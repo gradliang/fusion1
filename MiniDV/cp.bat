@@ -1,0 +1,1 @@
+copy .\main\make\mp612.bin %1

@@ -1,0 +1,202 @@
+
+E:\Sinoon\610\sn610-SW-svn1907\MiniDV\main\MAKE>copy ..\..\include\iplaysysconfig.h ..\..\..\libIPLAY\include 
+已复制         1 个文件。
+
+E:\Sinoon\610\sn610-SW-svn1907\MiniDV\main\MAKE>copy ..\..\include\corelib.h ..\..\..\libIPLAY\include 
+已复制         1 个文件。
+
+E:\Sinoon\610\sn610-SW-svn1907\MiniDV\main\MAKE>copy ..\include\ui_timer.h ..\..\..\libIPLAY\include  
+已复制         1 个文件。
+------------------------------------------------------
+The Platform you are making is 0x662  !!!
+MK_BT flag                    - 0
+MK_TESTCONSOLE flag           - 0
+Softwarw MP3 codec flag       - 1
+AAC SWAAC codec flag          - 0
+Video enable flag             - 0
+Video codec MPEG-12           - 0
+Video codec MPEG-4            - 0
+Video codec H.264             - 0
+MotionJpeg flag               - 1
+WIFI flag                     - 0
+WPA flag                      - 0
+LWIP flag                     - 0
+CURL flag                     - 0
+OPENSSL flag                  - 0
+UPNP flag                     - 0
+SDIO flag                     - 0
+USB flag                      - 3
+make -C ../../../libIPLAY/make
+make[1]: Entering directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/make'
+make -C ../libsrc/bios/make
+make[2]: Entering directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/bios/make'
+make[2]: Nothing to be done for `all'.
+make[2]: Leaving directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/bios/make'
+make -C ../libsrc/Mcard/make
+make[2]: Entering directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/Mcard/make'
+make[2]: Nothing to be done for `all'.
+make[2]: Leaving directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/Mcard/make'
+make -C ../libsrc/file/make
+make[2]: Entering directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/file/make'
+make[2]: Nothing to be done for `all'.
+make[2]: Leaving directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/file/make'
+make -C ../libsrc/os/make
+make[2]: Entering directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/os/make'
+make[2]: Nothing to be done for `all'.
+make[2]: Leaving directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/os/make'
+make -C ../libsrc/image/make
+make[2]: Entering directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/image/make'
+make[2]: Nothing to be done for `all'.
+make[2]: Leaving directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/image/make'
+make -C ../libsrc/demux/make
+make[2]: Entering directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/demux/make'
+make[2]: Nothing to be done for `all'.
+make[2]: Leaving directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/demux/make'
+make -C ../libsrc/codec/swaac/make
+make[2]: Entering directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/codec/swaac/make'
+make[2]: Nothing to be done for `all'.
+make[2]: Leaving directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/codec/swaac/make'
+make -C ../libsrc/codec/hwmad/make
+make[2]: Entering directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/codec/hwmad/make'
+make[2]: Nothing to be done for `all'.
+make[2]: Leaving directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/codec/hwmad/make'
+make -C ../libsrc/codec/softaviwave/make
+make[2]: Entering directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/codec/softaviwave/make'
+make[2]: Nothing to be done for `all'.
+make[2]: Leaving directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/codec/softaviwave/make'
+make -C ../libsrc/codec/swac3/make
+make[2]: Entering directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/codec/swac3/make'
+make[2]: Nothing to be done for `all'.
+make[2]: Leaving directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/codec/swac3/make'
+make -C ../libsrc/codec/swram/make
+make[2]: Entering directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/codec/swram/make'
+make[2]: Nothing to be done for `all'.
+make[2]: Leaving directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/codec/swram/make'
+make -C ../libsrc/codec/swmad/make
+make[2]: Entering directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/codec/swmad/make'
+make[2]: Nothing to be done for `all'.
+make[2]: Leaving directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/codec/swmad/make'
+make -C ../libsrc/codec/swamr/make
+make[2]: Entering directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/codec/swamr/make'
+make[2]: Nothing to be done for `all'.
+make[2]: Leaving directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/codec/swamr/make'
+make -C ../libsrc/codec/ffmpeg/make
+make[2]: Entering directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/codec/ffmpeg/make'
+make[2]: Nothing to be done for `all'.
+make[2]: Leaving directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/codec/ffmpeg/make'
+make -C ../libsrc/ptpdps/make
+make[2]: Entering directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/ptpdps/make'
+make[2]: Nothing to be done for `all'.
+make[2]: Leaving directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/ptpdps/make'
+make -C ../libsrc/xpg/make
+make[2]: Entering directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/xpg/make'
+make[2]: Nothing to be done for `all'.
+make[2]: Leaving directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/xpg/make'
+make -C ../libsrc/usbotg/make
+make[2]: Entering directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/usbotg/make'
+make[2]: Nothing to be done for `all'.
+make[2]: Leaving directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/usbotg/make'
+make -C ../libsrc/mpapi/make
+make[2]: Entering directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/mpapi/make'
+make[2]: Nothing to be done for `all'.
+make[2]: Leaving directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/mpapi/make'
+make -C ../libsrc/codec/swmp3/make
+make[2]: Entering directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/codec/swmp3/make'
+make[2]: Nothing to be done for `all'.
+make[2]: Leaving directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/codec/swmp3/make'
+make -C ../libsrc/codec/swwma/make
+make[2]: Entering directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/codec/swwma/make'
+make[2]: Nothing to be done for `all'.
+make[2]: Leaving directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/codec/swwma/make'
+make -C ../libsrc/codec/utilities/make
+make[2]: Entering directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/codec/utilities/make'
+make[2]: Nothing to be done for `all'.
+make[2]: Leaving directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/codec/utilities/make'
+make -C ../libsrc/codec/swogg/make
+make[2]: Entering directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/codec/swogg/make'
+make[2]: Nothing to be done for `all'.
+make[2]: Leaving directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/codec/swogg/make'
+make -C ../libsrc/stream/make
+make[2]: Entering directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/stream/make'
+make[2]: Nothing to be done for `all'.
+make[2]: Leaving directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/stream/make'
+make -C ../libsrc/codec/libmad/make
+make[2]: Entering directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/codec/libmad/make'
+make[2]: Nothing to be done for `all'.
+make[2]: Leaving directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/codec/libmad/make'
+make -C ../libsrc/codec/faad/make
+make[2]: Entering directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/codec/faad/make'
+make[2]: Nothing to be done for `all'.
+make[2]: Leaving directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/codec/faad/make'
+make -C ../libsrc/codec/mp4ff/make
+make[2]: Entering directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/codec/mp4ff/make'
+make[2]: Nothing to be done for `all'.
+make[2]: Leaving directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/codec/mp4ff/make'
+make -C ../libsrc/text/make
+make[2]: Entering directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/text/make'
+make -C ../make/txt
+make[3]: Entering directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/text/make/txt'
+make[3]: Nothing to be done for `all'.
+make[3]: Leaving directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/text/make/txt'
+make[2]: Leaving directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/text/make'
+make -C ../libsrc/util/make
+make[2]: Entering directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/util/make'
+make[2]: Nothing to be done for `all'.
+make[2]: Leaving directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/util/make'
+make -C ../libsrc/mpxtool/make
+make[2]: Entering directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/mpxtool/make'
+make[2]: Nothing to be done for `all'.
+make[2]: Leaving directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/mpxtool/make'
+make -C ../libsrc/codec/hwfaad/make
+make[2]: Entering directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/codec/hwfaad/make'
+make[2]: Nothing to be done for `all'.
+make[2]: Leaving directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/codec/hwfaad/make'
+make -C ../libsrc/peripheral/make
+make[2]: Entering directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/peripheral/make'
+make[2]: Nothing to be done for `all'.
+make[2]: Leaving directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/peripheral/make'
+make -C ../libsrc/system/make
+make[2]: Entering directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/system/make'
+make[2]: Nothing to be done for `all'.
+make[2]: Leaving directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/system/make'
+make -C ../libsrc/display/make
+make[2]: Entering directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/display/make'
+make[2]: Nothing to be done for `all'.
+make[2]: Leaving directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/display/make'
+make -C ../libsrc/sensor/make	
+make[2]: Entering directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/sensor/make'
+make[2]: Nothing to be done for `all'.
+make[2]: Leaving directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/sensor/make'
+make -C ../libsrc/codec/aviPacker/make
+make[2]: Entering directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/codec/aviPacker/make'
+make[2]: Nothing to be done for `all'.
+make[2]: Leaving directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/codec/aviPacker/make'
+make -C ../libsrc/record/make
+make[2]: Entering directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/record/make'
+make[2]: Nothing to be done for `all'.
+make[2]: Leaving directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/record/make'
+make -C ../libsrc/xml/make
+make[2]: Entering directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/xml/make'
+make[2]: Nothing to be done for `all'.
+make[2]: Leaving directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/xml/make'
+make -C ../libsrc/touchctrl/make	
+make[2]: Entering directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/touchctrl/make'
+make[2]: Nothing to be done for `all'.
+make[2]: Leaving directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/touchctrl/make'
+make -C ../libsrc/subtitle/make
+make[2]: Entering directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/subtitle/make'
+make[2]: Nothing to be done for `all'.
+make[2]: Leaving directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/subtitle/make'
+make -C ../libsrc/audio/make
+make[2]: Entering directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/audio/make'
+make[2]: Nothing to be done for `all'.
+make[2]: Leaving directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/libsrc/audio/make'
+make[1]: Leaving directory `E:/Sinoon/610/sn610-SW-svn1907/libIPLAY/make'
+TTF flag                      - 0
+DiagnosticTestConsole flag    - 0
+------------------------------------------------------
+make -C ../../ui/make
+make[1]: Entering directory `E:/Sinoon/610/sn610-SW-svn1907/MiniDV/ui/make'
+make[1]: Nothing to be done for `all'.
+make[1]: Leaving directory `E:/Sinoon/610/sn610-SW-svn1907/MiniDV/ui/make'
+lexra-mpx-elf-gcc -DAUDIO_ENDIAN=1  -march=r3000 -c -EB -msoft-float  -G 8 -D__DEBUG__ -O2 -DNO_STUB -fno-strict-aliasing			 -DWORDS_BIGENDIAN -DARCH_IS_BIG_ENDIAN -DAMR_NB_ENABLE -DLAYERII_FORCE_MONO -DMPEG1_DROP_B_FRAME -DXVID_DROP_B_FRAME -finline-limit=128 -finline-functions -O0 -ggdb -G 8 -mno-abicalls -I../include/ -I../../../libIPLAY/include/ -I../../../libIPLAY/libsrc/xpg/include -I../../../libIPLAY/libSrc/fontengine/INCLUDE -I../../../libIPLAY/libSrc/fontengine/INCLUDE/freetype -Wa,-al=../object/../object/xpgFunc.lst -o ../object/xpgFunc.o ../source/xpgFunc.c

@@ -1,0 +1,70 @@
+MP62X Network Socket library API 
+=========================
+
+Updated: 24 December 2008
+
+Copyright (c)  2008 Magic Pixel Inc.
+
+
+0. Introduction
+
+The socket library API on MP62X follows popular BSD socket API mostly, with some 
+borrowed from Windows Sockets, Winsock.
+
+Function prototypes and detailed descriptions of the API functions can be 
+found in the following file:
+
+    libIPLAY/libSrc/lwip/include/net_socket2.h
+
+However, with some API functions, we support only subset of standard API
+functions.  Please refer to function descriptions in the header file above.
+
+Maximum number of sockets supported is 31.
+
+1. Differences Between BSD Socket API and MP62X Socket API
+
+1.1 File and Socket Handles
+
+Under Unix/Linux, I/O system calls work with file descriptors and socket
+descriptors equally well.  It's common in BSD sockets programs to use read() 
+instead of recv() to read data from a socket, for example.  But under Windows
+and MP62X, socket descriptors are completely distinct from file descriptors.
+For example, close() is designed to work only with files, not sockets.
+
+1.2 Options for Sockets
+
+Though there are two options you can set on a socket,SO_LINGER and SO_BROADCAST,
+by calling setsockopt(), they are not really used in the socket library.
+
+The getsockopt() supports only one option, SO_ERROR.
+
+2. BSD API Functions Supported
+
+2.1 socket()
+2.2 select()
+2.3 bind()
+2.4 listen()
+2.4 accept()
+2.5 connect()
+2.6 sendto()
+2.7 send()
+2.8 recvfrom()
+2.9 recv()
+2.10 getsockopt()
+2.11 setsockopt()
+2.12 shutdown()
+2.13 inet_addr()
+2.14 gethostbyname()
+
+
+3. Winsock API Functions Supported
+
+2.1 closesocket()
+
+This is equivalent to Linux's close().
+
+2.2 ioctlsocket()
+
+This is equivalent to Linux's ioctl().  Supported IOCTLs include FIONBIO, 
+SIOCGIFADDR, and SIOCGIFHWADDR.
+

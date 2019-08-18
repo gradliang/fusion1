@@ -1,0 +1,1 @@
+#include "global612.h"#include "mpTrace.h"#include "audio.h"#include "audio_hal.h"#include "wavUtil.h"#include "../../demux/INCLUDE/filter_graph.h"#include "../../demux/INCLUDE/audio_out.h"#include "../../Peripheral/INCLUDE/hal_gpio.h"//#define AUDIO_RECORD_VERIFICATION_ENABLE 1#if RECORD_AUDIO#endif

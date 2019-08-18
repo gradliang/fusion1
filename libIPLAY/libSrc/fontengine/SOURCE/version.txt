@@ -1,0 +1,2 @@
+version:
+FreeType 2.4.2  (2010-Aug-06)

@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2010/09/20 16:48:29.740.cpp,C:\Documents and Settings\AllenChen\My Documents\RAD Studio\Projects\File1.cpp=F:\Covert BMP to YUV422\Convert.cpp</Transaction>
+    <Transaction>2010/09/20 16:48:35.287.cbproj,C:\Documents and Settings\AllenChen\My Documents\RAD Studio\Projects\Project1.cbproj=F:\Covert BMP to YUV422\Convert.cbproj</Transaction>
+    <Transaction>2010/09/20 16:56:31.787.cbproj,F:\Covert BMP to YUV422\Convert.cbproj=F:\Covert BMP to YUV422\Convert.cbproj</Transaction>
+    <Transaction>2010/09/21 10:39:30.637.cbproj,F:\Covert BMP to YUV422\Convert.cbproj=F:\Covert BMP to YUV422\Convert.cbproj</Transaction>
+    <Transaction>2010/09/28 11:11:57.940.cpp,F:\Covert BMP to YUV422\Convert.cpp=F:\Covert BMP to YUV422\Convert_20100928.cpp</Transaction>
+    <Transaction>2010/09/28 11:12:15.486.cbproj,F:\Covert BMP to YUV422\Convert.cbproj=F:\Covert BMP to YUV422\Convert_20100928.cbproj</Transaction>
+    <Transaction>2010/09/28 11:44:45.628.cbproj,F:\Covert BMP to YUV422\Convert_20100928.cbproj=F:\Covert BMP to YUV422\Convert_20100928.cbproj</Transaction>
+    <Transaction>2010/09/28 15:41:14.820.cbproj,F:\CovertBMPtoYUV422\Convert_20100928.cbproj=F:\CovertBMPtoYUV422\Convert_20100928.cbproj</Transaction>
+    <Transaction>2010/09/28 15:41:37.945.cbproj,F:\CovertBMPtoYUV422\Convert_20100928.cbproj=F:\CovertBMPtoYUV422\Convert_20100928_a.cbproj</Transaction>
+    <Transaction>2010/09/28 15:41:42.899.cbproj,F:\CovertBMPtoYUV422\Convert_20100928_a.cbproj=F:\CovertBMPtoYUV422\Convert_20100928_a.cbproj</Transaction>
+    <Transaction>2010/09/28 15:41:47.758.cpp,F:\CovertBMPtoYUV422\Convert_20100928.cpp=F:\CovertBMPtoYUV422\Convert_20100928_a.cpp</Transaction>
+    <Transaction>2010/09/28 15:41:52.539.cbproj,F:\CovertBMPtoYUV422\Convert_20100928_a.cbproj=F:\CovertBMPtoYUV422\Convert_20100928_a.cbproj</Transaction>
+    <Transaction>2010/09/28 17:46:06.633.cbproj,F:\CovertBMPtoYUV422\Convert_20100928_a.cbproj=F:\CovertBMPtoYUV422\Convert_20100928_a.cbproj</Transaction>
+    <Transaction>2010/09/28 17:46:17.899.cbproj,F:\CovertBMPtoYUV422\Convert_20100928_a.cbproj=F:\CovertBMPtoYUV422\Convert_20100928_b.cbproj</Transaction>
+    <Transaction>2010/09/28 17:46:23.227.cpp,F:\CovertBMPtoYUV422\Convert_20100928_a.cpp=F:\CovertBMPtoYUV422\Convert_20100928_b.cpp</Transaction>
+    <Transaction>2010/09/28 19:10:00.680.cbproj,F:\CovertBMPtoYUV422\Convert_20100928_b.cbproj=F:\CovertBMPtoYUV422\Convert_20100928_b.cbproj</Transaction>
+    <Transaction>2010/09/28 19:10:09.820.cbproj,F:\CovertBMPtoYUV422\Convert_20100928_b.cbproj=F:\CovertBMPtoYUV422\Convert_20100928_c.cbproj</Transaction>
+    <Transaction>2010/09/28 19:10:16.149.cpp,F:\CovertBMPtoYUV422\Convert_20100928_b.cpp=F:\CovertBMPtoYUV422\Convert_20100928_c.cpp</Transaction>
+    <Transaction>2010/09/29 15:53:18.614.cbproj,F:\CovertBMPtoYUV422\Convert_20100928_c.cbproj=F:\CovertBMPtoYUV422\Convert_20100928_c.cbproj</Transaction>
+    <Transaction>2010/09/29 15:53:28.427.cbproj,F:\CovertBMPtoYUV422\Convert_20100928_c.cbproj=F:\CovertBMPtoYUV422\Convert_20100928_d.cbproj</Transaction>
+    <Transaction>2010/09/29 15:53:32.505.cpp,F:\CovertBMPtoYUV422\Convert_20100928_c.cpp=F:\CovertBMPtoYUV422\Convert_20100928_d.cpp</Transaction>
+    <Transaction>2010/09/29 15:55:22.024.cbproj,F:\CovertBMPtoYUV422\Convert_20100928_d.cbproj=F:\CovertBMPtoYUV422\Convert_20100929_d.cbproj</Transaction>
+    <Transaction>2010/09/29 15:55:26.665.cpp,F:\CovertBMPtoYUV422\Convert_20100928_d.cpp=F:\CovertBMPtoYUV422\Convert_20100929_d.cpp</Transaction>
+    <Transaction>2010/09/29 16:16:47.540.cbproj,F:\CovertBMPtoYUV422\Convert_20100929_d.cbproj=F:\CovertBMPtoYUV422\Convert_20100929_d.cbproj</Transaction>
+    <Transaction>2010/09/29 16:16:52.869.cbproj,F:\CovertBMPtoYUV422\Convert_20100929_d.cbproj=F:\CovertBMPtoYUV422\Convert_20100929_d.cbproj</Transaction>
+    <Transaction>2010/10/04 21:31:59.738.cbproj,F:\CovertBMPtoYUV422\Convert_20100929_d.cbproj=F:\CovertBMPtoYUV422\Convert_20101004_e.cbproj</Transaction>
+    <Transaction>2010/10/04 21:32:07.301.cpp,F:\CovertBMPtoYUV422\Convert_20100929_d.cpp=F:\CovertBMPtoYUV422\Convert_20101004_e.cpp</Transaction>
+    <Transaction>2010/10/05 15:36:55.763.cbproj,F:\CovertBMPtoYUV422\Convert_20101004_e.cbproj=F:\CovertBMPtoYUV422\Convert_20101004_f.cbproj</Transaction>
+    <Transaction>2010/10/05 15:37:00.185.cpp,F:\CovertBMPtoYUV422\Convert_20101004_e.cpp=F:\CovertBMPtoYUV422\Convert_20101004_f.cpp</Transaction>
+    <Transaction>2010/10/05 15:38:34.670.cbproj,F:\CovertBMPtoYUV422\Convert_20101004_f.cbproj=F:\CovertBMPtoYUV422\Convert_20101005_f.cbproj</Transaction>
+    <Transaction>2010/10/05 15:38:39.404.cpp,F:\CovertBMPtoYUV422\Convert_20101004_f.cpp=F:\CovertBMPtoYUV422\Convert_20101005_f.cpp</Transaction>
+    <Transaction>2010/10/05 18:06:18.945.cbproj,F:\CovertBMPtoYUV422\Convert_20101005_f.cbproj=F:\CovertBMPtoYUV422\Convert_20101005_f1.cbproj</Transaction>
+    <Transaction>2010/10/05 18:06:22.961.cpp,F:\CovertBMPtoYUV422\Convert_20101005_f.cpp=F:\CovertBMPtoYUV422\Convert_20101005_f1.cpp</Transaction>
+    <Transaction>2010/10/06 11:13:12.724.cbproj,F:\CovertBMPtoYUV422\Convert_20101005_f1.cbproj=F:\CovertBMPtoYUV422\Convert_20101006_f2.cbproj</Transaction>
+    <Transaction>2010/10/06 18:25:54.222.cbproj,F:\CovertBMPtoYUV422\Convert_20101006_f2.cbproj=F:\CovertBMPtoYUV422\Convert_20101006_h.cbproj</Transaction>
+    <Transaction>2010/10/06 18:26:03.534.cpp,F:\CovertBMPtoYUV422\Convert_20101005_f1.cpp=F:\CovertBMPtoYUV422\Convert_20101006_h.cpp</Transaction>
+    <Transaction>2010/10/06 18:26:14.581.cbproj,F:\CovertBMPtoYUV422\Convert_20101006_h.cbproj=F:\CovertBMPtoYUV422\Convert_20101006_h.cbproj</Transaction>
+    <Transaction>2010/10/07 16:56:19.228.cbproj,F:\CovertBMPtoYUV422\Convert_20101006_h.cbproj=F:\CovertBMPtoYUV422\Convert_20101007_r.cbproj</Transaction>
+    <Transaction>2010/10/08 15:20:26.267.cbproj,F:\CovertBMPtoYUV422\Convert_20101007_r.cbproj=F:\CovertBMPtoYUV422\Convert_20101008_r1.cbproj</Transaction>
+    <Transaction>2010/10/08 15:21:50.752.cpp,F:\CovertBMPtoYUV422\Convert_20101006_h.cpp=</Transaction>
+    <Transaction>2010/10/08 15:22:07.346.cbproj,F:\CovertBMPtoYUV422\Convert_20101008_r1.cbproj=F:\CovertBMPtoYUV422\Convert_20101008_r2.cbproj</Transaction>
+    <Transaction>2010/10/11 13:05:55.275.cpp,F:\CovertBMPtoYUV422\Convert_20101008_r1.cpp=F:\CovertBMPtoYUV422\Convert_20101011_r1.cpp</Transaction>
+    <Transaction>2010/10/11 13:06:02.040.cpp,F:\CovertBMPtoYUV422\Convert_20101011_r1.cpp=F:\CovertBMPtoYUV422\Convert_20101011_r2_2.cpp</Transaction>
+    <Transaction>2010/10/11 13:06:24.259.cbproj,F:\CovertBMPtoYUV422\Convert_20101008_r2.cbproj=F:\CovertBMPtoYUV422\Convert_20101011_r2_2.cbproj</Transaction>
+    <Transaction>2010/10/11 13:14:02.372.cpp,F:\CovertBMPtoYUV422\Convert_20101011_r2_2.cpp=</Transaction>
+    <Transaction>2010/10/11 13:14:27.200.cbproj,F:\CovertBMPtoYUV422\Convert_20101011_r2_2.cbproj=F:\CovertBMPtoYUV422\Convert_20101011_r2_2.cbproj</Transaction>
+    <Transaction>2010/10/11 13:46:27.743.cbproj,F:\CovertBMPtoYUV422\Convert_20101011_r2_2.cbproj=F:\CovertBMPtoYUV422\Convert_20101011_r2_2.cbproj</Transaction>
+    <Transaction>2010/10/11 13:46:42.322.cpp,F:\CovertBMPtoYUV422\Convert_20101008_r2.cpp=F:\CovertBMPtoYUV422\Convert_20101011_r2_2.cpp</Transaction>
+    <Transaction>2010/10/11 13:46:47.744.cbproj,F:\CovertBMPtoYUV422\Convert_20101011_r2_2.cbproj=F:\CovertBMPtoYUV422\Convert_20101011_r2_2.cbproj</Transaction>
+    <Transaction>2010/10/11 18:45:21.895.cpp,F:\CovertBMPtoYUV422\Convert_20101011_r2_2.cpp=F:\CovertBMPtoYUV422\Convert_20101011_t.cpp</Transaction>
+    <Transaction>2010/10/11 18:45:31.317.cbproj,F:\CovertBMPtoYUV422\Convert_20101011_r2_2.cbproj=F:\CovertBMPtoYUV422\Convert_20101011_t.cbproj</Transaction>
+    <Transaction>2010/10/12 15:12:33.453.cpp,F:\CovertBMPtoYUV422\Convert_20101011_t.cpp=F:\CovertBMPtoYUV422\Convert_20101012_t1.cpp</Transaction>
+    <Transaction>2010/10/12 15:12:39.453.cbproj,F:\CovertBMPtoYUV422\Convert_20101011_t.cbproj=F:\CovertBMPtoYUV422\Convert_20101012_t1.cbproj</Transaction>
+    <Transaction>2010/10/13 17:47:51.469.cpp,F:\CovertBMPtoYUV422\Convert_20101012_t1.cpp=F:\CovertBMPtoYUV422\Convert_20101013_t2.cpp</Transaction>
+    <Transaction>2010/10/13 17:48:08.953.cbproj,F:\CovertBMPtoYUV422\Convert_20101012_t1.cbproj=F:\CovertBMPtoYUV422\Convert_20101013_t2.cbproj</Transaction>
+  </Transactions>
+</BorlandProject>
