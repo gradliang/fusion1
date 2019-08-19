@@ -385,6 +385,7 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
     WORD wW = pstSprite->m_wWidth;
     WORD wH = pstSprite->m_wHeight;
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
+    DWORD dwSpriteId = pstSprite->m_dwTypeIndex;
     
     if (dwHashKey == xpgHash("Main", strlen("Main")))
         xpgDrawSprite(pWin, pstSprite, boClip);
@@ -394,6 +395,13 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         if (pstMask)
             xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
     }
+    else if (dwHashKey == xpgHash("FuncSet2", strlen("FuncSet2")))
+    {
+        pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, (dwSpriteId < 6) ? 1:0);
+        if (pstMask)
+            xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+    }
+
     
     xpgSpriteEnableTouch(pstSprite);
 }
@@ -413,6 +421,13 @@ SWORD xpgDrawSprite_LightIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite
         if (pstMask)
             xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
     }
+    else if (dwHashKey == xpgHash("FuncSet2", strlen("FuncSet2")))
+    {
+        pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 0);
+        if (pstMask)
+            xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+    }
+    
     return PASS;
 }
 
