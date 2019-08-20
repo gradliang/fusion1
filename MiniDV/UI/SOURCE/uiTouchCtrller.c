@@ -9,6 +9,7 @@
 #include "ui.h"
 #include "display.h"
 #include "xpg.h"
+#include "Setup.h"
 
 #if (TOUCH_CONTROLLER_ENABLE == ENABLE)
 
@@ -176,6 +177,28 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite)
             xpgSearchAndGotoPage("FuncSet", strlen("FuncSet"));
             xpgUpdateStage();
         }
+    }
+    else if (dwHashKey == xpgHash("FuncSet", strlen("FuncSet")))
+    {
+        BYTE * pb;
+        if (dwIconId == 0)
+            pb = &(g_psSetupMenu->bEnableIcon_LaLiCeShi);
+        else if (dwIconId == 1)
+            pb = &(g_psSetupMenu->bEnableIcon_DuanMianJianCe);
+        else if (dwIconId == 2)
+            pb = &(g_psSetupMenu->bEnableIcon_ZiDongDuiJiao);
+        else if (dwIconId == 3)
+            pb = &(g_psSetupMenu->bEnableIcon_JiaoDuJianCe);
+        else if (dwIconId == 4)
+            pb = &(g_psSetupMenu->bEnableIcon_BaoCunTuXiang);
+        else if (dwIconId == 5)
+            pb = &(g_psSetupMenu->bEnableIcon_HuiChenJianCe);
+        else if (dwIconId == 6)
+            pb = &(g_psSetupMenu->bEnableIcon_RongJieZanTing);
+        else
+            pb = &(g_psSetupMenu->bEnableIcon_YunDuanCeLiang);
+        *pb = !(*pb);
+        xpgUpdateStage();
     }
     return 0;
 }

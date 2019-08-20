@@ -414,12 +414,25 @@ SWORD xpgDrawSprite_LightIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite
     WORD wW = pstSprite->m_wWidth;
     WORD wH = pstSprite->m_wHeight;
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
+    DWORD dwSpriteId = pstSprite->m_dwTypeIndex;
 
     if (dwHashKey == xpgHash("FuncSet", strlen("FuncSet")))
     {
-        pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 0);
-        if (pstMask)
-            xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+        BOOL enable[8];
+        enable[0] = g_psSetupMenu->bEnableIcon_LaLiCeShi;
+        enable[1] = g_psSetupMenu->bEnableIcon_DuanMianJianCe;
+        enable[2] = g_psSetupMenu->bEnableIcon_ZiDongDuiJiao;
+        enable[3] = g_psSetupMenu->bEnableIcon_JiaoDuJianCe;
+        enable[4] = g_psSetupMenu->bEnableIcon_BaoCunTuXiang;
+        enable[5] = g_psSetupMenu->bEnableIcon_HuiChenJianCe;
+        enable[6] = g_psSetupMenu->bEnableIcon_RongJieZanTing;
+        enable[7] = g_psSetupMenu->bEnableIcon_YunDuanCeLiang;
+        if (enable[dwSpriteId])
+        {
+            pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 0);
+            if (pstMask)
+                xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+        }
     }
     else if (dwHashKey == xpgHash("FuncSet2", strlen("FuncSet2")))
     {

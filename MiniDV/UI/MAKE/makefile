@@ -12,7 +12,7 @@ TARGET = $(LIBMAIN)libui.a
 CC = $(BIN)gcc
 #CC_OPTION += -O1 -g
 CC_OPTION += -O1 -fno-strict-aliasing
-CC_OPTION += -I$(INC) -I$(G_INC) -I../../../libIPLAY/libSrc/xpg/include -Wa,-ahl=
+CC_OPTION += -I$(INC) -I$(G_INC) -I../../main/INCLUDE -I../../../libIPLAY/libSrc/xpg/include -Wa,-ahl=
 
 AS = $(BIN)as
 AS_OPTION = -march=r3000 -I$(INC) -I$(G_INC) -ahl=
