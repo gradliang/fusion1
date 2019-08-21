@@ -51,6 +51,22 @@ void GetDefaultSetupMenuValue(void)
 #if  (PRODUCT_UI==UI_WELDING)
 	g_psSetupMenu->wElectrodePos[0]=0;
 	g_psSetupMenu->wElectrodePos[1]=0;
+
+    g_psSetupMenu->bEnableIcon_LaLiCeShi = 0;
+    g_psSetupMenu->bEnableIcon_DuanMianJianCe = 0;
+    g_psSetupMenu->bEnableIcon_ZiDongDuiJiao = 0;
+    g_psSetupMenu->bEnableIcon_JiaoDuJianCe = 0;
+    g_psSetupMenu->bEnableIcon_BaoCunTuXiang = 0;
+    g_psSetupMenu->bEnableIcon_HuiChenJianCe = 0;
+    g_psSetupMenu->bEnableIcon_RongJieZanTing = 0;
+    g_psSetupMenu->bEnableIcon_YunDuanCeLiang = 0;
+    g_psSetupMenu->bCustomizeIcon[0] = 0;
+    g_psSetupMenu->bCustomizeIcon[1] = 1;
+    g_psSetupMenu->bCustomizeIcon[2] = 2;
+    g_psSetupMenu->bCustomizeIcon[3] = 11;
+    g_psSetupMenu->bCustomizeIcon[4] = 4;
+    g_psSetupMenu->bCustomizeIcon[5] = 5;
+    
 #endif	
 }
 
@@ -64,6 +80,20 @@ void Update_gSetupMenuValue(void)
 	*(gSetupMenuValue + 9)  =  g_psSetupMenu->wElectrodePos[0];
 	*(gSetupMenuValue + 10)  =  g_psSetupMenu->wElectrodePos[1];
 
+    *(gSetupMenuValue + 11)  =  g_psSetupMenu->bEnableIcon_LaLiCeShi;
+    *(gSetupMenuValue + 12)  =  g_psSetupMenu->bEnableIcon_DuanMianJianCe;
+    *(gSetupMenuValue + 13)  =  g_psSetupMenu->bEnableIcon_ZiDongDuiJiao;
+    *(gSetupMenuValue + 14)  =  g_psSetupMenu->bEnableIcon_JiaoDuJianCe;
+    *(gSetupMenuValue + 15)  =  g_psSetupMenu->bEnableIcon_BaoCunTuXiang;
+    *(gSetupMenuValue + 16)  =  g_psSetupMenu->bEnableIcon_HuiChenJianCe;
+    *(gSetupMenuValue + 17)  =  g_psSetupMenu->bEnableIcon_RongJieZanTing;
+    *(gSetupMenuValue + 18)  =  g_psSetupMenu->bEnableIcon_YunDuanCeLiang;
+    *(gSetupMenuValue + 19)  =  (int)(g_psSetupMenu->bCustomizeIcon[0]);
+    *(gSetupMenuValue + 20)  =  (int)(g_psSetupMenu->bCustomizeIcon[1]);
+    *(gSetupMenuValue + 21)  =  (int)(g_psSetupMenu->bCustomizeIcon[2]);
+    *(gSetupMenuValue + 22)  =  (int)(g_psSetupMenu->bCustomizeIcon[3]);
+    *(gSetupMenuValue + 23)  =  (int)(g_psSetupMenu->bCustomizeIcon[4]);
+    *(gSetupMenuValue + 24)  =  (int)(g_psSetupMenu->bCustomizeIcon[5]);
 	MP_DEBUG("--Write setup value  g_psSetupMenu->wElectrodePos[1]=%d",g_psSetupMenu->wElectrodePos[1] );
 
 }
@@ -83,6 +113,21 @@ void Recover_g_psSetupMenu(void)
         g_psSetupMenu->wElectrodePos[0] =  gSetupMenuValue[9];
     if (gSetupMenuValue[10] <= 0x0fff)
         g_psSetupMenu->wElectrodePos[1] =  gSetupMenuValue[10];
+
+    g_psSetupMenu->bEnableIcon_LaLiCeShi = gSetupMenuValue[11];
+    g_psSetupMenu->bEnableIcon_DuanMianJianCe = gSetupMenuValue[12];
+    g_psSetupMenu->bEnableIcon_ZiDongDuiJiao = gSetupMenuValue[13];
+    g_psSetupMenu->bEnableIcon_JiaoDuJianCe = gSetupMenuValue[14];
+    g_psSetupMenu->bEnableIcon_BaoCunTuXiang = gSetupMenuValue[15];
+    g_psSetupMenu->bEnableIcon_HuiChenJianCe = gSetupMenuValue[16];
+    g_psSetupMenu->bEnableIcon_RongJieZanTing = gSetupMenuValue[17];
+    g_psSetupMenu->bEnableIcon_YunDuanCeLiang = gSetupMenuValue[18];
+    g_psSetupMenu->bCustomizeIcon[0] = (int)(gSetupMenuValue[19]);
+    g_psSetupMenu->bCustomizeIcon[1] = (int)(gSetupMenuValue[20]);
+    g_psSetupMenu->bCustomizeIcon[2] = (int)(gSetupMenuValue[21]);
+    g_psSetupMenu->bCustomizeIcon[3] = (int)(gSetupMenuValue[22]);
+    g_psSetupMenu->bCustomizeIcon[4] = (int)(gSetupMenuValue[23]);
+    g_psSetupMenu->bCustomizeIcon[5] = (int)(gSetupMenuValue[24]);
 
 	MP_DEBUG("--Read setup value  g_psSetupMenu->wElectrodePos[1]=%d",g_psSetupMenu->wElectrodePos[1] );
 }

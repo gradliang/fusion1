@@ -712,6 +712,7 @@
 #define XPG_ROLE_TEXT_WHITE_0              10 //10-19
 
 #define SPRITE_TYPE_HILIGHTFRAME           5
+#define SPRITE_TYPE_ICON                    12
 #define SPRITE_TYPE_MASK                    15
 
 //xpg page define

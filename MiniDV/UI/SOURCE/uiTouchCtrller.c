@@ -200,6 +200,45 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite)
         *pb = !(*pb);
         xpgUpdateStage();
     }
+    else if (dwHashKey == xpgHash("FuncSet2", strlen("FuncSet2")))
+    {
+        if (dwIconId < 6)
+        {
+            if (g_psSetupMenu->bCustomizeIcon[dwIconId] < 0)
+            {
+                mpDebugPrint("it is empty.");
+                return PASS;
+            }
+            g_psSetupMenu->bCustomizeIcon[dwIconId] = -1;
+        }
+        else
+        {
+            DWORD nowIdx = dwIconId - 6;
+            BOOL found = FALSE;
+            DWORD foundIdx;
+            for (foundIdx = 0; foundIdx < 6; foundIdx++) {
+                if (g_psSetupMenu->bCustomizeIcon[foundIdx] < 0) {
+                    found = TRUE;
+                    break;
+                }
+            }
+            if (found == FALSE)
+            {
+                mpDebugPrint("not found empty.");
+                return PASS;
+            }
+
+            DWORD j1;
+            for (j1 = 0; j1 < 6; j1++) {
+                if (g_psSetupMenu->bCustomizeIcon[j1] == (int)nowIdx) {
+                    mpDebugPrint("has exist.");
+                    return PASS;
+                }
+            }
+            g_psSetupMenu->bCustomizeIcon[foundIdx] = (int)nowIdx;
+        }
+        xpgUpdateStage();
+    }
     return 0;
 }
 

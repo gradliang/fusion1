@@ -436,9 +436,15 @@ SWORD xpgDrawSprite_LightIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite
     }
     else if (dwHashKey == xpgHash("FuncSet2", strlen("FuncSet2")))
     {
+        if (dwSpriteId >= 6)
+            return PASS;
+        int lightIdx = g_psSetupMenu->bCustomizeIcon[dwSpriteId];
+        if (lightIdx < 0)
+            return PASS;
         pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 0);
+        STXPGSPRITE * lightSprite = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_ICON, 6 + lightIdx);
         if (pstMask)
-            xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+            xpgRoleDrawMask(lightSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
     }
     
     return PASS;
