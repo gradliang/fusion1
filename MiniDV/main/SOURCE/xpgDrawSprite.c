@@ -75,6 +75,8 @@ SWORD(*drawSpriteFunctions[]) (ST_IMGWIN *, STXPGSPRITE *, BOOL) =
     xpgDrawSprite_Selector,             // type21
     xpgDrawSprite_List,                 // type22
     xpgDrawSprite_Dialog,               // type23
+    xpgDrawSprite_Status,               // type24
+    xpgDrawSprite_Radio,                // type25
 };
 
 //---------------------------------------------------------------------------
@@ -452,6 +454,18 @@ SWORD xpgDrawSprite_LightIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite
 
 SWORD xpgDrawSprite_DarkIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOOL boClip)
 {
+    STXPGSPRITE *pstMask;
+    
+    DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
+    if (dwHashKey == xpgHash("SetYun", strlen("SetYun")))
+    {
+        if (!g_psSetupMenu->bCloudMode)
+        {
+            pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 0);
+            if (pstMask)
+                xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+        }
+    }
     return PASS;
 }
 
@@ -760,18 +774,49 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
 {
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
     
-    xpgDrawSprite(pWin, pstSprite, boClip);
-    if (dwHashKey == xpgHash("User", strlen("User")))
+    
+    if (dwHashKey == xpgHash("User", strlen("User"))) 
+    {
+        xpgDrawSprite(pWin, pstSprite, boClip);
         xpgSpriteEnableTouch(pstSprite);
-    return;
+    }
+    else if (dwHashKey == xpgHash("SetYun", strlen("SetYun")))
+    {
+        SetCurrIduFontID(FONT_ID_HeiTi16);
+        Idu_PrintString(pWin, getstr(Str_YunDuanCeLiang), pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
+        Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + 38, 400, 2, RGB2YUV(0x2F, 0x2F, 0x2F));
+    }
+    return PASS;
 }
 
 SWORD xpgDrawSprite_Dialog(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOOL boClip)
 {
     xpgDrawSprite(pWin, pstSprite, boClip);
-    return;
+    return PASS;
 }
 
+SWORD xpgDrawSprite_Status(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOOL boClip)         // type24
+{
+    return PASS;
+}
+
+SWORD xpgDrawSprite_Radio(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOOL boClip)          // type25
+{
+    STXPGSPRITE *pstMask;
+    
+    DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
+    if (dwHashKey == xpgHash("SetYun", strlen("SetYun")))
+    {
+        if (g_psSetupMenu->bCloudMode)
+        {
+            pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 0);
+            if (pstMask)
+                xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+        }
+        xpgSpriteEnableTouch(pstSprite);
+    }
+    return PASS;
+}
 
 #endif
 

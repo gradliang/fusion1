@@ -408,6 +408,29 @@ SWORD touchSprite_Dialog(STXPGSPRITE * sprite)
     return 0;
 }
 
+SWORD touchSprite_Status(STXPGSPRITE * sprite)
+{
+    return 0;
+}
+
+SWORD touchSprite_Radio(STXPGSPRITE * sprite)
+{
+    DWORD dwSpriteId = sprite->m_dwTypeIndex;
+    DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
+
+    if (dwHashKey == xpgHash("SetYun", strlen("SetYun")))
+    {
+        if (dwSpriteId == 0)
+        {
+            g_psSetupMenu->bCloudMode = !g_psSetupMenu->bCloudMode;
+            xpgUpdateStage();
+        }
+    }
+    return 0;
+}
+
+
+
 
 #pragma alignvar(4)
 SWORD(*touchSpriteFunctions[]) (STXPGSPRITE *) = {
@@ -435,6 +458,8 @@ SWORD(*touchSpriteFunctions[]) (STXPGSPRITE *) = {
     touchSprite_Selector,           // type21
     touchSprite_List,               // type22
     touchSprite_Dialog,             // type23
+    touchSprite_Status,             // type24
+    touchSprite_Radio,              // type25
 };
 
 void uiDispatchTouchSprite(WORD x1, WORD y1)

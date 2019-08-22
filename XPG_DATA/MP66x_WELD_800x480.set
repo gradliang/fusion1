@@ -31,6 +31,9 @@ type20=Text
 type21=Selector
 type22=List
 type23=Dialog
+type24=Status
+type25=Radio
+
 
 [ACTION]
 ;//Main Menu
