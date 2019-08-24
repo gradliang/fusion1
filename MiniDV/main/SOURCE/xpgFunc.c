@@ -477,6 +477,27 @@ void Free_Cache_BGWin()
 	}
 }
 
+void DrakWin(ST_IMGWIN* pWin, DWORD largeNum, DWORD smallNum)
+{
+    WORD i, j;
+    DWORD * pLineStart;
+    DWORD value;
+    DWORD y1, y2;
+    for (j = 0; j < pWin->wHeight ; j++) 
+    {
+        pLineStart = & (pWin->pdwStart [j * (pWin->wWidth / 2)]);
+        for (i = 0; i < pWin->wWidth / 2; i++) 
+        {
+            value = pLineStart[i];
+            y1 = (value >> 24) & 0xff;
+            y2 = (value >> 16) & 0xff;
+            y1 = y1 * smallNum / largeNum;
+            y2 = y2 * smallNum / largeNum;
+            pLineStart[i] = (value & 0xffff) | (y1 << 24) | (y2 << 16);
+        }
+    }
+}
+
 /////////////////////////////////////////////////////////////////////
 ST_IMGWIN *Idu_GetCacheWin_WithInit()
 {

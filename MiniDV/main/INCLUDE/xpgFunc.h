@@ -178,6 +178,7 @@ void Free_Cache_BGWin();
 ST_IMGWIN *Idu_GetCacheWin_WithInit();
 ST_IMGWIN *Idu_GetCacheWin();
 void Free_CacheWin();
+void DrakWin(ST_IMGWIN* pWin, DWORD largeNum, DWORD smallNum);
 
 
 

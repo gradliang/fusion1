@@ -146,6 +146,7 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
         if (dwIconId == 0) 
         {
             Idu_GetCacheWin_WithInit();
+            DrakWin(Idu_GetCacheWin(), 2, 1);
             xpgSearchAndGotoPage("User", strlen("User"));
             xpgUpdateStage();
         }
