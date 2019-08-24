@@ -483,6 +483,7 @@ void DrakWin(ST_IMGWIN* pWin, DWORD largeNum, DWORD smallNum)
     DWORD * pLineStart;
     DWORD value;
     DWORD y1, y2;
+    int iU, iV;
     for (j = 0; j < pWin->wHeight ; j++) 
     {
         pLineStart = & (pWin->pdwStart [j * (pWin->wWidth / 2)]);

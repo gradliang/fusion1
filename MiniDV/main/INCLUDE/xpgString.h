@@ -40,7 +40,76 @@ enum xpgStringId {
 	Str_XiTongXinXi,			//  30
 	Str_RongJieMoShi,			//  31
 	Str_JiaReSheZhi,			//  32
-    
+    Str_YunDuanMoShi,			//  33
+	Str_MAD,					//  34
+	Str_YunDuanOPMZhuangTai,	//  35
+	Str_ZaiXian,				//  36
+	Str_SaoMiaoErWeiMa,			//  37
+	Str_ZhiNengBeiGuang,		//   38
+	Str_YiFenZhongWuCaoZuo,	//39
+	Str_LiangDuTiaoJie,			//   40
+	Str_ZiDongGuanJi,			//   41
+	Str_DaoShiZiDongGuanJi,		//  42
+	Str_GuanJiShiJian,				//   43
+	Str_min,						//   44
+	Str_ChuPingShengYin,			//   45
+	Str_YinLiangTiaoJie,			//   46
+	Str_24XiaoShiZhi,				//   47
+	Str_ShiJianSheZhi,				//   48
+	Str_RiQiSheZhi,					//   49
+	Str_RiQiGeShi,					//   50
+	Str_XiTongYuYan,				//   51
+	Str_JianTiZhongWen,				//   52
+	Str_YingWen,					//   53
+	Str_PuTaoYaWen,					//   54
+	Str_XiBanYaWen,					//   55
+	Str_EWen,						//   56
+	Str_FaWen,						//   57
+	Str_TaiWen,						//   58
+	Str_ALaBoWen,					//   59
+	Str_KaiJiMiMa,					//   60
+	Str_SheZhiKaiJiMiMa,			//   61
+	Str_ZuJieMiMa,					//   62
+	Str_SheZhiZuJieMiMa,			//   63
+	Str_ZuJieRiQi,					//   64
+	Str_SuoDingRongJieCiShu,		//   65
+	Str_Zhi,						//   66
+	Str_Ci,							//   67
+	Str_ZhuJieMianFengGe,			//   68
+	Str_YangShiYanSe,				//   69
+	Str_JianYueMoRen,				//   70
+	Str_DongGan,					//   71
+	Str_JianYue,					//   72
+	Str_MoHuan,						//   73
+	Str_XingKong,					//   74
+	Str_XuanCai,					//   75
+	Str_GuanYuBenJi,				//   76
+	Str_DianJiBangXinXi,			//   77
+	Str_WenDuXinXi,					//   78
+	Str_DianChiXinXi,				//   79
+	Str_RongJieZongCiShu,			//   80
+	Str_GuJianBanBenHao,			//   81
+	Str_XiTongBanBenHao,			//   82
+	Str_XingHao,					//   83
+	Str_ShengYuCiShu,				//   84
+	Str_NeiBuWenDu,					//   85
+	Str_DianChiRongLiang,			//   86
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	Str_MAX_ID,
 };
 

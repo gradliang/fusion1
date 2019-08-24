@@ -782,8 +782,9 @@ SWORD xpgDrawSprite_Selector(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite,
 
 SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOOL boClip)
 {
+    const char * text = "";
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
-    
+    DWORD dwListId = pstSprite->m_dwTypeIndex;
     
     if (dwHashKey == xpgHash("User", strlen("User"))) 
     {
@@ -792,44 +793,108 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
     }
     else if (dwHashKey == xpgHash("SetYun", strlen("SetYun")))
     {
-        SetCurrIduFontID(FONT_ID_HeiTi16);
-        Idu_PrintString(pWin, getstr(Str_YunDuanCeLiang), pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
+        if (dwListId == 0)
+            text = getstr(Str_YunDuanMoShi);
+        else if (dwListId == 1)
+            text = getstr(Str_MAD);
+        else if (dwListId == 2)
+            text = getstr(Str_YunDuanOPMZhuangTai);
+        
+        SetCurrIduFontID(FONT_ID_HeiTi20);
+        Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
         Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + 38, 400, 2, RGB2YUV(0x2F, 0x2F, 0x2F));
     }
     else if (dwHashKey == xpgHash("SetSleep", strlen("SetSleep")))
     {
-        SetCurrIduFontID(FONT_ID_HeiTi16);
-        Idu_PrintString(pWin, getstr(Str_YunDuanCeLiang), pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
+        if (dwListId == 0)
+            text = getstr(Str_ZhiNengBeiGuang);
+        else if (dwListId == 1)
+            text = getstr(Str_LiangDuTiaoJie);
+        else if (dwListId == 2)
+            text = getstr(Str_ZiDongGuanJi);
+        else if (dwListId == 3)
+            text = getstr(Str_GuanJiShiJian);
+        
+        SetCurrIduFontID(FONT_ID_HeiTi20);
+        Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
         Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + 38, 400, 2, RGB2YUV(0x2F, 0x2F, 0x2F));
     }
     else if (dwHashKey == xpgHash("SetSound", strlen("SetSound")))
     {
-        SetCurrIduFontID(FONT_ID_HeiTi16);
-        Idu_PrintString(pWin, getstr(Str_YunDuanCeLiang), pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
+        if (dwListId == 0)
+            text = getstr(Str_ChuPingShengYin);
+        else if (dwListId == 1)
+            text = getstr(Str_YinLiangTiaoJie);
+        SetCurrIduFontID(FONT_ID_HeiTi20);
+        Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
         Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + 38, 400, 2, RGB2YUV(0x2F, 0x2F, 0x2F));
     }
     else if (dwHashKey == xpgHash("SetTime", strlen("SetTime")))
     {
-        SetCurrIduFontID(FONT_ID_HeiTi16);
-        Idu_PrintString(pWin, getstr(Str_YunDuanCeLiang), pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
+        if (dwListId == 0)
+            text = getstr(Str_24XiaoShiZhi);
+        else if (dwListId == 1)
+            text = getstr(Str_ShiJianSheZhi);
+        else if (dwListId == 2)
+            text = getstr(Str_RiQiSheZhi);
+        else if (dwListId == 3)
+            text = getstr(Str_RiQiGeShi);
+        else if (dwListId == 4)
+            text = getstr(Str_XiTongYuYan);
+        
+        SetCurrIduFontID(FONT_ID_HeiTi20);
+        Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
         Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + 38, 400, 2, RGB2YUV(0x2F, 0x2F, 0x2F));
     }
     else if (dwHashKey == xpgHash("SetPassword", strlen("SetPassword")))
     {
-        SetCurrIduFontID(FONT_ID_HeiTi16);
-        Idu_PrintString(pWin, getstr(Str_YunDuanCeLiang), pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
+        if (dwListId == 0)
+            text = getstr(Str_KaiJiMiMa);
+        else if (dwListId == 1)
+            text = getstr(Str_SheZhiKaiJiMiMa);
+        else if (dwListId == 2)
+            text = getstr(Str_ZuJieMiMa);
+        else if (dwListId == 3)
+            text = getstr(Str_SheZhiZuJieMiMa);
+        else if (dwListId == 4)
+            text = getstr(Str_ZuJieRiQi);
+        else if (dwListId == 5)
+            text = getstr(Str_SuoDingRongJieCiShu);
+        
+        SetCurrIduFontID(FONT_ID_HeiTi20);
+        Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
         Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + 38, 400, 2, RGB2YUV(0x2F, 0x2F, 0x2F));
     }
     else if (dwHashKey == xpgHash("SetUi", strlen("SetUi")))
     {
-        SetCurrIduFontID(FONT_ID_HeiTi16);
-        Idu_PrintString(pWin, getstr(Str_YunDuanCeLiang), pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
+        if (dwListId == 0)
+            text = getstr(Str_ZhuJieMianFengGe);
+        else if (dwListId == 1)
+            text = getstr(Str_YangShiYanSe);
+        
+        SetCurrIduFontID(FONT_ID_HeiTi20);
+        Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
         Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + 38, 400, 2, RGB2YUV(0x2F, 0x2F, 0x2F));
     }
     else if (dwHashKey == xpgHash("SetInfo", strlen("SetInfo")))
     {
-        SetCurrIduFontID(FONT_ID_HeiTi16);
-        Idu_PrintString(pWin, getstr(Str_YunDuanCeLiang), pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
+        if (dwListId == 0)
+            text = getstr(Str_GuanYuBenJi);
+        else if (dwListId == 1)
+            text = getstr(Str_DianJiBangXinXi);
+        else if (dwListId == 2)
+            text = getstr(Str_WenDuXinXi);
+        else if (dwListId == 3)
+            text = getstr(Str_DianChiXinXi);
+        else if (dwListId == 4)
+            text = getstr(Str_RongJieZongCiShu);
+        else if (dwListId == 5)
+            text = getstr(Str_GuJianBanBenHao);
+        else if (dwListId == 6)
+            text = getstr(Str_XiTongBanBenHao);
+        
+        SetCurrIduFontID(FONT_ID_HeiTi20);
+        Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
         Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + 38, 400, 2, RGB2YUV(0x2F, 0x2F, 0x2F));
     }
     return PASS;
