@@ -131,34 +131,9 @@ ST_POINT PinOffsetArry[] =
 	{132	, 128	}, 	
 }; 
 
-static ST_IMGWIN g_stCacheWin = {0};
 
-ST_IMGWIN *Idu_GetCacheWin_WithInit()
-{
-	ST_IMGWIN *pCacheWin=&g_stCacheWin, *pWin = Idu_GetCurrWin();
-	
-	mpDebugPrint("Idu_GetCacheWin_WithInit 0x%08x",g_stCacheWin.pdwStart);
-	if (pCacheWin->pdwStart == NULL)
-	{
-		ImgWinInit(pCacheWin, NULL, pWin->wHeight, pWin->wWidth);
-		pCacheWin->pdwStart = ext_mem_malloc(pWin->wWidth * pWin->wHeight * 2);
-		Slide_WinCopy(pWin, pCacheWin);
-	}
-	return pCacheWin;
-}
-ST_IMGWIN *Idu_GetCacheWin()
-{
-	return &g_stCacheWin;
-}
-void Free_CacheWin()
-{
-	mpDebugPrint("Free_CacheWin 0x%08x",g_stCacheWin.pdwStart);
-	if (g_stCacheWin.pdwStart )
-	{
-		ext_mem_free(g_stCacheWin.pdwStart);
-		g_stCacheWin.pdwStart=NULL;
-	}
-}
+
+
 
 /*
 ST_IMGWIN *pCacheWin;

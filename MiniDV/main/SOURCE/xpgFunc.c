@@ -477,6 +477,36 @@ void Free_Cache_BGWin()
 	}
 }
 
+/////////////////////////////////////////////////////////////////////
+ST_IMGWIN *Idu_GetCacheWin_WithInit()
+{
+	ST_IMGWIN *pCacheWin=&g_stCacheWin, *pWin = Idu_GetCurrWin();
+	
+	mpDebugPrint("Idu_GetCacheWin_WithInit 0x%08x",g_stCacheWin.pdwStart);
+	if (pCacheWin->pdwStart == NULL)
+	{
+		ImgWinInit(pCacheWin, NULL, pWin->wHeight, pWin->wWidth);
+		pCacheWin->pdwStart = ext_mem_malloc(pWin->wWidth * pWin->wHeight * 2);
+		mpCopyEqualWin(pCacheWin, pWin);
+	}
+	return pCacheWin;
+}
+ST_IMGWIN *Idu_GetCacheWin()
+{
+	return &g_stCacheWin;
+}
+void Free_CacheWin()
+{
+	mpDebugPrint("Free_CacheWin 0x%08x",g_stCacheWin.pdwStart);
+	if (g_stCacheWin.pdwStart )
+	{
+		ext_mem_free(g_stCacheWin.pdwStart);
+		g_stCacheWin.pdwStart=NULL;
+	}
+}
+/////////////////////////////////////////////////////////////////////
+
+
 #if (defined(WATCHDOG_GPIO)&&(WATCHDOG_GPIO!=GPIO_NULL))
 void SendWatchDog(void)
 {

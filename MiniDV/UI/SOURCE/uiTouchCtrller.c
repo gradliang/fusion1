@@ -10,6 +10,7 @@
 #include "display.h"
 #include "xpg.h"
 #include "Setup.h"
+#include "xpgFunc.h"
 
 #if (TOUCH_CONTROLLER_ENABLE == ENABLE)
 
@@ -144,6 +145,7 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
     {
         if (dwIconId == 0) 
         {
+            Idu_GetCacheWin_WithInit();
             xpgSearchAndGotoPage("User", strlen("User"));
             xpgUpdateStage();
         }
@@ -164,6 +166,7 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
         }
         else if (dwIconId == 4) 
         {
+            Idu_GetCacheWin_WithInit();
             xpgSearchAndGotoPage("ToolBox", strlen("ToolBox"));
             xpgUpdateStage();
         }
@@ -434,10 +437,11 @@ SWORD touchSprite_Scroll(STXPGSPRITE * sprite, WORD x, WORD y)
     //mpDebugPrint("touchSprite_Scroll  %d, %d", x, y);
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
 
+    int x1 = x - sprite->m_wPx;
+    int y1 = y - sprite->m_wPy;
+
     if (dwHashKey == xpgHash("SetSleep", strlen("SetSleep")))
     {
-        int x1 = x - sprite->m_wPx;
-        int y1 = y - sprite->m_wPy;
         if (x1 >= 0 && y1 >= 0)
         {
             // scroll left_x = 32, scroll right_x = 282
@@ -448,6 +452,22 @@ SWORD touchSprite_Scroll(STXPGSPRITE * sprite, WORD x, WORD y)
             else {
                 // 282 - 32 = 250
                 g_psSetupMenu->bBrightness = (x1-32)*100/250;
+            }
+            xpgUpdateStage();
+        }
+    }
+    else if (dwHashKey == xpgHash("SetSound", strlen("SetSound")))
+    {
+        if (x1 >= 0 && y1 >= 0)
+        {
+            // scroll left_x = 32, scroll right_x = 282
+            if (x1 <= 32)
+                g_psSetupMenu->bVolume = 0;
+            else if (x1 >= 282)
+                g_psSetupMenu->bVolume = 100;
+            else {
+                // 282 - 32 = 250
+                g_psSetupMenu->bVolume = (x1-32)*100/250;
             }
             xpgUpdateStage();
         }

@@ -377,7 +377,16 @@ SWORD xpgDrawSprite_FlashIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite
 
 SWORD xpgDrawSprite_Background(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOOL boClip)
 {
-    xpgDrawSprite(pWin, pstSprite, boClip);
+    DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
+
+    if (dwHashKey == xpgHash("User", strlen("User")) || 
+        dwHashKey == xpgHash("ToolBox", strlen("ToolBox")) )
+    {
+        mpCopyEqualWin(pWin, Idu_GetCacheWin());
+    }
+    else
+        xpgDrawSprite(pWin, pstSprite, boClip);
+    return PASS;
 }
 
 SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOOL boClip)
@@ -793,6 +802,36 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         Idu_PrintString(pWin, getstr(Str_YunDuanCeLiang), pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
         Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + 38, 400, 2, RGB2YUV(0x2F, 0x2F, 0x2F));
     }
+    else if (dwHashKey == xpgHash("SetSound", strlen("SetSound")))
+    {
+        SetCurrIduFontID(FONT_ID_HeiTi16);
+        Idu_PrintString(pWin, getstr(Str_YunDuanCeLiang), pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
+        Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + 38, 400, 2, RGB2YUV(0x2F, 0x2F, 0x2F));
+    }
+    else if (dwHashKey == xpgHash("SetTime", strlen("SetTime")))
+    {
+        SetCurrIduFontID(FONT_ID_HeiTi16);
+        Idu_PrintString(pWin, getstr(Str_YunDuanCeLiang), pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
+        Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + 38, 400, 2, RGB2YUV(0x2F, 0x2F, 0x2F));
+    }
+    else if (dwHashKey == xpgHash("SetPassword", strlen("SetPassword")))
+    {
+        SetCurrIduFontID(FONT_ID_HeiTi16);
+        Idu_PrintString(pWin, getstr(Str_YunDuanCeLiang), pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
+        Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + 38, 400, 2, RGB2YUV(0x2F, 0x2F, 0x2F));
+    }
+    else if (dwHashKey == xpgHash("SetUi", strlen("SetUi")))
+    {
+        SetCurrIduFontID(FONT_ID_HeiTi16);
+        Idu_PrintString(pWin, getstr(Str_YunDuanCeLiang), pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
+        Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + 38, 400, 2, RGB2YUV(0x2F, 0x2F, 0x2F));
+    }
+    else if (dwHashKey == xpgHash("SetInfo", strlen("SetInfo")))
+    {
+        SetCurrIduFontID(FONT_ID_HeiTi16);
+        Idu_PrintString(pWin, getstr(Str_YunDuanCeLiang), pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
+        Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + 38, 400, 2, RGB2YUV(0x2F, 0x2F, 0x2F));
+    }
     return PASS;
 }
 
@@ -822,6 +861,12 @@ SWORD xpgDrawSprite_Radio(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BO
         }
         xpgSpriteEnableTouch(pstSprite);
     }
+    else if (dwHashKey == xpgHash("SetSleep", strlen("SetSleep")))
+    {
+    }
+    else if (dwHashKey == xpgHash("SetSound", strlen("SetSound")))
+    {
+    }
     return PASS;
 }
 
@@ -845,6 +890,29 @@ SWORD xpgDrawSprite_Scroll(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
             if (pstMask && pstRound){
 
                 DWORD xadd = (g_psSetupMenu->bBrightness) * 250 / 100;
+                DWORD xpoint = pstSprite->m_wPx + (32-8) + xadd;
+                
+                xpgRoleDrawMask(pstRound->m_pstRole, pWin->pdwStart, xpoint, pstSprite->m_wPy + 6, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+                Idu_PaintWinArea(pWin, pstSprite->m_wPx + 24, pstSprite->m_wPy + 12, xadd, 2, RGB2YUV(0x14, 0xb6, 0xff));
+            }
+            
+            xpgSpriteSetTouchArea(pstSprite, pstSprite->m_wPx, pstSprite->m_wPy-8, pstSprite->m_wWidth, pstSprite->m_wHeight+8);
+        }
+    }
+    else if (dwHashKey == xpgHash("SetSound", strlen("SetSound")))
+    {
+        if (dwSpriteId == 0)
+        {
+            STXPGSPRITE *pstRound;
+            pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 0);
+            if (pstMask)
+                xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+            
+            pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 1);
+            pstRound = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_SCROLL, 1); 
+            if (pstMask && pstRound){
+
+                DWORD xadd = (g_psSetupMenu->bVolume) * 250 / 100;
                 DWORD xpoint = pstSprite->m_wPx + (32-8) + xadd;
                 
                 xpgRoleDrawMask(pstRound->m_pstRole, pWin->pdwStart, xpoint, pstSprite->m_wPy + 6, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);

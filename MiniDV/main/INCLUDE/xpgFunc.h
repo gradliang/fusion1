@@ -171,6 +171,16 @@ int IsSleepState();
 void BreakSleepState();
 int spi_ClearOldFileSpaceForNewFile(ST_SEARCH_INFO * pSearchInfo, DWORD dwTotalFiles);
 
+ST_IMGWIN *Idu_Cache_BGWin(ST_IMGWIN*pWin);
+ST_IMGWIN *Idu_GetCache_BGWin();
+void Free_Cache_BGWin();
+
+ST_IMGWIN *Idu_GetCacheWin_WithInit();
+ST_IMGWIN *Idu_GetCacheWin();
+void Free_CacheWin();
+
+
+
 #endif
 
 
