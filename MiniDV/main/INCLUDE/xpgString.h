@@ -94,7 +94,12 @@ enum xpgStringId {
 	Str_ShengYuCiShu,				//   84
 	Str_NeiBuWenDu,					//   85
 	Str_DianChiRongLiang,			//   86
-	
+	Str_ZiDongRongJieMoShi,			//   87
+	Str_GongChangTiaoXinMoShi,		//   88
+	Str_FangDianJiaoZhengMoShi,		//   89
+	Str_PingMuHuiChenJianCe,		//   90
+	Str_GongChangMoShi,				//   91
+	Str_DianJiBangJiHuo,			//   92
 	
 	
 	

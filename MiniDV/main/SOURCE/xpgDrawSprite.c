@@ -786,12 +786,7 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
     DWORD dwListId = pstSprite->m_dwTypeIndex;
     
-    if (dwHashKey == xpgHash("User", strlen("User"))) 
-    {
-        xpgDrawSprite(pWin, pstSprite, boClip);
-        xpgSpriteEnableTouch(pstSprite);
-    }
-    else if (dwHashKey == xpgHash("SetYun", strlen("SetYun")))
+    if (dwHashKey == xpgHash("SetYun", strlen("SetYun")))
     {
         if (dwListId == 0)
             text = getstr(Str_YunDuanMoShi);
@@ -896,6 +891,26 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         SetCurrIduFontID(FONT_ID_HeiTi20);
         Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
         Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + 38, 400, 2, RGB2YUV(0x2F, 0x2F, 0x2F));
+    }
+    else if (dwHashKey == xpgHash("User", strlen("User")))
+    {
+        if (dwListId == 0)
+            text = getstr(Str_ZiDongRongJieMoShi);
+        else if (dwListId == 1)
+            text = getstr(Str_GongChangTiaoXinMoShi);
+        else if (dwListId == 2)
+            text = getstr(Str_FangDianJiaoZhengMoShi);
+        else if (dwListId == 3)
+            text = getstr(Str_PingMuHuiChenJianCe);
+        else if (dwListId == 4)
+            text = getstr(Str_GongChangMoShi);
+        else if (dwListId == 5)
+            text = getstr(Str_DianJiBangJiHuo);
+        
+        xpgDrawSprite(pWin, pstSprite, boClip);
+        SetCurrIduFontID(FONT_ID_HeiTi20);
+        Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
+        xpgSpriteEnableTouch(pstSprite);
     }
     return PASS;
 }
