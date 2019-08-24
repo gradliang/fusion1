@@ -714,6 +714,7 @@
 #define SPRITE_TYPE_HILIGHTFRAME           5
 #define SPRITE_TYPE_ICON                    12
 #define SPRITE_TYPE_MASK                    15
+#define SPRITE_TYPE_SCROLL                  26
 
 //xpg page define
 

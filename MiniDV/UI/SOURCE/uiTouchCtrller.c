@@ -129,12 +129,12 @@ void uiTouchMsgReceiver(void)
 
 
 
-SWORD touchSprite_Background(STXPGSPRITE * sprite)
+SWORD touchSprite_Background(STXPGSPRITE * sprite, WORD x, WORD y)
 {
     return 0;
 }
 
-SWORD touchSprite_Icon(STXPGSPRITE * sprite)
+SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
 {
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
     DWORD dwIconId = sprite->m_dwTypeIndex;
@@ -243,32 +243,32 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite)
 }
 
 
-SWORD touchSprite_LightIcon(STXPGSPRITE * sprite)
+SWORD touchSprite_LightIcon(STXPGSPRITE * sprite, WORD x, WORD y)
 {
     return 0;
 }
 
-SWORD touchSprite_DarkIcon(STXPGSPRITE * sprite)
+SWORD touchSprite_DarkIcon(STXPGSPRITE * sprite, WORD x, WORD y)
 {
     return 0;
 }
 
-SWORD touchSprite_Mask(STXPGSPRITE * sprite)
+SWORD touchSprite_Mask(STXPGSPRITE * sprite, WORD x, WORD y)
 {
     return 0;
 }
 
-SWORD touchSprite_Title(STXPGSPRITE * sprite)
+SWORD touchSprite_Title(STXPGSPRITE * sprite, WORD x, WORD y)
 {
     return 0;
 }
 
-SWORD touchSprite_Aside(STXPGSPRITE * sprite)
+SWORD touchSprite_Aside(STXPGSPRITE * sprite, WORD x, WORD y)
 {
     return 0;
 }
 
-SWORD touchSprite_BackIcon(STXPGSPRITE * sprite)
+SWORD touchSprite_BackIcon(STXPGSPRITE * sprite, WORD x, WORD y)
 {
     mpDebugPrint("touchSprite_BackIcon  %d", sprite->m_dwTypeIndex);
     
@@ -293,7 +293,7 @@ SWORD touchSprite_BackIcon(STXPGSPRITE * sprite)
     return 0;
 }
 
-SWORD touchSprite_CloseIcon(STXPGSPRITE * sprite)
+SWORD touchSprite_CloseIcon(STXPGSPRITE * sprite, WORD x, WORD y)
 {
     mpDebugPrint("touchSprite_CloseIcon  %d", sprite->m_dwTypeIndex);
     
@@ -307,12 +307,12 @@ SWORD touchSprite_CloseIcon(STXPGSPRITE * sprite)
     return 0;
 }
 
-SWORD touchSprite_Text(STXPGSPRITE * sprite)
+SWORD touchSprite_Text(STXPGSPRITE * sprite, WORD x, WORD y)
 {
     return 0;
 }
 
-SWORD touchSprite_Selector(STXPGSPRITE * sprite)
+SWORD touchSprite_Selector(STXPGSPRITE * sprite, WORD x, WORD y)
 {
     DWORD dwSelectorId = sprite->m_dwTypeIndex;
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
@@ -397,23 +397,23 @@ SWORD touchSprite_Selector(STXPGSPRITE * sprite)
     return 0;
 }
 
-SWORD touchSprite_List(STXPGSPRITE * sprite)
+SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
 {
     mpDebugPrint("touchSprite_List  %d", sprite->m_dwTypeIndex);
     return 0;
 }
 
-SWORD touchSprite_Dialog(STXPGSPRITE * sprite)
+SWORD touchSprite_Dialog(STXPGSPRITE * sprite, WORD x, WORD y)
 {
     return 0;
 }
 
-SWORD touchSprite_Status(STXPGSPRITE * sprite)
+SWORD touchSprite_Status(STXPGSPRITE * sprite, WORD x, WORD y)
 {
     return 0;
 }
 
-SWORD touchSprite_Radio(STXPGSPRITE * sprite)
+SWORD touchSprite_Radio(STXPGSPRITE * sprite, WORD x, WORD y)
 {
     DWORD dwSpriteId = sprite->m_dwTypeIndex;
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
@@ -429,38 +429,70 @@ SWORD touchSprite_Radio(STXPGSPRITE * sprite)
     return 0;
 }
 
+SWORD touchSprite_Scroll(STXPGSPRITE * sprite, WORD x, WORD y)
+{
+    //mpDebugPrint("touchSprite_Scroll  %d, %d", x, y);
+    DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
+
+    if (dwHashKey == xpgHash("SetSleep", strlen("SetSleep")))
+    {
+        int x1 = x - sprite->m_wPx;
+        int y1 = y - sprite->m_wPy;
+        if (x1 >= 0 && y1 >= 0)
+        {
+            // scroll left_x = 32, scroll right_x = 282
+            if (x1 <= 32)
+                g_psSetupMenu->bBrightness = 0;
+            else if (x1 >= 282)
+                g_psSetupMenu->bBrightness = 100;
+            else {
+                // 282 - 32 = 250
+                g_psSetupMenu->bBrightness = (x1-32)*100/250;
+            }
+            xpgUpdateStage();
+        }
+    }
+}
 
 
+typedef SWORD(*touchFunction)(STXPGSPRITE *, WORD, WORD);
+typedef struct  {
+    DWORD           touchFlag;
+    touchFunction   touchFunc;
+}TouchSpriteFunction;
 
-#pragma alignvar(4)
-SWORD(*touchSpriteFunctions[]) (STXPGSPRITE *) = {
-    NULL,                          
-    NULL,                           //type1 
-    NULL,                           //type2
-    NULL,                           //type3
-    NULL,                           //type4
-    NULL,                           //type5
-    NULL,                           //type6
-    NULL,                           //type7
-    NULL,                           //type8
-    NULL,                           //type9
-    NULL,                           //type10
-    touchSprite_Background,         //type11
-    touchSprite_Icon,               //type12
-    touchSprite_LightIcon,          // type13
-    touchSprite_DarkIcon,           // type14
-    touchSprite_Mask,               // type15
-    touchSprite_Title,              // type16
-    touchSprite_Aside,              // type17
-    touchSprite_BackIcon,           // type18
-    touchSprite_CloseIcon,          // type19
-    touchSprite_Text,               // type20
-    touchSprite_Selector,           // type21
-    touchSprite_List,               // type22
-    touchSprite_Dialog,             // type23
-    touchSprite_Status,             // type24
-    touchSprite_Radio,              // type25
+#define ENABLE_SLIDE        0x01
+
+TouchSpriteFunction touchSpriteFunctions[] = {
+    {0,             NULL},                          
+    {0,             NULL},                           // type1 
+    {0,             NULL},                           // type2
+    {0,             NULL},                           // type3
+    {0,             NULL},                           // type4
+    {0,             NULL},                           // type5
+    {0,             NULL},                           // type6
+    {0,             NULL},                           // type7
+    {0,             NULL},                           // type8
+    {0,             NULL},                           // type9
+    {0,             NULL},                           // type10
+    {0,             touchSprite_Background},         // type11
+    {0,             touchSprite_Icon},               // type12
+    {0,             touchSprite_LightIcon},          // type13
+    {0,             touchSprite_DarkIcon},           // type14
+    {0,             touchSprite_Mask},               // type15
+    {0,             touchSprite_Title},              // type16
+    {0,             touchSprite_Aside},              // type17
+    {0,             touchSprite_BackIcon},           // type18
+    {0,             touchSprite_CloseIcon},          // type19
+    {0,             touchSprite_Text},               // type20
+    {0,             touchSprite_Selector},           // type21
+    {0,             touchSprite_List},               // type22
+    {0,             touchSprite_Dialog},             // type23
+    {0,             touchSprite_Status},             // type24
+    {0,             touchSprite_Radio},              // type25
+    {ENABLE_SLIDE,  touchSprite_Scroll},             // type26
 };
+
 
 void uiDispatchTouchSprite(WORD x1, WORD y1)
 {
@@ -497,12 +529,16 @@ void uiDispatchTouchSprite(WORD x1, WORD y1)
     if (match)
     {
         //mpDebugPrint("match");
-        if (pstSprite->m_dwType < sizeof(touchSpriteFunctions)/sizeof(void*))
+        if (pstSprite->m_dwType < sizeof(touchSpriteFunctions)/sizeof(TouchSpriteFunction))
         {
-            if (touchSpriteFunctions[pstSprite->m_dwType] != NULL) 
+            TouchSpriteFunction * pfunc;
+            pfunc = & (touchSpriteFunctions[pstSprite->m_dwType]);
+                
+            if (pfunc->touchFunc != NULL) 
             {
-                dwLastTouchActionTime = GetSysTime();
-                (touchSpriteFunctions[pstSprite->m_dwType]) (pstSprite);
+                if (!(pfunc->touchFlag& ENABLE_SLIDE))
+                    dwLastTouchActionTime = GetSysTime();
+                pfunc->touchFunc (pstSprite, x1, y1);
             }
         }
     }

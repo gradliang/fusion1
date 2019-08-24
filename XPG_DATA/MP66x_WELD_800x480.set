@@ -33,7 +33,7 @@ type22=List
 type23=Dialog
 type24=Status
 type25=Radio
-
+type26=Scroll
 
 [ACTION]
 ;//Main Menu

@@ -77,6 +77,7 @@ SWORD(*drawSpriteFunctions[]) (ST_IMGWIN *, STXPGSPRITE *, BOOL) =
     xpgDrawSprite_Dialog,               // type23
     xpgDrawSprite_Status,               // type24
     xpgDrawSprite_Radio,                // type25
+    xpgDrawSprite_Scroll,               // type26
 };
 
 //---------------------------------------------------------------------------
@@ -786,6 +787,12 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         Idu_PrintString(pWin, getstr(Str_YunDuanCeLiang), pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
         Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + 38, 400, 2, RGB2YUV(0x2F, 0x2F, 0x2F));
     }
+    else if (dwHashKey == xpgHash("SetSleep", strlen("SetSleep")))
+    {
+        SetCurrIduFontID(FONT_ID_HeiTi16);
+        Idu_PrintString(pWin, getstr(Str_YunDuanCeLiang), pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
+        Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + 38, 400, 2, RGB2YUV(0x2F, 0x2F, 0x2F));
+    }
     return PASS;
 }
 
@@ -818,5 +825,41 @@ SWORD xpgDrawSprite_Radio(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BO
     return PASS;
 }
 
+SWORD xpgDrawSprite_Scroll(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOOL boClip)          // type25
+{
+    STXPGSPRITE *pstMask;
+    DWORD dwSpriteId = pstSprite->m_dwTypeIndex;
+
+    DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
+    if (dwHashKey == xpgHash("SetSleep", strlen("SetSleep")))
+    {
+        if (dwSpriteId == 0)
+        {
+            STXPGSPRITE *pstRound;
+            pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 0);
+            if (pstMask)
+                xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+            
+            pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 1);
+            pstRound = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_SCROLL, 1); 
+            if (pstMask && pstRound){
+
+                DWORD xadd = (g_psSetupMenu->bBrightness) * 250 / 100;
+                DWORD xpoint = pstSprite->m_wPx + (32-8) + xadd;
+                
+                xpgRoleDrawMask(pstRound->m_pstRole, pWin->pdwStart, xpoint, pstSprite->m_wPy + 6, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+                Idu_PaintWinArea(pWin, pstSprite->m_wPx + 24, pstSprite->m_wPy + 12, xadd, 2, RGB2YUV(0x14, 0xb6, 0xff));
+            }
+            
+            xpgSpriteSetTouchArea(pstSprite, pstSprite->m_wPx, pstSprite->m_wPy-8, pstSprite->m_wWidth, pstSprite->m_wHeight+8);
+        }
+    }
+    return PASS;
+}
+
 #endif
+
+
+
+
 
