@@ -687,7 +687,7 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             text = getstr(Str_XianShi);
         }
         else if (dwTextId == 19){
-            text = getstr(Str_XianShi);
+            text = getstr(Str_TianJiaKongZhi);
         }
 
         if (dwTextId <= 17)
@@ -982,7 +982,7 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         
         xpgDrawSprite(pWin, pstSprite, boClip);
         SetCurrIduFontID(FONT_ID_HeiTi20);
-        Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
+        Idu_PrintStringCenter(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy + 3, 0, 300);
         xpgSpriteEnableTouch(pstSprite);
     }
     return PASS;
@@ -990,7 +990,15 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
 
 SWORD xpgDrawSprite_Dialog(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOOL boClip)
 {
-    xpgDrawSprite(pWin, pstSprite, boClip);
+    DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
+    if (dwHashKey == xpgHash("User", strlen("User")))
+    {
+        xpgDrawSprite(pWin, pstSprite, boClip);
+        SetCurrIduFontID(FONT_ID_HeiTi20);
+        Idu_PrintStringCenter(pWin, getstr(Str_YongHuWeiHu), pstSprite->m_wPx, pstSprite->m_wPy + 5, 0, pstSprite->m_wWidth);
+    }
+    else
+        xpgDrawSprite(pWin, pstSprite, boClip);
     return PASS;
 }
 

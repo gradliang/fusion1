@@ -72,7 +72,7 @@
 
 
 #define Idu_PrintString(trgWin, string, startX, startY, UnicodeFlag,wWidth) Idu_PrintStringWithSize(trgWin, string, startX, startY, UnicodeFlag,wWidth, 0, DEFAULT_FONT_SIZE)
-#define Idu_GetStringWidth(pbString, boUnicodeFlag) Idu_GetStringWidthWithSize(pbString, boUnicodeFlag, DEFAULT_FONT_SIZE)
+//#define Idu_GetStringWidth(pbString, boUnicodeFlag) Idu_GetStringWidthWithSize(pbString, boUnicodeFlag, DEFAULT_FONT_SIZE)
 #define Idu_OsdPutStr(psWin, pbString, startX, startY, bIndex) Idu_OsdPutStrWithSize(psWin, pbString, startX, startY, bIndex, 0, 0, DEFAULT_FONT_SIZE)
 
 
@@ -102,6 +102,7 @@ WORD Idu_PrintStringWithSize(ST_IMGWIN *, BYTE *, WORD, WORD, BYTE, WORD, WORD, 
 void Idu_Draw1BitBitmap(ST_IMGWIN *pWin, WORD x, WORD y, WORD w, WORD h, BYTE *pImgBuffer, BYTE bColor);
 //WORD Idu_GetStringWidth(BYTE *pbString, BYTE boUnicodeFlag);
 WORD Idu_GetStringWidthWithSize(BYTE *pbString, BYTE boUnicodeFlag, BYTE Font_Size);
+WORD Idu_GetStringWidth(BYTE *pbString, BYTE UnicodeFlag);
 BYTE Idu_GetStringHeight(BYTE *pbString, BYTE boUnicodeFlag);
 void Idu_InitPrintPosition(ST_IMGWIN *, WORD, WORD);
 void Idu_PrintLyrics(ST_IMGWIN *, BYTE *, BYTE);
@@ -111,6 +112,10 @@ void Idu_PaintWinArea(ST_IMGWIN *ImgWin, WORD x, WORD y, WORD w, WORD h, DWORD d
 void Idu_ChangeResolution(DWORD, DWORD, BYTE);
 BOOL Idu_SetHighResolution();
 void Idu_SetImageGamma(void);
+
+WORD Idu_PrintStringCenter(ST_IMGWIN * trgWin, BYTE * string, WORD startX, WORD startY, BYTE UnicodeFlag, WORD wWidth);
+WORD Idu_PrintStringRight(ST_IMGWIN * trgWin, BYTE * string, WORD startX, WORD startY, BYTE UnicodeFlag);
+
 
 ST_OSDWIN *Idu_GetOsdWin();
 void Idu_OsdErase();

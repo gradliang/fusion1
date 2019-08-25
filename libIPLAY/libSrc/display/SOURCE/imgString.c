@@ -90,7 +90,7 @@ BYTE ImgPutChar_GrayFont(ST_IMGWIN *psWin, ST_FONT *sFont, WORD wData, BYTE Mapp
 	bHeight = *bitmap;
 	bitmap++;
 
-	if (bHeight > 64) 
+	if (bHeight > 256) 
 		return 1;
 
 	pbStartAddr = (BYTE *)((DWORD)psWin->pdwStart + (sFont->wY * psWin->dwOffset/2 + sFont->wX ) * 2);
@@ -229,6 +229,86 @@ BYTE ImgPutChar_GrayFont(ST_IMGWIN *psWin, ST_FONT *sFont, WORD wData, BYTE Mapp
     return 0;
 }
 
+BYTE ImgPutCharFake(ST_FONT *sFont, WORD wData, BYTE MappingTable)
+{
+    DWORD dwOffset;	
+	BYTE i, j;
+	BYTE *pbStartAddr;
+	BYTE *bitmap;
+	BYTE bMask = 0,temp;
+	BYTE bWidth,bHeight;
+	BYTE bPixel, bNextPixel;
+	BYTE bSingleBit, bExtraBit;
+	BYTE bBitPerPixel;
+	BYTE tt0, tt1;
+	WORD wTemp;
+	SBYTE temp1;
+
+	if(wData == ' ')
+	{
+		sFont->wX += (IduFontGetBlankWidth() + sFont->bTextGap);
+		sFont->wDisplayWidth += (IduFontGetBlankWidth() + sFont->bTextGap);
+		return 0;
+	}	
+	
+	bitmap =(BYTE *)IduFontGetCharBitmapAddr(wData);
+	if (bitmap == NULL)
+	{
+		bitmap =(BYTE *)IduFontGetCharBitmapAddr(UNKNOWN_CHAR);
+		if (bitmap == NULL) return 0;
+	}
+
+	bBitPerPixel = IduFontGetBitPerPixel();
+	if(bBitPerPixel > 4)
+		return 1;
+	
+	wTemp = (1 << bBitPerPixel) - 1;
+	bWidth = *bitmap;
+	bitmap++;
+	
+	if (bWidth == 0 || bWidth > 64) return 1;
+	
+//	if(sFont->wX & 0x01) sFont->wX++;
+	if(sFont->wX & 0x01)
+		bSingleBit = 1;
+	else
+		bSingleBit = 0;
+
+	if((bWidth - bSingleBit) & 0x01)
+		bExtraBit = 1;
+	else
+		bExtraBit = 0;
+	
+	sFont->wDisplayWidth += bWidth;
+	if ((sFont->wWidth <= sFont->wDisplayWidth)&&(sFont->wWidth != 0))
+    {   
+		MP_DEBUG("%x exceed", wData);
+        //idu_Draw2Point(psWin , sFont);
+		return 1;
+    }
+
+	bHeight = *bitmap;
+	bitmap++;
+
+	if (bHeight > 256) 
+		return 1;
+
+	//pbStartAddr = (BYTE *)((DWORD)psWin->pdwStart + (sFont->wY * psWin->dwOffset/2 + sFont->wX ) * 2);
+	//dwOffset = psWin->dwOffset- (bWidth << 1);
+
+	BYTE cy = sFont->bFontColor;
+	BYTE cb = sFont->bFontCb;
+	BYTE cr = sFont->bFontCr;
+	DWORD dwFontColor = (cy << 24) | (cy << 16) | (cb << 8) | cr;
+
+
+
+	sFont->wX += bWidth + sFont->bTextGap; 
+	sFont->wDisplayWidth += sFont->bTextGap;
+    return 0;
+}
+
+
 
 BYTE ImgPutChar(ST_IMGWIN *psWin, ST_FONT *sFont, WORD wData, BYTE MappingTable)
 {
@@ -349,6 +429,79 @@ WORD Idu_PrintStringWithSize(ST_IMGWIN * trgWin, BYTE * string, WORD startX, WOR
 
 }
 
+WORD Idu_GetStringWidth(BYTE *string, BYTE UnicodeFlag)
+{
+    MP_DEBUG("%s", __func__);
+    //mpDebugPrint("%s: string = %s", __func__, string);
+    
+	ST_FONT ft;
+
+	if (string == NULL)
+		return;
+
+	ft.wX = 0;
+	ft.wY = 0;
+	ft.bTextGap = g_bImgTextGap;
+
+	DWORD dwFontColor = g_dwSystemFontColor;
+
+	ft.bFontColor = (dwFontColor >> 16) & 0xff;	//YYCbCr - Y
+	//mpDebugPrint("%s: dwFontColor = 0x%X, ft.bFontColor = 0x%X", __func__, dwFontColor, ft.bFontColor);
+	ft.bFontCb = (dwFontColor >> 8) & 0xff;
+	ft.bFontCr = dwFontColor & 0xff;
+	ft.wWidth = 0;
+	ft.wDisplayWidth = 0;
+	ft.bFontSize = 0;
+
+#if 0
+	ft.bWidth = DEFAULT_FONT_SIZE;
+	ft.bHeight = DEFAULT_FONT_SIZE;
+#endif
+	// check if out of win
+
+    Font_GetStrWidth(&ft, string, UnicodeFlag);
+
+    return ft.wX;
+    
+}
+
+WORD Idu_PrintStringCenter(ST_IMGWIN * trgWin, BYTE * string, WORD startX, WORD startY, BYTE UnicodeFlag, WORD wWidth)
+{
+    WORD wStrWidth;
+    int offsetx;
+    int newX;
+    if (wWidth == 0)
+        return Idu_PrintString(trgWin, string, startX, startY, UnicodeFlag, 0);
+
+    wStrWidth = Idu_GetStringWidth(string, UnicodeFlag);
+    //mpDebugPrint("wStrWidth = %d", wStrWidth);
+    
+    offsetx = wWidth - wStrWidth;
+    offsetx /= 2;
+    newX = startX + offsetx;
+    if (newX < 0)
+        newX = 0;
+    return Idu_PrintString(trgWin, string, (WORD)newX, startY, UnicodeFlag, 0);
+}
+
+WORD Idu_PrintStringRight(ST_IMGWIN * trgWin, BYTE * string, WORD startX, WORD startY, BYTE UnicodeFlag)
+{
+    int newX;
+    WORD wStrWidth;
+    wStrWidth = Idu_GetStringWidth(string, UnicodeFlag);
+    newX = startX - wStrWidth;
+    if (newX < 0)
+        newX = 0;
+    return Idu_PrintString(trgWin, string, (WORD)newX, startY, UnicodeFlag, 0);
+}
+
+
+
 
 #endif
+
+
+
+
+
 

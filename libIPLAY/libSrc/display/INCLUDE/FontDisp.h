@@ -21,5 +21,10 @@ void FontInit();
 
 #endif
 
+void Font_Draw(ST_IMGWIN *psWin, ST_FONT *sFont, WORD *str, BYTE UnicodeFlag);
+void Font_GetStrWidth(ST_FONT *sFont, WORD *str, BYTE UnicodeFlag);
+BYTE ImgPutCharFake(ST_FONT *sFont, WORD wData, BYTE MappingTable);
+
+
 #endif
 

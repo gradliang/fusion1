@@ -100,7 +100,7 @@ enum xpgStringId {
 	Str_PingMuHuiChenJianCe,		//   90
 	Str_GongChangMoShi,				//   91
 	Str_DianJiBangJiHuo,			//   92
-	
+	Str_TianJiaKongZhi,				//   93
 	
 	
 	

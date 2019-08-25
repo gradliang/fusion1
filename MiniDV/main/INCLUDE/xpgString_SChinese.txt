@@ -101,7 +101,7 @@ static const BYTE* xpgString_SChinese[] =
 	"屏幕灰尘检测",				//   90
 	"工厂模式",					//   91
 	"电极棒激活",				//   92
-	
+	"添加控制",					//   93
 	
 	
 	
