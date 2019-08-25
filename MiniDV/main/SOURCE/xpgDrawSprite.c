@@ -419,6 +419,12 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         if (pstMask)
             xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
     }
+    else if (dwHashKey == xpgHash("Record", strlen("Record")) )
+    {
+        pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, dwSpriteId);
+        if (pstMask)
+            xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+    }
     
     xpgSpriteEnableTouch(pstSprite);
 }
@@ -491,6 +497,7 @@ SWORD xpgDrawSprite_Mask(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
 
 SWORD xpgDrawSprite_Title(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOOL boClip)
 {
+    DWORD dwSpriteId = pstSprite->m_dwTypeIndex;
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
     if (dwHashKey == xpgHash("FuncSet", strlen("FuncSet")) || 
         dwHashKey == xpgHash("FuncSet2", strlen("FuncSet2")))
@@ -524,6 +531,19 @@ SWORD xpgDrawSprite_Title(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BO
         Idu_PaintWinArea(pWin, 0, 0, pWin->wWidth, 40, RGB2YUV(0x0B, 0x0C, 0x0E));
         SetCurrIduFontID(FONT_ID_HeiTi20);
         Idu_PrintString(pWin, getstr(Str_XiTongSheZhi), pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
+    }
+    else if (dwHashKey == xpgHash("Record", strlen("Record")) )
+    {
+        if (dwSpriteId == 0)
+        {
+            Idu_PaintWinArea(pWin, 0, 0, pWin->wWidth, 40, RGB2YUV(0x0B, 0x0C, 0x0E));
+            SetCurrIduFontID(FONT_ID_HeiTi20);
+            Idu_PrintString(pWin, getstr(Str_RongJieJiLu), pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
+        }
+        else if (dwSpriteId == 1)
+        {
+            Idu_PaintWinArea(pWin, 14, 100, 770, 30, RGB2YUV(0x36, 0x36, 0x36));
+        }
     }
 
     return PASS;
