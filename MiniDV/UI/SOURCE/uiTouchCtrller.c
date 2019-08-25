@@ -145,6 +145,7 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
     {
         if (dwIconId == 0) 
         {
+            Free_CacheWin();
             Idu_GetCacheWin_WithInit();
             DrakWin(Idu_GetCacheWin(), 2, 1);
             xpgSearchAndGotoPage("User", strlen("User"));
@@ -167,7 +168,9 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
         }
         else if (dwIconId == 4) 
         {
+            Free_CacheWin();
             Idu_GetCacheWin_WithInit();
+            DrakWin(Idu_GetCacheWin(), 2, 1);
             xpgSearchAndGotoPage("ToolBox", strlen("ToolBox"));
             xpgUpdateStage();
         }

@@ -997,6 +997,12 @@ SWORD xpgDrawSprite_Dialog(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
         SetCurrIduFontID(FONT_ID_HeiTi20);
         Idu_PrintStringCenter(pWin, getstr(Str_YongHuWeiHu), pstSprite->m_wPx, pstSprite->m_wPy + 5, 0, pstSprite->m_wWidth);
     }
+    else if (dwHashKey == xpgHash("ToolBox", strlen("ToolBox")))
+    {
+        xpgDrawSprite(pWin, pstSprite, boClip);
+        SetCurrIduFontID(FONT_ID_HeiTi20);
+        Idu_PrintStringCenter(pWin, getstr(Str_GongJuXiang), pstSprite->m_wPx, pstSprite->m_wPy + 5, 0, pstSprite->m_wWidth);
+    }
     else
         xpgDrawSprite(pWin, pstSprite, boClip);
     return PASS;
