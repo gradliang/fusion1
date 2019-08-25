@@ -624,6 +624,79 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         SetCurrIduFontID(FONT_ID_HeiTi16);
         Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
     }
+    else if (dwHashKey == xpgHash("FuncSet2", strlen("FuncSet2")))
+    {
+        if (dwTextId <= 5)
+        {
+            BYTE value = g_psSetupMenu->bCustomizeIcon[dwTextId];
+            if (value == 0)
+                text = getstr(Str_YuJiaRe);
+            else if (value == 1)
+                text = getstr(Str_LaLiCeShi);
+            else if (value == 2)
+                text = getstr(Str_DuanMianJianCe);
+            else if (value == 3)
+                text = getstr(Str_ZiDongGuanJi);
+            else if (value == 4)
+                text = getstr(Str_JiaoDuJianCe);
+            else if (value == 5)
+                text = getstr(Str_FangDianJiaoZheng);
+            else if (value == 6)
+                text = getstr(Str_HuiChenJianCe);
+            else if (value == 7)
+                text = getstr(Str_RongJieZanTing);
+            else if (value == 8)
+                text = getstr(Str_HongGuangBi);
+            else if (value == 9)
+                text = getstr(Str_GuangGongLvJi);
+            else if (value == 10)
+                text = getstr(Str_BaoCunTuXiang);
+            else if (value == 11)
+                text = getstr(Str_YunDuanCeLiang);
+            else 
+                return PASS;
+        }
+        else if (dwTextId >= 6 && dwTextId <= 17)
+        {
+            if (dwTextId == 6)
+                text = getstr(Str_YuJiaRe);
+            else if (dwTextId == 7)
+                text = getstr(Str_LaLiCeShi);
+            else if (dwTextId == 8)
+                text = getstr(Str_DuanMianJianCe);
+            else if (dwTextId == 9)
+                text = getstr(Str_ZiDongGuanJi);
+            else if (dwTextId == 10)
+                text = getstr(Str_JiaoDuJianCe);
+            else if (dwTextId == 11)
+                text = getstr(Str_FangDianJiaoZheng);
+            else if (dwTextId == 12)
+                text = getstr(Str_HuiChenJianCe);
+            else if (dwTextId == 13)
+                text = getstr(Str_RongJieZanTing);
+            else if (dwTextId == 14)
+                text = getstr(Str_HongGuangBi);
+            else if (dwTextId == 15)
+                text = getstr(Str_GuangGongLvJi);
+            else if (dwTextId == 16)
+                text = getstr(Str_BaoCunTuXiang);
+            else if (dwTextId == 17)
+                text = getstr(Str_YunDuanCeLiang);
+        }
+        else if (dwTextId == 18){
+            text = getstr(Str_XianShi);
+        }
+        else if (dwTextId == 19){
+            text = getstr(Str_XianShi);
+        }
+
+        if (dwTextId <= 17)
+            SetCurrIduFontID(FONT_ID_HeiTi16);
+        else 
+            SetCurrIduFontID(FONT_ID_HeiTi20);
+        Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
+    }
+    
     return PASS;
 }
 
