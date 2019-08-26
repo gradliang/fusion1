@@ -142,5 +142,30 @@ extern ST_SETUP_MENU *g_psSetupMenu;
 SDWORD GetSetupMenuValue(void);
 void SetupMenuInit(void);
 
+
+
+typedef struct Record1 {
+    WORD        wYear;
+    BYTE        bMonth;
+    BYTE        bDay;
+    BYTE        bHour;
+    BYTE        bMinute;
+    BYTE        bSecond;
+    BYTE        noused;
+    DWORD       dwPowerWaste;
+    BYTE        bRecordName[32];
+    BYTE        bRecordFileName[64];
+}STRECORD;
+
+
+int LoadRecordFromFile();
+int SaveRecordToFile();
+void AddRecord(STRECORD* pstRecord);
+STRECORD* GetRecord(DWORD dwIndex);
+DWORD GetRecordTotal();
+void ClearAllRecord();
+
 #endif
+
+
 

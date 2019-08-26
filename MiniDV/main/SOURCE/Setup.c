@@ -325,5 +325,174 @@ void TimerToWriteSetup(DWORD dwTime)
 	Ui_TimerProcAdd(dwTime, WriteSetupChg);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+static STRECORD **pstRecordList = NULL;
+static DWORD    dwRecordTotal = 0;
+static DWORD    dwAllocedSlot = 0;
+#define  RECORD_INC_COUNT       200
+#define RECORD_TABLE_PATH_1     "record1"
+#define RECORD_TABLE_EXT        "sys"
+#define RECORD_FLAG             0x8864E423
+
+int LoadRecordFromFile()
+{
+    DRIVE *sysDrv;
+    BYTE  sysDrvId = SYS_DRV_ID;
+    DWORD confirm_1, confirm_2;
+    DWORD value_1, value_2, updateValue;
+    DWORD *ptr32;
+    SDWORD retVal = PASS;
+    DRIVE_PHY_DEV_ID phyDevID = DriveIndex2PhyDevID(sysDrvId);
+
+    //if ((phyDevID != DEV_NAND) && (phyDevID != DEV_SPI_FLASH))
+    if (sysDrvId == NULL_DRIVE)
+    {
+        MP_ALERT("--E-- %s: Invalid System Drive ID (= %d) defined ! => use current drive instead ...", __FUNCTION__, SYS_DRV_ID);
+        sysDrvId = DriveCurIdGet(); /* use current drive */
+
+        if (sysDrvId == NULL_DRIVE)
+        {
+            MP_ALERT("%s: --E-- Current drive is NULL !!! Abort !!!", __FUNCTION__);
+            return FALSE;
+        }
+
+        MP_ALERT("Using current drive-%s !!!", DriveIndex2DrvName(sysDrvId));
+    }
+
+
+    {
+        STREAM* file_1 = NULL;
+        DWORD fileSize;
+        DWORD dwFlag;
+        BOOL checkTimes = 1;
+        STRECORD  record;
+
+STTAB_OPEN_START:
+        sysDrv = DriveGet(sysDrvId);
+		DirReset(sysDrv);
+
+        // record1.sys
+        if (FileSearch(sysDrv, RECORD_TABLE_PATH_1, RECORD_TABLE_EXT, E_FILE_TYPE) != FS_SUCCEED)
+        {
+            MP_DEBUG("record1.sys is not found in drive-%s !! Create it now.", DriveIndex2DrvName(sysDrvId));
+            if (CreateFile(sysDrv, RECORD_TABLE_PATH_1, RECORD_TABLE_EXT) != FS_SUCCEED)
+            {
+                MP_ALERT("-E- record1.sys in drive-%s can't be created!!!", DriveIndex2DrvName(sysDrvId));
+                retVal = FAIL;
+                goto _OPEN_END;
+            }
+        }
+
+        file_1 = FileOpen(sysDrv);
+        fileSize = FileSizeGet(file_1);
+        if (fileSize < 4)
+        {
+            goto _OPEN_END;
+        }
+        
+
+        Fseek(file_1, 0, SEEK_SET);
+        if (FileRead(file_1, (BYTE *) &dwFlag, 4) != 4)
+        {
+            retVal = FAIL;
+            goto _OPEN_END;
+        }
+
+        if (dwFlag != RECORD_FLAG)
+        {
+            MP_ALERT("-E- record1.sys flag error.");
+            goto _OPEN_END;
+        }
+
+        ClearAllRecord();
+        
+        while (FileRead(file_1, (BYTE *) &record, sizeof(record)) == sizeof(record))
+        {
+            AddRecord(&record);
+        }
+        
+_OPEN_END:
+        if (file_1 != NULL)
+            FileClose(file_1);
+    }
+
+    return retVal;
+}
+
+int SaveRecordToFile()
+{
+}
+
+void AddRecord(STRECORD* pstRecord)
+{
+    //mpDebugPrint("AddRecord");
+    
+    if (pstRecord == NULL)
+        return;
+    
+    if (dwAllocedSlot == 0)
+    {
+        DWORD dwAllocByte = RECORD_INC_COUNT * sizeof(STRECORD*);
+        pstRecordList = (STRECORD**) ext_mem_malloc(dwAllocByte);
+        memset(pstRecordList, 0, dwAllocByte);
+        dwAllocedSlot = RECORD_INC_COUNT;
+    }
+    else if (dwRecordTotal >= dwAllocedSlot) 
+    {
+        STRECORD ** newList;
+        DWORD dwAllocByte = (dwAllocedSlot + RECORD_INC_COUNT) * sizeof(STRECORD*);
+        newList = (STRECORD**) ext_mem_malloc(dwAllocByte);
+        memset(newList, 0, dwAllocByte);
+        memcpy(newList, pstRecordList, dwAllocedSlot*sizeof(STRECORD*));
+        ext_mem_free(pstRecordList);
+        pstRecordList = newList;
+        dwAllocedSlot = dwAllocedSlot + RECORD_INC_COUNT;
+    }
+    ///////////////
+
+    STRECORD * newRecord = (STRECORD*) ext_mem_malloc(sizeof(STRECORD));
+    memcpy(newRecord, pstRecord, sizeof(STRECORD));
+    pstRecordList[dwRecordTotal] = newRecord;
+    dwRecordTotal++;
+    
+}
+
+STRECORD* GetRecord(DWORD dwIndex)
+{
+    if (dwIndex >= dwRecordTotal)
+        return NULL;
+    if (pstRecordList == NULL)
+        return NULL;
+    
+    return pstRecordList[dwIndex];
+}
+
+
+DWORD GetRecordTotal()
+{
+    return dwRecordTotal;
+}
+
+void ClearAllRecord()
+{
+    mpDebugPrint("ClearAllRecord");
+    
+    DWORD i;
+    for (i = 0; i < dwRecordTotal; i++)
+    {
+        if (pstRecordList[i] != NULL)
+        {
+            ext_mem_free(pstRecordList[i]);
+            pstRecordList[i] = NULL;
+        }
+    }
+    dwRecordTotal = 0;
+}
+
+
+
 
 

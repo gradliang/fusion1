@@ -1021,6 +1021,10 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         Idu_PrintStringCenter(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy + 3, 0, 300);
         xpgSpriteEnableTouch(pstSprite);
     }
+    else if (dwHashKey == xpgHash("Record", strlen("Record")))
+    {
+        
+    }
     return PASS;
 }
 
