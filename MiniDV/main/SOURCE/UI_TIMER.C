@@ -150,6 +150,9 @@ static void ui_Detect(void)
 #if GPIO_SIMPLE_KEY_ENABE
 	SimpleGpioKeyScan();
 #endif
+#if ((TOUCH_CONTROLLER_ENABLE == ENABLE) && (TOUCH_CONTROLLER == TOUCH_PANEL_DRIVER_GT911))
+	TimerToKeyRelease();
+#endif
 }
 
 

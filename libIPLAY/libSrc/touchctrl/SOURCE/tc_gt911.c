@@ -465,20 +465,21 @@ SWORD I2CM_GT911_WtRegisters(BYTE *bBufer,BYTE lens)
 
 
 
-
+#define  KEYRELEASEDELAY													50
 static DWORD gpioNum, gpioIntNum;
 static BYTE st_bInReadTouchData=0,st_bKeyPressed=0;
 static WORD st_wTouchX, st_wTouchY;
 #if 1
 void TimerToKeyRelease(void)
 {
-	st_bKeyPressed=0;
+	if (st_bKeyPressed>0)
+	{
+		st_bKeyPressed--;
+	}
 }
 
 void GT911_I2C_ReadTouchData() //from datasheet
 {
-	if (st_bKeyPressed)
-		return;
 	if (st_bInReadTouchData)
 		return;
 	st_bInReadTouchData=1;
@@ -488,6 +489,8 @@ void GT911_I2C_ReadTouchData() //from datasheet
 	BYTE  end_cmd[3] = {GTP_READ_COOR_ADDR >> 8, GTP_READ_COOR_ADDR & 0xFF, 0};
 	ST_TC_MSG tcMessage;
 
+		if (!st_bKeyPressed)
+		{
 	//dwLen=I2CM_GT911_RdReg(GTP_READ_COOR_ADDR)&0x0f;
 	//mpDebugPrint(" dwLen=%p",I2CM_GT911_RdReg(GTP_READ_COOR_ADDR));
 	I2CM_GT911_RdRegisters(GTP_READ_COOR_ADDR,buf,8);
@@ -512,19 +515,19 @@ void GT911_I2C_ReadTouchData() //from datasheet
 			y= buf[i*8+4] | (buf[i*8+5] << 8);
 			st_wTouchX=x;
 			st_wTouchY=y;
-			st_bKeyPressed=1;
+			//st_bKeyPressed=KEYRELEASEDELAY;
 			//mpDebugPrint(" %d :(%d,%d)",buf[i*8+1],st_wTouchX,st_wTouchY);
 		}
 		tcMessage.status = TC_DOWN;
 		MessageDrop(TcGetMsgId(), (BYTE *) &tcMessage, sizeof(ST_TC_MSG));
 	}
+		}
+		st_bKeyPressed=KEYRELEASEDELAY;
 
 
 
 	if (I2CM_GT911_WtRegisters(end_cmd, 3) < 0)
 	   mpDebugPrint("I2C write end_cmd error!");
-	if (st_bKeyPressed)
-		Ui_TimerProcAdd(10, TimerToKeyRelease);
 	st_bInReadTouchData=0;
 }
 #endif
