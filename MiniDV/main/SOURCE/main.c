@@ -681,6 +681,9 @@ Timer_FirstEnterCamPreview();
     //g_bXpgStatus = XPG_MODE_MODESEL;
     //SetMotionDetectionEnable(1);
 
+    initRecordDummyData();
+
+
     while (1)
     {
         if (MainWaitEvent(&dwMainEvent, 0) == OS_STATUS_OK)

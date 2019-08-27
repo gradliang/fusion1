@@ -424,6 +424,79 @@ _OPEN_END:
 
 int SaveRecordToFile()
 {
+    DRIVE *sysDrv;
+    BYTE  sysDrvId = SYS_DRV_ID;
+    DWORD confirm_1, confirm_2;
+    DWORD value_1, value_2, updateValue;
+    DWORD *ptr32;
+    SDWORD retVal = PASS;
+    DRIVE_PHY_DEV_ID phyDevID = DriveIndex2PhyDevID(sysDrvId);
+
+    //if ((phyDevID != DEV_NAND) && (phyDevID != DEV_SPI_FLASH))
+    if (sysDrvId == NULL_DRIVE)
+    {
+        MP_ALERT("--E-- %s: Invalid System Drive ID (= %d) defined ! => use current drive instead ...", __FUNCTION__, SYS_DRV_ID);
+        sysDrvId = DriveCurIdGet(); /* use current drive */
+
+        if (sysDrvId == NULL_DRIVE)
+        {
+            MP_ALERT("%s: --E-- Current drive is NULL !!! Abort !!!", __FUNCTION__);
+            return FALSE;
+        }
+
+        MP_ALERT("Using current drive-%s !!!", DriveIndex2DrvName(sysDrvId));
+    }
+
+
+    {
+        DWORD i;
+        STREAM* file_1 = NULL;
+        DWORD fileSize;
+        DWORD dwFlag = RECORD_FLAG;
+        BOOL checkTimes = 1;
+
+STTAB_OPEN_START:
+        sysDrv = DriveGet(sysDrvId);
+		DirReset(sysDrv);
+
+        // record1.sys
+        if (FileSearch(sysDrv, RECORD_TABLE_PATH_1, RECORD_TABLE_EXT, E_FILE_TYPE) != FS_SUCCEED)
+        {
+            MP_DEBUG("record1.sys is not found in drive-%s !! Create it now.", DriveIndex2DrvName(sysDrvId));
+            if (CreateFile(sysDrv, RECORD_TABLE_PATH_1, RECORD_TABLE_EXT) != FS_SUCCEED)
+            {
+                MP_ALERT("-E- record1.sys in drive-%s can't be created!!!", DriveIndex2DrvName(sysDrvId));
+                retVal = FAIL;
+                goto _OPEN_END;
+            }
+        }
+
+        file_1 = FileOpen(sysDrv);
+        
+        fileSize = FileSizeGet(file_1);
+        if (fileSize < 4)
+        {
+            goto _OPEN_END;
+        }
+
+        if (FileWrite(file_1, &dwFlag, 4) != 4)
+        {
+            MP_ALERT("write record1.sys error.");
+            goto _OPEN_END;
+        }
+
+        for (i = 0; i < GetRecordTotal(); i++)
+        {
+            STRECORD* pstRecord = GetRecord(i);
+            FileWrite(file_1, pstRecord, sizeof(STRECORD));
+        }
+        
+_OPEN_END:
+        if (file_1 != NULL)
+            FileClose(file_1);
+    }
+
+    return retVal;
 }
 
 void AddRecord(STRECORD* pstRecord)
@@ -490,6 +563,54 @@ void ClearAllRecord()
         }
     }
     dwRecordTotal = 0;
+}
+
+void InitRecord(STRECORD* pstRecord, WORD year, BYTE month, BYTE day, BYTE hour, BYTE minute, BYTE second, DWORD power, BYTE * recordName, BYTE fileName)
+{
+    pstRecord->wYear = year;
+    pstRecord->bMonth = month;
+    pstRecord->bDay = day;
+    pstRecord->bHour = hour;
+    pstRecord->bMinute = minute;
+    pstRecord->bSecond = second;
+    pstRecord->noused = 0;
+    pstRecord->dwPowerWaste = power;
+    strncpy(pstRecord->bRecordName, recordName, sizeof(pstRecord->bRecordName)-1);
+    pstRecord->bRecordName[sizeof(pstRecord->bRecordName)-1] = 0;
+    strncpy(pstRecord->bRecordFileName, fileName, sizeof(pstRecord->bRecordFileName)-1);
+    pstRecord->bRecordFileName[sizeof(pstRecord->bRecordFileName)-1] = 0;
+}
+
+int initRecordDummyData()
+{
+    STRECORD  record;
+    
+    InitRecord(&record, 2017, 2, 28, 1, 59, 59, (0<<6) | 1, "REC 1", "aaa.jpg");
+    AddRecord(&record);
+    InitRecord(&record, 2017, 3, 28, 1, 59, 59, (0<<6) | 1, "REC 2", "aaa.jpg");
+    AddRecord(&record);
+    InitRecord(&record, 2017, 4, 28, 1, 59, 59, (0<<6) | 1, "REC 3", "aaa.jpg");
+    AddRecord(&record);
+    InitRecord(&record, 2017, 5, 28, 1, 59, 59, (0<<6) | 1, "REC 4", "aaa.jpg");
+    AddRecord(&record);
+    InitRecord(&record, 2017, 6, 28, 1, 59, 59, (0<<6) | 1, "REC 5", "aaa.jpg");
+    AddRecord(&record);
+    InitRecord(&record, 2017, 7, 28, 1, 59, 59, (0<<6) | 1, "REC 6", "aaa.jpg");
+    AddRecord(&record);
+    InitRecord(&record, 2017, 8, 28, 1, 59, 59, (0<<6) | 1, "REC 7", "aaa.jpg");
+    AddRecord(&record);
+    InitRecord(&record, 2018, 2, 28, 1, 59, 59, (0<<6) | 1, "REC 8", "aaa.jpg");
+    AddRecord(&record);
+    InitRecord(&record, 2018, 5, 28, 1, 59, 59, (0<<6) | 1, "REC 9", "aaa.jpg");
+    AddRecord(&record);
+    InitRecord(&record, 2018, 7, 28, 1, 59, 59, (0<<6) | 1, "REC 10", "aaa.jpg");
+    AddRecord(&record);
+    InitRecord(&record, 2019, 9, 28, 1, 59, 59, (0<<6) | 1, "REC 11", "aaa.jpg");
+    AddRecord(&record);
+    InitRecord(&record, 2019, 12, 28, 1, 59, 59, (0<<6) | 1, "REC 12", "aaa.jpg");
+    AddRecord(&record);
+    InitRecord(&record, 2019, 12, 29, 1, 59, 59, (0<<6) | 1, "REC 13", "aaa.jpg");
+    AddRecord(&record);
 }
 
 
