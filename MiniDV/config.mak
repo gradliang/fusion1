@@ -11,8 +11,9 @@ LIB = ../../../libIPLAY/lib/
 G_INC = ../../../libIPLAY/include/
 LIBSRCPATH = ../../../libIPLAY/libsrc/
 LIBMAIN = ../../lib/
+UI_INC = ../../../MiniDV/UI/INCLUDE
 
-ALL_INCLUDE = -I$(INC) -I$(G_INC) -I$(LIBSRCPATH)xpg/include
+ALL_INCLUDE = -I$(INC) -I$(G_INC) -I$(UI_INC) -I$(LIBSRCPATH)xpg/include
 
 ##################################################################################################
 # PROGRAM

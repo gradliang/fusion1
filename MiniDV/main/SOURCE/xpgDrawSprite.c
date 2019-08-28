@@ -25,6 +25,7 @@
 #include "charset.h"
 #include "SPI_Ex.h"
 #include "Setup.h"
+#include "uiTouchCtrller.h"
 
 #if ((CHIP_VER_MSB == CHIP_VER_650) || (CHIP_VER_MSB == CHIP_VER_660))
 #define memset          mmcp_memset
@@ -1023,6 +1024,41 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
     }
     else if (dwHashKey == xpgHash("Record", strlen("Record")))
     {
+        char tmpbuff[128];
+        STRECORD * pr;
+        int iCurIndex;
+        DWORD dwCurPageStart = 0;
+        DWORD dwTotal = GetRecordTotal();
+        DWORD dwPageTotal = dwTotal / PAGE_RECORD_SIZE;
+        if (dwTotal % PAGE_RECORD_SIZE)
+            dwPageTotal++;
+        
+        if (g_dwRecordListCurrPage >= dwPageTotal)
+            g_dwRecordListCurrPage = dwPageTotal - 1;
+        
+        
+        dwCurPageStart = PAGE_RECORD_SIZE * g_dwRecordListCurrPage;
+        dwCurPageStart = dwTotal - 1 - dwCurPageStart;                  // Fan Guo Lai
+
+        iCurIndex =  dwCurPageStart - dwListId;
+        if (iCurIndex < 0)
+            return PASS;
+
+        pr = GetRecord((DWORD)iCurIndex);
+        if (pr == NULL)
+            return PASS;
+
+        sprintf(tmpbuff, "%03d", iCurIndex);
+        SetCurrIduFontID(FONT_ID_HeiTi16);
+        Idu_PrintString(pWin, tmpbuff, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
+
+        sprintf(tmpbuff, "[%04d/%d/%d %02d:%02d:%02d]", pr->wYear, pr->bMonth, pr->bDay, pr->bHour, pr->bMinute, pr->bSecond);
+        SetCurrIduFontID(FONT_ID_HeiTi16);
+        Idu_PrintString(pWin, tmpbuff, pstSprite->m_wPx + 60, pstSprite->m_wPy, 0, 0);
+
+        sprintf(tmpbuff, "%s", pr->bRecordName);
+        SetCurrIduFontID(FONT_ID_HeiTi16);
+        Idu_PrintString(pWin, tmpbuff, pstSprite->m_wPx + 320, pstSprite->m_wPy, 0, 0);
         
     }
     return PASS;
