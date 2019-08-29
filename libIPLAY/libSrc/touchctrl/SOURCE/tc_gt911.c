@@ -465,14 +465,14 @@ SWORD I2CM_GT911_WtRegisters(BYTE *bBufer,BYTE lens)
 
 
 
-#define  KEYRELEASEDELAY													50
+#define  KEYRELEASEDELAY													5
 static DWORD gpioNum, gpioIntNum;
 static BYTE st_bInReadTouchData=0,st_bKeyPressed=0;
 static WORD st_wTouchX, st_wTouchY;
 #if 1
 void TimerToKeyRelease(void)
 {
-	if (st_bKeyPressed>0)
+	if (st_bKeyPressed)
 	{
 		st_bKeyPressed--;
 	}
