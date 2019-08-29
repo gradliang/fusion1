@@ -1054,12 +1054,21 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
 
         sprintf(tmpbuff, "[%04d/%d/%d %02d:%02d:%02d]", pr->wYear, pr->bMonth, pr->bDay, pr->bHour, pr->bMinute, pr->bSecond);
         SetCurrIduFontID(FONT_ID_HeiTi16);
-        Idu_PrintString(pWin, tmpbuff, pstSprite->m_wPx + 60, pstSprite->m_wPy, 0, 0);
+        Idu_PrintString(pWin, tmpbuff, pstSprite->m_wPx + 40, pstSprite->m_wPy, 0, 0);
 
         sprintf(tmpbuff, "%s", pr->bRecordName);
         SetCurrIduFontID(FONT_ID_HeiTi16);
-        Idu_PrintString(pWin, tmpbuff, pstSprite->m_wPx + 320, pstSprite->m_wPy, 0, 0);
-        
+        Idu_PrintString(pWin, tmpbuff, pstSprite->m_wPx + 270, pstSprite->m_wPy, 0, 0);
+
+        sprintf(tmpbuff, "%d.%ddB", pr->dwPowerWaste >> 6, pr->dwPowerWaste & 0x3F);
+        SetCurrIduFontID(FONT_ID_HeiTi16);
+        Idu_PrintString(pWin, tmpbuff, pstSprite->m_wPx + 510, pstSprite->m_wPy, 0, 0);
+
+        sprintf(tmpbuff, "ChaKan" );
+        SetCurrIduFontID(FONT_ID_HeiTi16);
+        Idu_PrintString(pWin, tmpbuff, pstSprite->m_wPx + 638, pstSprite->m_wPy, 0, 0);
+
+        Idu_PaintWinArea(pWin, 14, pstSprite->m_wPy + 35, 744, 2, RGB2YUV(0x20, 0x20, 0x20));
     }
     return PASS;
 }
