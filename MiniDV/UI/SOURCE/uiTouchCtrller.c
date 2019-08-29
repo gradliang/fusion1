@@ -11,10 +11,14 @@
 #include "xpg.h"
 #include "Setup.h"
 #include "xpgFunc.h"
+#include "uiTouchCtrller.h"
 
 #if (TOUCH_CONTROLLER_ENABLE == ENABLE)
 
 DWORD dwLastTouchActionTime = 0;
+
+static void uiEnterRecordList();
+DWORD g_dwRecordListCurrPage = 0;
 
 /*
 // Structure declarations
@@ -153,8 +157,7 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
         }
         else if (dwIconId == 1) 
         {
-            xpgSearchAndGotoPage("Record", strlen("Record"));
-            xpgUpdateStage();
+            uiEnterRecordList();
         }
         else if (dwIconId == 2) 
         {
@@ -476,6 +479,13 @@ SWORD touchSprite_Scroll(STXPGSPRITE * sprite, WORD x, WORD y)
             xpgUpdateStage();
         }
     }
+}
+
+static void uiEnterRecordList()
+{
+    g_dwRecordListCurrPage = 0;
+    xpgSearchAndGotoPage("Record", strlen("Record"));
+    xpgUpdateStage();
 }
 
 

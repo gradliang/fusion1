@@ -164,6 +164,11 @@ void AddRecord(STRECORD* pstRecord);
 STRECORD* GetRecord(DWORD dwIndex);
 DWORD GetRecordTotal();
 void ClearAllRecord();
+void InitRecord(STRECORD* pstRecord, WORD year, BYTE month, BYTE day, BYTE hour, BYTE minute, BYTE second, DWORD power, BYTE * recordName, BYTE fileName);
+
+
+int initRecordDummyData();      // Jia Shu Ju
+
 
 #endif
 
