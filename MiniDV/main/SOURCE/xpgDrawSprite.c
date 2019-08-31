@@ -79,6 +79,7 @@ SWORD(*drawSpriteFunctions[]) (ST_IMGWIN *, STXPGSPRITE *, BOOL) =
     xpgDrawSprite_Status,               // type24
     xpgDrawSprite_Radio,                // type25
     xpgDrawSprite_Scroll,               // type26
+    xpgDrawSprite_Frame,                // type27
 };
 
 //---------------------------------------------------------------------------
@@ -1122,7 +1123,7 @@ SWORD xpgDrawSprite_Radio(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BO
     return PASS;
 }
 
-SWORD xpgDrawSprite_Scroll(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOOL boClip)          // type25
+SWORD xpgDrawSprite_Scroll(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOOL boClip)          // type26
 {
     STXPGSPRITE *pstMask;
     DWORD dwSpriteId = pstSprite->m_dwTypeIndex;
@@ -1176,6 +1177,21 @@ SWORD xpgDrawSprite_Scroll(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
     }
     return PASS;
 }
+
+SWORD xpgDrawSprite_Frame(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOOL boClip)
+{
+    DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
+    if (dwHashKey == xpgHash("Manual_work", strlen("Manual_work")))
+    {
+        Idu_PaintWin(pWin, RGB2YUV(0xC9, 0xCE, 0xE0));
+        Idu_PaintWinArea(pWin, 0, 0,  pWin->wWidth, 40, RGB2YUV(0x18, 0x19, 0x1D));
+        Idu_PaintWinArea(pWin, 0, 40, pWin->wWidth, 30, RGB2YUV(0x00, 0x4E, 0xFF));
+        Idu_PaintWinArea(pWin, 0, 70, 102, 410, RGB2YUV(0x2F, 0x2F, 0x2F));
+        Idu_PaintWinArea(pWin, 718, 70, 82, 410, RGB2YUV(0x2F, 0x2F, 0x2F));
+    }
+    return PASS;
+}
+
 
 #endif
 
