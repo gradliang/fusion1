@@ -66,6 +66,12 @@ void GetDefaultSetupMenuValue(void)
     g_psSetupMenu->bCustomizeIcon[3] = 11;
     g_psSetupMenu->bCustomizeIcon[4] = 4;
     g_psSetupMenu->bCustomizeIcon[5] = 5;
+    g_psSetupMenu->bCustomizeIconEnable[0] = 1;
+    g_psSetupMenu->bCustomizeIconEnable[1] = 1;
+    g_psSetupMenu->bCustomizeIconEnable[2] = 1;
+    g_psSetupMenu->bCustomizeIconEnable[3] = 1;
+    g_psSetupMenu->bCustomizeIconEnable[4] = 1;
+    g_psSetupMenu->bCustomizeIconEnable[5] = 1;
     
 #endif	
 }
@@ -94,6 +100,13 @@ void Update_gSetupMenuValue(void)
     *(gSetupMenuValue + 22)  =  (int)(g_psSetupMenu->bCustomizeIcon[3]);
     *(gSetupMenuValue + 23)  =  (int)(g_psSetupMenu->bCustomizeIcon[4]);
     *(gSetupMenuValue + 24)  =  (int)(g_psSetupMenu->bCustomizeIcon[5]);
+    *(gSetupMenuValue + 25)  =  g_psSetupMenu->bCustomizeIconEnable[0];
+    *(gSetupMenuValue + 26)  =  g_psSetupMenu->bCustomizeIconEnable[1];
+    *(gSetupMenuValue + 27)  =  g_psSetupMenu->bCustomizeIconEnable[2];
+    *(gSetupMenuValue + 28)  =  g_psSetupMenu->bCustomizeIconEnable[3];
+    *(gSetupMenuValue + 29)  =  g_psSetupMenu->bCustomizeIconEnable[4];
+    *(gSetupMenuValue + 30)  =  g_psSetupMenu->bCustomizeIconEnable[5];
+    
 	MP_DEBUG("--Write setup value  g_psSetupMenu->wElectrodePos[1]=%d",g_psSetupMenu->wElectrodePos[1] );
 
 }
@@ -128,6 +141,12 @@ void Recover_g_psSetupMenu(void)
     g_psSetupMenu->bCustomizeIcon[3] = (int)(gSetupMenuValue[22]);
     g_psSetupMenu->bCustomizeIcon[4] = (int)(gSetupMenuValue[23]);
     g_psSetupMenu->bCustomizeIcon[5] = (int)(gSetupMenuValue[24]);
+    g_psSetupMenu->bCustomizeIconEnable[0] = gSetupMenuValue[25];
+    g_psSetupMenu->bCustomizeIconEnable[1] = gSetupMenuValue[26];
+    g_psSetupMenu->bCustomizeIconEnable[2] = gSetupMenuValue[27];
+    g_psSetupMenu->bCustomizeIconEnable[3] = gSetupMenuValue[28];
+    g_psSetupMenu->bCustomizeIconEnable[4] = gSetupMenuValue[29];
+    g_psSetupMenu->bCustomizeIconEnable[5] = gSetupMenuValue[30];
 
 	MP_DEBUG("--Read setup value  g_psSetupMenu->wElectrodePos[1]=%d",g_psSetupMenu->wElectrodePos[1] );
 }

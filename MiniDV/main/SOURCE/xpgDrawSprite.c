@@ -440,6 +440,20 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             xpgDrawSprite(pWin, pstSprite, boClip);
         }
     }
+    else if (dwHashKey == xpgHash("Auto_work", strlen("Auto_work")))
+    {
+        if (dwSpriteId <= 5)
+        {
+            pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 1);
+            if (pstMask)
+                xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+        }
+        else if (dwSpriteId == 6 || dwSpriteId == 7 || dwSpriteId == 8 )
+        {
+            xpgDrawSprite(pWin, pstSprite, boClip);
+        }
+    }
+    
     
     xpgSpriteEnableTouch(pstSprite);
 }
@@ -481,8 +495,26 @@ SWORD xpgDrawSprite_LightIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite
             return PASS;
         pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 0);
         STXPGSPRITE * lightSprite = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_ICON, 6 + lightIdx);
-        if (pstMask)
+        if (pstMask && lightSprite)
             xpgRoleDrawMask(lightSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+    }
+    else if (dwHashKey == xpgHash("Auto_work", strlen("Auto_work")))
+    {
+        if (dwSpriteId >= 100)
+            return PASS;
+        if (dwSpriteId <= 5)
+        {
+            int lightIdx = g_psSetupMenu->bCustomizeIcon[dwSpriteId];
+            if (lightIdx < 0)
+                return PASS;
+            if (g_psSetupMenu->bCustomizeIconEnable[dwSpriteId] == 0)
+                return PASS;
+            pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 0);
+            STXPGSPRITE * lightSprite = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_LIGHT_ICON, 100 + lightIdx);
+            if (pstMask && lightSprite)
+                xpgRoleDrawMask(lightSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+        }
+        
     }
     
     return PASS;
@@ -491,6 +523,11 @@ SWORD xpgDrawSprite_LightIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite
 SWORD xpgDrawSprite_DarkIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOOL boClip)
 {
     STXPGSPRITE *pstMask;
+    WORD wX = pstSprite->m_wPx;
+    WORD wY = pstSprite->m_wPy;
+    WORD wW = pstSprite->m_wWidth;
+    WORD wH = pstSprite->m_wHeight;
+    DWORD dwSpriteId = pstSprite->m_dwTypeIndex;
     
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
     if (dwHashKey == xpgHash("SetYun", strlen("SetYun")))
@@ -502,6 +539,24 @@ SWORD xpgDrawSprite_DarkIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite,
                 xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
         }
     }
+    else if (dwHashKey == xpgHash("Auto_work", strlen("Auto_work")))
+    {
+        if (dwSpriteId >= 100)
+            return PASS;
+        if (dwSpriteId <= 5)
+        {
+            int darkIdx = g_psSetupMenu->bCustomizeIcon[dwSpriteId];
+            if (darkIdx < 0)
+                return PASS;
+            if (g_psSetupMenu->bCustomizeIconEnable[dwSpriteId] != 0)       // disable
+                return PASS;
+            pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 0);
+            STXPGSPRITE * darkSprite = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_DARK_ICON, 100 + darkIdx);
+            if (pstMask && darkSprite)
+                xpgRoleDrawMask(darkSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+        }
+    }
+    
     return PASS;
 }
 
@@ -1221,8 +1276,21 @@ SWORD xpgDrawSprite_Frame(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BO
             Idu_PaintWinArea(pWin, 486, 368, 02, 70, RGB2YUV(0x47, 0x47, 0x47));
         }
     }
+    if (dwHashKey == xpgHash("Auto_work", strlen("Auto_work")))
+    {
+        if (dwSpriteId == 0)
+        {
+            Idu_PaintWin(pWin, RGB2YUV(0xC9, 0xCE, 0xE0));
+            Idu_PaintWinArea(pWin, 0, 0,  pWin->wWidth, 40, RGB2YUV(0x18, 0x19, 0x1D));
+            Idu_PaintWinArea(pWin, 0, 40, pWin->wWidth, 30, RGB2YUV(0x00, 0x4E, 0xFF));
+            Idu_PaintWinArea(pWin, 0, 370, pWin->wWidth, 30, RGB2YUV(0x00, 0x4E, 0xFF));
+            Idu_PaintWinArea(pWin, 0, 400, pWin->wWidth, 80, RGB2YUV(0x1F, 0x21, 0x26));
+        }
+    }
+    
     return PASS;
 }
+
 
 
 #endif

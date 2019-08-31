@@ -19,7 +19,7 @@ DWORD dwLastTouchActionTime = 0;
 
 static void uiEnterRecordList();
 DWORD g_dwRecordListCurrPage = 0;
-
+static BYTE strSetupBackPageName[24] = {0};
 /*
 // Structure declarations
 */
@@ -161,11 +161,13 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
         }
         else if (dwIconId == 2) 
         {
+            strcpy(strSetupBackPageName, "Main");
             xpgSearchAndGotoPage("FusionSet1", strlen("FusionSet1"));
             xpgUpdateStage();
         }
         else if (dwIconId == 3) 
         {
+            //xpgSearchAndGotoPage("Auto_work", strlen("Auto_work"));
             xpgSearchAndGotoPage("Manual_work", strlen("Manual_work"));
             xpgUpdateStage();
         }
@@ -184,6 +186,7 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
         }
         else if (dwIconId == 6) 
         {
+            strcpy(strSetupBackPageName, "Main");
             xpgSearchAndGotoPage("FuncSet", strlen("FuncSet"));
             xpgUpdateStage();
         }
@@ -246,9 +249,42 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
                 }
             }
             g_psSetupMenu->bCustomizeIcon[foundIdx] = (int)nowIdx;
+            g_psSetupMenu->bCustomizeIconEnable[foundIdx] = 1;
+            PutSetupMenuValue();
         }
         xpgUpdateStage();
     }
+    else if (dwHashKey == xpgHash("Auto_work", strlen("Auto_work")))
+    {
+        if (dwIconId <= 5)
+        {
+            if (g_psSetupMenu->bCustomizeIcon[dwIconId] < 0)
+            {
+                strcpy(strSetupBackPageName, "Auto_work");
+                xpgSearchAndGotoPage("FuncSet2", strlen("FuncSet2"));
+                xpgUpdateStage();
+                return 0;
+            }
+            g_psSetupMenu->bCustomizeIconEnable[dwIconId] = !g_psSetupMenu->bCustomizeIconEnable[dwIconId];
+            xpgUpdateStage();
+        }
+        else if (dwIconId == 6)
+        {
+            strcpy(strSetupBackPageName, "Auto_work");
+            xpgSearchAndGotoPage("FusionSet1", strlen("FusionSet1"));
+            xpgUpdateStage();
+        }
+        else if (dwIconId == 7)
+        {
+            strcpy(strSetupBackPageName, "Auto_work");
+            xpgSearchAndGotoPage("FuncSet2", strlen("FuncSet2"));
+            xpgUpdateStage();
+        }
+        else if (dwIconId == 8)
+        {
+        }
+    }
+    
     return 0;
 }
 
@@ -283,23 +319,29 @@ SWORD touchSprite_BackIcon(STXPGSPRITE * sprite, WORD x, WORD y)
     mpDebugPrint("touchSprite_BackIcon  %d", sprite->m_dwTypeIndex);
     
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
-    if (dwHashKey == xpgHash("FuncSet", strlen("FuncSet")) || 
-        dwHashKey == xpgHash("FuncSet2", strlen("FuncSet2")) ||
-        dwHashKey == xpgHash("SetYun", strlen("SetYun")) ||
+    if (dwHashKey == xpgHash("SetYun", strlen("SetYun")) ||
         dwHashKey == xpgHash("SetSleep", strlen("SetSleep")) ||
         dwHashKey == xpgHash("SetSound", strlen("SetSound")) ||
         dwHashKey == xpgHash("SetTime", strlen("SetTime")) ||
         dwHashKey == xpgHash("SetPassword", strlen("SetPassword")) ||
         dwHashKey == xpgHash("SetUi", strlen("SetUi")) ||
         dwHashKey == xpgHash("SetInfo", strlen("SetInfo")) ||
-        dwHashKey == xpgHash("FusionSet1", strlen("FusionSet1")) ||
-        dwHashKey == xpgHash("FusionSet2", strlen("FusionSet2")) ||
-        dwHashKey == xpgHash("FusionSet3", strlen("FusionSet3")) ||
         dwHashKey == xpgHash("Record", strlen("Record")))
     {
         xpgSearchAndGotoPage("Main", strlen("Main"));
         xpgUpdateStage();
     }
+    else if (dwHashKey == xpgHash("FuncSet", strlen("FuncSet")) || 
+        dwHashKey == xpgHash("FuncSet2", strlen("FuncSet2")) ||
+        dwHashKey == xpgHash("FusionSet1", strlen("FusionSet1")) ||
+        dwHashKey == xpgHash("FusionSet2", strlen("FusionSet2")) ||
+        dwHashKey == xpgHash("FusionSet3", strlen("FusionSet3")) )
+    {
+        xpgSearchAndGotoPage(strSetupBackPageName, strlen(strSetupBackPageName));
+        xpgUpdateStage();
+    }
+
+    
     return 0;
 }
 

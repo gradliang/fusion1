@@ -126,6 +126,7 @@ typedef struct ST_SETUP_MENU_SETTING_VALUE
     BYTE bEnableIcon_RongJieZanTing;
     BYTE bEnableIcon_YunDuanCeLiang;
     char bCustomizeIcon[6];
+    BYTE bCustomizeIconEnable[6];
     BYTE bCloudMode;
     BYTE bBrightness;                   // Liang Du,  0-100
     BYTE bVolume;                       // Yin Liang, 0 -100 
