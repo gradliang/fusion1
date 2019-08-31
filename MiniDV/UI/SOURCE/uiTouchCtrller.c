@@ -212,6 +212,7 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
             pb = &(g_psSetupMenu->bEnableIcon_YunDuanCeLiang);
         *pb = !(*pb);
         xpgUpdateStage();
+        WriteSetupChg();
     }
     else if (dwHashKey == xpgHash("FuncSet2", strlen("FuncSet2")))
     {
@@ -250,7 +251,7 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
             }
             g_psSetupMenu->bCustomizeIcon[foundIdx] = (int)nowIdx;
             g_psSetupMenu->bCustomizeIconEnable[foundIdx] = 1;
-            PutSetupMenuValue();
+            WriteSetupChg();
         }
         xpgUpdateStage();
     }
@@ -267,6 +268,7 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
             }
             g_psSetupMenu->bCustomizeIconEnable[dwIconId] = !g_psSetupMenu->bCustomizeIconEnable[dwIconId];
             xpgUpdateStage();
+            WriteSetupChg();
         }
         else if (dwIconId == 6)
         {
@@ -476,6 +478,7 @@ SWORD touchSprite_Radio(STXPGSPRITE * sprite, WORD x, WORD y)
         {
             g_psSetupMenu->bCloudMode = !g_psSetupMenu->bCloudMode;
             xpgUpdateStage();
+            WriteSetupChg();
         }
     }
     return 0;
