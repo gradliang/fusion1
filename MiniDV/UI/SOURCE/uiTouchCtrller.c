@@ -11,6 +11,7 @@
 #include "xpg.h"
 #include "Setup.h"
 #include "xpgFunc.h"
+#include "xpgDrawSprite.h"
 #include "uiTouchCtrller.h"
 
 #if (TOUCH_CONTROLLER_ENABLE == ENABLE)

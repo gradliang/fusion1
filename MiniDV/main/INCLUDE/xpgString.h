@@ -102,9 +102,11 @@ enum xpgStringId {
 	Str_DianJiBangJiHuo,			//   92
 	Str_TianJiaKongZhi,				//   93
 	Str_Str_DuanMianJianCeYi,		//   94
-	
-	
-	
+	Str_ZuoDianJi,					//   95
+	Str_YouDianJi,					//   96
+	Str_SuDuMaoHao,					//   97
+	Str_BuShuMaoHao,				//   98
+	Str_DuC,						//   99
 	
 	
 	

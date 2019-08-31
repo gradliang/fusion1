@@ -817,6 +817,118 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         SetCurrIduFontID(FONT_ID_HeiTi20);
         Idu_PrintStringCenter(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 66);
     }
+    else if (dwHashKey == xpgHash("Manual_work", strlen("Manual_work")))
+    {
+        char tempStr[64];
+        if (dwTextId == 0)
+        {
+            text = getstr(Str_ZuoDianJi);
+            SetCurrIduFontID(FONT_ID_HeiTi16);
+            Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
+        }
+        else if (dwTextId == 1)
+        {
+            text = getstr(Str_SuDuMaoHao);
+            SetCurrIduFontID(FONT_ID_HeiTi16);
+            Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
+        }
+        else if (dwTextId == 2)
+        {
+            sprintf(tempStr, "%d", 10);
+            SetCurrIduFontID(FONT_ID_HeiTi16);
+            Idu_FontColorSet(0,0,0);
+            Idu_PrintStringCenter(pWin, tempStr, 4, 139, 0, 74);
+            Idu_FontColorSet(0xff,0xff,0xff);
+        }
+        else if (dwTextId == 3)
+        {
+            text = getstr(Str_BuShuMaoHao);
+            SetCurrIduFontID(FONT_ID_HeiTi16);
+            Idu_PrintStringCenter(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 66);
+        }
+        else if (dwTextId == 4)
+        {
+            sprintf(tempStr, "%d", 100);
+            SetCurrIduFontID(FONT_ID_HeiTi16);
+            Idu_FontColorSet(0,0,0);
+            Idu_PrintStringCenter(pWin, tempStr, 4, 190, 0, 74);
+            Idu_FontColorSet(0xff,0xff,0xff);
+        }
+        else if (dwTextId == 5)
+        {
+            text = getstr(Str_YouDianJi);
+            SetCurrIduFontID(FONT_ID_HeiTi16);
+            Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
+        }
+        else if (dwTextId == 6)
+        {
+            text = getstr(Str_SuDuMaoHao);
+            SetCurrIduFontID(FONT_ID_HeiTi16);
+            Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
+        }
+        else if (dwTextId == 7)
+        {
+            sprintf(tempStr, "%d", 10);
+            SetCurrIduFontID(FONT_ID_HeiTi16);
+            Idu_FontColorSet(0,0,0);
+            Idu_PrintStringCenter(pWin, tempStr, 722, 139, 0, 74);
+            Idu_FontColorSet(0xff,0xff,0xff);
+        }
+        else if (dwTextId == 8)
+        {
+            text = getstr(Str_BuShuMaoHao);
+            SetCurrIduFontID(FONT_ID_HeiTi16);
+            Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
+        }
+        else if (dwTextId == 9)
+        {
+            sprintf(tempStr, "%d", 100);
+            SetCurrIduFontID(FONT_ID_HeiTi16);
+            Idu_FontColorSet(0,0,0);
+            Idu_PrintStringCenter(pWin, tempStr, 722, 190, 0, 74);
+            Idu_FontColorSet(0xff,0xff,0xff);
+        }
+        else if (dwTextId == 10)
+        {
+            text = getstr(Str_SuDuMaoHao);
+            SetCurrIduFontID(FONT_ID_HeiTi16);
+            Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
+        }
+        else if (dwTextId == 11)
+        {
+            sprintf(tempStr, "%d", 10);
+            SetCurrIduFontID(FONT_ID_HeiTi16);
+            Idu_FontColorSet(0,0,0);
+            Idu_PrintStringCenter(pWin, tempStr, 212, 380, 0, 70);
+            Idu_FontColorSet(0xff,0xff,0xff);
+        }
+        else if (dwTextId == 12)
+        {
+            text = getstr(Str_BuShuMaoHao);
+            SetCurrIduFontID(FONT_ID_HeiTi16);
+            Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
+        }
+        else if (dwTextId == 13)
+        {
+            sprintf(tempStr, "%d", 100);
+            SetCurrIduFontID(FONT_ID_HeiTi16);
+            Idu_FontColorSet(0,0,0);
+            Idu_PrintStringCenter(pWin, tempStr, 212, 406, 0, 70);
+            Idu_FontColorSet(0xff,0xff,0xff);
+        }
+        else if (dwTextId == 14)
+        {
+            sprintf(tempStr, "%ds|%ds", 20, 19);
+            SetCurrIduFontID(FONT_ID_HeiTi16);
+            Idu_PrintString(pWin, tempStr, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
+        }
+        else if (dwTextId == 15)
+        {
+            sprintf(tempStr, "%d%s", 50, getstr(Str_DuC));
+            SetCurrIduFontID(FONT_ID_HeiTi16);
+            Idu_PrintString(pWin, tempStr, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
+        }
+    }
     
     return PASS;
 }

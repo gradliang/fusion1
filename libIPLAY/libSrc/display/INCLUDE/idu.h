@@ -116,6 +116,7 @@ void Idu_SetImageGamma(void);
 WORD Idu_PrintStringCenter(ST_IMGWIN * trgWin, BYTE * string, WORD startX, WORD startY, BYTE UnicodeFlag, WORD wWidth);
 WORD Idu_PrintStringRight(ST_IMGWIN * trgWin, BYTE * string, WORD startX, WORD startY, BYTE UnicodeFlag);
 
+DWORD Idu_FontColorSet(BYTE R, BYTE G, BYTE B);
 
 ST_OSDWIN *Idu_GetOsdWin();
 void Idu_OsdErase();
