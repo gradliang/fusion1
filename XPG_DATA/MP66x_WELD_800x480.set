@@ -35,7 +35,7 @@ type24=Status
 type25=Radio
 type26=Scroll
 type27=Frame
-
+type28=Role
 
 [ACTION]
 ;//Main Menu
