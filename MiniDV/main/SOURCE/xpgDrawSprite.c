@@ -15,6 +15,7 @@
 #define LOCAL_DEBUG_ENABLE 0
 
 #include "global612.h"
+#include "mpTrace.h"
 #include "xpgDrawSprite.h"
 #include "mpTrace.h"
 #include "xpgGPRSFunc.h"
@@ -1269,23 +1270,128 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
     return PASS;
 }
 
+
+void MakeDialogRole(STXPGROLE * pstRole, WORD width, WORD height)
+{
+    DWORD dwSize;
+    ST_IMGWIN win;
+    ST_IMGWIN * pWin;
+    
+    xpgRoleInit(pstRole);
+    pstRole->m_bBitDepth = 24;
+    pstRole->m_wIndex = 0;
+    pstRole->m_wWidth = width;
+    if (pstRole->m_wWidth % 2)
+        pstRole->m_wWidth ++;
+    pstRole->m_wHeight = height;
+    if (pstRole->m_wHeight < 41)
+        pstRole->m_wHeight = 41;
+    
+    dwSize = ALIGN_16(pstRole->m_wWidth) * ALIGN_16(pstRole->m_wHeight) * 2 + 256;
+
+    pstRole->m_pRawImage = (BYTE *) ext_mem_malloc(dwSize);
+    pstRole->m_wRawWidth = pstRole->m_wWidth;
+
+	MP_ASSERT(pstRole->m_pRawImage != NULL);
+    MP_DEBUG4("malloc role %d, w%d h%d raw_w%d", pstRole->m_wIndex, pstRole->m_wWidth, pstRole->m_wHeight, pstRole->m_wRawWidth);
+
+    mpWinInit(&win, pstRole->m_pRawImage, pstRole->m_wHeight, pstRole->m_wWidth);
+    pWin = &win;
+
+    Idu_PaintWinArea(pWin, 0, 0, pWin->wWidth, 40, RGB2YVU(0x28, 0x29, 0x2D));
+    Idu_PaintWinArea(pWin, 0, 40, pWin->wWidth, pstRole->m_wHeight - 40, RGB2YVU(0x1C, 0x1D, 0x21));
+    
+    return;
+}
+
+void MakeMaskRole(STXPGROLE * pstMaskRole, int maskRoleIndex, WORD width, WORD height)
+{
+    ST_IMGWIN win1, win2;
+    ST_IMGWIN * pWin1, * pWin2;
+    DWORD * pdwStart1, * pdwStart2;
+    WORD iconWidth;
+    WORD iconHeight;
+    WORD corner;
+    
+    if (maskRoleIndex == XPG_ROLE_ICON_MASK_0)
+    {
+        iconWidth = 66;
+        iconHeight = 66;
+        corner = 12;
+    }
+    else 
+    {
+        return;
+    }
+    
+    pdwStart1 = (DWORD*) ext_mem_malloc((iconHeight) * (iconWidth*2) * 2);
+    mpWinInit(&win1, pdwStart1, iconHeight, iconWidth * 2);
+    pWin1 = &win1;
+    xpgDirectDrawRoleOnWin(pWin1, g_pstXpgMovie->m_pstObjRole[maskRoleIndex], 0, 0, NULL, 0);
+
+    if (width < corner * 2)
+        width = corner * 2;
+    if (height < corner * 2)
+        height = corner * 2;
+    if (width % 2)
+        width ++;
+    
+    pdwStart2 = (DWORD*) ext_mem_malloc(width * height * 2);
+    mpWinInit(&win2, pdwStart2, height, width);
+    pWin2 = &win2;
+    mpPaintWin(pWin2, 0xffff8080);
+
+    mpCopyWinAreaSameSize(pWin1, pWin2, 0, 0, 0, 0, corner, corner);
+    mpCopyWinAreaSameSize(pWin1, pWin2, iconWidth - corner, 0, width - corner, 0, corner, corner);
+    mpCopyWinAreaSameSize(pWin1, pWin2, 0, iconHeight - corner, 0, height - corner, corner, corner);
+    mpCopyWinAreaSameSize(pWin1, pWin2, iconWidth - corner, iconHeight - corner, width - corner, height - corner, corner, corner);
+
+    ext_mem_free(pdwStart1);
+    
+    xpgRoleInit(pstMaskRole);
+    pstMaskRole->m_bBitDepth = 24;
+    pstMaskRole->m_wIndex = 0;
+    pstMaskRole->m_wWidth = width;
+    pstMaskRole->m_wHeight = height;
+    pstMaskRole->m_pRawImage = pdwStart2;
+    pstMaskRole->m_wRawWidth = pstMaskRole->m_wWidth;
+
+    return;
+}
+
+
 SWORD xpgDrawSprite_Dialog(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOOL boClip)
 {
+    STXPGROLE  stRole, stMaskRole;
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
+
+    xpgRoleInit(&stRole);
+    xpgRoleInit(&stMaskRole);
+    
     if (dwHashKey == xpgHash("User", strlen("User")))
     {
-        xpgDrawSprite(pWin, pstSprite, boClip);
+        MakeDialogRole(&stRole, 400, 440);
+        MakeMaskRole(&stMaskRole, XPG_ROLE_ICON_MASK_0, 400, 440);
+        xpgRoleDrawMask(&stRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, &stMaskRole);
+        
         SetCurrIduFontID(FONT_ID_HeiTi20);
         Idu_PrintStringCenter(pWin, getstr(Str_YongHuWeiHu), pstSprite->m_wPx, pstSprite->m_wPy + 5, 0, pstSprite->m_wWidth);
     }
     else if (dwHashKey == xpgHash("ToolBox", strlen("ToolBox")))
     {
-        xpgDrawSprite(pWin, pstSprite, boClip);
+        MakeDialogRole(&stRole, 500, 250);
+        MakeMaskRole(&stMaskRole, XPG_ROLE_ICON_MASK_0, 500, 250);
+        xpgRoleDrawMask(&stRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, &stMaskRole);
+
         SetCurrIduFontID(FONT_ID_HeiTi20);
         Idu_PrintStringCenter(pWin, getstr(Str_GongJuXiang), pstSprite->m_wPx, pstSprite->m_wPy + 5, 0, pstSprite->m_wWidth);
     }
     else
         xpgDrawSprite(pWin, pstSprite, boClip);
+
+    xpgRoleRelease(&stRole);
+    xpgRoleRelease(&stMaskRole);
+        
     return PASS;
 }
 

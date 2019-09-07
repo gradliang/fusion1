@@ -711,6 +711,10 @@
 #define XPG_ROLE_TEXT_BLACK_0              0 //0-9
 #define XPG_ROLE_TEXT_WHITE_0              10 //10-19
 
+#define XPG_ROLE_BACKGROUND_0               0
+#define XPG_ROLE_ICON_MASK_0               1
+
+
 #define SPRITE_TYPE_HILIGHTFRAME           5
 #define SPRITE_TYPE_ICON                    12
 #define SPRITE_TYPE_LIGHT_ICON              13
