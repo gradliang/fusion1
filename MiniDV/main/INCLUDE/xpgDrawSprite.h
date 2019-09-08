@@ -8,6 +8,9 @@
 #include "ui.h"
 #include "filebrowser.h"
 
+extern DWORD dwDialogType;
+extern BYTE  strCloseDialogBackPage[32];
+
 
 
 SWORD xpgDrawSprite_Null				  ( ST_IMGWIN *, STXPGSPRITE *, BOOL );

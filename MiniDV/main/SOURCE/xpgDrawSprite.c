@@ -42,6 +42,10 @@
 //---------------------------------------------------------------------------
 //Global variable region
 //---------------------------------------------------------------------------
+DWORD dwDialogType = 0;                     // current dialog type
+BYTE  strCloseDialogBackPage[32] = {0};     // close the dialog, will go back to this page
+
+
 //BYTE xpgStringBuffer[254];
 extern DWORD g_dwCurIndex,g_dwModeIconStatus;
 #if  (PRODUCT_UI==UI_SURFACE)
@@ -454,6 +458,27 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             xpgDrawSprite(pWin, pstSprite, boClip);
         }
     }
+    else if (dwHashKey == xpgHash("FusionSet3", strlen("FusionSet3")))
+    {
+        if (dwSpriteId == 0 && g_psSetupMenu->bHotUpMode == SETUP_MENU_HOT_UP_MODE_MANUAL)
+        {
+            pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 0);
+            if (pstMask)
+                xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+        }
+        else if (dwSpriteId == 1 && g_psSetupMenu->bHotUpMode == SETUP_MENU_HOT_UP_MODE_AUTO)
+        {
+            pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 0);
+            if (pstMask)
+                xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+        }
+        else if (dwSpriteId == 2 && !g_psSetupMenu->bPreHotEnable)
+        {
+            pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 1);
+            if (pstMask)
+                xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+        }
+    }
     
     
     xpgSpriteEnableTouch(pstSprite);
@@ -516,6 +541,27 @@ SWORD xpgDrawSprite_LightIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite
                 xpgRoleDrawMask(lightSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
         }
         
+    }
+    else if (dwHashKey == xpgHash("FusionSet3", strlen("FusionSet3")))
+    {
+        if (dwSpriteId == 0 && g_psSetupMenu->bHotUpMode == SETUP_MENU_HOT_UP_MODE_AUTO)
+        {
+            pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 0);
+            if (pstMask)
+                xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+        }
+        else if (dwSpriteId == 1 && g_psSetupMenu->bHotUpMode == SETUP_MENU_HOT_UP_MODE_MANUAL)
+        {
+            pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 0);
+            if (pstMask)
+                xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+        }
+        else if (dwSpriteId == 2 && g_psSetupMenu->bPreHotEnable)
+        {
+            pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 1);
+            if (pstMask)
+                xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+        }
     }
     
     return PASS;
@@ -1267,6 +1313,24 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
 
         Idu_PaintWinArea(pWin, 14, pstSprite->m_wPy + 35, 744, 2, RGB2YUV(0x20, 0x20, 0x20));
     }
+    else if (dwHashKey == xpgHash("FusionSet3", strlen("FusionSet3")))
+    {
+        if (dwListId == 0)
+            text = getstr(Str_YuReMoShi);
+        else if (dwListId == 1)
+            text = getstr(Str_JiaReFangShi);
+        else if (dwListId == 2)
+            text = getstr(Str_ReSuGuanSheZhi);
+        else if (dwListId == 3)
+            text = getstr(Str_JiaReWenDu);
+        else if (dwListId == 4)
+            text = getstr(Str_JiaReShiJian);
+        
+        SetCurrIduFontID(FONT_ID_HeiTi19);
+        Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
+        Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + 42, 472, 2, RGB2YUV(0x37, 0x37, 0x37));
+    }
+    
     return PASS;
 }
 

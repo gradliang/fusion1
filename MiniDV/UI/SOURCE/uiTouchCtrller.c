@@ -287,6 +287,30 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
         {
         }
     }
+    else if (dwHashKey == xpgHash("FusionSet3", strlen("FusionSet3")))
+    {
+        if (dwIconId == 0)
+        {
+            if (g_psSetupMenu->bHotUpMode != SETUP_MENU_HOT_UP_MODE_AUTO)
+            {
+                g_psSetupMenu->bHotUpMode = SETUP_MENU_HOT_UP_MODE_AUTO;
+                xpgUpdateStage();
+            }
+        }
+        else if (dwIconId == 1)
+        {
+            if (g_psSetupMenu->bHotUpMode != SETUP_MENU_HOT_UP_MODE_MANUAL)
+            {
+                g_psSetupMenu->bHotUpMode = SETUP_MENU_HOT_UP_MODE_MANUAL;
+                xpgUpdateStage();
+            }
+        }
+        else if (dwIconId == 2)
+        {
+            g_psSetupMenu->bPreHotEnable = !g_psSetupMenu->bPreHotEnable;
+            xpgUpdateStage();
+        }
+    }
     
     return 0;
 }

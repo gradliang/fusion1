@@ -107,7 +107,11 @@ enum xpgStringId {
 	Str_SuDuMaoHao,					//   97
 	Str_BuShuMaoHao,				//   98
 	Str_DuC,						//   99
-	
+	Str_YuReMoShi,					//   100
+	Str_JiaReFangShi,				//   101
+	Str_ReSuGuanSheZhi,				//   102
+	Str_JiaReWenDu,					//   103
+	Str_JiaReShiJian,				//   104
 	
 	
 	

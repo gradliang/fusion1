@@ -72,7 +72,8 @@ void GetDefaultSetupMenuValue(void)
     g_psSetupMenu->bCustomizeIconEnable[3] = 1;
     g_psSetupMenu->bCustomizeIconEnable[4] = 1;
     g_psSetupMenu->bCustomizeIconEnable[5] = 1;
-    
+    g_psSetupMenu->bPreHotEnable = 0;
+    g_psSetupMenu->bHotUpMode = SETUP_MENU_HOT_UP_MODE_AUTO;
 #endif	
 }
 
@@ -106,7 +107,9 @@ void Update_gSetupMenuValue(void)
     *(gSetupMenuValue + 28)  =  g_psSetupMenu->bCustomizeIconEnable[3];
     *(gSetupMenuValue + 29)  =  g_psSetupMenu->bCustomizeIconEnable[4];
     *(gSetupMenuValue + 30)  =  g_psSetupMenu->bCustomizeIconEnable[5];
-    
+    *(gSetupMenuValue + 31)  =  g_psSetupMenu->bPreHotEnable;
+    *(gSetupMenuValue + 32)  =  g_psSetupMenu->bHotUpMode;
+        
 	MP_DEBUG("--Write setup value  g_psSetupMenu->wElectrodePos[1]=%d",g_psSetupMenu->wElectrodePos[1] );
 
 }
@@ -147,6 +150,8 @@ void Recover_g_psSetupMenu(void)
     g_psSetupMenu->bCustomizeIconEnable[3] = gSetupMenuValue[28];
     g_psSetupMenu->bCustomizeIconEnable[4] = gSetupMenuValue[29];
     g_psSetupMenu->bCustomizeIconEnable[5] = gSetupMenuValue[30];
+    g_psSetupMenu->bPreHotEnable = gSetupMenuValue[31];
+    g_psSetupMenu->bHotUpMode = gSetupMenuValue[32];
 
 	MP_DEBUG("--Read setup value  g_psSetupMenu->wElectrodePos[1]=%d",g_psSetupMenu->wElectrodePos[1] );
 }

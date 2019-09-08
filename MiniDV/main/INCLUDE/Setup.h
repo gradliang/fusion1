@@ -92,6 +92,11 @@ enum{
     SETUP_MENU_AV_OUTPUTPAL = 3,
 };
 
+enum {
+    SETUP_MENU_HOT_UP_MODE_AUTO = 0,
+    SETUP_MENU_HOT_UP_MODE_MANUAL = 1,
+};
+
 #define						SETTING_NUMBER					32 //对应下面设置的数量
 typedef struct ST_SETUP_MENU_SETTING_VALUE
 {
@@ -130,6 +135,9 @@ typedef struct ST_SETUP_MENU_SETTING_VALUE
     BYTE bCloudMode;
     BYTE bBrightness;                   // Liang Du,  0-100
     BYTE bVolume;                       // Yin Liang, 0 -100 
+    BYTE bPreHotEnable;                 // 预热模式
+    BYTE bHotUpMode;                    // 加热模式
+    
 #endif
 
     //BYTE bReserved[1];
