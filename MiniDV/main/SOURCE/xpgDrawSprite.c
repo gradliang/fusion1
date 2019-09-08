@@ -405,6 +405,7 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
     WORD wH = pstSprite->m_wHeight;
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
     DWORD dwSpriteId = pstSprite->m_dwTypeIndex;
+    const char * text = "";
     
     if (dwHashKey == xpgHash("Main", strlen("Main")))
         xpgDrawSprite(pWin, pstSprite, boClip);
@@ -483,7 +484,32 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
                 xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
         }
     }
-    
+    else if (dwHashKey == xpgHash("FusionSet2", strlen("FusionSet2")))
+    {
+        pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 0);
+        if (pstMask)
+            xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+        if (dwSpriteId == 0)
+            text = getstr(Str_YiBan);
+        else if (dwSpriteId == 1)
+            text = getstr(Str_BiaoZhun);
+        else if (dwSpriteId == 2)
+            text = getstr(Str_JingXi);
+        else if (dwSpriteId == 3)
+            text = getstr(Str_XianXin);
+        else if (dwSpriteId == 4)
+            text = getstr(Str_BaoCeng);
+        else if (dwSpriteId == 5)
+            text = getstr(Str_XPing);
+        else if (dwSpriteId == 6)
+            text = getstr(Str_YPing);
+        else if (dwSpriteId == 7)
+            text = getstr(Str_XYPing);
+        else if (dwSpriteId == 8)
+            text = getstr(Str_XYJiaoTi);
+        SetCurrIduFontID(FONT_ID_HeiTi16);
+        Idu_PrintStringCenter(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy+2, 0, pstSprite->m_wWidth);   
+    }
     
     xpgSpriteEnableTouch(pstSprite);
 }
@@ -997,6 +1023,19 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             return PASS;
         SetCurrIduFontID(FONT_ID_HeiTi16);
         Idu_PrintStringRight(pWin, tmpbuf, pstSprite->m_wPx, pstSprite->m_wPy, 0);
+    }
+    else if (dwHashKey == xpgHash("FusionSet2", strlen("FusionSet2")))
+    {
+        if (dwTextId == 0)
+            text = getstr(Str_RongJieZanTing);
+        else if (dwTextId == 1)
+            text = getstr(Str_RongJieZanTing);
+        else if (dwTextId == 2)
+            text = getstr(Str_RongJieZanTing);
+        else
+            return PASS;
+        SetCurrIduFontID(FONT_ID_HeiTi19);
+        Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
     }
     
     return PASS;
