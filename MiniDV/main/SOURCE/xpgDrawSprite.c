@@ -466,14 +466,15 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             if (pstMask)
                 xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
             SetCurrIduFontID(FONT_ID_HeiTi16);
-            //Idu_PrintString(pWin, getstr(Str_HongGuangBi), pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
-            
+            Idu_PrintStringCenter(pWin, getstr(Str_ZiDong), pstSprite->m_wPx, pstSprite->m_wPy, 0, pstSprite->m_wWidth);            
         }
         else if (dwSpriteId == 1 && g_psSetupMenu->bHotUpMode == SETUP_MENU_HOT_UP_MODE_AUTO)
         {
             pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 0);
             if (pstMask)
                 xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+            SetCurrIduFontID(FONT_ID_HeiTi16);
+            Idu_PrintStringCenter(pWin, getstr(Str_ShouDong), pstSprite->m_wPx, pstSprite->m_wPy, 0, pstSprite->m_wWidth);    
         }
         else if (dwSpriteId == 2 && !g_psSetupMenu->bPreHotEnable)
         {
@@ -552,12 +553,16 @@ SWORD xpgDrawSprite_LightIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite
             pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 0);
             if (pstMask)
                 xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+            SetCurrIduFontID(FONT_ID_HeiTi16);
+            Idu_PrintStringCenter(pWin, getstr(Str_ZiDong), pstSprite->m_wPx, pstSprite->m_wPy, 0, pstSprite->m_wWidth);
         }
         else if (dwSpriteId == 1 && g_psSetupMenu->bHotUpMode == SETUP_MENU_HOT_UP_MODE_MANUAL)
         {
             pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 0);
             if (pstMask)
                 xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+            SetCurrIduFontID(FONT_ID_HeiTi16);
+            Idu_PrintStringCenter(pWin, getstr(Str_ShouDong), pstSprite->m_wPx, pstSprite->m_wPy, 0, pstSprite->m_wWidth);
         }
         else if (dwSpriteId == 2 && g_psSetupMenu->bPreHotEnable)
         {
@@ -978,6 +983,20 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             SetCurrIduFontID(FONT_ID_HeiTi16);
             Idu_PrintString(pWin, tempStr, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
         }
+    }
+    else if (dwHashKey == xpgHash("FusionSet3", strlen("FusionSet3")))
+    {
+        BYTE tmpbuf[128];
+        if (dwTextId == 0)
+            sprintf(tmpbuf, "%s >", getstr(Str_ZiDingYi));
+        else if (dwTextId == 1)
+            sprintf(tmpbuf, "50%s", getstr(Str_DuC));
+        else if (dwTextId == 2)
+            sprintf(tmpbuf, "%dS", 12);
+        else
+            return PASS;
+        SetCurrIduFontID(FONT_ID_HeiTi16);
+        Idu_PrintStringRight(pWin, tmpbuf, pstSprite->m_wPx, pstSprite->m_wPy, 0);
     }
     
     return PASS;
