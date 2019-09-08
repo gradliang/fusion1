@@ -112,8 +112,33 @@ enum xpgStringId {
 	Str_ReSuGuanSheZhi,				//   102
 	Str_JiaReWenDu,					//   103
 	Str_JiaReShiJian,				//   104
-	
-	
+	Str_ZiDong,						//   105
+	Str_ShouDong,					//   106
+	Str_ZiDingYi,					//   107
+	Str_YiBan,						//   108
+	Str_BiaoZhun,					//   109
+	Str_JingXi,						//   110
+	Str_XianXin,					//   111
+	Str_BaoCeng,					//   112
+	Str_XPing,						//   113
+	Str_YPing,						//   114
+	Str_XYPing,						//   115
+	Str_XYJiaoTi,					//   116
+	Str_MoShiCanShu,				//   117
+	Str_FangDianZhongXin,			//   118
+	Str_RongJieDianYa,				//   119
+	Str_YuRongDianYa,				//   120
+	Str_ChuChenDianYa,				//   121
+	Str_RongJieChongDieLiang,		//   122
+	Str_DuiJiaoMuBiaoZhi,			//   123
+	Str_RongJieShiJian,				//   124
+	Str_YuRongShiJian,				//   125
+	Str_ChuChenShiJian,				//   126
+	Str_QieGeJiaoDuShangXian,		//   127
+	Str_FangDianJiaoDuShangXian,	//   128
+	Str_FangDianJiaoZhengMuBiaoZhi,	//   129
+	Str_Du,							//   130
+	Str_ShuZhiXiuGai,				//   131
 	
 	
 	
