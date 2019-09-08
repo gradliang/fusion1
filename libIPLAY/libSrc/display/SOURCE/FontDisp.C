@@ -39,9 +39,9 @@
 #include "HeiTi16Data.h"
 #include "HeiTi16Tab.h"
 #endif
-#ifdef FONT_ID_HeiTi20
-#include "HeiTi20Data.h"
-#include "HeiTi20Tab.h"
+#ifdef FONT_ID_HeiTi19
+#include "HeiTi19Data.h"
+#include "HeiTi19Tab.h"
 #endif
 
 
@@ -133,11 +133,11 @@ static BOOL SetFontDataInfo(FontInfo_t * pstInfo, DWORD wFontID)
         pstInfo->bFlag = 1;
         break;
 #endif
-#ifdef FONT_ID_HeiTi20
-        case FONT_ID_HeiTi20:
-            pstInfo->pData = HeiTi20_fontdata;
-            pstInfo->largeTab = HeiTi20_FontTab;
-            pstInfo->fastIdxTab = HeiTi20_FastIndexTab;
+#ifdef FONT_ID_HeiTi19
+        case FONT_ID_HeiTi19:
+            pstInfo->pData = HeiTi19_fontdata;
+            pstInfo->largeTab = HeiTi19_FontTab;
+            pstInfo->fastIdxTab = HeiTi19_FastIndexTab;
             pstInfo->bFlag = 1;
             break;
 #endif

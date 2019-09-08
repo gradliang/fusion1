@@ -1,7 +1,7 @@
 struct {
     unsigned int code;
     unsigned int offset;
-} HeiTi20_FontTab [] = { 
+} HeiTi19_FontTab [] = { 
 
   { 0x0020 , 12 }, 
   { 0x0021 , 189 }, 
@@ -221,7 +221,7 @@ struct {
 struct {
   unsigned short start;
   unsigned short total;
-} HeiTi20_FastIndexTab [] = {
+} HeiTi19_FastIndexTab [] = {
   { 0x0000, 0x005F },  //High Byte : 0x00 
   { 0x005F, 0x0000 },  //High Byte : 0x01 
   { 0x005F, 0x0000 },  //High Byte : 0x02 

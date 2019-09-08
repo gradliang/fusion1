@@ -208,7 +208,7 @@
 //#define FONT_ID_YAHEI19         2
 //#define FONT_ID_LibMono17       3
 //#define FONT_ID_DotumChe18      4
-#define FONT_ID_HeiTi20         5
+#define FONT_ID_HeiTi19         5
 #define FONT_ID_HeiTi16         6
 
 #endif

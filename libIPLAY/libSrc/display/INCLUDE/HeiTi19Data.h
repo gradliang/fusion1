@@ -4,7 +4,7 @@
 // TXT File : C:\vmshare\fusion1\font\大字.txt
 // 在产生的字体数据前面放置高度和宽度
 
-const unsigned char HeiTi20_fontdata[] = { 
+const unsigned char HeiTi19_fontdata[] = { 
 
   // New Font Tab 
   0x4E,0x65,0x77,0x46,0x6F,0x6E,0x74,0x00,
