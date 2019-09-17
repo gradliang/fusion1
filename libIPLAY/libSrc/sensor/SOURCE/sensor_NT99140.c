@@ -94,7 +94,7 @@ void Sensor_Channel_Set(BYTE bChannel)
 
 }
 
-#elif (PRODUCT_PCBA==PCBA_MAIN_BOARD_V11||PRODUCT_PCBA==PCBA_MAIN_BOARD_V12)
+#elif (PRODUCT_PCBA==PCBA_MAIN_BOARD_V11||PRODUCT_PCBA==PCBA_MAIN_BOARD_V12||PRODUCT_PCBA==PCBA_MAIN_BOARD_V20)
 //--st_bCurChannel:0->channel 0  1->channel 1
 static BYTE st_bCurChannel=0;
 
@@ -734,7 +734,7 @@ static void Local_HW_StopIPW2(void)
 
 void Local_Sensor_GPIO_Reset(void)
 {
-#if (PRODUCT_PCBA==PCBA_MAIN_BOARD_V11||PRODUCT_PCBA==PCBA_MAIN_BOARD_V12)
+#if (PRODUCT_PCBA==PCBA_MAIN_BOARD_V11||PRODUCT_PCBA==PCBA_MAIN_BOARD_V12||PRODUCT_PCBA==PCBA_MAIN_BOARD_V20)
 	WORD gpioNum;
 
 	if (Sensor_CurChannel_Get())
