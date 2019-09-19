@@ -597,6 +597,60 @@ SWORD xpgDrawSprite_LightIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite
                 xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
         }
     }
+    else if (dwHashKey == xpgHash("FusionSet2", strlen("FusionSet2")))
+    {
+        pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 0);
+        
+        if (dwSpriteId == 0)
+            text = getstr(Str_YiBan);
+        else if (dwSpriteId == 1)
+            text = getstr(Str_BiaoZhun);
+        else if (dwSpriteId == 2)
+            text = getstr(Str_JingXi);
+        else if (dwSpriteId == 3)
+            text = getstr(Str_XianXin);
+        else if (dwSpriteId == 4)
+            text = getstr(Str_BaoCeng);
+        else if (dwSpriteId == 5)
+            text = getstr(Str_XPing);
+        else if (dwSpriteId == 6)
+            text = getstr(Str_YPing);
+        else if (dwSpriteId == 7)
+            text = getstr(Str_XYPing);
+        else if (dwSpriteId == 8)
+            text = getstr(Str_XYJiaoTi);
+
+        if (dwSpriteId <= 2)
+        {
+            if (g_psSetupMenu->bRongJieZhiLiang == dwSpriteId)
+            {
+                if (pstMask)
+                    xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+                SetCurrIduFontID(FONT_ID_HeiTi16);
+                Idu_PrintStringCenter(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy+2, 0, pstSprite->m_wWidth);
+            }
+        }
+        else if (dwSpriteId >= 3 && dwSpriteId <= 4)
+        {
+            if (g_psSetupMenu->bDuiXianFangShi == dwSpriteId - 3)
+            {
+                if (pstMask)
+                    xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+                SetCurrIduFontID(FONT_ID_HeiTi16);
+                Idu_PrintStringCenter(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy+2, 0, pstSprite->m_wWidth);
+            }
+        }
+        else if (dwSpriteId >= 5)
+        {
+            if (g_psSetupMenu->bPingXianFangShi == dwSpriteId - 5)
+            {
+                if (pstMask)
+                    xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+                SetCurrIduFontID(FONT_ID_HeiTi16);
+                Idu_PrintStringCenter(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy+2, 0, pstSprite->m_wWidth);
+            }
+        }
+    }
     
     return PASS;
 }

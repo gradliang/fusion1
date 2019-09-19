@@ -137,6 +137,9 @@ typedef struct ST_SETUP_MENU_SETTING_VALUE
     BYTE bVolume;                       // Yin Liang, 0 -100 
     BYTE bPreHotEnable;                 // 预热模式
     BYTE bHotUpMode;                    // 加热模式
+    BYTE bRongJieZhiLiang;              // 熔接质量
+    BYTE bDuiXianFangShi;               // 对纤方式
+    BYTE bPingXianFangShi;              // 屏显方式
     
 #endif
 

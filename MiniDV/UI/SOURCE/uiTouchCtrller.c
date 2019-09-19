@@ -295,6 +295,7 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
             {
                 g_psSetupMenu->bHotUpMode = SETUP_MENU_HOT_UP_MODE_AUTO;
                 xpgUpdateStage();
+                WriteSetupChg();
             }
         }
         else if (dwIconId == 1)
@@ -303,12 +304,35 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
             {
                 g_psSetupMenu->bHotUpMode = SETUP_MENU_HOT_UP_MODE_MANUAL;
                 xpgUpdateStage();
+                WriteSetupChg();
             }
         }
         else if (dwIconId == 2)
         {
             g_psSetupMenu->bPreHotEnable = !g_psSetupMenu->bPreHotEnable;
             xpgUpdateStage();
+            WriteSetupChg();
+        }
+    }
+    else if (dwHashKey == xpgHash("FusionSet2", strlen("FusionSet2")))
+    {
+        if (dwIconId == 0 || dwIconId == 1 || dwIconId == 2)
+        {
+        	g_psSetupMenu->bRongJieZhiLiang = dwIconId;
+        	xpgUpdateStage();
+        	WriteSetupChg();
+        }
+        else if (dwIconId == 3 || dwIconId == 4 )
+        {
+        	g_psSetupMenu->bDuiXianFangShi = dwIconId - 3;
+        	xpgUpdateStage();
+        	WriteSetupChg();
+        }
+        else if (dwIconId == 5 || dwIconId == 6 || dwIconId == 7 || dwIconId == 8)
+        {
+        	g_psSetupMenu->bDuiXianFangShi = dwIconId - 5;
+        	xpgUpdateStage();
+        	WriteSetupChg();
         }
     }
     
