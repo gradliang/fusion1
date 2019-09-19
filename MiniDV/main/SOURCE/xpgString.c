@@ -68,7 +68,7 @@ static const BYTE* xpgString_English[] =
 int langid = 0;
 const BYTE** xpgString = xpgString_SChinese;   //xpgString_English;
 
-const BYTE* getstr(DWORD str_id)
+BYTE* getstr(DWORD str_id)
 {
 	if (str_id >= Str_MAX_ID)
 		return "";

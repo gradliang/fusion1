@@ -77,6 +77,7 @@ void GetDefaultSetupMenuValue(void)
     g_psSetupMenu->bRongJieZhiLiang = 0;
     g_psSetupMenu->bDuiXianFangShi = 0;
     g_psSetupMenu->bPingXianFangShi = 0;
+    g_psSetupMenu->bCurrFusionMode = 0;
 #endif	
 }
 
@@ -115,6 +116,7 @@ void Update_gSetupMenuValue(void)
     *(gSetupMenuValue + 33)  =  g_psSetupMenu->bRongJieZhiLiang ;
     *(gSetupMenuValue + 34)  =  g_psSetupMenu->bDuiXianFangShi ;
     *(gSetupMenuValue + 35)  =  g_psSetupMenu->bPingXianFangShi ;
+    *(gSetupMenuValue + 36)  =  g_psSetupMenu->bCurrFusionMode;
         
 	MP_DEBUG("--Write setup value  g_psSetupMenu->wElectrodePos[1]=%d",g_psSetupMenu->wElectrodePos[1] );
 
@@ -161,6 +163,7 @@ void Recover_g_psSetupMenu(void)
     g_psSetupMenu->bRongJieZhiLiang = gSetupMenuValue[33];
     g_psSetupMenu->bDuiXianFangShi = gSetupMenuValue[34];
     g_psSetupMenu->bPingXianFangShi = gSetupMenuValue[35];
+    g_psSetupMenu->bCurrFusionMode = gSetupMenuValue[36];
 
 	MP_DEBUG("--Read setup value  g_psSetupMenu->wElectrodePos[1]=%d",g_psSetupMenu->wElectrodePos[1] );
 }
@@ -598,7 +601,7 @@ void ClearAllRecord()
     dwRecordTotal = 0;
 }
 
-void InitRecord(STRECORD* pstRecord, WORD year, BYTE month, BYTE day, BYTE hour, BYTE minute, BYTE second, DWORD power, BYTE * recordName, BYTE fileName)
+void InitRecord(STRECORD* pstRecord, WORD year, BYTE month, BYTE day, BYTE hour, BYTE minute, BYTE second, DWORD power, BYTE * recordName, BYTE* fileName)
 {
     pstRecord->wYear = year;
     pstRecord->bMonth = month;

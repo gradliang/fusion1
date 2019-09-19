@@ -140,6 +140,7 @@ typedef struct ST_SETUP_MENU_SETTING_VALUE
     BYTE bRongJieZhiLiang;              // 熔接质量
     BYTE bDuiXianFangShi;               // 对纤方式
     BYTE bPingXianFangShi;              // 屏显方式
+    BYTE bCurrFusionMode;               // 当前熔接模式
     
 #endif
 
@@ -176,7 +177,7 @@ void AddRecord(STRECORD* pstRecord);
 STRECORD* GetRecord(DWORD dwIndex);
 DWORD GetRecordTotal();
 void ClearAllRecord();
-void InitRecord(STRECORD* pstRecord, WORD year, BYTE month, BYTE day, BYTE hour, BYTE minute, BYTE second, DWORD power, BYTE * recordName, BYTE fileName);
+void InitRecord(STRECORD* pstRecord, WORD year, BYTE month, BYTE day, BYTE hour, BYTE minute, BYTE second, DWORD power, BYTE * recordName, BYTE* fileName);
 
 
 int initRecordDummyData();      // Jia Shu Ju

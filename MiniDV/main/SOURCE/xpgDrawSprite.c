@@ -405,7 +405,7 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
     WORD wH = pstSprite->m_wHeight;
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
     DWORD dwSpriteId = pstSprite->m_dwTypeIndex;
-    const char * text = "";
+    char * text = "";
     
     if (dwHashKey == xpgHash("Main", strlen("Main")))
         xpgDrawSprite(pWin, pstSprite, boClip);
@@ -510,6 +510,30 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         SetCurrIduFontID(FONT_ID_HeiTi16);
         Idu_PrintStringCenter(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy+2, 0, pstSprite->m_wWidth);   
     }
+    else if (dwHashKey == xpgHash("FusionSet1", strlen("FusionSet1")))
+    {
+        pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 0);
+        if (pstMask)
+            xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+        if (dwSpriteId == 0)
+            text = "SM";
+        else if (dwSpriteId == 1)
+            text = "MM";
+        else if (dwSpriteId == 2)
+            text = "DS";
+        else if (dwSpriteId == 3)
+            text = "NZ";
+        else if (dwSpriteId == 4)
+            text = "BIF";
+        else if (dwSpriteId == 5)
+            text = "CZ1";
+        else if (dwSpriteId == 6)
+            text = "CZ2";
+        else if (dwSpriteId == 7)
+            text = "AUTO";
+        SetCurrIduFontID(FONT_ID_HeiTi16);
+        Idu_PrintStringCenter(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy+2, 0, pstSprite->m_wWidth);   
+    }
     
     xpgSpriteEnableTouch(pstSprite);
 }
@@ -521,7 +545,7 @@ SWORD xpgDrawSprite_LightIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite
     WORD wY = pstSprite->m_wPy;
     WORD wW = pstSprite->m_wWidth;
     WORD wH = pstSprite->m_wHeight;
-    const char * text;
+    char * text;
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
     DWORD dwSpriteId = pstSprite->m_dwTypeIndex;
 
@@ -651,6 +675,32 @@ SWORD xpgDrawSprite_LightIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite
                 Idu_PrintStringCenter(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy+2, 0, pstSprite->m_wWidth);
             }
         }
+    }
+    else if (dwHashKey == xpgHash("FusionSet1", strlen("FusionSet1")))
+    {
+        if (g_psSetupMenu->bCurrFusionMode != dwSpriteId)
+            return PASS;
+        pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 0);
+        if (pstMask)
+            xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+        if (dwSpriteId == 0)
+            text = "SM";
+        else if (dwSpriteId == 1)
+            text = "MM";
+        else if (dwSpriteId == 2)
+            text = "DS";
+        else if (dwSpriteId == 3)
+            text = "NZ";
+        else if (dwSpriteId == 4)
+            text = "BIF";
+        else if (dwSpriteId == 5)
+            text = "CZ1";
+        else if (dwSpriteId == 6)
+            text = "CZ2";
+        else if (dwSpriteId == 7)
+            text = "AUTO";
+        SetCurrIduFontID(FONT_ID_HeiTi16);
+        Idu_PrintStringCenter(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy+2, 0, pstSprite->m_wWidth);   
     }
     
     return PASS;
@@ -827,7 +877,7 @@ SWORD xpgDrawSprite_CloseIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite
 
 SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOOL boClip)
 {
-    const char * text = "";
+    char * text = "";
     DWORD dwTextId = pstSprite->m_dwTypeIndex;
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
     if (dwHashKey == xpgHash("Main", strlen("Main")))
@@ -1092,13 +1142,20 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         SetCurrIduFontID(FONT_ID_HeiTi19);
         Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
     }
+    else if (dwHashKey == xpgHash("FusionSet1", strlen("FusionSet1")))
+    {
+        if (dwTextId != 0)
+            return PASS;
+        Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy, 468, 250, RGB2YUV(0x24, 0x24, 0x24));
+        Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + 36, 468, 2, RGB2YUV(0x31, 0x31, 0x31));
+    }
     
     return PASS;
 }
 
 SWORD xpgDrawSprite_Selector(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOOL boClip)
 {
-    const char * text = "";
+    char * text = "";
     DWORD dwSelectorId = pstSprite->m_dwTypeIndex;
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
 
@@ -1251,7 +1308,7 @@ SWORD xpgDrawSprite_Selector(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite,
 
 SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOOL boClip)
 {
-    const char * text = "";
+    char * text = "";
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
     DWORD dwListId = pstSprite->m_dwTypeIndex;
     

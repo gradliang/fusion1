@@ -335,6 +335,15 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
         	WriteSetupChg();
         }
     }
+    else if (dwHashKey == xpgHash("FusionSet1", strlen("FusionSet1")))
+    {
+        if (dwIconId < 8)
+        {
+            g_psSetupMenu->bCurrFusionMode = dwIconId;
+            xpgUpdateStage();
+        	WriteSetupChg();
+        }
+    }
     
     return 0;
 }

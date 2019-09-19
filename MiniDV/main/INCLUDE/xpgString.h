@@ -149,7 +149,7 @@ enum xpgStringId {
 	Str_MAX_ID,
 };
 
-const BYTE* getstr(DWORD str_id);
+BYTE* getstr(DWORD str_id);
 void ChangeLanguage(int lang);
 void IduSetFontSize(DWORD fontsize);
 
