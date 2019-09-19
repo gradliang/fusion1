@@ -330,7 +330,7 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
         }
         else if (dwIconId == 5 || dwIconId == 6 || dwIconId == 7 || dwIconId == 8)
         {
-        	g_psSetupMenu->bDuiXianFangShi = dwIconId - 5;
+        	g_psSetupMenu->bPingXianFangShi = dwIconId - 5;
         	xpgUpdateStage();
         	WriteSetupChg();
         }

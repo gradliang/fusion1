@@ -521,6 +521,7 @@ SWORD xpgDrawSprite_LightIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite
     WORD wY = pstSprite->m_wPy;
     WORD wW = pstSprite->m_wWidth;
     WORD wH = pstSprite->m_wHeight;
+    const char * text;
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
     DWORD dwSpriteId = pstSprite->m_dwTypeIndex;
 
