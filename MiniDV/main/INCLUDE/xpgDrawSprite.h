@@ -12,7 +12,6 @@ extern DWORD dwDialogType;
 extern BYTE  strCloseDialogBackPage[32];
 
 
-
 SWORD xpgDrawSprite_Null				  ( ST_IMGWIN *, STXPGSPRITE *, BOOL );
 SWORD xpgDrawSprite						    ( ST_IMGWIN *, STXPGSPRITE *, BOOL ); // type0
 SWORD xpgDrawSprite_TextWhiteLeft			  (ST_IMGWIN * , STXPGSPRITE *, BOOL ); // type1

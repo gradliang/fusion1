@@ -158,6 +158,8 @@ void IduSetFontSize(DWORD fontsize);
 
 
 
+
+
 #endif	// XPG_STRING_H_73DF5D2BF2678F03
 
 

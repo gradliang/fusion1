@@ -97,7 +97,23 @@ enum {
     SETUP_MENU_HOT_UP_MODE_MANUAL = 1,
 };
 
-#define						SETTING_NUMBER					32 //对应下面设置的数量
+#define						SETTING_NUMBER					128  //对应下面设置的数量
+
+typedef struct {
+    unsigned int    fangDianZhongXin;
+    unsigned int    rongJieDianYa;
+    unsigned int    yuRongDianYa;
+    unsigned int    chuChenDianYa;
+    unsigned int    rongJieChongDieLiang;
+    unsigned int    duiJiaoMuBiaoZhi;
+    unsigned int    rongJieShiJian;
+    unsigned int    yuRongShiJian;
+    unsigned int    chuChenShiJian;
+    unsigned int    qieGeJiaoDuShangXian;
+    unsigned int    fangDianJiaoZhengMuBiaoZhi;
+}MODEPARAM;
+
+
 typedef struct ST_SETUP_MENU_SETTING_VALUE
 {
 	DWORD dwSetupFlag; //Must be 1st
@@ -141,7 +157,14 @@ typedef struct ST_SETUP_MENU_SETTING_VALUE
     BYTE bDuiXianFangShi;               // 对纤方式
     BYTE bPingXianFangShi;              // 屏显方式
     BYTE bCurrFusionMode;               // 当前熔接模式
-    
+    MODEPARAM  SM;                      // SM模式参数
+    MODEPARAM  MM;                      // MM模式参数
+    MODEPARAM  DS;                      // DS模式参数
+    MODEPARAM  NZ;                      // NZ模式参数
+    MODEPARAM  BIF;                     // BIF模式参数
+    MODEPARAM  CZ1;                     // CZ1模式参数
+    MODEPARAM  CZ2;                     // CZ2模式参数
+    MODEPARAM  AUTO;                    // AUTO模式参数
 #endif
 
     //BYTE bReserved[1];
@@ -181,6 +204,10 @@ void InitRecord(STRECORD* pstRecord, WORD year, BYTE month, BYTE day, BYTE hour,
 
 
 int initRecordDummyData();      // Jia Shu Ju
+void initModeParamDefault(MODEPARAM *);
+
+
+
 
 
 #endif

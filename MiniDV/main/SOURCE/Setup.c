@@ -78,6 +78,14 @@ void GetDefaultSetupMenuValue(void)
     g_psSetupMenu->bDuiXianFangShi = 0;
     g_psSetupMenu->bPingXianFangShi = 0;
     g_psSetupMenu->bCurrFusionMode = 0;
+    initModeParamDefault(&(g_psSetupMenu->SM));
+    initModeParamDefault(&(g_psSetupMenu->MM));
+    initModeParamDefault(&(g_psSetupMenu->DS));
+    initModeParamDefault(&(g_psSetupMenu->NZ));
+    initModeParamDefault(&(g_psSetupMenu->BIF));
+    initModeParamDefault(&(g_psSetupMenu->CZ1));
+    initModeParamDefault(&(g_psSetupMenu->CZ2));
+    initModeParamDefault(&(g_psSetupMenu->AUTO));
 #endif	
 }
 
@@ -117,7 +125,15 @@ void Update_gSetupMenuValue(void)
     *(gSetupMenuValue + 34)  =  g_psSetupMenu->bDuiXianFangShi ;
     *(gSetupMenuValue + 35)  =  g_psSetupMenu->bPingXianFangShi ;
     *(gSetupMenuValue + 36)  =  g_psSetupMenu->bCurrFusionMode;
-        
+    memcpy(&gSetupMenuValue[37], &(g_psSetupMenu->SM), 11 * 4);
+    memcpy(&gSetupMenuValue[48], &(g_psSetupMenu->MM), 11 * 4);
+    memcpy(&gSetupMenuValue[59], &(g_psSetupMenu->DS), 11 * 4);
+    memcpy(&gSetupMenuValue[70], &(g_psSetupMenu->NZ), 11 * 4);
+    memcpy(&gSetupMenuValue[81], &(g_psSetupMenu->BIF), 11 * 4);
+    memcpy(&gSetupMenuValue[92], &(g_psSetupMenu->CZ1), 11 * 4);
+    memcpy(&gSetupMenuValue[103], &(g_psSetupMenu->CZ2), 11 * 4);
+    memcpy(&gSetupMenuValue[114], &(g_psSetupMenu->AUTO), 11 * 4);
+    //125    
 	MP_DEBUG("--Write setup value  g_psSetupMenu->wElectrodePos[1]=%d",g_psSetupMenu->wElectrodePos[1] );
 
 }
@@ -164,6 +180,14 @@ void Recover_g_psSetupMenu(void)
     g_psSetupMenu->bDuiXianFangShi = gSetupMenuValue[34];
     g_psSetupMenu->bPingXianFangShi = gSetupMenuValue[35];
     g_psSetupMenu->bCurrFusionMode = gSetupMenuValue[36];
+    memcpy(&(g_psSetupMenu->SM), &gSetupMenuValue[37], 11 * 4);
+    memcpy(&(g_psSetupMenu->MM), &gSetupMenuValue[48], 11 * 4);
+    memcpy(&(g_psSetupMenu->DS), &gSetupMenuValue[59], 11 * 4);
+    memcpy(&(g_psSetupMenu->NZ), &gSetupMenuValue[70], 11 * 4);
+    memcpy(&(g_psSetupMenu->BIF), &gSetupMenuValue[81], 11 * 4);
+    memcpy(&(g_psSetupMenu->CZ1), &gSetupMenuValue[92], 11 * 4);
+    memcpy(&(g_psSetupMenu->CZ2), &gSetupMenuValue[103], 11 * 4);
+    memcpy(&(g_psSetupMenu->AUTO), &gSetupMenuValue[114], 11 * 4);
 
 	MP_DEBUG("--Read setup value  g_psSetupMenu->wElectrodePos[1]=%d",g_psSetupMenu->wElectrodePos[1] );
 }
@@ -650,6 +674,20 @@ int initRecordDummyData()
 }
 
 
+void initModeParamDefault(MODEPARAM * pstModeParam)
+{
+    pstModeParam->fangDianZhongXin = 323;
+    pstModeParam->rongJieDianYa = 1010;
+    pstModeParam->yuRongDianYa = 10;
+    pstModeParam->chuChenDianYa = 120;
+    pstModeParam->rongJieChongDieLiang = 26;
+    pstModeParam->duiJiaoMuBiaoZhi = 40;
+    pstModeParam->rongJieShiJian = 3000;
+    pstModeParam->yuRongShiJian = 200;
+    pstModeParam->chuChenShiJian = 200;
+    pstModeParam->qieGeJiaoDuShangXian = (3<<6)|0;
+    pstModeParam->fangDianJiaoZhengMuBiaoZhi = 140;
+}
 
 
 

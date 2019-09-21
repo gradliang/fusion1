@@ -1144,10 +1144,35 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
     }
     else if (dwHashKey == xpgHash("FusionSet1", strlen("FusionSet1")))
     {
+        int mode;
+        MODEPARAM * pstModeParam;
+        
         if (dwTextId != 0)
             return PASS;
         Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy, 468, 250, RGB2YUV(0x24, 0x24, 0x24));
         Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + 36, 468, 2, RGB2YUV(0x31, 0x31, 0x31));
+
+        mode = g_psSetupMenu->bCurrFusionMode;
+        if (mode == 0)
+            pstModeParam = &(g_psSetupMenu->SM);
+        else if (mode == 1)
+            pstModeParam = &(g_psSetupMenu->MM);
+        else if (mode == 2)
+            pstModeParam = &(g_psSetupMenu->DS);
+        else if (mode == 3)
+            pstModeParam = &(g_psSetupMenu->NZ);
+        else if (mode == 4)
+            pstModeParam = &(g_psSetupMenu->BIF);
+        else if (mode == 5)
+            pstModeParam = &(g_psSetupMenu->CZ1);
+        else if (mode == 6)
+            pstModeParam = &(g_psSetupMenu->CZ2);
+        else if (mode == 7)
+            pstModeParam = &(g_psSetupMenu->AUTO);
+        else
+            return PASS;
+        
+        
     }
     
     return PASS;
