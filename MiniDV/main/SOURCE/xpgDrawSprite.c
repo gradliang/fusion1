@@ -45,6 +45,17 @@
 DWORD dwDialogType = 0;                     // current dialog type
 BYTE  strCloseDialogBackPage[32] = {0};     // close the dialog, will go back to this page
 
+const BYTE * FModeStrList[] = {
+    "SM",
+    "MM",
+    "DS",
+    "NZ",
+    "BIF",
+    "CZ1",
+    "CZ2",
+    "AUTO",
+    NULL
+};
 
 //BYTE xpgStringBuffer[254];
 extern DWORD g_dwCurIndex,g_dwModeIconStatus;
@@ -515,22 +526,7 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 0);
         if (pstMask)
             xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
-        if (dwSpriteId == 0)
-            text = "SM";
-        else if (dwSpriteId == 1)
-            text = "MM";
-        else if (dwSpriteId == 2)
-            text = "DS";
-        else if (dwSpriteId == 3)
-            text = "NZ";
-        else if (dwSpriteId == 4)
-            text = "BIF";
-        else if (dwSpriteId == 5)
-            text = "CZ1";
-        else if (dwSpriteId == 6)
-            text = "CZ2";
-        else if (dwSpriteId == 7)
-            text = "AUTO";
+        text = (char*) FModeStrList[dwSpriteId];
         SetCurrIduFontID(FONT_ID_HeiTi16);
         Idu_PrintStringCenter(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy+2, 0, pstSprite->m_wWidth);   
     }
@@ -683,22 +679,7 @@ SWORD xpgDrawSprite_LightIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite
         pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 0);
         if (pstMask)
             xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
-        if (dwSpriteId == 0)
-            text = "SM";
-        else if (dwSpriteId == 1)
-            text = "MM";
-        else if (dwSpriteId == 2)
-            text = "DS";
-        else if (dwSpriteId == 3)
-            text = "NZ";
-        else if (dwSpriteId == 4)
-            text = "BIF";
-        else if (dwSpriteId == 5)
-            text = "CZ1";
-        else if (dwSpriteId == 6)
-            text = "CZ2";
-        else if (dwSpriteId == 7)
-            text = "AUTO";
+        text = (char*) FModeStrList[dwSpriteId];
         SetCurrIduFontID(FONT_ID_HeiTi16);
         Idu_PrintStringCenter(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy+2, 0, pstSprite->m_wWidth);   
     }
@@ -1146,6 +1127,8 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
     {
         int mode;
         MODEPARAM * pstModeParam;
+        char * titleText = "";
+        char tmpText[256];
         
         if (dwTextId != 0)
             return PASS;
@@ -1171,8 +1154,37 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             pstModeParam = &(g_psSetupMenu->AUTO);
         else
             return PASS;
-        
-        
+
+        text = (char*) FModeStrList[mode];
+        sprintf(tmpText, "%s%s", text, getstr(Str_MoShiCanShu));
+        SetCurrIduFontID(FONT_ID_HeiTi19);
+        Idu_PrintString(pWin, tmpText, 304, 174, 0, 0);
+
+        SetCurrIduFontID(FONT_ID_HeiTi16);
+        sprintf(tmpText, "%s:", getstr(Str_FangDianZhongXin));
+        Idu_PrintString(pWin, tmpText, 306, 222 + 24 * 0, 0, 0);
+        sprintf(tmpText, "%s:", getstr(Str_RongJieDianYa));
+        Idu_PrintString(pWin, tmpText, 306, 222 + 24 * 1, 0, 0);
+        sprintf(tmpText, "%s:", getstr(Str_YuRongDianYa));
+        Idu_PrintString(pWin, tmpText, 306, 222 + 24 * 2, 0, 0);
+        sprintf(tmpText, "%s:", getstr(Str_ChuChenDianYa));
+        Idu_PrintString(pWin, tmpText, 306, 222 + 24 * 3, 0, 0);
+        sprintf(tmpText, "%s:", getstr(Str_RongJieChongDieLiang));
+        Idu_PrintString(pWin, tmpText, 306, 222 + 24 * 4, 0, 0);
+        sprintf(tmpText, "%s:", getstr(Str_DuiJiaoMuBiaoZhi));
+        Idu_PrintString(pWin, tmpText, 306, 222 + 24 * 5, 0, 0);
+
+        sprintf(tmpText, "%s:", getstr(Str_RongJieShiJian));
+        Idu_PrintString(pWin, tmpText, 536, 222 + 24 * 1, 0, 0);
+        sprintf(tmpText, "%s:", getstr(Str_YuRongShiJian));
+        Idu_PrintString(pWin, tmpText, 536, 222 + 24 * 2, 0, 0);
+        sprintf(tmpText, "%s:", getstr(Str_ChuChenShiJian));
+        Idu_PrintString(pWin, tmpText, 536, 222 + 24 * 3, 0, 0);
+        sprintf(tmpText, "%s:", getstr(Str_QieGeJiaoDuShangXian));
+        Idu_PrintString(pWin, tmpText, 536, 222 + 24 * 4, 0, 0);
+        sprintf(tmpText, "%s:", getstr(Str_FangDianJiaoDuShangXian));
+        Idu_PrintString(pWin, tmpText, 536, 222 + 24 * 5, 0, 0);
+
     }
     
     return PASS;
