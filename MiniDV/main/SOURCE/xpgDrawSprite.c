@@ -1132,11 +1132,11 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
     else if (dwHashKey == xpgHash("FusionSet2", strlen("FusionSet2")))
     {
         if (dwTextId == 0)
-            text = getstr(Str_RongJieZanTing);
+            text = getstr(Str_RongJieZhiLiang);
         else if (dwTextId == 1)
-            text = getstr(Str_RongJieZanTing);
+            text = getstr(Str_DuiXianFangShi);
         else if (dwTextId == 2)
-            text = getstr(Str_RongJieZanTing);
+            text = getstr(Str_PingXianFangShi);
         else
             return PASS;
         SetCurrIduFontID(FONT_ID_HeiTi19);

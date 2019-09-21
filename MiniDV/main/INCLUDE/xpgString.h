@@ -139,8 +139,9 @@ enum xpgStringId {
 	Str_FangDianJiaoZhengMuBiaoZhi,	//   129
 	Str_Du,							//   130
 	Str_ShuZhiXiuGai,				//   131
-	
-	
+	Str_RongJieZhiLiang,			//   132
+	Str_DuiXianFangShi,				//   133
+	Str_PingXianFangShi,			//   134
 	
 	
 	
