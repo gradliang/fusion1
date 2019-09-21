@@ -1129,6 +1129,7 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         MODEPARAM * pstModeParam;
         char * titleText = "";
         char tmpText[256];
+        const BYTE JIANGE = 24;
         
         if (dwTextId != 0)
             return PASS;
@@ -1162,33 +1163,70 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
 
         SetCurrIduFontID(FONT_ID_HeiTi16);
         sprintf(tmpText, "%s:", getstr(Str_FangDianZhongXin));
-        Idu_PrintString(pWin, tmpText, 306, 222 + 24 * 0, 0, 0);
+        Idu_PrintString(pWin, tmpText, 306, 222 + JIANGE * 0, 0, 0);
         sprintf(tmpText, "%s:", getstr(Str_RongJieDianYa));
-        Idu_PrintString(pWin, tmpText, 306, 222 + 24 * 1, 0, 0);
+        Idu_PrintString(pWin, tmpText, 306, 222 + JIANGE * 1, 0, 0);
         sprintf(tmpText, "%s:", getstr(Str_YuRongDianYa));
-        Idu_PrintString(pWin, tmpText, 306, 222 + 24 * 2, 0, 0);
+        Idu_PrintString(pWin, tmpText, 306, 222 + JIANGE * 2, 0, 0);
         sprintf(tmpText, "%s:", getstr(Str_ChuChenDianYa));
-        Idu_PrintString(pWin, tmpText, 306, 222 + 24 * 3, 0, 0);
+        Idu_PrintString(pWin, tmpText, 306, 222 + JIANGE * 3, 0, 0);
         sprintf(tmpText, "%s:", getstr(Str_RongJieChongDieLiang));
-        Idu_PrintString(pWin, tmpText, 306, 222 + 24 * 4, 0, 0);
+        Idu_PrintString(pWin, tmpText, 306, 222 + JIANGE * 4, 0, 0);
         sprintf(tmpText, "%s:", getstr(Str_DuiJiaoMuBiaoZhi));
-        Idu_PrintString(pWin, tmpText, 306, 222 + 24 * 5, 0, 0);
+        Idu_PrintString(pWin, tmpText, 306, 222 + JIANGE * 5, 0, 0);
 
         sprintf(tmpText, "%s:", getstr(Str_RongJieShiJian));
-        Idu_PrintString(pWin, tmpText, 536, 222 + 24 * 1, 0, 0);
+        Idu_PrintString(pWin, tmpText, 536, 222 + JIANGE * 1, 0, 0);
         sprintf(tmpText, "%s:", getstr(Str_YuRongShiJian));
-        Idu_PrintString(pWin, tmpText, 536, 222 + 24 * 2, 0, 0);
+        Idu_PrintString(pWin, tmpText, 536, 222 + JIANGE * 2, 0, 0);
         sprintf(tmpText, "%s:", getstr(Str_ChuChenShiJian));
-        Idu_PrintString(pWin, tmpText, 536, 222 + 24 * 3, 0, 0);
+        Idu_PrintString(pWin, tmpText, 536, 222 + JIANGE * 3, 0, 0);
         sprintf(tmpText, "%s:", getstr(Str_QieGeJiaoDuShangXian));
-        Idu_PrintString(pWin, tmpText, 536, 222 + 24 * 4, 0, 0);
+        Idu_PrintString(pWin, tmpText, 536, 222 + JIANGE * 4, 0, 0);
         sprintf(tmpText, "%s:", getstr(Str_FangDianJiaoDuShangXian));
-        Idu_PrintString(pWin, tmpText, 536, 222 + 24 * 5, 0, 0);
+        Idu_PrintString(pWin, tmpText, 536, 222 + JIANGE * 5, 0, 0);
 
+        Idu_PrintString(pWin, "mV", 468, 222 + JIANGE * 1, 0, 0);
+        Idu_PrintString(pWin, "mV", 468, 222 + JIANGE * 2, 0, 0);
+        Idu_PrintString(pWin, "mV", 468, 222 + JIANGE * 3, 0, 0);
+        Idu_PrintString(pWin, "um", 468, 222 + JIANGE * 4, 0, 0);
+
+        Idu_PrintString(pWin, "ms", 724, 222 + JIANGE * 1, 0, 0);
+        Idu_PrintString(pWin, "ms", 724, 222 + JIANGE * 2, 0, 0);
+        Idu_PrintString(pWin, "mV", 724, 222 + JIANGE * 3, 0, 0);
+        Idu_PrintString(pWin, getstr(Str_Du), 724, 222 + JIANGE * 4, 0, 0);
+
+        Idu_FontColorSet(22,160,255);
+        sprintf(tmpText, "%d", pstModeParam->fangDianZhongXin);
+        Idu_PrintStringCenter(pWin, tmpText, 394, 222 + JIANGE * 0, 0, 74);
+        sprintf(tmpText, "%d", pstModeParam->rongJieDianYa);
+        Idu_PrintStringCenter(pWin, tmpText, 394, 222 + JIANGE * 1, 0, 74);
+        sprintf(tmpText, "%d", pstModeParam->yuRongDianYa);
+        Idu_PrintStringCenter(pWin, tmpText, 394, 222 + JIANGE * 2, 0, 74);
+        sprintf(tmpText, "%d", pstModeParam->chuChenDianYa);
+        Idu_PrintStringCenter(pWin, tmpText, 394, 222 + JIANGE * 3, 0, 74);
+        sprintf(tmpText, "%d", pstModeParam->rongJieChongDieLiang);
+        Idu_PrintStringCenter(pWin, tmpText, 394, 222 + JIANGE * 4, 0, 74);
+        sprintf(tmpText, "%d", pstModeParam->duiJiaoMuBiaoZhi);
+        Idu_PrintStringCenter(pWin, tmpText, 394, 222 + JIANGE * 5, 0, 74);
+
+        sprintf(tmpText, "%d", pstModeParam->rongJieShiJian);
+        Idu_PrintStringCenter(pWin, tmpText, 644, 222 + JIANGE * 1, 0, 76);
+        sprintf(tmpText, "%d", pstModeParam->yuRongShiJian);
+        Idu_PrintStringCenter(pWin, tmpText, 644, 222 + JIANGE * 2, 0, 76);
+        sprintf(tmpText, "%d", pstModeParam->chuChenShiJian);
+        Idu_PrintStringCenter(pWin, tmpText, 644, 222 + JIANGE * 3, 0, 76);
+        sprintf(tmpText, "%d.%d", pstModeParam->qieGeJiaoDuShangXian >> 6, pstModeParam->qieGeJiaoDuShangXian & 0x3f);
+        Idu_PrintStringCenter(pWin, tmpText, 644, 222 + JIANGE * 4, 0, 76);
+        sprintf(tmpText, "%d", pstModeParam->fangDianJiaoZhengMuBiaoZhi);
+        Idu_PrintStringCenter(pWin, tmpText, 644, 222 + JIANGE * 5, 0, 76);
+        
+        Idu_FontColorSet(0xff,0xff,0xff);
     }
     
     return PASS;
 }
+
 
 SWORD xpgDrawSprite_Selector(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOOL boClip)
 {
