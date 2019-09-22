@@ -428,10 +428,14 @@ SWORD touchSprite_BackIcon(STXPGSPRITE * sprite, WORD x, WORD y)
         dwHashKey == xpgHash("FusionSet2", strlen("FusionSet2")) ||
         dwHashKey == xpgHash("FusionSet3", strlen("FusionSet3")) )
     {
-        xpgSearchAndGotoPage(strSetupBackPageName, strlen(strSetupBackPageName));
+        xpgSearchAndGotoPage("Main", strlen("Main"));
         xpgUpdateStage();
     }
-
+    else if (dwHashKey == xpgHash("FusionModeSet", strlen("FusionModeSet")))
+    {
+        xpgSearchAndGotoPage("FusionSet1", strlen("FusionSet1"));
+        xpgUpdateStage();
+    }
     
     return 0;
 }

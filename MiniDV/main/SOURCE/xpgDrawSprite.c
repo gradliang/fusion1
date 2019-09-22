@@ -809,9 +809,9 @@ SWORD xpgDrawSprite_Title(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BO
     {
         Idu_PaintWinArea(pWin, 0, 0, pWin->wWidth, 40, RGB2YUV(0x0B, 0x0C, 0x0E));
         SetCurrIduFontID(FONT_ID_HeiTi19);
-        Idu_PrintString(pWin, getstr(Str_XiTongSheZhi), pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
+        Idu_PrintString(pWin, getstr(Str_RongJieSheZhi), pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
     }
-    else if (dwHashKey == xpgHash("FusionSet1", strlen("FusionSet1")) )
+    else if (dwHashKey == xpgHash("FusionModeSet", strlen("FusionModeSet")) )
     {
         Idu_PaintWinArea(pWin, 0, 0, pWin->wWidth, 40, RGB2YUV(0x0B, 0x0C, 0x0E));
         SetCurrIduFontID(FONT_ID_HeiTi19);
@@ -878,7 +878,15 @@ SWORD xpgDrawSprite_BackIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite,
         Idu_PrintString(pWin, tmpbuf, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
         xpgSpriteSetTouchArea(pstSprite, 0, 0, 120, 40);
     }
-    return PASS;
+    else if (dwHashKey == xpgHash("FusionModeSet", strlen("FusionModeSet")))
+    {
+        char tmpbuf[64];
+        SetCurrIduFontID(FONT_ID_HeiTi19);
+        sprintf(tmpbuf, " < %s", getstr(Str_RongJieSheZhi));
+        Idu_PrintString(pWin, tmpbuf, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
+        xpgSpriteSetTouchArea(pstSprite, 0, 0, 200, 40);
+    }
+    
     return PASS;
 }
 
