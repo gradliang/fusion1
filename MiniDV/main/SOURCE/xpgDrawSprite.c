@@ -1223,6 +1223,83 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         
         Idu_FontColorSet(0xff,0xff,0xff);
     }
+    else if (dwHashKey == xpgHash("FusionModeSet", strlen("FusionModeSet")))
+    {
+        char tmpText[256];
+
+        SetCurrIduFontID(FONT_ID_HeiTi16);
+        if (dwTextId <= 10)
+        {
+            switch(dwTextId)
+            {
+            case 0:
+                sprintf(tmpText, "%s:", getstr(Str_FangDianZhongXin));
+                break;
+            case 1:
+                sprintf(tmpText, "%s:", getstr(Str_RongJieDianYa));
+                break;
+            case 2:
+                sprintf(tmpText, "%s:", getstr(Str_YuRongDianYa));
+                break;
+            case 3:
+                sprintf(tmpText, "%s:", getstr(Str_ChuChenDianYa));
+                break;
+            case 4:
+                sprintf(tmpText, "%s:", getstr(Str_RongJieChongDieLiang));
+                break;
+            case 5:
+                sprintf(tmpText, "%s:", getstr(Str_DuiJiaoMuBiaoZhi));
+                break;
+            case 6:
+                sprintf(tmpText, "%s:", getstr(Str_RongJieShiJian));
+                break;
+            case 7:
+                sprintf(tmpText, "%s:", getstr(Str_YuRongShiJian));
+                break;
+            case 8:
+                sprintf(tmpText, "%s:", getstr(Str_ChuChenShiJian));
+                break;
+            case 9:
+                sprintf(tmpText, "%s:", getstr(Str_QieGeJiaoDuShangXian));
+                break;
+            case 10:
+                sprintf(tmpText, "%s:", getstr(Str_FangDianJiaoDuShangXian));
+                break;
+            }
+            Idu_PrintString(pWin, tmpText, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
+        }
+        else if (dwTextId >= 11 && dwTextId <= 18)
+        {
+            switch(dwTextId)
+            {
+            case 11:
+                text = "mV";
+                break;
+            case 12:
+                text = "mV";
+                break;
+            case 13:
+                text = "mV";
+                break;
+            case 14:
+                text = "um";
+                break;
+            case 15:
+                text = "ms";
+                break;
+            case 16:
+                text = "ms";
+                break;
+            case 17:
+                text = "mV";
+                break;
+            case 18:
+                text = getstr(Str_Du);
+                break;
+            }
+            Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
+        }
+    }
     
     return PASS;
 }
