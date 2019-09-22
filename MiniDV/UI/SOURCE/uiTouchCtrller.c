@@ -343,6 +343,11 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
             xpgUpdateStage();
         	WriteSetupChg();
         }
+        else if (dwIconId == 8)
+        {
+            xpgSearchAndGotoPage("FusionModeSet", strlen("FusionModeSet"));
+            xpgUpdateStage();
+        }
     }
     
     return 0;
