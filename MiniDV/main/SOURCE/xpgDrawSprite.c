@@ -44,6 +44,7 @@
 //---------------------------------------------------------------------------
 DWORD dwDialogType = 0;                     // current dialog type
 BYTE  strCloseDialogBackPage[32] = {0};     // close the dialog, will go back to this page
+MODEPARAM tempModeParam;
 
 const BYTE * FModeStrList[] = {
     "SM",
@@ -538,6 +539,26 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             if (pstMask)
                 xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
             text = (char*) getstr(Str_ShuZhiXiuGai);
+            SetCurrIduFontID(FONT_ID_HeiTi16);
+            Idu_PrintStringCenter(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy+2, 0, pstSprite->m_wWidth);  
+        }
+    }
+    else if (dwHashKey == xpgHash("FusionModeSet", strlen("FusionModeSet")))
+    {
+        if (dwSpriteId <= 10)
+        {
+        }
+        else if (dwSpriteId >= 11 && dwSpriteId <= 13)
+        {
+            pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 0);
+            if (pstMask)
+                xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+            if (dwSpriteId == 11)
+                text = (char*) getstr(Str_HuiFuMoRenZhi);
+            else if (dwSpriteId == 12)
+                text = (char*) getstr(Str_BaoCun);
+            else if (dwSpriteId == 13)
+                text = (char*) getstr(Str_LingCunWei);
             SetCurrIduFontID(FONT_ID_HeiTi16);
             Idu_PrintStringCenter(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy+2, 0, pstSprite->m_wWidth);  
         }

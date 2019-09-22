@@ -345,9 +345,35 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
         }
         else if (dwIconId == 8)
         {
+            MODEPARAM * pstModeParam;
+            int mode;
+            mode = g_psSetupMenu->bCurrFusionMode;
+            if (mode == 0)
+                pstModeParam = &(g_psSetupMenu->SM);
+            else if (mode == 1)
+                pstModeParam = &(g_psSetupMenu->MM);
+            else if (mode == 2)
+                pstModeParam = &(g_psSetupMenu->DS);
+            else if (mode == 3)
+                pstModeParam = &(g_psSetupMenu->NZ);
+            else if (mode == 4)
+                pstModeParam = &(g_psSetupMenu->BIF);
+            else if (mode == 5)
+                pstModeParam = &(g_psSetupMenu->CZ1);
+            else if (mode == 6)
+                pstModeParam = &(g_psSetupMenu->CZ2);
+            else if (mode == 7)
+                pstModeParam = &(g_psSetupMenu->AUTO);
+            else
+                return PASS;
+        
+            memcpy(&tempModeParam, pstModeParam, sizeof(MODEPARAM));
             xpgSearchAndGotoPage("FusionModeSet", strlen("FusionModeSet"));
             xpgUpdateStage();
         }
+    }
+    else if (dwHashKey == xpgHash("FusionModeSet", strlen("FusionModeSet")))
+    {
     }
     
     return 0;

@@ -7,10 +7,11 @@
 #include "display.h"
 #include "ui.h"
 #include "filebrowser.h"
+#include "Setup.h"
 
 extern DWORD dwDialogType;
 extern BYTE  strCloseDialogBackPage[32];
-
+extern MODEPARAM tempModeParam;
 
 SWORD xpgDrawSprite_Null				  ( ST_IMGWIN *, STXPGSPRITE *, BOOL );
 SWORD xpgDrawSprite						    ( ST_IMGWIN *, STXPGSPRITE *, BOOL ); // type0

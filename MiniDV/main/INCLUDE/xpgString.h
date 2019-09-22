@@ -142,7 +142,10 @@ enum xpgStringId {
 	Str_RongJieZhiLiang,			//   132
 	Str_DuiXianFangShi,				//   133
 	Str_PingXianFangShi,			//   134
-	
+	Str_HuiFuMoRenZhi,				//   135
+	Str_BaoCun,						//   136
+	Str_LingCunWei,					//   137
+	Str_ShanChu,					//   138
 	
 	
 	
