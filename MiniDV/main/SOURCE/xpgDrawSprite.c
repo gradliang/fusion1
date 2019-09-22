@@ -547,6 +547,127 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
     {
         if (dwSpriteId <= 10)
         {
+            char tmpText[128];
+            WORD startX, width;
+            WORD height = 26;
+            int AreaYOffset = -2;
+            int LineYOffset = 20;
+            MODEPARAM * pstModeParam = &tempModeParam;
+            DWORD lineColor = RGB2YUV(75,75,75); //RGB2YUV(255,0,0); //RGB2YUV(75,75,75);
+            
+            Idu_FontColorSet(22,160,255);
+            if (dwSpriteId == 0)
+            {
+                startX = pstSprite->m_wPx + 20;
+                width = 92;
+                sprintf(tmpText, "%d", pstModeParam->fangDianZhongXin);
+                //Idu_PaintWinArea(pWin, startX, pstSprite->m_wPy + AreaYOffset, width, height, RGB2YUV(255,255,0));
+                xpgSpriteSetTouchArea(pstSprite, startX, pstSprite->m_wPy + AreaYOffset, width, height);
+                Idu_PrintStringCenter(pWin, tmpText, startX, pstSprite->m_wPy, 0, width);
+                Idu_PaintWinArea(pWin, startX, pstSprite->m_wPy + LineYOffset, width, 2, lineColor);
+            }
+            else if (dwSpriteId == 1)
+            {
+                startX = pstSprite->m_wPx + 20;
+                width = 76;
+                sprintf(tmpText, "%d", pstModeParam->rongJieDianYa);
+                //Idu_PaintWinArea(pWin, startX, pstSprite->m_wPy + AreaYOffset, width, height, RGB2YUV(255,255,0));
+                xpgSpriteSetTouchArea(pstSprite, startX, pstSprite->m_wPy + AreaYOffset, width, height);
+                Idu_PrintStringCenter(pWin, tmpText, startX, pstSprite->m_wPy, 0, width);
+                Idu_PaintWinArea(pWin, startX, pstSprite->m_wPy + LineYOffset, width, 2, lineColor);
+            }
+            else if (dwSpriteId == 2)
+            {
+                startX = pstSprite->m_wPx + 20;
+                width = 76;
+                sprintf(tmpText, "%d", pstModeParam->yuRongDianYa);
+                //Idu_PaintWinArea(pWin, startX, pstSprite->m_wPy + AreaYOffset, width, height, RGB2YUV(255,255,0));
+                xpgSpriteSetTouchArea(pstSprite, startX, pstSprite->m_wPy + AreaYOffset, width, height);
+                Idu_PrintStringCenter(pWin, tmpText, startX, pstSprite->m_wPy, 0, width);
+                Idu_PaintWinArea(pWin, startX, pstSprite->m_wPy + LineYOffset, width, 2, lineColor);
+            }
+            else if (dwSpriteId == 3)
+            {
+                startX = pstSprite->m_wPx + 20;
+                width = 76;
+                sprintf(tmpText, "%d", pstModeParam->chuChenDianYa);
+                //Idu_PaintWinArea(pWin, startX, pstSprite->m_wPy + AreaYOffset, width, height, RGB2YUV(255,255,0));
+                xpgSpriteSetTouchArea(pstSprite, startX, pstSprite->m_wPy + AreaYOffset, width, height);
+                Idu_PrintStringCenter(pWin, tmpText, startX, pstSprite->m_wPy, 0, width);
+                Idu_PaintWinArea(pWin, startX, pstSprite->m_wPy + LineYOffset, width, 2, lineColor);
+            }
+            else if (dwSpriteId == 4)
+            {
+                startX = pstSprite->m_wPx + 36;
+                width = 60;
+                sprintf(tmpText, "%d", pstModeParam->rongJieChongDieLiang);
+                //Idu_PaintWinArea(pWin, startX, pstSprite->m_wPy + AreaYOffset, width, height, RGB2YUV(255,255,0));
+                xpgSpriteSetTouchArea(pstSprite, startX, pstSprite->m_wPy + AreaYOffset, width, height);
+                Idu_PrintStringCenter(pWin, tmpText, startX, pstSprite->m_wPy, 0, width);
+                Idu_PaintWinArea(pWin, startX, pstSprite->m_wPy + LineYOffset, width, 2, lineColor);
+            }
+            else if (dwSpriteId == 5)
+            {
+                startX = pstSprite->m_wPx + 36;
+                width = 80;
+                sprintf(tmpText, "%d", pstModeParam->duiJiaoMuBiaoZhi);
+                //Idu_PaintWinArea(pWin, startX, pstSprite->m_wPy + AreaYOffset, width, height, RGB2YUV(255,255,0));
+                xpgSpriteSetTouchArea(pstSprite, startX, pstSprite->m_wPy + AreaYOffset, width, height);
+                Idu_PrintStringCenter(pWin, tmpText, startX, pstSprite->m_wPy, 0, width);
+                Idu_PaintWinArea(pWin, startX, pstSprite->m_wPy + LineYOffset, width, 2, lineColor);
+            }
+            else if (dwSpriteId == 6)
+            {
+                startX = pstSprite->m_wPx + 20;
+                width = 80;
+                sprintf(tmpText, "%d", pstModeParam->rongJieShiJian);
+                //Idu_PaintWinArea(pWin, startX, pstSprite->m_wPy + AreaYOffset, width, height, RGB2YUV(255,255,0));
+                xpgSpriteSetTouchArea(pstSprite, startX, pstSprite->m_wPy + AreaYOffset, width, height);
+                Idu_PrintStringCenter(pWin, tmpText, startX, pstSprite->m_wPy, 0, width);
+                Idu_PaintWinArea(pWin, startX, pstSprite->m_wPy + LineYOffset, width, 2, lineColor);
+            }
+            else if (dwSpriteId == 7)
+            {
+                startX = pstSprite->m_wPx + 20;
+                width = 80;
+                sprintf(tmpText, "%d", pstModeParam->yuRongShiJian);
+                //Idu_PaintWinArea(pWin, startX, pstSprite->m_wPy + AreaYOffset, width, height, RGB2YUV(255,255,0));
+                xpgSpriteSetTouchArea(pstSprite, startX, pstSprite->m_wPy + AreaYOffset, width, height);
+                Idu_PrintStringCenter(pWin, tmpText, startX, pstSprite->m_wPy, 0, width);
+                Idu_PaintWinArea(pWin, startX, pstSprite->m_wPy + LineYOffset, width, 2, lineColor);
+            }
+            else if (dwSpriteId == 8)
+            {
+                startX = pstSprite->m_wPx + 20;
+                width = 80;
+                sprintf(tmpText, "%d", pstModeParam->chuChenShiJian);
+                //Idu_PaintWinArea(pWin, startX, pstSprite->m_wPy + AreaYOffset, width, height, RGB2YUV(255,255,0));
+                xpgSpriteSetTouchArea(pstSprite, startX, pstSprite->m_wPy + AreaYOffset, width, height);
+                Idu_PrintStringCenter(pWin, tmpText, startX, pstSprite->m_wPy, 0, width);
+                Idu_PaintWinArea(pWin, startX, pstSprite->m_wPy + LineYOffset, width, 2, lineColor);
+            }
+            else if (dwSpriteId == 9)
+            {
+                startX = pstSprite->m_wPx + 54;
+                width = 48;
+                sprintf(tmpText, "%d.%d", pstModeParam->qieGeJiaoDuShangXian >> 6, pstModeParam->qieGeJiaoDuShangXian & 0x3f);
+                //Idu_PaintWinArea(pWin, startX, pstSprite->m_wPy + AreaYOffset, width, height, RGB2YUV(255,255,0));
+                xpgSpriteSetTouchArea(pstSprite, startX, pstSprite->m_wPy + AreaYOffset, width, height);
+                Idu_PrintStringCenter(pWin, tmpText, startX, pstSprite->m_wPy, 0, width);
+                Idu_PaintWinArea(pWin, startX, pstSprite->m_wPy + LineYOffset, width, 2, lineColor);
+            }
+            else if (dwSpriteId == 10)
+            {
+                startX = pstSprite->m_wPx + 62;
+                width = 60;
+                sprintf(tmpText, "%d", pstModeParam->fangDianJiaoZhengMuBiaoZhi);
+                //Idu_PaintWinArea(pWin, startX, pstSprite->m_wPy + AreaYOffset, width, height, RGB2YUV(255,255,0));
+                xpgSpriteSetTouchArea(pstSprite, startX, pstSprite->m_wPy + AreaYOffset, width, height);
+                Idu_PrintStringCenter(pWin, tmpText, startX, pstSprite->m_wPy, 0, width);
+                Idu_PaintWinArea(pWin, startX, pstSprite->m_wPy + LineYOffset, width, 2, lineColor);
+            }
+            Idu_FontColorSet(0xff,0xff,0xff);
+            return PASS;
         }
         else if (dwSpriteId >= 11 && dwSpriteId <= 13)
         {
