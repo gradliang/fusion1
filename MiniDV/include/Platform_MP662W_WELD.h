@@ -185,9 +185,13 @@
 
   #define TOUCH_CONTROLLER            TOUCH_PANEL_DRIVER_GT911
   #define TOUCH_CONTROLLER_TYPE       TOUCH_PANEL_TYPE_CAPACITIVE
+#if (PRODUCT_PCBA==PCBA_MAIN_BOARD_V20)
+  #define TOUCH_CONTROLLER_INT_PIN    GPIO_03//GPIO_02
+  #define TOUCH_RESET_PIN		(PGPIO | GPIO_01)
+#else
   #define TOUCH_CONTROLLER_INT_PIN    GPIO_03//GPIO_02
   #define TOUCH_RESET_PIN		GPIO_02//GPIO_FGPIO_20
-
+#endif
 //------------------------------------------------------------------
 // BT
 //------------------------------------------------------------------

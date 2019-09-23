@@ -243,7 +243,7 @@ typedef enum {
 #define PCBA_MAIN_BOARD_V10     							0x00000600							// 20181203	
 #define PCBA_MAIN_BOARD_V11     							0x00000700							
 #define PCBA_MAIN_BOARD_V12     							0x00000800							
-#define PCBA_MAIN_BOARD_V20     							0x00000800							//一体板
+#define PCBA_MAIN_BOARD_V20     							0x00000900							//一体板
 //--PRODUCT_PANEL
 #define PANEL_NO_DISPLAY            							0x00000000
 #define PANEL_640x480            									0x00010000
