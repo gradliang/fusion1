@@ -285,11 +285,9 @@ STXPGSPRITE *xpgSpriteFindType(register STXPGMOVIE * pstMovie, DWORD dwType, DWO
 ///
 ///@param   name - specified page name
 ///
-///@param   len - specified page name length
-///
 ///@return  STXPGPAGE - selected page
 ///
-STXPGPAGE *xpgMovieSearchPage(const char *name, DWORD len)
+STXPGPAGE *xpgMovieSearchPage(const char *name)
 {
 	register DWORD iPage;
 	register DWORD dwSearchKey;

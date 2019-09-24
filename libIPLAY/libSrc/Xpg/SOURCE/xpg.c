@@ -249,7 +249,7 @@ WORD xpgGotoEnterPage()  //Mason 20060619  //From Athena
 STXPGPAGE *xpgSearchAndGotoPage(const char *name, DWORD len)
 {
     len = strlen(name);
-    STXPGPAGE *pstPage = xpgMovieSearchPage(name, len);
+    STXPGPAGE *pstPage = xpgMovieSearchPage(name);
 
     if (pstPage == NULL)
     {

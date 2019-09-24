@@ -408,8 +408,8 @@ void xpgCb_EnterPhotoView()
 	g_bXpgStatus = XPG_MODE_PHOTOVIEW;
 	g_pstXpgMovie->m_pstCurPage->m_bPageMode = XPG_MODE_PHOTOVIEW;
 
-    mpDebugPrint("xpgMovieSearchPage(Photo_Viewer, 12)");
-	//g_pstMenuPage = xpgMovieSearchPage("Photo_Viewer", 12);
+    mpDebugPrint("xpgMovieSearchPage(Photo_Viewer)");
+	//g_pstMenuPage = xpgMovieSearchPage("Photo_Viewer");
 	bZoomMode = FALSE;
 	xpgViewPhoto();
 	//Draw_Osd_Icon(20,420,NULL,0,OSDICON_Left);

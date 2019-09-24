@@ -254,7 +254,7 @@ void xpgMovieLoadPageCommand( register STXPGMOVIE *pstMovie, int iPage );
 
 STXPGSPRITE *xpgSpriteFindType( register STXPGMOVIE *pstMovie, DWORD dwType, DWORD dwIndex );
 
-STXPGPAGE *xpgMovieSearchPage(const char *name, DWORD len);
+STXPGPAGE *xpgMovieSearchPage(const char *name);
 STXPGSPRITE *xpgMovieSearchSprite(const char *name, DWORD len);
 //-----------------------------------------------------------------------------
 
