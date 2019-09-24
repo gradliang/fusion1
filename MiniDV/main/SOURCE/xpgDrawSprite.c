@@ -63,6 +63,19 @@ extern DWORD g_dwCurIndex,g_dwModeIconStatus;
 #if  (PRODUCT_UI==UI_SURFACE)
 extern DWORD g_dwPassNum,g_dwFailNum;
 #endif
+
+//---------------------------------------------------------------------------
+// Dialog
+//---------------------------------------------------------------------------
+int popupDialog(int dialogType, char * backToPage)
+{
+}
+
+int exitDialog()
+{
+}
+
+
 //---------------------------------------------------------------------------
 // xpg draw sprite functions
 //---------------------------------------------------------------------------
