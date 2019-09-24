@@ -485,7 +485,7 @@ void PrintWinData()
 void SetFillProcWinFlag(void)
 {
 	IPU *ipu = (IPU *) IPU_BASE;
-GetSetupMenuValue();
+
 #if  1//PROC_SENSOR_DATA_MODE
 		st_bNeedFillProcWin=0xe3; // bit0->up win  bit1->down win   bit7->init mode
 		//st_bNeedFillProcWin=0xe1; // bit0->up win  bit1->down win   bit7->init mode
@@ -3738,21 +3738,11 @@ void TSPI_DataProc(void)
 				switch (st_bTspiRxArry[2])
 				{
 					case 1:
-						#if 0
-						index=st_bAFMotoIndex;
-						if (st_bMotorHold&(1<<index))
-						{
-							MotorSetStatus(index,MOTOR_NO_HOLD);
-							st_bMotorHold &= ~(1<<index);
-							mpDebugPrint(" motor %d hold off",index);
-						}
-						else
-						{
-							MotorSetStatus(index,MOTOR_HOLD);
-							st_bMotorHold|=(1<<index);
-							mpDebugPrint(" motor %d hold on",index);
-						}
-						Idu_OsdErase();
+						#if 1
+						//DriveMotor(01,1,1000,8);//RIGHT_DOWN_FIBER  DOWN
+						st_swAFStep=100;
+						ProcAFmotorAction();
+						//PrintWinData();
 						#else
 						//DriveMotor(01,0,1000,8);//RIGHT_DOWN_FIBER  DOWN
 						Discharge(800,0);
@@ -3760,20 +3750,26 @@ void TSPI_DataProc(void)
 						#endif
 						break;
 					case 2:
-						#if 0
-						//DriveMotor(01,1,1000,8);//RIGHT_DOWN_FIBER  DOWN
-						st_swAFStep=100;
+						#if 1
+						//DriveMotor(02,0,1000,8);//RIGHT_DOWN_FIBER  UP
+						st_swAFStep=-100;
 						ProcAFmotorAction();
-						//PrintWinData();
 						#else
 						Discharge(1000,0);
 						#endif
 						break;
 					case 3:
-						#if 0
-						//DriveMotor(02,0,1000,8);//RIGHT_DOWN_FIBER  UP
-						st_swAFStep=-100;
-						ProcAFmotorAction();
+						#if 1
+						index=st_bAFMotoIndex;
+						if (st_bMotorHold&(1<<index))
+						{
+							MotorSetStatus(index,MOTOR_NO_HOLD);
+							st_bMotorHold &= ~(1<<index);
+						}
+						if (st_bAFMotoIndex==5)
+							st_bAFMotoIndex=6;
+						else
+							st_bAFMotoIndex=5;
 						#else
 						Discharge(1500,0);
 						#endif
@@ -3792,11 +3788,20 @@ void TSPI_DataProc(void)
 						MotorSetStatus(3,MOTOR_NO_HOLD);
 						MotorSetStatus(4,MOTOR_NO_HOLD);
 						#elif 1
-						if (g_bDisplayMode<3)
-							g_bDisplayMode++;
+						index=st_bAFMotoIndex;
+						if (st_bMotorHold&(1<<index))
+						{
+							MotorSetStatus(index,MOTOR_NO_HOLD);
+							st_bMotorHold &= ~(1<<index);
+							mpDebugPrint(" motor %d hold off",index);
+						}
 						else
-							g_bDisplayMode=0;
-						g_bDisplayMode |= 0x80;
+						{
+							MotorSetStatus(index,MOTOR_HOLD);
+							st_bMotorHold|=(1<<index);
+							mpDebugPrint(" motor %d hold on",index);
+						}
+						//Idu_OsdErase();
 						#elif 1
 						//DriveMotor(02,1,1000,8);
 						SetFillProcWinFlag();
@@ -3813,13 +3818,13 @@ void TSPI_DataProc(void)
 						g_swAutoFocusState=AF_INIT;
 						Proc_AutoFocus();
 						*/
-						#elif 0
+						#elif 1
 						if (g_bDisplayMode<3)
 							g_bDisplayMode++;
 						else
 							g_bDisplayMode=0;
 						g_bDisplayMode |= 0x80;
-						#elif 1
+						#elif 0
 						g_swProcState=SENSOR_IDLE;
 						ResetMotor();
 						#elif 0
@@ -3841,9 +3846,11 @@ void TSPI_DataProc(void)
 						MotorSetStatus(2,MOTOR_NO_HOLD);
 						DriveMotor(02,1,2000,8);//RIGHT_UP_FIBER UP
 						//g_bDisplayMode=(g_bDisplayMode+1)|0x80;
-						#elif 0
-								MoveAFMotor(6,100);
 						#elif 1
+						g_swProcState=SENSOR_IDLE;
+						ResetMotor();
+
+						#elif 0
 						//AutoStartWeld();
 						//SetFillProcWinFlag();
 						AutoGetFiberLowPoint();
@@ -4303,7 +4310,7 @@ void WeldDataInit(void)
 	ST_IMGWIN *pWin=(ST_IMGWIN *)Idu_GetNextWin();
 
 #if SHOW_CENTER
-	g_bDisplayMode=0x80;
+	g_bDisplayMode=0x82;
 	g_swProcState = SENSOR_IDLE;
 #elif TEST_PLANE
 	//g_bDisplayMode=0x80;
