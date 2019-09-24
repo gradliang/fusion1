@@ -579,6 +579,21 @@ void xpgSpriteCopy(register STXPGMOVIE * pstMovie, register STXPGSPRITE * pstDst
 
 }
 
+void xpgExtraSpriteCopy(STXPGSPRITE * pstDst, STXPGPAGESPRITE * pstSrc)
+{
+}
+
+DWORD getCurDialogExtraSpriteCount()
+{
+    return 0;
+}
+
+XPGEXTRASPRITE* getCurDialogExtraSpriteList()
+{
+    return NULL;
+}
+
+
 void xpgSpriteSetTouchArea (STXPGSPRITE * pstSprite, WORD startX, WORD startY, WORD width, WORD height) 
 {
     if (pstSprite == NULL)

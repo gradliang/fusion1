@@ -82,7 +82,7 @@ void xpgMovieLoadPage(register STXPGMOVIE * pstMovie, DWORD iPage)
         xpgMemorySetOffset(dwOffset);
     } 
     
-	register DWORD i;
+	DWORD i, j;
 	DWORD iSpriteCount;
 	STXPGPAGE *pstPage = NULL;
 	pstPage = &(pstMovie->m_astPage[iPage]);	//xpgGetPage( pstMovie, iPage );
@@ -135,6 +135,24 @@ void xpgMovieLoadPage(register STXPGMOVIE * pstMovie, DWORD iPage)
 		xpgSpriteCopy(pstMovie, &(pstMovie->m_astSprite[i]), &(pstPage->m_astSprite[i]));
 		
 	}
+
+#if XPG_DIALOG_EXTRA_SPRITE_ENABLE
+    if (g_isDialogPage)
+    {
+        DWORD dialogSpriteExtraCount = getCurDialogExtraSpriteCount();
+        XPGEXTRASPRITE * extraSpriteList = getCurDialogExtraSpriteList();
+        if (extraSpriteList)
+        {
+            for (j = 0; j < dialogSpriteExtraCount; j++) 
+            {
+                memset(&pstMovie->m_astSprite[i + j], 0, sizeof(STXPGSPRITE));
+    		    xpgExtraSpriteCopy(&(pstMovie->m_astSprite[i + j]), &(extraSpriteList[j]));
+            }
+            pstMovie->m_dwSpriteCount += dialogSpriteExtraCount;
+        }
+    }   
+#endif
+    
 
 #if XPG_LIST_COUNT
 	if (pstMovie->m_pstListFrame != NULL)

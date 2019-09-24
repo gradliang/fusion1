@@ -22,7 +22,7 @@ STXPGMOVIE g_stXpgMovie;
 STXPGMOVIE *g_pstXpgMovie = NULL;
 
 BYTE g_boNeedRepaint = 0;
-
+BOOL g_isDialogPage = 0;
 //------------------------------------------------------------------------------
 BOOL xpgLoadFromSPINOR(DWORD dwNORStartAddr, DWORD dwNORSXPGSize)
 {
@@ -253,6 +253,11 @@ STXPGPAGE *xpgSearchAndGotoPage(const char *name)
         MP_ALERT("%s: XPG page name [%s] not found !", __FUNCTION__, name);
         return NULL;
     }
+
+    if (0 == strcmp(name, "DIALOG_PAGE_NAME"))
+        g_isDialogPage = 1;
+    else
+        g_isDialogPage = 0;
 
 	//mpDebugPrint("---------xpgSearchAndGotoPage :%s-> %d",name,pstPage->m_wIndex);
     if (xpgGotoPage(pstPage->m_wIndex) != PASS)

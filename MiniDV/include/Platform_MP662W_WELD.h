@@ -719,7 +719,6 @@
 #define XPG_ROLE_BACKGROUND_0               0
 #define XPG_ROLE_ICON_MASK_0               1
 
-
 #define SPRITE_TYPE_HILIGHTFRAME           5
 #define SPRITE_TYPE_ICON                    12
 #define SPRITE_TYPE_LIGHT_ICON              13
@@ -730,10 +729,14 @@
 //xpg page define
 
 
+
+
 // dialog define
 #define Dialog_ReSuGuan                     1           // 热塑管设置对话框
 #define Dialog_JiaReWenDu                   2           // 加热温度设置对话框
 #define Dialog_JiaReShiJian                 3           // 加热时间设置对话框
+
+#define XPG_DIALOG_EXTRA_SPRITE_ENABLE      1
 
 #endif
 

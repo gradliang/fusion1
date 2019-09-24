@@ -44,6 +44,11 @@ typedef struct {
 } STXPGPAGESPRITE;   
 
 typedef struct {
+    WORD m_wPx;     ///< Position of X
+    WORD m_wPy;  	  ///< Position of Y
+}XPGEXTRASPRITE;
+
+typedef struct {
     WORD m_touchAreaX;
     WORD m_touchAreaY;
     WORD m_touchAreaW;
@@ -116,6 +121,12 @@ void xpgSpriteSetRole( STXPGSPRITE *pstSprite, STXPGROLE *pstRole );
 void xpgSpriteMoveTo ( STXPGSPRITE *pstSprite, DWORD x, DWORD y );
 void xpgSpriteMove   ( STXPGSPRITE *pstSprite, DWORD x, DWORD y );
 void xpgSpriteCopy	 ( register STXPGMOVIE *pstMovie, STXPGSPRITE *pstDst, STXPGPAGESPRITE *pstSrc );
+
+void xpgExtraSpriteCopy(STXPGSPRITE * pstDst, STXPGPAGESPRITE * pstSrc);
+DWORD getCurDialogExtraSpriteCount();
+XPGEXTRASPRITE* getCurDialogExtraSpriteList();
+
+
 void xpgSpriteSetTouchArea (STXPGSPRITE * pstSprite, WORD startX, WORD startY, WORD width, WORD height);
 void xpgSpriteEnableTouch(STXPGSPRITE * pstSprite);
 void xpgSpriteDisableTouch(STXPGSPRITE * pstSprite);
