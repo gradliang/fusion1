@@ -140,7 +140,7 @@ void xpgCb_PhotoMenuThumbExit()
     g_bXpgStatus = XPG_MODE_MODESEL;
     Idu_OsdErase();
     g_boNeedRepaint=true;
-    xpgSearchAndGotoPage("Main_Photo", 10);
+    xpgSearchAndGotoPage("Main_Photo");
 }
 */
 
@@ -351,7 +351,7 @@ BOOL xpgViewPhotoEx(STXPGSPRITE * pstSprite)
 #if NET_UPNP
 	if( g_bXpgStatus == XPG_MODE_UPNP_USER_LIST )
 	{
-		xpgSearchAndGotoPage("Net_UserList", 12);
+		xpgSearchAndGotoPage("Net_UserList");
 		xpgUpdateStage();
 	}
 #endif
@@ -389,8 +389,8 @@ void xpgCb_EnterPhotoView()
 	if (FileBrowserGetCurFileType() == FILE_OP_TYPE_FOLDER)
 	{
 		//xpgGotoPage(g_pstMenuPage->m_wIndex);
-        mpDebugPrint("xpgSearchAndGotoPage(Mode_Photo, 10) @@");
-        xpgSearchAndGotoPage("Mode_Photo", 10);
+        mpDebugPrint("xpgSearchAndGotoPage(Mode_Photo) @@");
+        xpgSearchAndGotoPage("Mode_Photo");
 		xpgCb_OpenFolder();
 		return;
 	}
@@ -433,9 +433,9 @@ void xpgCb_PhotoMenuThumbExit()
 
 #if 0
     #if 1
-      xpgSearchAndGotoPage("Main_SpyCam", 11);
+      xpgSearchAndGotoPage("Main_SpyCam");
     #else
-      xpgSearchAndGotoPage("Main_Photo", 10);
+      xpgSearchAndGotoPage("Main_Photo");
     #endif
     Idu_OsdPutStr(Idu_GetOsdWin(), "MINIDV", 135 , 50, OSD_COLOR_WHITE);
 #endif
@@ -450,7 +450,7 @@ void xpgCb_PhotoMenuThumbExit_MINIDV()
     Idu_OsdErase();
     g_boNeedRepaint=true;
     //g_boNeedRepaint=false;
-    xpgSearchAndGotoPage("Main_SpyCam", 11);
+    xpgSearchAndGotoPage("Main_SpyCam");
     xpgUpdateStage();
 
 }
@@ -532,7 +532,7 @@ void xpgCb_PhotoViewExit()
 		//
 		// Net_PhotoViewExit();
 		//
-		xpgSearchAndGotoPage("Net_PhotoList", 14); // // temp
+		xpgSearchAndGotoPage("Net_PhotoList"); // // temp
 		return;
 	}
 #endif
@@ -551,7 +551,7 @@ void xpgCb_PhotoViewExit()
     	{
     	   g_bXpgStatus = XPG_MODE_MYFAVORPHOTO;
            g_boNeedRepaint = true;
-           xpgSearchAndGotoPage("Mode_PhotoFavor", 15);
+           xpgSearchAndGotoPage("Mode_PhotoFavor");
            xpgUpdateStage();
     	}
     	else

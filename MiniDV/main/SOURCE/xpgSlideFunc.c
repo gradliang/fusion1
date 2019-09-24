@@ -124,7 +124,7 @@ void xpgCb_SlidePause()
 				break;
 		}
 
-		xpgSearchAndGotoPage("Net_Func",8);
+		xpgSearchAndGotoPage("Net_Func");
 		g_bXpgStatus = XPG_MODE_NET_FUNC;
 		xpgUpdateStage();
 		return;
@@ -156,7 +156,7 @@ void xpgCb_SlideSetMusicOnOff()
 void xpgCb_SlideMusicSetting()
 {
     MP_DEBUG("%s()", __FUNCTION__);
-	//xpgSearchAndGotoPage("Music_Setting", 13);
+	//xpgSearchAndGotoPage("Music_Setting");
 	xpgCb_EnterMusicSetting();
 
 	if (g_psSystemConfig->sFileBrowser.dwAudioTotalFile == 0)
@@ -197,7 +197,7 @@ void xpgCb_SlideExit()
     #endif
         (g_bXpgStatus == XPG_MODE_NET_PC_PHOTO))    // abel 20070930
     {
-        xpgSearchAndGotoPage("Net_PhotoList",13);   //cj modify 102307
+        xpgSearchAndGotoPage("Net_PhotoList");   //cj modify 102307
 
         return;
     }
@@ -206,7 +206,7 @@ void xpgCb_SlideExit()
     {
         //xpgReleaseThumbBuffer();
         //ImageReleaseAllBuffer();
-        xpgSearchAndGotoPage("Net_UpnpList", 12);
+        xpgSearchAndGotoPage("Net_UpnpList");
         //xpgCb_NetPhotoViewExit();
 
         return;
@@ -224,7 +224,7 @@ void xpgCb_SlideExit()
                 break;
         }
 
-        xpgSearchAndGotoPage("Net_Func",8);
+        xpgSearchAndGotoPage("Net_Func");
         g_bXpgStatus = XPG_MODE_NET_FUNC;
         xpgUpdateStage();
         return;
@@ -350,7 +350,7 @@ void xpgCb_EnterSlideShowEx(STXPGSPRITE * pstSprite)
         return;
 
     if (g_pstXpgMovie->m_pstCurPage->m_bPageMode!= XPG_MODE_SLIDESHOW) {
-        xpgSearchAndGotoPage("SlideShow", 9);
+        xpgSearchAndGotoPage("SlideShow");
         g_pstXpgMovie->m_pstCurPage->m_bPageMode = XPG_MODE_SLIDESHOW;
     }
 
@@ -405,7 +405,7 @@ void xpgCb_EnterSlideShowEx(STXPGSPRITE * pstSprite)
         if(is_net)
 		{
 			if( NetConnected()== TRUE  )
-				xpgSearchAndGotoPage("Net_PhotoList",13);
+				xpgSearchAndGotoPage("Net_PhotoList");
 		}
         else
 #endif
@@ -430,7 +430,7 @@ void xpgCb_EnterSlideShowEx(STXPGSPRITE * pstSprite)
                 if(is_net)
 				{
 					if( NetConnected()== TRUE  )
-						xpgSearchAndGotoPage("Mode_NWPhoto",12);
+						xpgSearchAndGotoPage("Mode_NWPhoto");
 				}
                 else
 #endif
@@ -529,7 +529,7 @@ void xpgCb_EnterSlideShowEx(STXPGSPRITE * pstSprite)
                 (g_bXpgStatus == XPG_MODE_FRAMEIT) ||
                 (g_bXpgStatus == XPG_MODE_NET_FLICKR)) //cj 102307
             {
-                xpgSearchAndGotoPage("Mode_NWPhoto",12);
+                xpgSearchAndGotoPage("Mode_NWPhoto");
             }
             else
 #endif
@@ -988,12 +988,12 @@ BYTE xpgSlideShowAnywhere()
 		}
 		if (psSysConfig->sFileBrowser.dwImgAndMovTotalFile != 0)
 		{
-			xpgSearchAndGotoPage("Mode_Photo", 10);
+			xpgSearchAndGotoPage("Mode_Photo");
 
 			xpgChangeMenuMode(OP_IMAGE_MODE, 1);
 			g_pstMenuPage = g_pstXpgMovie->m_pstCurPage;
 			g_bXpgStatus = XPG_MODE_PHOTOMENU;
-			xpgSearchAndGotoPage("SlideShow", 9);
+			xpgSearchAndGotoPage("SlideShow");
 			//RefreshOSD();
 			Idu_OsdErase();
 			xpgCb_EnterPhotoViewWithMP3();

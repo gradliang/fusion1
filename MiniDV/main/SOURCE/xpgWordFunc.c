@@ -119,12 +119,12 @@ void	xpgCb_WordBTNEnter(void)
 	
 	if (FileBrowserGetCurFileType() == FILE_OP_TYPE_FOLDER)
 	{
-		xpgSearchAndGotoPage("Mode_Reader", 11);
+		xpgSearchAndGotoPage("Mode_Reader");
 		xpgCb_OpenFolder();
 		return;
 	}
 
-	xpgSearchAndGotoPage("Reader_Viewer",13);
+	xpgSearchAndGotoPage("Reader_Viewer");
 	xpgUpdateStage();
 	iIndex = FileBrowserGetCurIndex();	
 	
@@ -560,12 +560,12 @@ void	xpgCb_WordBTNEnter(void)
 	if (FileBrowserGetCurFileType() == FILE_OP_TYPE_FOLDER)
 	{
 		//xpgGotoPage(g_pstMenuPage->m_wIndex);
-		xpgSearchAndGotoPage("Mode_Reader", 11);
+		xpgSearchAndGotoPage("Mode_Reader");
 		xpgCb_OpenFolder();
 		return;
 	}
 
-	xpgSearchAndGotoPage("Reader_Viewer",13);
+	xpgSearchAndGotoPage("Reader_Viewer");
 	//xpgUpdateStage();
 	iIndex = FileBrowserGetCurIndex();	
 	

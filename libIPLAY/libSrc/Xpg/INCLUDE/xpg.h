@@ -91,7 +91,7 @@ BOOL xpgLoadFromFlash(DWORD dwTag);
 
 SWORD xpgGotoPage(DWORD iPage);
 WORD  xpgGotoEnterPage(void);
-STXPGPAGE *xpgSearchAndGotoPage(const char *name, DWORD len);
+STXPGPAGE *xpgSearchAndGotoPage(const char *name);
 void  xpgUpdateStage(void);
 #if VIDEO_ON
 void  xpgClearStage(void);

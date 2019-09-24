@@ -1165,8 +1165,8 @@ void Cal_PhotoStart(void)
 
     if (g_psSystemConfig->sFileBrowser.dwImgAndMovTotalFile == 0)
     {
-        //if (xpgSearchAndGotoPage("Calendar", 8) == NULL)
-        if (xpgSearchAndGotoPage("CalendarWhite", 13) == NULL)
+        //if (xpgSearchAndGotoPage("Calendar") == NULL)
+        if (xpgSearchAndGotoPage("CalendarWhite") == NULL)
             xpgCb_GoModePage(); //xpgCb_GoPrevPage();
         else
             EnterCalendarWhite(); //AnaClockStart();
@@ -1365,7 +1365,7 @@ void FlashClockBlackExit()
     Idu_OsdErase();
     IDU *idu = (IDU *) IDU_BASE;
     idu->Palette[6] = palette6Backup;
-    xpgSearchAndGotoPage("Main_Calendar", 13);
+    xpgSearchAndGotoPage("Main_Calendar");
     xpgCb_EnterModeMenu(); //AnaClockStart();
 }
 
@@ -1512,7 +1512,7 @@ void DigitClockExit(void)
     MP_DEBUG("DigitClockExit");
     Idu_OsdErase();
     RemoveTimerProc(DigitClockProcess);
-    xpgSearchAndGotoPage("FlashClockBlack", 15);
+    xpgSearchAndGotoPage("FlashClockBlack");
     EnterFlashClockBlack(); //AnaClockStart();
 }
 
@@ -1851,7 +1851,7 @@ void CalendarBlackDayPhoto()
         QuickSort((void *) psFileBrowser->dwFileListAddress[OP_IMAGE_MODE], psFileBrowser->dwFileListCount[OP_IMAGE_MODE], sizeof(ST_SEARCH_INFO), CompareFileWeekDate, 1); //0);
 
         Idu_OsdErase();
-        xpgSearchAndGotoPage("Mode_Photo", 10);
+        xpgSearchAndGotoPage("Mode_Photo");
         xpgCb_EnterDatePhoto(wDayPhotoSum, wStartIndex, bFileSortBasis);
     }
     g_boNeedRepaint = FALSE;
@@ -2020,7 +2020,7 @@ void CalendarWhiteDayPhoto()
         QuickSort((void *) psFileBrowser->dwFileListAddress[OP_IMAGE_MODE], psFileBrowser->dwFileListCount[OP_IMAGE_MODE], sizeof(ST_SEARCH_INFO), CompareFileWeekDate, 1); //0);
 
         Idu_OsdErase();
-        xpgSearchAndGotoPage("Mode_Photo", 10);
+        xpgSearchAndGotoPage("Mode_Photo");
         xpgCb_EnterDatePhoto(wDayPhotoSum, wStartIndex, bFileSortBasis);
     }
     g_boNeedRepaint = FALSE;
@@ -2420,7 +2420,7 @@ void WeekPhoto(void)
         QuickSort((void *) psFileBrowser->dwFileListAddress[OP_IMAGE_MODE], psFileBrowser->dwFileListCount[OP_IMAGE_MODE], sizeof(ST_SEARCH_INFO), CompareFileWeekDate, 1); //0);
 
         Idu_OsdErase();
-        xpgSearchAndGotoPage("Mode_Photo", 10);
+        xpgSearchAndGotoPage("Mode_Photo");
         xpgCb_EnterDatePhoto(weekPhotoMatchCount, weekPhotoStartIndex, bFileSortBasis);
         //xpgCb_EnterPhotoMenu();
     }
@@ -2464,7 +2464,7 @@ void WeekPhotoExit(void)
     Idu_OsdErase();
     IDU *idu = (IDU *) IDU_BASE;
     idu->Palette[6] = palette6Backup;
-    xpgSearchAndGotoPage("CalendarWhite", 13);
+    xpgSearchAndGotoPage("CalendarWhite");
     EnterCalendarWhite();
 }
 

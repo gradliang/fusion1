@@ -242,13 +242,10 @@ WORD xpgGotoEnterPage()  //Mason 20060619  //From Athena
 ///
 ///@param   name - page name
 ///
-///@param   len - page name's length
-///
 ///@return  page index
 ///
-STXPGPAGE *xpgSearchAndGotoPage(const char *name, DWORD len)
+STXPGPAGE *xpgSearchAndGotoPage(const char *name)
 {
-    len = strlen(name);
     STXPGPAGE *pstPage = xpgMovieSearchPage(name);
 
     if (pstPage == NULL)
@@ -269,7 +266,7 @@ STXPGPAGE *xpgSearchAndGotoPage(const char *name, DWORD len)
 
 void xpgForcedSearchAndGotoPage(const char *name, DWORD len)
 {
-    STXPGPAGE *pstPage = xpgSearchAndGotoPage(name, len);
+    STXPGPAGE *pstPage = xpgSearchAndGotoPage(name);
     if(pstPage == NULL)
     {
         MP_ALERT("%s: page %s (len = %d) search fail!", __FUNCTION__, name, len);

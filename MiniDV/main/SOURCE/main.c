@@ -651,7 +651,7 @@ int main(void)
 #endif
 
 
-    //xpgSearchAndGotoPage("Preview", sizeof("Preview")-1);
+    //xpgSearchAndGotoPage("Preview");
     //xpgUpdateStage();
     //mpClearWin(Idu_GetCurrWin());
     //mpCopyWin(Idu_GetNextWin(), Idu_GetCurrWin());
@@ -1402,8 +1402,8 @@ static SWORD XpgInit(BYTE driveId, DWORD dwXPGTag)
         //xpgInitThumbBuffer(THUMB_COUNT, THUMB_WIDTH * THUMB_HEIGHT * 2);
         //g_pDrawIconBuffer = xpgMalloc(ICON_BUFFER_SIZE);	// alloc buffer for Icon Capture screen
 
-        //if (xpgSearchAndGotoPage("Logo", 4)!=NULL)
-        if (xpgSearchAndGotoPage("Main", sizeof("Main")-1)!=NULL)
+        //if (xpgSearchAndGotoPage("Logo")!=NULL)
+        if (xpgSearchAndGotoPage("Main")!=NULL)
         {
 			xpgUpdateStage();
         }

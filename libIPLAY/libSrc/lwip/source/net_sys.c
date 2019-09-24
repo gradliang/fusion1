@@ -264,7 +264,7 @@ void ShowWirelessAPTable(void)
 #if MAKE_XPG_PLAYER
 	g_Net_WifiStatus = NET_STATUS_NULL;
        g_bXpgStatus = XPG_MODE_NET_AP;
-       xpgSearchAndGotoPage("NetworkAPTab", 12);
+       xpgSearchAndGotoPage("NetworkAPTab");
        xpgUpdateStage();
 #endif	   
 }
@@ -574,7 +574,7 @@ void ShowWirelessConnect(void)
 		HsmOnStart(xpgNetHsm);
 #endif
 		mpDebugPrint("ShowWirelessConnect");
-		xpgSearchAndGotoPage("Net_Func",8);
+		xpgSearchAndGotoPage("Net_Func");
 		xpgUpdateStage();
 	}
 #endif		

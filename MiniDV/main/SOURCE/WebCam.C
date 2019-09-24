@@ -51,7 +51,7 @@ void WebCamStart()
 	if (!SystemCardPresentCheck(USB_WEBCAM_DEVICE))
 		return;
 #if MAKE_XPG_PLAYER
-	xpgSearchAndGotoPage("Preview", 0);
+	xpgSearchAndGotoPage("Preview");
 #endif
 	mpClearWin(Idu_GetNextWin());
 	mpClearWin(Idu_GetCurrWin());

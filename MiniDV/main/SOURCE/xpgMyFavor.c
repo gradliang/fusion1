@@ -866,7 +866,7 @@ void MyFavorDeleteFile()
     RestoreCurrentSearchInfo();
     g_bXpgStatus = XPG_MODE_MYFAVOR;
     g_boNeedRepaint = true;
-    xpgSearchAndGotoPage("MyFavor", 7);
+    xpgSearchAndGotoPage("MyFavor");
     xpgUpdateStage();
 }
 
@@ -990,7 +990,7 @@ void xpgCb_MyFavorEnter(void)
 
     g_bXpgStatus = XPG_MODE_MYFAVOR;
     g_boNeedRepaint = true;
-    xpgSearchAndGotoPage("MyFavor", 7);
+    xpgSearchAndGotoPage("MyFavor");
     xpgUpdateStage();
 }
 
@@ -1002,7 +1002,7 @@ void xpgCb_MyFavorExit(void)
     Idu_OsdErase();
     g_boNeedRepaint = true;
     g_bXpgStatus = XPG_MODE_PHOTOMENU;
-    xpgSearchAndGotoPage("Mode_Photo", 10);
+    xpgSearchAndGotoPage("Mode_Photo");
     //xpgUpdateStage(); // it makes show "Mode_Photo" twice!"
     xpgCb_EnterPhotoMenu();
 }
@@ -1017,7 +1017,7 @@ void xpgCb_MyFavorUp(void)
 
     g_bXpgStatus = XPG_MODE_MYFAVOR;
     g_boNeedRepaint = true;
-    xpgSearchAndGotoPage("MyFavor", 7);
+    xpgSearchAndGotoPage("MyFavor");
     xpgUpdateStage();
 }
 
@@ -1031,7 +1031,7 @@ void xpgCb_MyFavorDown(void)
 
     g_bXpgStatus = XPG_MODE_MYFAVOR;
     g_boNeedRepaint = true;
-    xpgSearchAndGotoPage("MyFavor", 7);
+    xpgSearchAndGotoPage("MyFavor");
     xpgUpdateStage();
 }
 
@@ -1085,7 +1085,7 @@ void xpgCb_MyFavorPhotoEnter(void)
 
     g_bXpgStatus = XPG_MODE_MYFAVORPHOTO;
     g_boNeedRepaint = true;
-    xpgSearchAndGotoPage("Mode_PhotoFavor", 15);
+    xpgSearchAndGotoPage("Mode_PhotoFavor");
     xpgUpdateStage();
 }
 
@@ -1097,7 +1097,7 @@ void xpgCb_MyFavorPhotoExit(void)
     Idu_OsdErase();
     g_boNeedRepaint = true;
     g_bXpgStatus = XPG_MODE_MYFAVOR;
-    xpgSearchAndGotoPage("MyFavor", 7);
+    xpgSearchAndGotoPage("MyFavor");
     xpgUpdateStage();
 }
 

@@ -157,7 +157,7 @@ void xpgCb_CameraPreviewAndCapture()
             MP_DEBUG("%s : g_MinidvMode = %d", __func__, g_MinidvMode);
             g_bAniFlag &= ~ANI_VIDEO;
             g_bAniFlag &= ~ANI_READY;
-//            xpgSearchAndGotoPage("Preview", sizeof("Preview")-1);
+//            xpgSearchAndGotoPage("Preview");
 //            xpgUpdateStage();
 //            mpCopyEqualWin(Idu_GetNextWin(), Idu_GetCurrWin());
 
@@ -532,7 +532,7 @@ void xpgCb_EnterCamcoderPreview()
 #endif
 
 #if MAKE_XPG_PLAYER
-    xpgSearchAndGotoPage("Preview", 0);
+    xpgSearchAndGotoPage("Preview");
     xpgUpdateStage();
     mpCopyEqualWin(Idu_GetNextWin(), Idu_GetCurrWin());
 #endif

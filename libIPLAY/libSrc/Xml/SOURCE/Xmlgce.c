@@ -59,7 +59,7 @@ void gce_URL_refresh()
 	//RemoveTimerProc(gce_URL_refresh);
 	NetFileBrowerInitial();
 	gce_get_picture(gce_info.refresh_url);	
-	xpgSearchAndGotoPage("GoogleViewer",12);	
+	xpgSearchAndGotoPage("GoogleViewer");	
 	xpgViewPhoto();
 	//AddTimerProc(gce_get_refresh_interval, gce_URL_refresh); 
 } 

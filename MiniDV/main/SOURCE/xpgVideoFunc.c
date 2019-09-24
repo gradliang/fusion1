@@ -174,7 +174,7 @@ void xpgCb_VideoMenuListNext()
         BYTE OriginalMode = g_bAniFlag;
         xpgStopVideo();
         FileListAddCurIndex(1);
-        xpgSearchAndGotoPage("Video_Viewer", 12);        
+        xpgSearchAndGotoPage("Video_Viewer");        
         xpgCb_EnterVideoPlayer();
         if (OriginalMode & ANI_VIDEO)
             xpgPlayVideo();
@@ -215,7 +215,7 @@ void xpgCb_VideoMenuListPrev()
 
         xpgStopVideo();
         FileListAddCurIndex(-1);
-        xpgSearchAndGotoPage("Video_Viewer", 12);
+        xpgSearchAndGotoPage("Video_Viewer");
         xpgCb_EnterVideoPlayer();
 
         if (OriginalMode & ANI_VIDEO)
@@ -250,7 +250,7 @@ void xpgCb_VideoMenuListExit(void) // act15
     MP_DEBUG("xpgCb_VideoMenuListExit");
     g_bAniFlag &= ~ANI_VIDEO_PREVIEW;
     Idu_OsdErase();
-    //xpgSearchAndGotoPage("Main_Video", 10);
+    //xpgSearchAndGotoPage("Main_Video");
 #endif
 }
 
@@ -383,7 +383,7 @@ int xpgVideoDrawThumb(ST_IMGWIN * pWin, DWORD x, DWORD y, DWORD w, DWORD h)
 
     if (pSearchInfo->bFileType == FILE_OP_TYPE_FOLDER)
     {
-        xpgSearchAndGotoPage("Mode_Video", 10);
+        xpgSearchAndGotoPage("Mode_Video");
         xpgCb_OpenFolder();
         g_boNeedRepaint = false; // prevent XpgUi.c xpgprocessEvent() to call xpgUpdateStage() again
         return;
@@ -583,7 +583,7 @@ void VideoPlayerExit()
     {
         if(xpgGetVideoScreenMode() == VIDEO_FULL_SCREEN)
         {
-            xpgSearchAndGotoPage("YouTubeThumb", 12);
+            xpgSearchAndGotoPage("YouTubeThumb");
             xpgCb_YouTubeThumbEnter();
         } // else skip // VIDEO_DRAW_THUMB
     }
@@ -591,7 +591,7 @@ void VideoPlayerExit()
     {
         if(xpgGetVideoScreenMode() == VIDEO_FULL_SCREEN)
         {
-            xpgSearchAndGotoPage("YouTubeFavor", 12);
+            xpgSearchAndGotoPage("YouTubeFavor");
             xpgCb_YouTubeFavorEnter();
         } // else skip // VIDEO_DRAW_THUMB
     }
@@ -706,13 +706,13 @@ void xpgVideoEnd()
             {
                 VideoPlayerExit(); // do VideoExit first
 
-                xpgSearchAndGotoPage("Mode_Photo", 10);
+                xpgSearchAndGotoPage("Mode_Photo");
                 g_boNeedRepaint=true;
                 xpgUpdateStage();
                 xpgCb_EnterPhotoMenu();
                 xpgCb_EnterPhotoView(); // wait until xpgPhotoFunc.c's xpgCb_EnterPhotoView()
                 /*
-                xpgSearchAndGotoPage("Mode_Music", 10);
+                xpgSearchAndGotoPage("Mode_Music");
                 g_boNeedRepaint=true;
                 xpgUpdateStage();
                 xpgCb_EnterMusicMenu();
@@ -736,7 +736,7 @@ void xpgVideoEnd()
 
         if (boVideoPlaying)
         {
-            //xpgSearchAndGotoPage("Video_Viewer", 12);
+            //xpgSearchAndGotoPage("Video_Viewer");
             g_bXpgStatus = XPG_MODE_NULL;
 
             //xpgCb_EnterVideoPlayer();
@@ -770,7 +770,7 @@ void xpgVideoEnd()
 		#if (PRODUCT_UI==UI_HXJ_1)
 		EnterVideoModePlay();
 		#else
-		xpgSearchAndGotoPage("Mode_Video", 0);
+		xpgSearchAndGotoPage("Mode_Video");
 		Idu_OsdErase();
 		xpgUpdateStage();
 		#endif
@@ -845,13 +845,13 @@ void xpgVideoEnd()
             {
                 xpgCb_VideoPlayerExit(); // do VideoExit first
 
-                xpgSearchAndGotoPage("Mode_Photo", 10);
+                xpgSearchAndGotoPage("Mode_Photo");
                 g_boNeedRepaint=true;
                 xpgUpdateStage();
                 xpgCb_EnterPhotoMenu();
                 xpgCb_EnterPhotoView(); // wait until xpgPhotoFunc.c's xpgCb_EnterPhotoView()
                 /*
-                xpgSearchAndGotoPage("Mode_Music", 10);
+                xpgSearchAndGotoPage("Mode_Music");
                 g_boNeedRepaint=true;
                 xpgUpdateStage();
                 xpgCb_EnterMusicMenu();
@@ -875,7 +875,7 @@ void xpgVideoEnd()
 
         if (boVideoPlaying)
         {
-            //xpgSearchAndGotoPage("Video_Viewer", 12);
+            //xpgSearchAndGotoPage("Video_Viewer");
             g_bXpgStatus = XPG_MODE_NULL;
 
             //xpgCb_EnterVideoPlayer();
@@ -918,7 +918,7 @@ void EnterVideoPlayer()
     if (FileBrowserGetCurFileType() == FILE_OP_TYPE_FOLDER)
     {
         //xpgGotoPage(g_pstMenuPage->m_wIndex);
-        xpgSearchAndGotoPage("Mode_Video", 10);
+        xpgSearchAndGotoPage("Mode_Video");
         xpgCb_OpenFolder();
         g_boNeedRepaint = false; // prevent XpgUi.c xpgprocessEvent() to call xpgUpdateStage() again
         return;
@@ -979,7 +979,7 @@ void EnterVideoPlayer()
 
     if (boSuccess)
     {
-        xpgSearchAndGotoPage("Video_Viewer", 12);
+        xpgSearchAndGotoPage("Video_Viewer");
 
 #if ((CHIP_VER & 0xffff0000) == CHIP_VER_615)
         g_psDma->BtBtc |= 0x00800000;       // increase the priority of SDRAM auto reflash
@@ -1116,7 +1116,7 @@ void EnterVideoPlayer()
         int i;
         BYTE bRedCurtain = 0;
 
-        if(xpgSearchAndGotoPage("RedCurtain", 10))
+        if(xpgSearchAndGotoPage("RedCurtain"))
         {
             bRedCurtain = 1;
             for(i=0; i<20; i++) // total 20 .jpgs
@@ -1130,7 +1130,7 @@ void EnterVideoPlayer()
                 //mpDebugPrint("elapsedTime = %d", elapsedTime);
             }
 
-            if(!xpgSearchAndGotoPage("VideoViewer$$$", 14))
+            if(!xpgSearchAndGotoPage("VideoViewer$$$"))
                 MP_ALERT("GotoPage VideoViewer$$$  fail!");
         }
 
@@ -1276,7 +1276,7 @@ void xpgCb_EnterVideoPlayer()
     if (FileBrowserGetCurFileType() == FILE_OP_TYPE_FOLDER)
     {
         //xpgGotoPage(g_pstMenuPage->m_wIndex);
-        xpgSearchAndGotoPage("Mode_Video", 10);
+        xpgSearchAndGotoPage("Mode_Video");
         xpgCb_OpenFolder();
         g_boNeedRepaint = false; // prevent XpgUi.c xpgprocessEvent() to call xpgUpdateStage() again
         return;
@@ -1337,7 +1337,7 @@ void xpgCb_EnterVideoPlayer()
 
     if (boSuccess)
     {
-        xpgSearchAndGotoPage("Video_Viewer", 12);
+        xpgSearchAndGotoPage("Video_Viewer");
 #if ((CHIP_VER & 0xffff0000) == CHIP_VER_615)
         g_psDma->BtBtc |= 0x00800000;       // increase the priority of SDRAM auto reflash
 #endif
@@ -1616,7 +1616,7 @@ void xpgCb_VideoPlayerExit()
     {
         if(xpgGetVideoScreenMode() == VIDEO_FULL_SCREEN)
         {
-            xpgSearchAndGotoPage("YouTubeThumb", 12);
+            xpgSearchAndGotoPage("YouTubeThumb");
             xpgCb_YouTubeThumbEnter();
         }   // else skip // VIDEO_DRAW_THUMB
     }
@@ -1624,7 +1624,7 @@ void xpgCb_VideoPlayerExit()
     {
         if(xpgGetVideoScreenMode() == VIDEO_FULL_SCREEN)
         {
-            xpgSearchAndGotoPage("YouTubeFavor", 12);
+            xpgSearchAndGotoPage("YouTubeFavor");
             xpgCb_YouTubeFavorEnter();
         }   // else skip // VIDEO_DRAW_THUMB
     }
@@ -1708,7 +1708,7 @@ void xpgCb_VideoPlay()
     {
 
 #if Video_Preview_Play_And_Stop
-        xpgSearchAndGotoPage("Video_Viewer", 12);
+        xpgSearchAndGotoPage("Video_Viewer");
         ST_IMGWIN *pWin = Idu_GetNextWin();
 
 	if (st_dwVideoPreviewMode==Video_Preview_In_Start)
@@ -2178,7 +2178,7 @@ void EnterVideoModePlay()
 {
 #if MAKE_XPG_PLAYER
     mpDebugPrint("_%s_",__FUNCTION__);
-	xpgSearchAndGotoPage("Mode_Video", 0);
+	xpgSearchAndGotoPage("Mode_Video");
 #if 0//VIDEO_ON
 	ui_EnterVideoPage();
 #endif
@@ -2189,7 +2189,7 @@ void EnterVideoModePlay()
 	FileBrowserScanFileList(SEARCH_TYPE);
 	xpgCb_EnterVideoMenu();
 
-	xpgSearchAndGotoPage("Video_Viewer", 12);
+	xpgSearchAndGotoPage("Video_Viewer");
 	xpgCb_EnterVideoPlayer();
 	xpgCb_VideoPlay();
 

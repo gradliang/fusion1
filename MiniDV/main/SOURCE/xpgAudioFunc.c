@@ -269,13 +269,13 @@ void xpgCb_MusicMenuListExit()
         {
             //mpDebugPrint("g_bXpgStatus == XPG_MODE_NET_PC_AUDIO");
             g_bXpgStatus = XPG_MODE_NET_FUNC;
-            xpgSearchAndGotoPage("Net_Func",8);
+            xpgSearchAndGotoPage("Net_Func");
             //extern NETFUNC_t NETFUNC;
             //NETFUNC.dwCurrentIndex = 5; // internet radio
             xpgUpdateStage();
         }
         else
-            xpgSearchAndGotoPage("Main_Music", 10);
+            xpgSearchAndGotoPage("Main_Music");
     }
 #endif
 }
@@ -823,7 +823,7 @@ void xpgAudioEnd()
 						//MP_DEBUG3("g_wPlayAll =%d, dwAudioTotalFile=%d, dwAudioCurIndex=%d", g_wPlayAll, psSysConfig->sFileBrowser.dwAudioTotalFile, psSysConfig->sFileBrowser.dwAudioCurIndex);
 						xpgCb_MusicStop();
 
-						xpgSearchAndGotoPage("Mode_Video", 10);
+						xpgSearchAndGotoPage("Mode_Video");
 						g_boNeedRepaint=true;
                         xpgUpdateStage();
                         xpgCb_EnterVideoMenu();
@@ -899,14 +899,14 @@ void xpgCb_MusicPlay()
             {
             case 0://shoutcast
                 g_bXpgStatus = XPG_MODE_IRADIO_STATION;
-                xpgSearchAndGotoPage("Net_PhotoSet",12);
+                xpgSearchAndGotoPage("Net_PhotoSet");
                 break;
 
             case 1://vtuner
                 g_bXpgStatus = XPG_MODE_VTUNER_LOCATION;
                 vtuner_free_entry();
                 vtuner_Set_menu_level(2);
-                xpgSearchAndGotoPage("Net_UserList",12);
+                xpgSearchAndGotoPage("Net_UserList");
                 break;
             }
 #endif
@@ -962,7 +962,7 @@ void xpgCb_MusicPlay()
 
         if (FileBrowserGetCurFileType() == FILE_OP_TYPE_FOLDER)
         {
-            xpgSearchAndGotoPage("Mode_Music", 10);
+            xpgSearchAndGotoPage("Mode_Music");
             xpgCb_OpenFolder();
             g_boNeedRepaint = false; // prevent XpgUi.c xpgprocessEvent() to call xpgUpdateStage() again
             return;
@@ -1160,9 +1160,9 @@ void xpgCb_MusicPlayerExit()
     {
         //mpDebugPrint("g_bXpgStatus == XPG_MODE_NET_PC_AUDIO");
         g_bXpgStatus = XPG_MODE_NET_FUNC;
-        xpgSearchAndGotoPage("Net_Func",8);
+        xpgSearchAndGotoPage("Net_Func");
         //g_bXpgStatus = XPG_MODE_IRADIO_PLS; // 48 - Radio Station
-        //xpgSearchAndGotoPage("Net_UserList",12);
+        //xpgSearchAndGotoPage("Net_UserList");
         xpgUpdateStage();
     }
     else

@@ -878,7 +878,7 @@ void EnterNetMusicMenu()
 	if(ScanNetFileList(OP_AUDIO_MODE) == FAIL)
 	{
 		mpDebugPrint(" xxxxxxx         ScanNetFileList(OP_AUDIO_MODE) == FAIL  xxxxxxxxxxx");
-		xpgSearchAndGotoPage("NetworkSTab", 11);
+		xpgSearchAndGotoPage("NetworkSTab");
 		StartAutoSearch();
 
 	}

@@ -1089,7 +1089,7 @@ void xpgCb_EnterCamcoderPreview()
 #if MAKE_XPG_PLAYER
     xpgChangeMenuMode(OP_IMAGE_MODE, 1);
 
-    xpgSearchAndGotoPage("Preview", 0);
+    xpgSearchAndGotoPage("Preview");
     xpgUpdateStage();
     mpCopyEqualWin(Idu_GetNextWin(), Idu_GetCurrWin());
 #endif
@@ -1122,7 +1122,7 @@ void xpgCb_EnterSetupPage()
     	Camcorder_PreviewStop();
     g_bXpgStatus = XPG_MODE_SETUP;
 #if MAKE_XPG_PLAYER
-    xpgSearchAndGotoPage("Setup", 0);
+    xpgSearchAndGotoPage("Setup");
     xpgUpdateStage();
 #endif
     
@@ -1137,7 +1137,7 @@ void xpgCb_EnterPhotoViewPage()
     g_bXpgStatus = XPG_MODE_PHOTOVIEW;
 #if MAKE_XPG_PLAYER
     xpgChangeMenuMode(OP_IMAGE_MODE, 1);
-    xpgSearchAndGotoPage("PhotoView", 0);
+    xpgSearchAndGotoPage("PhotoView");
     xpgUpdateStage();
 #endif
     
