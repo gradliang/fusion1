@@ -318,11 +318,12 @@ DWORD xpgFileGetSize(register XPGFILE * stream)
 ///
 ///@retval  DWORD - hash value
 ///
-DWORD xpgHash(const char *str, DWORD len)
+DWORD xpgHash(const char *str)
 {
 	register DWORD hash = 0;
 	register DWORD i = 0;
-
+    DWORD len;
+    
     if (str == NULL)
         return 0;
     len = strlen(str);      // grad add

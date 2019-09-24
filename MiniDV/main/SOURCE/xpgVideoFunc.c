@@ -66,7 +66,7 @@ void VideoPreviewKeyProcess(DWORD *pdwEvent, BYTE *pbKeyCode)
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
 
 	mpDebugPrintN("VideoPreviewKeyProcess");
-		if (dwHashKey != xpgHash("Video_Viewer", 0))
+		if (dwHashKey != xpgHash("Video_Viewer"))
 		{
 			if (st_dwVideoPreviewMode)
 				st_dwVideoPreviewMode=0;
