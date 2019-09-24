@@ -830,7 +830,7 @@ void xpgCb_PressEnterKey()
 	ST_IMGWIN stViewWin,*pWin;
 
 #if  (PRODUCT_UI==UI_SURFACE)
-    if (dwHashKey == xpgHash("Preview",0))
+    if (dwHashKey == xpgHash("Preview"))
     {
 			switch (g_dwCurIndex&0x0000ffff)
 			{
@@ -855,7 +855,7 @@ void xpgCb_PressEnterKey()
 					break;
 			}
     }
-	else if (dwHashKey == xpgHash("PhotoView",0))
+	else if (dwHashKey == xpgHash("PhotoView"))
     {
 			switch (g_dwCurIndex&0x0000ffff)
 			{
@@ -883,7 +883,7 @@ void xpgCb_PressEnterKey()
 					break;
 			}
     }
-	else if (dwHashKey == xpgHash("Setup",0))
+	else if (dwHashKey == xpgHash("Setup"))
     {
 			switch (g_dwCurIndex&0x0000ffff)
 			{

@@ -275,7 +275,7 @@ void UpdateClock(void)
 #endif
 
     DWORD dwHash = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
-    if ( dwHash == xpgHash("Clock", 0))
+    if ( dwHash == xpgHash("Clock"))
 	{
         //mpDebugPrint("UpdateClock4");
 		//UpdateClock4();

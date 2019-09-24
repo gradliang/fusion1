@@ -166,7 +166,7 @@ SWORD xpgDrawSprite_TextWhiteLeft(ST_IMGWIN * pWin, register STXPGSPRITE * pstSp
 	DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
 
 #if  (PRODUCT_UI==UI_SURFACE)
-    if (dwHashKey == xpgHash("Preview",0))
+    if (dwHashKey == xpgHash("Preview"))
     {
 			switch (pstSprite->m_dwTypeIndex)
 			{
@@ -207,12 +207,12 @@ SWORD xpgDrawSprite_TextWhiteLeft(ST_IMGWIN * pWin, register STXPGSPRITE * pstSp
 					break;
 			}
     }
-	else if (dwHashKey == xpgHash("PhotoView",0))
+	else if (dwHashKey == xpgHash("PhotoView"))
     {
 			swData=g_psSystemConfig->sFileBrowser.dwImgAndMovCurIndex;
 			
     }
-	else if (dwHashKey == xpgHash("Setup",0))
+	else if (dwHashKey == xpgHash("Setup"))
     {
 			swData=g_dwPassNum+g_dwFailNum;
 			
@@ -411,8 +411,8 @@ SWORD xpgDrawSprite_Background(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprit
 {
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
 
-    if (dwHashKey == xpgHash("User", strlen("User")) || 
-        dwHashKey == xpgHash("ToolBox", strlen("ToolBox")) )
+    if (dwHashKey == xpgHash("User") || 
+        dwHashKey == xpgHash("ToolBox") )
     {
         mpCopyEqualWin(pWin, Idu_GetCacheWin());
     }
@@ -432,33 +432,33 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
     DWORD dwSpriteId = pstSprite->m_dwTypeIndex;
     char * text = "";
     
-    if (dwHashKey == xpgHash("Main", strlen("Main")))
+    if (dwHashKey == xpgHash("Main"))
         xpgDrawSprite(pWin, pstSprite, boClip);
-    else if (dwHashKey == xpgHash("FuncSet", strlen("FuncSet")))
+    else if (dwHashKey == xpgHash("FuncSet"))
     {
         pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 0);
         if (pstMask)
             xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
     }
-    else if (dwHashKey == xpgHash("FuncSet2", strlen("FuncSet2")))
+    else if (dwHashKey == xpgHash("FuncSet2"))
     {
         pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, (dwSpriteId < 6) ? 1:0);
         if (pstMask)
             xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
     }
-    else if (dwHashKey == xpgHash("ToolBox", strlen("ToolBox")))
+    else if (dwHashKey == xpgHash("ToolBox"))
     {
         pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 0);
         if (pstMask)
             xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
     }
-    else if (dwHashKey == xpgHash("Record", strlen("Record")) )
+    else if (dwHashKey == xpgHash("Record") )
     {
         pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, dwSpriteId);
         if (pstMask)
             xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
     }
-    else if (dwHashKey == xpgHash("Manual_work", strlen("Manual_work")))
+    else if (dwHashKey == xpgHash("Manual_work"))
     {
         if (dwSpriteId <= 11)
         {
@@ -471,7 +471,7 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             xpgDrawSprite(pWin, pstSprite, boClip);
         }
     }
-    else if (dwHashKey == xpgHash("Auto_work", strlen("Auto_work")))
+    else if (dwHashKey == xpgHash("Auto_work"))
     {
         if (dwSpriteId <= 5)
         {
@@ -484,7 +484,7 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             xpgDrawSprite(pWin, pstSprite, boClip);
         }
     }
-    else if (dwHashKey == xpgHash("FusionSet3", strlen("FusionSet3")))
+    else if (dwHashKey == xpgHash("FusionSet3"))
     {
         if (dwSpriteId == 0 && g_psSetupMenu->bHotUpMode == SETUP_MENU_HOT_UP_MODE_MANUAL)
         {
@@ -509,7 +509,7 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
                 xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
         }
     }
-    else if (dwHashKey == xpgHash("FusionSet2", strlen("FusionSet2")))
+    else if (dwHashKey == xpgHash("FusionSet2"))
     {
         pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 0);
         if (pstMask)
@@ -535,7 +535,7 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         SetCurrIduFontID(FONT_ID_HeiTi16);
         Idu_PrintStringCenter(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy+2, 0, pstSprite->m_wWidth);   
     }
-    else if (dwHashKey == xpgHash("FusionSet1", strlen("FusionSet1")))
+    else if (dwHashKey == xpgHash("FusionSet1"))
     {
         if (dwSpriteId <= 7)
         {
@@ -556,7 +556,7 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             Idu_PrintStringCenter(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy+2, 0, pstSprite->m_wWidth);  
         }
     }
-    else if (dwHashKey == xpgHash("FusionModeSet", strlen("FusionModeSet")))
+    else if (dwHashKey == xpgHash("FusionModeSet"))
     {
         if (dwSpriteId <= 10)
         {
@@ -712,7 +712,7 @@ SWORD xpgDrawSprite_LightIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
     DWORD dwSpriteId = pstSprite->m_dwTypeIndex;
 
-    if (dwHashKey == xpgHash("FuncSet", strlen("FuncSet")))
+    if (dwHashKey == xpgHash("FuncSet"))
     {
         BOOL enable[8];
         enable[0] = g_psSetupMenu->bEnableIcon_LaLiCeShi;
@@ -730,7 +730,7 @@ SWORD xpgDrawSprite_LightIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite
                 xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
         }
     }
-    else if (dwHashKey == xpgHash("FuncSet2", strlen("FuncSet2")))
+    else if (dwHashKey == xpgHash("FuncSet2"))
     {
         if (dwSpriteId >= 6)
             return PASS;
@@ -742,7 +742,7 @@ SWORD xpgDrawSprite_LightIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite
         if (pstMask && lightSprite)
             xpgRoleDrawMask(lightSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
     }
-    else if (dwHashKey == xpgHash("Auto_work", strlen("Auto_work")))
+    else if (dwHashKey == xpgHash("Auto_work"))
     {
         if (dwSpriteId >= 100)
             return PASS;
@@ -760,7 +760,7 @@ SWORD xpgDrawSprite_LightIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite
         }
         
     }
-    else if (dwHashKey == xpgHash("FusionSet3", strlen("FusionSet3")))
+    else if (dwHashKey == xpgHash("FusionSet3"))
     {
         if (dwSpriteId == 0 && g_psSetupMenu->bHotUpMode == SETUP_MENU_HOT_UP_MODE_AUTO)
         {
@@ -785,7 +785,7 @@ SWORD xpgDrawSprite_LightIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite
                 xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
         }
     }
-    else if (dwHashKey == xpgHash("FusionSet2", strlen("FusionSet2")))
+    else if (dwHashKey == xpgHash("FusionSet2"))
     {
         pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 0);
         
@@ -839,7 +839,7 @@ SWORD xpgDrawSprite_LightIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite
             }
         }
     }
-    else if (dwHashKey == xpgHash("FusionSet1", strlen("FusionSet1")))
+    else if (dwHashKey == xpgHash("FusionSet1"))
     {
         if (g_psSetupMenu->bCurrFusionMode != dwSpriteId)
             return PASS;
@@ -864,7 +864,7 @@ SWORD xpgDrawSprite_DarkIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite,
     DWORD dwSpriteId = pstSprite->m_dwTypeIndex;
     
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
-    if (dwHashKey == xpgHash("SetYun", strlen("SetYun")))
+    if (dwHashKey == xpgHash("SetYun"))
     {
         if (!g_psSetupMenu->bCloudMode)
         {
@@ -873,7 +873,7 @@ SWORD xpgDrawSprite_DarkIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite,
                 xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
         }
     }
-    else if (dwHashKey == xpgHash("Auto_work", strlen("Auto_work")))
+    else if (dwHashKey == xpgHash("Auto_work"))
     {
         if (dwSpriteId >= 100)
             return PASS;
@@ -890,7 +890,7 @@ SWORD xpgDrawSprite_DarkIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite,
                 xpgRoleDrawMask(darkSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
         }
     }
-    else if (dwHashKey == xpgHash("Manual_work", strlen("Manual_work")))
+    else if (dwHashKey == xpgHash("Manual_work"))
     {
         if (dwSpriteId == 0)
         {
@@ -918,40 +918,40 @@ SWORD xpgDrawSprite_Title(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BO
 {
     DWORD dwSpriteId = pstSprite->m_dwTypeIndex;
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
-    if (dwHashKey == xpgHash("FuncSet", strlen("FuncSet")) || 
-        dwHashKey == xpgHash("FuncSet2", strlen("FuncSet2")))
+    if (dwHashKey == xpgHash("FuncSet") || 
+        dwHashKey == xpgHash("FuncSet2"))
     {
         Idu_PaintWinArea(pWin, 0, 0, pWin->wWidth, 40, RGB2YUV(0x0B, 0x0C, 0x0E));
         SetCurrIduFontID(FONT_ID_HeiTi19);
         Idu_PrintString(pWin, getstr(Str_GongNengPeiZhi), pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
     }
-    else if (dwHashKey == xpgHash("SetYun", strlen("SetYun")) ||
-             dwHashKey == xpgHash("SetSleep", strlen("SetSleep")) ||
-             dwHashKey == xpgHash("SetSound", strlen("SetSound")) ||
-             dwHashKey == xpgHash("SetTime", strlen("SetTime")) ||
-             dwHashKey == xpgHash("SetPassword", strlen("SetPassword")) ||
-             dwHashKey == xpgHash("SetUi", strlen("SetUi")) ||
-             dwHashKey == xpgHash("SetInfo", strlen("SetInfo")) )
+    else if (dwHashKey == xpgHash("SetYun") ||
+             dwHashKey == xpgHash("SetSleep") ||
+             dwHashKey == xpgHash("SetSound") ||
+             dwHashKey == xpgHash("SetTime") ||
+             dwHashKey == xpgHash("SetPassword") ||
+             dwHashKey == xpgHash("SetUi") ||
+             dwHashKey == xpgHash("SetInfo") )
     {
         Idu_PaintWinArea(pWin, 0, 0, pWin->wWidth, 40, RGB2YUV(0x0B, 0x0C, 0x0E));
         SetCurrIduFontID(FONT_ID_HeiTi19);
         Idu_PrintString(pWin, getstr(Str_XiTongSheZhi), pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
     }
-    else if (dwHashKey == xpgHash("FusionSet1", strlen("FusionSet1")) ||
-             dwHashKey == xpgHash("FusionSet2", strlen("FusionSet2")) ||
-             dwHashKey == xpgHash("FusionSet3", strlen("FusionSet3")))
+    else if (dwHashKey == xpgHash("FusionSet1") ||
+             dwHashKey == xpgHash("FusionSet2") ||
+             dwHashKey == xpgHash("FusionSet3"))
     {
         Idu_PaintWinArea(pWin, 0, 0, pWin->wWidth, 40, RGB2YUV(0x0B, 0x0C, 0x0E));
         SetCurrIduFontID(FONT_ID_HeiTi19);
         Idu_PrintString(pWin, getstr(Str_RongJieSheZhi), pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
     }
-    else if (dwHashKey == xpgHash("FusionModeSet", strlen("FusionModeSet")) )
+    else if (dwHashKey == xpgHash("FusionModeSet") )
     {
         Idu_PaintWinArea(pWin, 0, 0, pWin->wWidth, 40, RGB2YUV(0x0B, 0x0C, 0x0E));
         SetCurrIduFontID(FONT_ID_HeiTi19);
         Idu_PrintString(pWin, getstr(Str_XiTongSheZhi), pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
     }
-    else if (dwHashKey == xpgHash("Record", strlen("Record")) )
+    else if (dwHashKey == xpgHash("Record") )
     {
         if (dwSpriteId == 0)
         {
@@ -971,18 +971,18 @@ SWORD xpgDrawSprite_Title(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BO
 SWORD xpgDrawSprite_Aside(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOOL boClip)
 {
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
-    if (dwHashKey == xpgHash("FuncSet", strlen("FuncSet")) || 
-        dwHashKey == xpgHash("FuncSet2", strlen("FuncSet2")) ||
-        dwHashKey == xpgHash("SetYun", strlen("SetYun")) ||
-        dwHashKey == xpgHash("SetSleep", strlen("SetSleep")) ||
-        dwHashKey == xpgHash("SetSound", strlen("SetSound")) ||
-        dwHashKey == xpgHash("SetTime", strlen("SetTime")) ||
-        dwHashKey == xpgHash("SetPassword", strlen("SetPassword")) ||
-        dwHashKey == xpgHash("SetUi", strlen("SetUi")) ||
-        dwHashKey == xpgHash("SetInfo", strlen("SetInfo")) ||
-        dwHashKey == xpgHash("FusionSet1", strlen("FusionSet1")) ||
-        dwHashKey == xpgHash("FusionSet2", strlen("FusionSet2")) ||
-        dwHashKey == xpgHash("FusionSet3", strlen("FusionSet3")))
+    if (dwHashKey == xpgHash("FuncSet") || 
+        dwHashKey == xpgHash("FuncSet2") ||
+        dwHashKey == xpgHash("SetYun") ||
+        dwHashKey == xpgHash("SetSleep") ||
+        dwHashKey == xpgHash("SetSound") ||
+        dwHashKey == xpgHash("SetTime") ||
+        dwHashKey == xpgHash("SetPassword") ||
+        dwHashKey == xpgHash("SetUi") ||
+        dwHashKey == xpgHash("SetInfo") ||
+        dwHashKey == xpgHash("FusionSet1") ||
+        dwHashKey == xpgHash("FusionSet2") ||
+        dwHashKey == xpgHash("FusionSet3"))
     {
         Idu_PaintWinArea(pWin, 248, 0, 2, pWin->wHeight, RGB2YUV(0x2E, 0x2E, 0x2E));
     }    
@@ -992,19 +992,19 @@ SWORD xpgDrawSprite_Aside(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BO
 SWORD xpgDrawSprite_BackIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOOL boClip)
 {
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
-    if (dwHashKey == xpgHash("FuncSet", strlen("FuncSet")) || 
-        dwHashKey == xpgHash("FuncSet2", strlen("FuncSet2")) ||
-        dwHashKey == xpgHash("SetYun", strlen("SetYun")) ||
-        dwHashKey == xpgHash("SetSleep", strlen("SetSleep")) ||
-        dwHashKey == xpgHash("SetSound", strlen("SetSound")) ||
-        dwHashKey == xpgHash("SetTime", strlen("SetTime")) ||
-        dwHashKey == xpgHash("SetPassword", strlen("SetPassword")) ||
-        dwHashKey == xpgHash("SetUi", strlen("SetUi")) ||
-        dwHashKey == xpgHash("SetInfo", strlen("SetInfo")) ||
-        dwHashKey == xpgHash("FusionSet1", strlen("FusionSet1")) ||
-        dwHashKey == xpgHash("FusionSet2", strlen("FusionSet2")) ||
-        dwHashKey == xpgHash("FusionSet3", strlen("FusionSet3")) ||
-        dwHashKey == xpgHash("Record", strlen("Record")))
+    if (dwHashKey == xpgHash("FuncSet") || 
+        dwHashKey == xpgHash("FuncSet2") ||
+        dwHashKey == xpgHash("SetYun") ||
+        dwHashKey == xpgHash("SetSleep") ||
+        dwHashKey == xpgHash("SetSound") ||
+        dwHashKey == xpgHash("SetTime") ||
+        dwHashKey == xpgHash("SetPassword") ||
+        dwHashKey == xpgHash("SetUi") ||
+        dwHashKey == xpgHash("SetInfo") ||
+        dwHashKey == xpgHash("FusionSet1") ||
+        dwHashKey == xpgHash("FusionSet2") ||
+        dwHashKey == xpgHash("FusionSet3") ||
+        dwHashKey == xpgHash("Record"))
     {
         char tmpbuf[64];
         SetCurrIduFontID(FONT_ID_HeiTi19);
@@ -1012,7 +1012,7 @@ SWORD xpgDrawSprite_BackIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite,
         Idu_PrintString(pWin, tmpbuf, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
         xpgSpriteSetTouchArea(pstSprite, 0, 0, 120, 40);
     }
-    else if (dwHashKey == xpgHash("FusionModeSet", strlen("FusionModeSet")))
+    else if (dwHashKey == xpgHash("FusionModeSet"))
     {
         char tmpbuf[64];
         SetCurrIduFontID(FONT_ID_HeiTi19);
@@ -1036,7 +1036,7 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
     char * text = "";
     DWORD dwTextId = pstSprite->m_dwTypeIndex;
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
-    if (dwHashKey == xpgHash("Main", strlen("Main")))
+    if (dwHashKey == xpgHash("Main"))
     {
         if (dwTextId == 0)
             text = getstr(Str_YongHuWeiHu);
@@ -1055,7 +1055,7 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         SetCurrIduFontID(FONT_ID_HeiTi16);
         Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
     }
-    else if (dwHashKey == xpgHash("FuncSet", strlen("FuncSet")))
+    else if (dwHashKey == xpgHash("FuncSet"))
     {
         if (dwTextId == 0)
             text = getstr(Str_LaLiCeShi);
@@ -1076,7 +1076,7 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         SetCurrIduFontID(FONT_ID_HeiTi16);
         Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
     }
-    else if (dwHashKey == xpgHash("FuncSet2", strlen("FuncSet2")))
+    else if (dwHashKey == xpgHash("FuncSet2"))
     {
         if (dwTextId <= 5)
         {
@@ -1148,7 +1148,7 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             SetCurrIduFontID(FONT_ID_HeiTi19);
         Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
     }
-    else if (dwHashKey == xpgHash("ToolBox", strlen("ToolBox")))
+    else if (dwHashKey == xpgHash("ToolBox"))
     {
         if (dwTextId == 0)
             text = getstr(Str_HongGuangBi);
@@ -1159,7 +1159,7 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         SetCurrIduFontID(FONT_ID_HeiTi19);
         Idu_PrintStringCenter(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 66);
     }
-    else if (dwHashKey == xpgHash("Manual_work", strlen("Manual_work")))
+    else if (dwHashKey == xpgHash("Manual_work"))
     {
         char tempStr[64];
         if (dwTextId == 0)
@@ -1271,7 +1271,7 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             Idu_PrintString(pWin, tempStr, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
         }
     }
-    else if (dwHashKey == xpgHash("FusionSet3", strlen("FusionSet3")))
+    else if (dwHashKey == xpgHash("FusionSet3"))
     {
         BYTE tmpbuf[128];
         if (dwTextId == 0)
@@ -1285,7 +1285,7 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         SetCurrIduFontID(FONT_ID_HeiTi16);
         Idu_PrintStringRight(pWin, tmpbuf, pstSprite->m_wPx, pstSprite->m_wPy, 0);
     }
-    else if (dwHashKey == xpgHash("FusionSet2", strlen("FusionSet2")))
+    else if (dwHashKey == xpgHash("FusionSet2"))
     {
         if (dwTextId == 0)
             text = getstr(Str_RongJieZhiLiang);
@@ -1298,7 +1298,7 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         SetCurrIduFontID(FONT_ID_HeiTi19);
         Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
     }
-    else if (dwHashKey == xpgHash("FusionSet1", strlen("FusionSet1")))
+    else if (dwHashKey == xpgHash("FusionSet1"))
     {
         int mode;
         MODEPARAM * pstModeParam;
@@ -1398,7 +1398,7 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         
         Idu_FontColorSet(0xff,0xff,0xff);
     }
-    else if (dwHashKey == xpgHash("FusionModeSet", strlen("FusionModeSet")))
+    else if (dwHashKey == xpgHash("FusionModeSet"))
     {
         char tmpText[256];
 
@@ -1486,7 +1486,7 @@ SWORD xpgDrawSprite_Selector(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite,
     DWORD dwSelectorId = pstSprite->m_dwTypeIndex;
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
 
-    if (dwHashKey == xpgHash("FuncSet", strlen("FuncSet")))
+    if (dwHashKey == xpgHash("FuncSet"))
     {
         if (dwSelectorId == 0)
         {
@@ -1507,7 +1507,7 @@ SWORD xpgDrawSprite_Selector(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite,
             xpgSpriteEnableTouch(pstSprite);
         }
     }
-    else if (dwHashKey == xpgHash("FuncSet2", strlen("FuncSet2")))
+    else if (dwHashKey == xpgHash("FuncSet2"))
     {
         if (dwSelectorId == 0)
         {
@@ -1528,13 +1528,13 @@ SWORD xpgDrawSprite_Selector(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite,
             Idu_PrintString(pWin, ">", pstSprite->m_wPx + 220, pstSprite->m_wPy + 12, 0, 0);
         }
     }
-    else if (dwHashKey == xpgHash("SetYun", strlen("SetYun")) ||
-            dwHashKey == xpgHash("SetSleep", strlen("SetSleep")) ||
-            dwHashKey == xpgHash("SetSound", strlen("SetSound")) ||
-            dwHashKey == xpgHash("SetTime", strlen("SetTime")) ||
-            dwHashKey == xpgHash("SetPassword", strlen("SetPassword")) ||
-            dwHashKey == xpgHash("SetUi", strlen("SetUi")) ||
-            dwHashKey == xpgHash("SetInfo", strlen("SetInfo")))
+    else if (dwHashKey == xpgHash("SetYun") ||
+            dwHashKey == xpgHash("SetSleep") ||
+            dwHashKey == xpgHash("SetSound") ||
+            dwHashKey == xpgHash("SetTime") ||
+            dwHashKey == xpgHash("SetPassword") ||
+            dwHashKey == xpgHash("SetUi") ||
+            dwHashKey == xpgHash("SetInfo"))
     {
         DWORD curPageType;
         if(dwSelectorId == 0)
@@ -1552,19 +1552,19 @@ SWORD xpgDrawSprite_Selector(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite,
         else //if (dwSelectorId == 6)
             text = getstr(Str_XiTongXinXi);
 
-        if (dwHashKey == xpgHash("SetYun", strlen("SetYun")))
+        if (dwHashKey == xpgHash("SetYun"))
             curPageType = 0;
-        else if (dwHashKey == xpgHash("SetSleep", strlen("SetSleep")))
+        else if (dwHashKey == xpgHash("SetSleep"))
             curPageType = 1;
-        else if (dwHashKey == xpgHash("SetSound", strlen("SetSound")))
+        else if (dwHashKey == xpgHash("SetSound"))
             curPageType = 2;
-        else if (dwHashKey == xpgHash("SetTime", strlen("SetTime")))
+        else if (dwHashKey == xpgHash("SetTime"))
             curPageType = 3;
-        else if (dwHashKey == xpgHash("SetPassword", strlen("SetPassword")))
+        else if (dwHashKey == xpgHash("SetPassword"))
             curPageType = 4;
-        else if (dwHashKey == xpgHash("SetUi", strlen("SetUi")))
+        else if (dwHashKey == xpgHash("SetUi"))
             curPageType = 5;
-        else //if (dwHashKey == xpgHash("SetInfo", strlen("SetInfo")))
+        else //if (dwHashKey == xpgHash("SetInfo"))
             curPageType = 6;
         
         if (dwSelectorId == curPageType)
@@ -1586,9 +1586,9 @@ SWORD xpgDrawSprite_Selector(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite,
             xpgSpriteEnableTouch(pstSprite);
         }
     }
-    else if (dwHashKey == xpgHash("FusionSet1", strlen("FusionSet1")) ||
-             dwHashKey == xpgHash("FusionSet2", strlen("FusionSet2")) ||
-             dwHashKey == xpgHash("FusionSet3", strlen("FusionSet3")) )
+    else if (dwHashKey == xpgHash("FusionSet1") ||
+             dwHashKey == xpgHash("FusionSet2") ||
+             dwHashKey == xpgHash("FusionSet3") )
     {
         DWORD curPageType;
         if(dwSelectorId == 0)
@@ -1598,11 +1598,11 @@ SWORD xpgDrawSprite_Selector(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite,
         else //if (dwSelectorId == 2)
             text = getstr(Str_JiaReSheZhi);
         
-        if (dwHashKey == xpgHash("FusionSet1", strlen("FusionSet1")))
+        if (dwHashKey == xpgHash("FusionSet1"))
             curPageType = 0;
-        else if (dwHashKey == xpgHash("FusionSet2", strlen("FusionSet2")))
+        else if (dwHashKey == xpgHash("FusionSet2"))
             curPageType = 1;
-        else //if (dwHashKey == xpgHash("FusionSet3", strlen("FusionSet3")))
+        else //if (dwHashKey == xpgHash("FusionSet3"))
             curPageType = 2;
         
         if (dwSelectorId == curPageType)
@@ -1639,7 +1639,7 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
     DWORD dwListId = pstSprite->m_dwTypeIndex;
     
-    if (dwHashKey == xpgHash("SetYun", strlen("SetYun")))
+    if (dwHashKey == xpgHash("SetYun"))
     {
         if (dwListId == 0)
             text = getstr(Str_YunDuanMoShi);
@@ -1652,7 +1652,7 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
         Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + 38, 400, 2, RGB2YUV(0x2F, 0x2F, 0x2F));
     }
-    else if (dwHashKey == xpgHash("SetSleep", strlen("SetSleep")))
+    else if (dwHashKey == xpgHash("SetSleep"))
     {
         if (dwListId == 0)
             text = getstr(Str_ZhiNengBeiGuang);
@@ -1667,7 +1667,7 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
         Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + 38, 400, 2, RGB2YUV(0x2F, 0x2F, 0x2F));
     }
-    else if (dwHashKey == xpgHash("SetSound", strlen("SetSound")))
+    else if (dwHashKey == xpgHash("SetSound"))
     {
         if (dwListId == 0)
             text = getstr(Str_ChuPingShengYin);
@@ -1677,7 +1677,7 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
         Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + 38, 400, 2, RGB2YUV(0x2F, 0x2F, 0x2F));
     }
-    else if (dwHashKey == xpgHash("SetTime", strlen("SetTime")))
+    else if (dwHashKey == xpgHash("SetTime"))
     {
         if (dwListId == 0)
             text = getstr(Str_24XiaoShiZhi);
@@ -1694,7 +1694,7 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
         Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + 38, 400, 2, RGB2YUV(0x2F, 0x2F, 0x2F));
     }
-    else if (dwHashKey == xpgHash("SetPassword", strlen("SetPassword")))
+    else if (dwHashKey == xpgHash("SetPassword"))
     {
         if (dwListId == 0)
             text = getstr(Str_KaiJiMiMa);
@@ -1713,7 +1713,7 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
         Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + 38, 400, 2, RGB2YUV(0x2F, 0x2F, 0x2F));
     }
-    else if (dwHashKey == xpgHash("SetUi", strlen("SetUi")))
+    else if (dwHashKey == xpgHash("SetUi"))
     {
         if (dwListId == 0)
             text = getstr(Str_ZhuJieMianFengGe);
@@ -1724,7 +1724,7 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
         Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + 38, 400, 2, RGB2YUV(0x2F, 0x2F, 0x2F));
     }
-    else if (dwHashKey == xpgHash("SetInfo", strlen("SetInfo")))
+    else if (dwHashKey == xpgHash("SetInfo"))
     {
         if (dwListId == 0)
             text = getstr(Str_GuanYuBenJi);
@@ -1745,7 +1745,7 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
         Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + 38, 400, 2, RGB2YUV(0x2F, 0x2F, 0x2F));
     }
-    else if (dwHashKey == xpgHash("User", strlen("User")))
+    else if (dwHashKey == xpgHash("User"))
     {
         if (dwListId == 0)
             text = getstr(Str_ZiDongRongJieMoShi);
@@ -1765,7 +1765,7 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         Idu_PrintStringCenter(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy + 3, 0, 300);
         xpgSpriteEnableTouch(pstSprite);
     }
-    else if (dwHashKey == xpgHash("Record", strlen("Record")))
+    else if (dwHashKey == xpgHash("Record"))
     {
         char tmpbuff[128];
         STRECORD * pr;
@@ -1813,7 +1813,7 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
 
         Idu_PaintWinArea(pWin, 14, pstSprite->m_wPy + 35, 744, 2, RGB2YUV(0x20, 0x20, 0x20));
     }
-    else if (dwHashKey == xpgHash("FusionSet3", strlen("FusionSet3")))
+    else if (dwHashKey == xpgHash("FusionSet3"))
     {
         if (dwListId == 0)
             text = getstr(Str_YuReMoShi);
@@ -1932,7 +1932,7 @@ SWORD xpgDrawSprite_Dialog(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
     xpgRoleInit(&stRole);
     xpgRoleInit(&stMaskRole);
     
-    if (dwHashKey == xpgHash("User", strlen("User")))
+    if (dwHashKey == xpgHash("User"))
     {
         MakeDialogRole(&stRole, 400, 440);
         MakeMaskRole(&stMaskRole, XPG_ROLE_ICON_MASK_0, 400, 440);
@@ -1941,7 +1941,7 @@ SWORD xpgDrawSprite_Dialog(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
         SetCurrIduFontID(FONT_ID_HeiTi19);
         Idu_PrintStringCenter(pWin, getstr(Str_YongHuWeiHu), pstSprite->m_wPx, pstSprite->m_wPy + 5, 0, pstSprite->m_wWidth);
     }
-    else if (dwHashKey == xpgHash("ToolBox", strlen("ToolBox")))
+    else if (dwHashKey == xpgHash("ToolBox"))
     {
         MakeDialogRole(&stRole, 500, 250);
         MakeMaskRole(&stMaskRole, XPG_ROLE_ICON_MASK_0, 500, 250);
@@ -1969,7 +1969,7 @@ SWORD xpgDrawSprite_Radio(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BO
     STXPGSPRITE *pstMask;
     
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
-    if (dwHashKey == xpgHash("SetYun", strlen("SetYun")))
+    if (dwHashKey == xpgHash("SetYun"))
     {
         if (g_psSetupMenu->bCloudMode)
         {
@@ -1979,10 +1979,10 @@ SWORD xpgDrawSprite_Radio(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BO
         }
         xpgSpriteEnableTouch(pstSprite);
     }
-    else if (dwHashKey == xpgHash("SetSleep", strlen("SetSleep")))
+    else if (dwHashKey == xpgHash("SetSleep"))
     {
     }
-    else if (dwHashKey == xpgHash("SetSound", strlen("SetSound")))
+    else if (dwHashKey == xpgHash("SetSound"))
     {
     }
     return PASS;
@@ -1994,7 +1994,7 @@ SWORD xpgDrawSprite_Scroll(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
     DWORD dwSpriteId = pstSprite->m_dwTypeIndex;
 
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
-    if (dwHashKey == xpgHash("SetSleep", strlen("SetSleep")))
+    if (dwHashKey == xpgHash("SetSleep"))
     {
         if (dwSpriteId == 0)
         {
@@ -2017,7 +2017,7 @@ SWORD xpgDrawSprite_Scroll(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
             xpgSpriteSetTouchArea(pstSprite, pstSprite->m_wPx, pstSprite->m_wPy-8, pstSprite->m_wWidth, pstSprite->m_wHeight+8);
         }
     }
-    else if (dwHashKey == xpgHash("SetSound", strlen("SetSound")))
+    else if (dwHashKey == xpgHash("SetSound"))
     {
         if (dwSpriteId == 0)
         {
@@ -2048,7 +2048,7 @@ SWORD xpgDrawSprite_Frame(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BO
     STXPGSPRITE *pstMask = NULL;
     DWORD dwSpriteId = pstSprite->m_dwTypeIndex;
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
-    if (dwHashKey == xpgHash("Manual_work", strlen("Manual_work")))
+    if (dwHashKey == xpgHash("Manual_work"))
     {
         if (dwSpriteId == 0)
         {
@@ -2073,7 +2073,7 @@ SWORD xpgDrawSprite_Frame(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BO
             Idu_PaintWinArea(pWin, 486, 368, 02, 70, RGB2YUV(0x47, 0x47, 0x47));
         }
     }
-    if (dwHashKey == xpgHash("Auto_work", strlen("Auto_work")))
+    if (dwHashKey == xpgHash("Auto_work"))
     {
         if (dwSpriteId == 0)
         {

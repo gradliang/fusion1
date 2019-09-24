@@ -260,7 +260,7 @@ void xpgUpdateStage()
 #if 0
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
 
-    if (dwHashKey == xpgHash("Mode_Photo", 0) || dwHashKey == xpgHash("Photo_Viewer", 0))
+    if (dwHashKey == xpgHash("Mode_Photo") || dwHashKey == xpgHash("Photo_Viewer"))
     {
 			ShowItemIndex();
     }
@@ -708,7 +708,7 @@ void xpgDirectDrawRoleOnWin(ST_IMGWIN * pWin, STXPGROLE * pstRole,
      		WORD wBlend  = pstSprite->m_astFrame[wCurFrame].m_alValue[6];
      		WORD wAngle  = pstSprite->m_astFrame[wCurFrame].m_alValue[7];
      	#if 1	
-     		DWORD pageHashKey = xpgHash("Clock", 5);
+     		DWORD pageHashKey = xpgHash("Clock");
      		if(g_pstXpgMovie->m_pstCurPage->m_dwHashKey == pageHashKey)
      		{
      		    //mpDebugPrint("pstSprite->m_dwType = %d, pstSprite->m_dwTypeIndex = %d", pstSprite->m_dwType, pstSprite->m_dwTypeIndex);

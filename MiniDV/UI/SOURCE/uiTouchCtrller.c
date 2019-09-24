@@ -146,7 +146,7 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
     DWORD dwIconId = sprite->m_dwTypeIndex;
     mpDebugPrint("touchSprite_Icon  %d", dwIconId);
     
-    if (dwHashKey == xpgHash("Main", strlen("Main")))
+    if (dwHashKey == xpgHash("Main"))
     {
         if (dwIconId == 0) 
         {
@@ -192,7 +192,7 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
             xpgUpdateStage();
         }
     }
-    else if (dwHashKey == xpgHash("FuncSet", strlen("FuncSet")))
+    else if (dwHashKey == xpgHash("FuncSet"))
     {
         BYTE * pb;
         if (dwIconId == 0)
@@ -215,7 +215,7 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
         xpgUpdateStage();
         WriteSetupChg();
     }
-    else if (dwHashKey == xpgHash("FuncSet2", strlen("FuncSet2")))
+    else if (dwHashKey == xpgHash("FuncSet2"))
     {
         if (dwIconId < 6)
         {
@@ -256,7 +256,7 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
         }
         xpgUpdateStage();
     }
-    else if (dwHashKey == xpgHash("Auto_work", strlen("Auto_work")))
+    else if (dwHashKey == xpgHash("Auto_work"))
     {
         if (dwIconId <= 5)
         {
@@ -287,7 +287,7 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
         {
         }
     }
-    else if (dwHashKey == xpgHash("FusionSet3", strlen("FusionSet3")))
+    else if (dwHashKey == xpgHash("FusionSet3"))
     {
         if (dwIconId == 0)
         {
@@ -314,7 +314,7 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
             WriteSetupChg();
         }
     }
-    else if (dwHashKey == xpgHash("FusionSet2", strlen("FusionSet2")))
+    else if (dwHashKey == xpgHash("FusionSet2"))
     {
         if (dwIconId == 0 || dwIconId == 1 || dwIconId == 2)
         {
@@ -335,7 +335,7 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
         	WriteSetupChg();
         }
     }
-    else if (dwHashKey == xpgHash("FusionSet1", strlen("FusionSet1")))
+    else if (dwHashKey == xpgHash("FusionSet1"))
     {
         if (dwIconId < 8)
         {
@@ -372,7 +372,7 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
             xpgUpdateStage();
         }
     }
-    else if (dwHashKey == xpgHash("FusionModeSet", strlen("FusionModeSet")))
+    else if (dwHashKey == xpgHash("FusionModeSet"))
     {
         if (dwIconId <= 10)
         {
@@ -447,28 +447,28 @@ SWORD touchSprite_BackIcon(STXPGSPRITE * sprite, WORD x, WORD y)
     mpDebugPrint("touchSprite_BackIcon  %d", sprite->m_dwTypeIndex);
     
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
-    if (dwHashKey == xpgHash("SetYun", strlen("SetYun")) ||
-        dwHashKey == xpgHash("SetSleep", strlen("SetSleep")) ||
-        dwHashKey == xpgHash("SetSound", strlen("SetSound")) ||
-        dwHashKey == xpgHash("SetTime", strlen("SetTime")) ||
-        dwHashKey == xpgHash("SetPassword", strlen("SetPassword")) ||
-        dwHashKey == xpgHash("SetUi", strlen("SetUi")) ||
-        dwHashKey == xpgHash("SetInfo", strlen("SetInfo")) ||
-        dwHashKey == xpgHash("Record", strlen("Record")))
+    if (dwHashKey == xpgHash("SetYun") ||
+        dwHashKey == xpgHash("SetSleep") ||
+        dwHashKey == xpgHash("SetSound") ||
+        dwHashKey == xpgHash("SetTime") ||
+        dwHashKey == xpgHash("SetPassword") ||
+        dwHashKey == xpgHash("SetUi") ||
+        dwHashKey == xpgHash("SetInfo") ||
+        dwHashKey == xpgHash("Record"))
     {
         xpgSearchAndGotoPage("Main", 0);
         xpgUpdateStage();
     }
-    else if (dwHashKey == xpgHash("FuncSet", strlen("FuncSet")) || 
-        dwHashKey == xpgHash("FuncSet2", strlen("FuncSet2")) ||
-        dwHashKey == xpgHash("FusionSet1", strlen("FusionSet1")) ||
-        dwHashKey == xpgHash("FusionSet2", strlen("FusionSet2")) ||
-        dwHashKey == xpgHash("FusionSet3", strlen("FusionSet3")) )
+    else if (dwHashKey == xpgHash("FuncSet") || 
+        dwHashKey == xpgHash("FuncSet2") ||
+        dwHashKey == xpgHash("FusionSet1") ||
+        dwHashKey == xpgHash("FusionSet2") ||
+        dwHashKey == xpgHash("FusionSet3") )
     {
         xpgSearchAndGotoPage("Main", 0);
         xpgUpdateStage();
     }
-    else if (dwHashKey == xpgHash("FusionModeSet", strlen("FusionModeSet")))
+    else if (dwHashKey == xpgHash("FusionModeSet"))
     {
         xpgSearchAndGotoPage("FusionSet1", 0);
         xpgUpdateStage();
@@ -482,8 +482,8 @@ SWORD touchSprite_CloseIcon(STXPGSPRITE * sprite, WORD x, WORD y)
     mpDebugPrint("touchSprite_CloseIcon  %d", sprite->m_dwTypeIndex);
     
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
-    if (dwHashKey == xpgHash("User", strlen("User")) || 
-        dwHashKey == xpgHash("ToolBox", strlen("ToolBox")))
+    if (dwHashKey == xpgHash("User") || 
+        dwHashKey == xpgHash("ToolBox"))
     {
         xpgSearchAndGotoPage("Main", 0);
         xpgUpdateStage();
@@ -502,23 +502,23 @@ SWORD touchSprite_Selector(STXPGSPRITE * sprite, WORD x, WORD y)
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
     mpDebugPrint("touchSprite_Selector  %d", sprite->m_dwTypeIndex);
     
-    if (dwHashKey == xpgHash("FuncSet", strlen("FuncSet")))
+    if (dwHashKey == xpgHash("FuncSet"))
     {
         xpgSearchAndGotoPage("FuncSet2", 0);
         xpgUpdateStage();
     }
-    else if (dwHashKey == xpgHash("FuncSet2", strlen("FuncSet2")))
+    else if (dwHashKey == xpgHash("FuncSet2"))
     {
         xpgSearchAndGotoPage("FuncSet", 0);
         xpgUpdateStage();
     }
-    else if (dwHashKey == xpgHash("SetYun", strlen("SetYun")) ||
-        dwHashKey == xpgHash("SetSleep", strlen("SetSleep")) ||
-        dwHashKey == xpgHash("SetSound", strlen("SetSound")) ||
-        dwHashKey == xpgHash("SetTime", strlen("SetTime")) ||
-        dwHashKey == xpgHash("SetPassword", strlen("SetPassword")) ||
-        dwHashKey == xpgHash("SetUi", strlen("SetUi")) ||
-        dwHashKey == xpgHash("SetInfo", strlen("SetInfo")))
+    else if (dwHashKey == xpgHash("SetYun") ||
+        dwHashKey == xpgHash("SetSleep") ||
+        dwHashKey == xpgHash("SetSound") ||
+        dwHashKey == xpgHash("SetTime") ||
+        dwHashKey == xpgHash("SetPassword") ||
+        dwHashKey == xpgHash("SetUi") ||
+        dwHashKey == xpgHash("SetInfo"))
     {
         if (dwSelectorId == 0)
         {
@@ -557,9 +557,9 @@ SWORD touchSprite_Selector(STXPGSPRITE * sprite, WORD x, WORD y)
         }
         
     }
-    else if (dwHashKey == xpgHash("FusionSet1", strlen("FusionSet1")) ||
-        dwHashKey == xpgHash("FusionSet2", strlen("FusionSet2")) ||
-        dwHashKey == xpgHash("FusionSet3", strlen("FusionSet3"))  )
+    else if (dwHashKey == xpgHash("FusionSet1") ||
+        dwHashKey == xpgHash("FusionSet2") ||
+        dwHashKey == xpgHash("FusionSet3")  )
     {
         if (dwSelectorId == 0)
         {
@@ -602,7 +602,7 @@ SWORD touchSprite_Radio(STXPGSPRITE * sprite, WORD x, WORD y)
     DWORD dwSpriteId = sprite->m_dwTypeIndex;
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
 
-    if (dwHashKey == xpgHash("SetYun", strlen("SetYun")))
+    if (dwHashKey == xpgHash("SetYun"))
     {
         if (dwSpriteId == 0)
         {
@@ -622,7 +622,7 @@ SWORD touchSprite_Scroll(STXPGSPRITE * sprite, WORD x, WORD y)
     int x1 = x - sprite->m_wPx;
     int y1 = y - sprite->m_wPy;
 
-    if (dwHashKey == xpgHash("SetSleep", strlen("SetSleep")))
+    if (dwHashKey == xpgHash("SetSleep"))
     {
         if (x1 >= 0 && y1 >= 0)
         {
@@ -638,7 +638,7 @@ SWORD touchSprite_Scroll(STXPGSPRITE * sprite, WORD x, WORD y)
             xpgUpdateStage();
         }
     }
-    else if (dwHashKey == xpgHash("SetSound", strlen("SetSound")))
+    else if (dwHashKey == xpgHash("SetSound"))
     {
         if (x1 >= 0 && y1 >= 0)
         {

@@ -232,7 +232,7 @@ void RecordWebCamStart(void)
 
 	if (bRecordMode())
 		return ;
-	if (dwHashKey != xpgHash("Preview", 0))
+	if (dwHashKey != xpgHash("Preview"))
 		return;
  	handle =(STREAM *)GetRecordFileHandle();
 	if (handle==NULL)

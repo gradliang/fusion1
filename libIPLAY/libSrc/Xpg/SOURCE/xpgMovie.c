@@ -294,7 +294,7 @@ STXPGPAGE *xpgMovieSearchPage(const char *name, DWORD len)
 	register DWORD iPage;
 	register DWORD dwSearchKey;
 
-	dwSearchKey = xpgHash(name, strlen(name) /*len*/);
+	dwSearchKey = xpgHash(name);
 	for (iPage = 1; iPage < g_pstXpgMovie->m_wPageCount; iPage++)
 	{
 		STXPGPAGE *pstPage = &(g_pstXpgMovie->m_astPage[iPage]);

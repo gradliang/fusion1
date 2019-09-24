@@ -1214,7 +1214,7 @@ static void sms_read_message(void)
 	dwHashKey = CDPF_GetPageHashKey();
 	dwTime = SystemGetTimeStamp();
 	CDPF_ClearKey();
-	if ( dwHashKey == xpgHash("SlideShow", 9) && (g_bAniFlag & ANI_AUDIO))
+	if ( dwHashKey == xpgHash("SlideShow") && (g_bAniFlag & ANI_AUDIO))
 	{
 		CDPF_ShowStartSms();							//grad add
 		g_bDisablePollingKey = 1;	//disable key
