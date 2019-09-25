@@ -579,19 +579,108 @@ void xpgSpriteCopy(register STXPGMOVIE * pstMovie, register STXPGSPRITE * pstDst
 
 }
 
+/////////////////////////////////////////////////////////////////////////////
+// dialog support
+///////////////////////////
+
+#define DIALOG_MAX_SPRITE_CNT       50
+
+typedef struct {
+    XPGEXTRASPRITE  spriteList[DIALOG_MAX_SPRITE_CNT];
+    DWORD           spriteCount;
+    int             dailogId;
+}XPGDIALOGSTACK;
+
+#define DIALOG_STACK_SIZE           3
+static XPGDIALOGSTACK  dialogStacks[DIALOG_STACK_SIZE];
+static DWORD dialogCount = 0;
+
+
 void xpgExtraSpriteCopy(STXPGSPRITE * pstDst, STXPGPAGESPRITE * pstSrc)
 {
 }
 
 DWORD getCurDialogExtraSpriteCount()
 {
-    return 0;
+    DWORD curDialogIndex;
+    if (dialogCount == 0 || dialogCount > DIALOG_STACK_SIZE)
+        return 0;
+    curDialogIndex = dialogCount - 1;
+    XPGDIALOGSTACK * pstCurDialogInfo = &dialogStacks[curDialogIndex];
+    return pstCurDialogInfo->spriteCount;
 }
 
 XPGEXTRASPRITE* getCurDialogExtraSpriteList()
 {
-    return NULL;
+    DWORD curDialogIndex;
+    if (dialogCount == 0 || dialogCount > DIALOG_STACK_SIZE)
+        return NULL;
+    curDialogIndex = dialogCount - 1;
+    XPGDIALOGSTACK * pstCurDialogInfo = &dialogStacks[curDialogIndex];
+    return pstCurDialogInfo->spriteList;
 }
+
+int xpgAddDialog(int dialogId)
+{
+    DWORD curDialogIndex;
+    if (dialogCount >= 3)
+    {
+        mpDebugPrint("Dialog count too large, have exist %d dialogs. ", dialogCount);
+        return -1;
+    }
+    curDialogIndex = dialogCount;
+    XPGDIALOGSTACK * pstCurDialogInfo = &dialogStacks[curDialogIndex];
+    pstCurDialogInfo->dailogId = dialogId;
+    pstCurDialogInfo->spriteCount = 0;
+    dialogCount++;
+    mpDebugPrint("xpgAddDialog OK, index = %d", curDialogIndex);
+    return PASS;
+}
+
+int xpgDeleteDialog()
+{
+    if (dialogCount > 0)
+        dialogCount --;
+    mpDebugPrint("xpgDeleteDialog OK, dialogCount = %d", dialogCount);
+    return PASS;
+}
+
+int xpgDeleteAllDialog()
+{
+    dialogCount = 0;
+    mpDebugPrint("xpgDeleteAllDialog");
+    return PASS;
+}
+
+int xpgAddDialogSprite(WORD m_dwType, WORD m_dwTypeIndex, BYTE flag)
+{
+    DWORD curDialogIndex;
+    XPGEXTRASPRITE * pstExtraSprite;
+    
+    if (dialogCount == 0 || dialogCount > DIALOG_STACK_SIZE)
+    {
+        mpDebugPrint("xpgAddDialogSprite error, dialogCount=%d", dialogCount);
+        return -1;
+    }
+    curDialogIndex = dialogCount - 1;
+    XPGDIALOGSTACK * pstCurDialogInfo = &dialogStacks[curDialogIndex];
+    if (pstCurDialogInfo->spriteCount >= DIALOG_MAX_SPRITE_CNT)
+    {
+        mpDebugPrint("xpgAddDialogSprite error, spriteCount=%d", pstCurDialogInfo->spriteCount);
+        return -1;
+    }
+    pstExtraSprite = &(pstCurDialogInfo->spriteList[pstCurDialogInfo->spriteCount]);
+    pstExtraSprite->m_dwType = m_dwType;
+    pstExtraSprite->m_dwTypeIndex = m_dwTypeIndex;
+    pstExtraSprite->m_bFlag = flag;
+
+    pstCurDialogInfo->spriteCount ++;
+    return 0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 void xpgSpriteSetTouchArea (STXPGSPRITE * pstSprite, WORD startX, WORD startY, WORD width, WORD height) 

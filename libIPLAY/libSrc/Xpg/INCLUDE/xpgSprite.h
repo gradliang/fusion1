@@ -44,8 +44,10 @@ typedef struct {
 } STXPGPAGESPRITE;   
 
 typedef struct {
-    WORD m_wPx;     ///< Position of X
-    WORD m_wPy;  	  ///< Position of Y
+    WORD m_dwType;      ///< Type
+    WORD m_dwTypeIndex; ///< Type Index
+    WORD m_bFlag;
+    WORD m_noused;
 }XPGEXTRASPRITE;
 
 typedef struct {
@@ -54,7 +56,6 @@ typedef struct {
     WORD m_touchAreaW;
     WORD m_touchAreaH;
     WORD m_boEnable;
-    
 } STXPGTOUCHINFO;
 
 ///@ingroup     xpgSprite
@@ -125,6 +126,10 @@ void xpgSpriteCopy	 ( register STXPGMOVIE *pstMovie, STXPGSPRITE *pstDst, STXPGP
 void xpgExtraSpriteCopy(STXPGSPRITE * pstDst, STXPGPAGESPRITE * pstSrc);
 DWORD getCurDialogExtraSpriteCount();
 XPGEXTRASPRITE* getCurDialogExtraSpriteList();
+
+int xpgAddDialog(int dialogId);
+int xpgDeleteDialog();
+int xpgAddDialogSprite(WORD m_dwType, WORD m_dwTypeIndex, BYTE flag);
 
 
 void xpgSpriteSetTouchArea (STXPGSPRITE * pstSprite, WORD startX, WORD startY, WORD width, WORD height);
