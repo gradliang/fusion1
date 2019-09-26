@@ -127,7 +127,7 @@ void xpgExtraSpriteCopy(STXPGSPRITE * pstDst, STXPGPAGESPRITE * pstSrc);
 DWORD getCurDialogExtraSpriteCount();
 XPGEXTRASPRITE* getCurDialogExtraSpriteList();
 
-int xpgAddDialog(int dialogId);
+int xpgAddDialog(int dialogId, char * backToPage, ST_IMGWIN* backupWin);
 int xpgDeleteDialog();
 int xpgAddDialogSprite(WORD m_dwType, WORD m_dwTypeIndex, BYTE flag);
 

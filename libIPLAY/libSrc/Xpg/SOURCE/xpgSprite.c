@@ -589,6 +589,8 @@ typedef struct {
     XPGEXTRASPRITE  spriteList[DIALOG_MAX_SPRITE_CNT];
     DWORD           spriteCount;
     int             dailogId;
+    char            backToPage[32];
+    ST_IMGWIN       backupWin;
 }XPGDIALOGSTACK;
 
 #define DIALOG_STACK_SIZE           3
@@ -620,7 +622,7 @@ XPGEXTRASPRITE* getCurDialogExtraSpriteList()
     return pstCurDialogInfo->spriteList;
 }
 
-int xpgAddDialog(int dialogId)
+int xpgAddDialog(int dialogId, char * backToPage, ST_IMGWIN* backupWin)
 {
     DWORD curDialogIndex;
     if (dialogCount >= 3)
@@ -632,6 +634,28 @@ int xpgAddDialog(int dialogId)
     XPGDIALOGSTACK * pstCurDialogInfo = &dialogStacks[curDialogIndex];
     pstCurDialogInfo->dailogId = dialogId;
     pstCurDialogInfo->spriteCount = 0;
+    if (backToPage == NULL)
+    {
+        pstCurDialogInfo->backToPage[0] = 0;
+    }
+    else
+    {
+        strncpy(pstCurDialogInfo->backToPage, backToPage, sizeof(pstCurDialogInfo->backToPage) - 1);
+        pstCurDialogInfo->backToPage[sizeof(pstCurDialogInfo->backToPage) - 1] = 0;
+    }
+
+	ST_IMGWIN *pCacheWin = &pstCurDialogInfo->backupWin;
+
+    if (pCacheWin->pdwStart != NULL)
+    {
+        ext_mem_free(pCacheWin->pdwStart);
+		pCacheWin->pdwStart = NULL;
+    }
+
+	ImgWinInit(pCacheWin, NULL, backupWin->wHeight, backupWin->wWidth);
+	pCacheWin->pdwStart = ext_mem_malloc(backupWin->wWidth * backupWin->wHeight * 2);
+	mpCopyEqualWin(pCacheWin, backupWin);
+	
     dialogCount++;
     mpDebugPrint("xpgAddDialog OK, index = %d", curDialogIndex);
     return PASS;
@@ -639,8 +663,22 @@ int xpgAddDialog(int dialogId)
 
 int xpgDeleteDialog()
 {
+    DWORD curDialogIndex;
+    XPGDIALOGSTACK * pstCurDialogInfo;
+    
     if (dialogCount > 0)
+    {
+        curDialogIndex = dialogCount - 1;
+        pstCurDialogInfo = &dialogStacks[curDialogIndex];
+        ST_IMGWIN *pCacheWin = &pstCurDialogInfo->backupWin;
+        if (pCacheWin->pdwStart != NULL)
+        {
+            ext_mem_free(pCacheWin->pdwStart);
+    		pCacheWin->pdwStart = NULL;
+        }
+        
         dialogCount --;
+    }
     mpDebugPrint("xpgDeleteDialog OK, dialogCount = %d", dialogCount);
     return PASS;
 }

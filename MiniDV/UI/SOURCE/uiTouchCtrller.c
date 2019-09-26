@@ -583,7 +583,31 @@ SWORD touchSprite_Selector(STXPGSPRITE * sprite, WORD x, WORD y)
 
 SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
 {
+    DWORD dwSpriteId = sprite->m_dwTypeIndex;
+    DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
+    
     mpDebugPrint("touchSprite_List  %d", sprite->m_dwTypeIndex);
+    
+    if (dwHashKey == xpgHash("FusionSet3"))
+    {
+        if (dwSpriteId == 2)
+        {
+            popupDialog(Dialog_ReSuGuan, "FusionSet3");
+            xpgUpdateStage();
+        }
+        else if (dwSpriteId == 3)
+        {
+            popupDialog(Dialog_JiaReWenDu, "FusionSet3");
+            xpgUpdateStage();
+        }
+        else if (dwSpriteId == 4)
+        {
+            popupDialog(Dialog_JiaReShiJian, "FusionSet3");
+            xpgUpdateStage();
+        }
+        else
+            return 0;
+    }
     return 0;
 }
 

@@ -69,10 +69,15 @@ extern DWORD g_dwPassNum,g_dwFailNum;
 //---------------------------------------------------------------------------
 int popupDialog(int dialogType, char * backToPage)
 {
+    xpgAddDialog(dialogType, backToPage, Idu_GetCurrWin());
+
+    xpgSearchAndGotoPage("Dialog");
+    
 }
 
 int exitDialog()
 {
+    xpgDeleteDialog();
 }
 
 
@@ -1820,11 +1825,20 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         else if (dwListId == 1)
             text = getstr(Str_JiaReFangShi);
         else if (dwListId == 2)
+        {
+            xpgSpriteSetTouchArea(pstSprite, pstSprite->m_wPx, pstSprite->m_wPy - 18, 472, 60);
             text = getstr(Str_ReSuGuanSheZhi);
+        }
         else if (dwListId == 3)
+        {
+            xpgSpriteSetTouchArea(pstSprite, pstSprite->m_wPx, pstSprite->m_wPy - 18, 472, 60);
             text = getstr(Str_JiaReWenDu);
+        }
         else if (dwListId == 4)
+        {
+            xpgSpriteSetTouchArea(pstSprite, pstSprite->m_wPx, pstSprite->m_wPy - 18, 472, 60);
             text = getstr(Str_JiaReShiJian);
+        }
         
         SetCurrIduFontID(FONT_ID_HeiTi19);
         Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
