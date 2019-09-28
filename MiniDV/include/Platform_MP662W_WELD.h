@@ -724,6 +724,7 @@
 #define SPRITE_TYPE_LIGHT_ICON              13
 #define SPRITE_TYPE_DARK_ICON               14
 #define SPRITE_TYPE_MASK                    15
+#define SPRITE_TYPE_DIALOG                  23
 #define SPRITE_TYPE_SCROLL                  26
 
 //xpg page define

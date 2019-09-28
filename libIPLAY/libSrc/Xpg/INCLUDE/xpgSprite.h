@@ -123,14 +123,14 @@ void xpgSpriteMoveTo ( STXPGSPRITE *pstSprite, DWORD x, DWORD y );
 void xpgSpriteMove   ( STXPGSPRITE *pstSprite, DWORD x, DWORD y );
 void xpgSpriteCopy	 ( register STXPGMOVIE *pstMovie, STXPGSPRITE *pstDst, STXPGPAGESPRITE *pstSrc );
 
-void xpgExtraSpriteCopy(STXPGSPRITE * pstDst, STXPGPAGESPRITE * pstSrc);
+void xpgExtraSpriteCopy(STXPGSPRITE * pstDst, XPGEXTRASPRITE * pstSrc);
 DWORD getCurDialogExtraSpriteCount();
 XPGEXTRASPRITE* getCurDialogExtraSpriteList();
 
 int xpgAddDialog(int dialogId, char * backToPage, ST_IMGWIN* backupWin);
 int xpgDeleteDialog();
 int xpgAddDialogSprite(WORD m_dwType, WORD m_dwTypeIndex, BYTE flag);
-
+int xpgGetCurrDialogTypeId();
 
 void xpgSpriteSetTouchArea (STXPGSPRITE * pstSprite, WORD startX, WORD startY, WORD width, WORD height);
 void xpgSpriteEnableTouch(STXPGSPRITE * pstSprite);

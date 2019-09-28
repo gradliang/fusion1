@@ -598,8 +598,19 @@ static XPGDIALOGSTACK  dialogStacks[DIALOG_STACK_SIZE];
 static DWORD dialogCount = 0;
 
 
-void xpgExtraSpriteCopy(STXPGSPRITE * pstDst, STXPGPAGESPRITE * pstSrc)
+void xpgExtraSpriteCopy(STXPGSPRITE * pstDst, XPGEXTRASPRITE * pstSrc)
 {
+    memset(pstDst, 0, sizeof(STXPGSPRITE));
+    pstDst->m_dwType = pstSrc->m_dwType;
+    pstDst->m_dwTypeIndex = pstSrc->m_dwTypeIndex;
+    pstDst->m_bFlag = pstSrc->m_bFlag;
+    pstDst->m_boVisible = true;
+    pstDst->m_boExist = true;
+
+    DWORD x, y;
+    x = 0;
+    y = 0;
+    xpgSpriteMoveTo(pstDst, x, y);
 }
 
 DWORD getCurDialogExtraSpriteCount()
@@ -689,6 +700,19 @@ int xpgDeleteAllDialog()
     mpDebugPrint("xpgDeleteAllDialog");
     return PASS;
 }
+
+int xpgGetCurrDialogTypeId()
+{
+    DWORD curDialogIndex;
+    XPGDIALOGSTACK * pstCurDialogInfo;
+    
+    if (dialogCount == 0 || dialogCount > DIALOG_STACK_SIZE)
+        return 0;
+    curDialogIndex = dialogCount - 1;
+    pstCurDialogInfo = &dialogStacks[curDialogIndex];
+    return pstCurDialogInfo->dailogId;
+}
+
 
 int xpgAddDialogSprite(WORD m_dwType, WORD m_dwTypeIndex, BYTE flag)
 {

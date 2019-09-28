@@ -69,9 +69,18 @@ extern DWORD g_dwPassNum,g_dwFailNum;
 //---------------------------------------------------------------------------
 int popupDialog(int dialogType, char * backToPage)
 {
+    DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
+    
     xpgAddDialog(dialogType, backToPage, Idu_GetCurrWin());
+    if (dwHashKey != xpgHash("Dialog"))
+        xpgSearchAndGotoPage("Dialog");
 
-    xpgSearchAndGotoPage("Dialog");
+    if (dialogType == Dialog_ReSuGuan)
+    {
+        xpgAddDialogSprite(SPRITE_TYPE_DIALOG, 0, 0);
+    }
+
+
     
 }
 
@@ -1963,6 +1972,17 @@ SWORD xpgDrawSprite_Dialog(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
 
         SetCurrIduFontID(FONT_ID_HeiTi19);
         Idu_PrintStringCenter(pWin, getstr(Str_GongJuXiang), pstSprite->m_wPx, pstSprite->m_wPy + 5, 0, pstSprite->m_wWidth);
+    }
+    else if (dwHashKey == xpgHash("Dialog"))
+    {
+        int dialogId = xpgGetCurrDialogTypeId();
+        if (dialogId == Dialog_ReSuGuan)
+        {
+            MakeDialogRole(&stRole, 500, 250);
+            MakeMaskRole(&stMaskRole, XPG_ROLE_ICON_MASK_0, 500, 250);
+            xpgRoleDrawMask(&stRole, pWin->pdwStart, 100, 200, pWin->wWidth, pWin->wHeight, &stMaskRole);
+        }
+        
     }
     else
         xpgDrawSprite(pWin, pstSprite, boClip);
