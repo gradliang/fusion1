@@ -698,8 +698,20 @@ int xpgDeleteDialog()
 
 int xpgDeleteAllDialog()
 {
+    DWORD i;
+    XPGDIALOGSTACK * pstCurDialogInfo;
+    
     dialogCount = 0;
     mpDebugPrint("xpgDeleteAllDialog");
+    for (i = 0; i < DIALOG_STACK_SIZE; i++)
+    {
+        pstCurDialogInfo = &dialogStacks[i];
+        if (pstCurDialogInfo->backupWin.pdwStart != NULL)
+        {
+            ext_mem_free(pstCurDialogInfo->backupWin.pdwStart);
+            pstCurDialogInfo->backupWin.pdwStart = NULL;
+        }
+    }
     return PASS;
 }
 
@@ -713,6 +725,18 @@ int xpgGetCurrDialogTypeId()
     curDialogIndex = dialogCount - 1;
     pstCurDialogInfo = &dialogStacks[curDialogIndex];
     return pstCurDialogInfo->dailogId;
+}
+
+ST_IMGWIN* xpgGetCurrDialogCacheWin()
+{
+    DWORD curDialogIndex;
+    XPGDIALOGSTACK * pstCurDialogInfo;
+    
+    if (dialogCount == 0 || dialogCount > DIALOG_STACK_SIZE)
+        return NULL;
+    curDialogIndex = dialogCount - 1;
+    pstCurDialogInfo = &dialogStacks[curDialogIndex];
+    return & pstCurDialogInfo->backupWin;
 }
 
 

@@ -432,6 +432,12 @@ SWORD xpgDrawSprite_Background(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprit
     {
         mpCopyEqualWin(pWin, Idu_GetCacheWin());
     }
+    else if (dwHashKey == xpgHash(DIALOG_PAGE_NAME))
+    {
+        ST_IMGWIN * pCacheWin = xpgGetCurrDialogCacheWin();
+        if (pCacheWin != NULL && pCacheWin->pdwStart != NULL)
+            mpCopyEqualWin(pWin, pCacheWin);
+    }
     else
         xpgDrawSprite(pWin, pstSprite, boClip);
     return PASS;
@@ -1977,12 +1983,19 @@ SWORD xpgDrawSprite_Dialog(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
     }
     else if (dwHashKey == xpgHash(DIALOG_PAGE_NAME))
     {
+        int dialogW, dialogH, dailogX, dialogY;
         int dialogId = xpgGetCurrDialogTypeId();
         if (dialogId == Dialog_ReSuGuan)
         {
-            MakeDialogRole(&stRole, 500, 250);
-            MakeMaskRole(&stMaskRole, XPG_ROLE_ICON_MASK_0, 500, 250);
-            xpgRoleDrawMask(&stRole, pWin->pdwStart, 100, 200, pWin->wWidth, pWin->wHeight, &stMaskRole);
+            dialogW = 350;
+            dialogH = 182;
+            dailogX = (pWin->wWidth - dialogW) / 2;
+            dialogY = (pWin->wHeight - dialogH) / 2;
+            MakeDialogRole(&stRole, dialogW, dialogH);
+            MakeMaskRole(&stMaskRole, XPG_ROLE_ICON_MASK_0, dialogW, dialogH);
+            xpgRoleDrawMask(&stRole, pWin->pdwStart, dailogX, dialogY, pWin->wWidth, pWin->wHeight, &stMaskRole);
+            SetCurrIduFontID(FONT_ID_HeiTi19);
+            Idu_PrintStringCenter(pWin, getstr(Str_ReSuGuanSheZhi), dailogX, dialogY + 5, 0, dialogW);
         }
         
     }
