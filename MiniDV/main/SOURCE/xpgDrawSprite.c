@@ -91,8 +91,14 @@ int popupDialog(int dialogType, char * backToPage)
         xpgAddDialogSprite(SPRITE_TYPE_CLOSE_ICON, 0, 0);
         dwDialogTempValue = g_psSetupMenu->bReSuGuanSheZhi;
     }
-
-
+    else if (dialogType == Dialog_ModifyNumber)
+    {
+        xpgAddDialogSprite(SPRITE_TYPE_DIALOG, 0, 0);
+        xpgAddDialogSprite(SPRITE_TYPE_ICON, 0, 0);
+        xpgAddDialogSprite(SPRITE_TYPE_ICON, 1, 0);
+        xpgAddDialogSprite(SPRITE_TYPE_TEXT, 0, 0);
+        xpgAddDialogSprite(SPRITE_TYPE_CLOSE_ICON, 0, 0);
+    }
     
     
     xpgSearchAndGotoPage(DIALOG_PAGE_NAME);
@@ -477,10 +483,12 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
     if (dwHashKey == xpgHash(DIALOG_PAGE_NAME))
     {
         int dialogType = xpgGetCurrDialogTypeId();
-        STXPGROLE * pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_SMALL_BUTTON_ICON];
-        STXPGROLE * pstMask = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_SMALL_BUTTON_MASK];
+        STXPGROLE * pstRole = NULL;
+        STXPGROLE * pstMask = NULL;
         if (dialogType == Dialog_ReSuGuan)
         {
+            pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_SMALL_BUTTON_ICON];
+            pstMask = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_SMALL_BUTTON_MASK];
             if (dwSpriteId == 0)
             {
                 wX = pstSprite->m_wPx = 246;
@@ -525,6 +533,28 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             SetCurrIduFontID(FONT_ID_HeiTi16);
             Idu_PrintStringCenter(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, pstSprite->m_wWidth); 
         }
+        else if (dialogType == Dialog_ModifyNumber)
+        {
+            pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_ADD_MINUS];
+            if (dwSpriteId == 0)
+            {
+                wX = pstSprite->m_wPx = 300;
+                wY = pstSprite->m_wPy = 238;
+                pstMask = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_ADD_MASK];
+            }
+            else if (dwSpriteId == 1)
+            {
+                wX = pstSprite->m_wPx = 460;
+                wY = pstSprite->m_wPy = 238;
+                pstMask = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_MINUS_MASK];
+            }
+            else 
+                return PASS;
+            wW = pstSprite->m_wWidth = 40;
+            wH = pstSprite->m_wHeight = 40;
+            xpgRoleDrawMask(pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask);
+        }
+        
     }
     else if (dwHashKey == xpgHash("Main"))
     {
@@ -2144,7 +2174,18 @@ SWORD xpgDrawSprite_Dialog(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
             SetCurrIduFontID(FONT_ID_HeiTi19);
             Idu_PrintStringCenter(pWin, getstr(Str_ReSuGuanSheZhi), dailogX, dialogY + 5, 0, dialogW);
         }
-        
+        else if (dialogId == Dialog_ModifyNumber)
+        {
+            dialogW = 350;
+            dialogH = 150;
+            dailogX = (pWin->wWidth - dialogW) / 2;
+            dialogY = (pWin->wHeight - dialogH) / 2;
+            MakeDialogRole(&stRole, dialogW, dialogH);
+            MakeMaskRole(&stMaskRole, XPG_ROLE_ICON_MASK_0, dialogW, dialogH);
+            xpgRoleDrawMask(&stRole, pWin->pdwStart, dailogX, dialogY, pWin->wWidth, pWin->wHeight, &stMaskRole);
+            SetCurrIduFontID(FONT_ID_HeiTi19);
+            Idu_PrintStringCenter(pWin, getstr(Str_ReSuGuanSheZhi), dailogX, dialogY + 5, 0, dialogW);
+        }
     }
     else
         xpgDrawSprite(pWin, pstSprite, boClip);

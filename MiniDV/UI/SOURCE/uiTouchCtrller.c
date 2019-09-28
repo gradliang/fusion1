@@ -616,12 +616,12 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
         }
         else if (dwSpriteId == 3)
         {
-            popupDialog(Dialog_JiaReWenDu, "FusionSet3");
+            popupDialog(Dialog_ModifyNumber, "FusionSet3");
             xpgUpdateStage();
         }
         else if (dwSpriteId == 4)
         {
-            popupDialog(Dialog_JiaReShiJian, "FusionSet3");
+            popupDialog(Dialog_ModifyNumber, "FusionSet3");
             xpgUpdateStage();
         }
         else

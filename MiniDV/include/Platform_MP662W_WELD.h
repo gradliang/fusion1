@@ -723,6 +723,10 @@
 #define XPG_ROLE_SMALL_BUTTON_LIGHT         4
 #define XPG_ROLE_CLOSE_ICON_MASK            5
 #define XPG_ROLE_CLOSE_ICON                 6
+#define XPG_ROLE_ADD_MINUS                  7
+#define XPG_ROLE_ADD_MASK                   8
+#define XPG_ROLE_MINUS_MASK                 9
+
 
 
 #define SPRITE_TYPE_HILIGHTFRAME            5
@@ -731,6 +735,7 @@
 #define SPRITE_TYPE_DARK_ICON               14
 #define SPRITE_TYPE_MASK                    15
 #define SPRITE_TYPE_CLOSE_ICON              19
+#define SPRITE_TYPE_TEXT                    20
 #define SPRITE_TYPE_DIALOG                  23
 #define SPRITE_TYPE_SCROLL                  26
 
@@ -741,8 +746,9 @@
 
 // dialog define
 #define Dialog_ReSuGuan                     1           // 热塑管设置对话框
-#define Dialog_JiaReWenDu                   2           // 加热温度设置对话框
-#define Dialog_JiaReShiJian                 3           // 加热时间设置对话框
+#define Dialog_ModifyNumber                 2           // 修改数字对话框(加热温度设置对话框, 加热时间设置对话框)
+#define Dialog_JiaReWenDu                   3           // 
+#define Dialog_JiaReShiJian                 4           // 
 
 #define XPG_DIALOG_EXTRA_SPRITE_ENABLE      1
 #define DIALOG_PAGE_NAME                    "Dialog"
