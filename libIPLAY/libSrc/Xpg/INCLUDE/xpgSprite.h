@@ -132,7 +132,7 @@ int xpgDeleteDialog();
 int xpgAddDialogSprite(WORD m_dwType, WORD m_dwTypeIndex, BYTE flag);
 int xpgGetCurrDialogTypeId();
 ST_IMGWIN* xpgGetCurrDialogCacheWin();
-
+char* xpgGetCurrDialogBackPage();
 
 void xpgSpriteSetTouchArea (STXPGSPRITE * pstSprite, WORD startX, WORD startY, WORD width, WORD height);
 void xpgSpriteEnableTouch(STXPGSPRITE * pstSprite);

@@ -497,6 +497,16 @@ SWORD touchSprite_CloseIcon(STXPGSPRITE * sprite, WORD x, WORD y)
         xpgSearchAndGotoPage("Main");
         xpgUpdateStage();
     }
+    else if (dwHashKey == xpgHash(DIALOG_PAGE_NAME))
+    {
+        int dialogType = xpgGetCurrDialogTypeId();
+        if (dialogType == Dialog_ReSuGuan)
+        {
+             g_psSetupMenu->bReSuGuanSheZhi = dwDialogTempValue;
+             exitDialog();
+             WriteSetupChg();
+        }
+    }
     return 0;
 }
 

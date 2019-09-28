@@ -89,6 +89,7 @@ int popupDialog(int dialogType, char * backToPage)
         xpgAddDialogSprite(SPRITE_TYPE_LIGHT_ICON, 4, 0);
         xpgAddDialogSprite(SPRITE_TYPE_LIGHT_ICON, 5, 0);
         xpgAddDialogSprite(SPRITE_TYPE_CLOSE_ICON, 0, 0);
+        dwDialogTempValue = g_psSetupMenu->bReSuGuanSheZhi;
     }
 
 
@@ -100,7 +101,14 @@ int popupDialog(int dialogType, char * backToPage)
 
 int exitDialog()
 {
+    char backPage[32];
+    char * pageName = xpgGetCurrDialogBackPage();
+    strncpy(backPage, pageName, sizeof(backPage) - 1);
+    backPage[sizeof(backPage) - 1] = 0;
     xpgDeleteDialog();
+    if (backPage[0] != 0)
+        xpgSearchAndGotoPage(backPage);
+    xpgUpdateStage();
 }
 
 

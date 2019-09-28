@@ -165,6 +165,7 @@ typedef struct ST_SETUP_MENU_SETTING_VALUE
     MODEPARAM  CZ1;                     // CZ1模式参数
     MODEPARAM  CZ2;                     // CZ2模式参数
     MODEPARAM  AUTO;                    // AUTO模式参数
+    BYTE bReSuGuanSheZhi;               // 热塑管设置
 #endif
 
     //BYTE bReserved[1];

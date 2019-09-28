@@ -739,6 +739,18 @@ ST_IMGWIN* xpgGetCurrDialogCacheWin()
     return & pstCurDialogInfo->backupWin;
 }
 
+char* xpgGetCurrDialogBackPage()
+{
+    DWORD curDialogIndex;
+    XPGDIALOGSTACK * pstCurDialogInfo;
+    
+    if (dialogCount == 0 || dialogCount > DIALOG_STACK_SIZE)
+        return 0;
+    curDialogIndex = dialogCount - 1;
+    pstCurDialogInfo = &dialogStacks[curDialogIndex];
+    return pstCurDialogInfo->backToPage;
+}
+
 
 int xpgAddDialogSprite(WORD m_dwType, WORD m_dwTypeIndex, BYTE flag)
 {
