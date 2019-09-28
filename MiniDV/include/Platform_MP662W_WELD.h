@@ -717,13 +717,20 @@
 #define XPG_ROLE_TEXT_WHITE_0              10 //10-19
 
 #define XPG_ROLE_BACKGROUND_0               0
-#define XPG_ROLE_ICON_MASK_0               1
+#define XPG_ROLE_ICON_MASK_0                1
+#define XPG_ROLE_SMALL_BUTTON_MASK          2
+#define XPG_ROLE_SMALL_BUTTON_ICON          3
+#define XPG_ROLE_SMALL_BUTTON_LIGHT         4
+#define XPG_ROLE_CLOSE_ICON_MASK            5
+#define XPG_ROLE_CLOSE_ICON                 6
 
-#define SPRITE_TYPE_HILIGHTFRAME           5
+
+#define SPRITE_TYPE_HILIGHTFRAME            5
 #define SPRITE_TYPE_ICON                    12
 #define SPRITE_TYPE_LIGHT_ICON              13
 #define SPRITE_TYPE_DARK_ICON               14
 #define SPRITE_TYPE_MASK                    15
+#define SPRITE_TYPE_CLOSE_ICON              19
 #define SPRITE_TYPE_DIALOG                  23
 #define SPRITE_TYPE_SCROLL                  26
 

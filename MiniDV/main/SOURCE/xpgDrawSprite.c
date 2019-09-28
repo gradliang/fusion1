@@ -42,9 +42,8 @@
 //---------------------------------------------------------------------------
 //Global variable region
 //---------------------------------------------------------------------------
-DWORD dwDialogType = 0;                     // current dialog type
-BYTE  strCloseDialogBackPage[32] = {0};     // close the dialog, will go back to this page
 MODEPARAM tempModeParam;
+DWORD dwDialogTempValue = 0;
 
 const BYTE * FModeStrList[] = {
     "SM",
@@ -77,6 +76,19 @@ int popupDialog(int dialogType, char * backToPage)
     if (dialogType == Dialog_ReSuGuan)
     {
         xpgAddDialogSprite(SPRITE_TYPE_DIALOG, 0, 0);
+        xpgAddDialogSprite(SPRITE_TYPE_ICON, 0, 0);
+        xpgAddDialogSprite(SPRITE_TYPE_ICON, 1, 0);
+        xpgAddDialogSprite(SPRITE_TYPE_ICON, 2, 0);
+        xpgAddDialogSprite(SPRITE_TYPE_ICON, 3, 0);
+        xpgAddDialogSprite(SPRITE_TYPE_ICON, 4, 0);
+        xpgAddDialogSprite(SPRITE_TYPE_ICON, 5, 0);
+        xpgAddDialogSprite(SPRITE_TYPE_LIGHT_ICON, 0, 0);
+        xpgAddDialogSprite(SPRITE_TYPE_LIGHT_ICON, 1, 0);
+        xpgAddDialogSprite(SPRITE_TYPE_LIGHT_ICON, 2, 0);
+        xpgAddDialogSprite(SPRITE_TYPE_LIGHT_ICON, 3, 0);
+        xpgAddDialogSprite(SPRITE_TYPE_LIGHT_ICON, 4, 0);
+        xpgAddDialogSprite(SPRITE_TYPE_LIGHT_ICON, 5, 0);
+        xpgAddDialogSprite(SPRITE_TYPE_CLOSE_ICON, 0, 0);
     }
 
 
@@ -453,9 +465,63 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
     DWORD dwSpriteId = pstSprite->m_dwTypeIndex;
     char * text = "";
-    
-    if (dwHashKey == xpgHash("Main"))
+
+    if (dwHashKey == xpgHash(DIALOG_PAGE_NAME))
+    {
+        int dialogType = xpgGetCurrDialogTypeId();
+        STXPGROLE * pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_SMALL_BUTTON_ICON];
+        STXPGROLE * pstMask = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_SMALL_BUTTON_MASK];
+        if (dialogType == Dialog_ReSuGuan)
+        {
+            if (dwSpriteId == 0)
+            {
+                wX = pstSprite->m_wPx = 246;
+                wY = pstSprite->m_wPy = 224;
+                text = "40mm";
+            }
+            else if (dwSpriteId == 1)
+            {
+                wX = pstSprite->m_wPx = 356;
+                wY = pstSprite->m_wPy = 224;
+                text = "45mm";
+            }
+            else if (dwSpriteId == 2)
+            {
+                wX = pstSprite->m_wPx = 462;
+                wY = pstSprite->m_wPy = 224;
+                text = "50mm";
+            }
+            else if (dwSpriteId == 3)
+            {
+                wX = pstSprite->m_wPx = 246;
+                wY = pstSprite->m_wPy = 264;
+                text = "55mm";
+            }
+            else if (dwSpriteId == 4)
+            {
+                wX = pstSprite->m_wPx = 356;
+                wY = pstSprite->m_wPy = 264;
+                text = "60mm";
+            }
+            else if (dwSpriteId == 5)
+            {
+                wX = pstSprite->m_wPx = 462;
+                wY = pstSprite->m_wPy = 264;
+                text = getstr(Str_ZiDingYi);
+            }
+            else 
+                return PASS;
+            wW = pstSprite->m_wWidth = 70;
+            wH = pstSprite->m_wHeight = 25;
+            xpgRoleDrawMask(pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask);
+            SetCurrIduFontID(FONT_ID_HeiTi16);
+            Idu_PrintStringCenter(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, pstSprite->m_wWidth); 
+        }
+    }
+    else if (dwHashKey == xpgHash("Main"))
+    {
         xpgDrawSprite(pWin, pstSprite, boClip);
+    }
     else if (dwHashKey == xpgHash("FuncSet"))
     {
         pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 0);
@@ -734,7 +800,61 @@ SWORD xpgDrawSprite_LightIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
     DWORD dwSpriteId = pstSprite->m_dwTypeIndex;
 
-    if (dwHashKey == xpgHash("FuncSet"))
+    if (dwHashKey == xpgHash(DIALOG_PAGE_NAME))
+    {
+        int dialogType = xpgGetCurrDialogTypeId();
+        STXPGROLE * pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_SMALL_BUTTON_LIGHT];
+        STXPGROLE * pstMask = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_SMALL_BUTTON_MASK];
+        if (dialogType == Dialog_ReSuGuan)
+        {
+            if (dwDialogTempValue != dwSpriteId)
+                return PASS;
+            if (dwSpriteId == 0)
+            {
+                wX = pstSprite->m_wPx = 246;
+                wY = pstSprite->m_wPy = 224;
+                text = "40mm";
+            }
+            else if (dwSpriteId == 1)
+            {
+                wX = pstSprite->m_wPx = 356;
+                wY = pstSprite->m_wPy = 224;
+                text = "45mm";
+            }
+            else if (dwSpriteId == 2)
+            {
+                wX = pstSprite->m_wPx = 462;
+                wY = pstSprite->m_wPy = 224;
+                text = "50mm";
+            }
+            else if (dwSpriteId == 3)
+            {
+                wX = pstSprite->m_wPx = 246;
+                wY = pstSprite->m_wPy = 264;
+                text = "55mm";
+            }
+            else if (dwSpriteId == 4)
+            {
+                wX = pstSprite->m_wPx = 356;
+                wY = pstSprite->m_wPy = 264;
+                text = "60mm";
+            }
+            else if (dwSpriteId == 5)
+            {
+                wX = pstSprite->m_wPx = 462;
+                wY = pstSprite->m_wPy = 264;
+                text = getstr(Str_ZiDingYi);
+            }
+            else 
+                return PASS;
+            wW = pstSprite->m_wWidth = 70;
+            wH = pstSprite->m_wHeight = 25;
+            xpgRoleDrawMask(pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask);
+            SetCurrIduFontID(FONT_ID_HeiTi16);
+            Idu_PrintStringCenter(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, pstSprite->m_wWidth); 
+        }
+    }
+    else if (dwHashKey == xpgHash("FuncSet"))
     {
         BOOL enable[8];
         enable[0] = g_psSetupMenu->bEnableIcon_LaLiCeShi;
@@ -1048,8 +1168,27 @@ SWORD xpgDrawSprite_BackIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite,
 
 SWORD xpgDrawSprite_CloseIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOOL boClip)
 {
-    xpgDrawSprite(pWin, pstSprite, boClip);
-    xpgSpriteEnableTouch(pstSprite);
+    DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
+    if (dwHashKey == xpgHash(DIALOG_PAGE_NAME))
+    {
+        int dialogType = xpgGetCurrDialogTypeId();
+        STXPGROLE * pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_CLOSE_ICON];
+        STXPGROLE * pstMask = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_CLOSE_ICON_MASK];
+        if (dialogType == Dialog_ReSuGuan)
+        {
+            pstSprite->m_wPx = 526;
+            pstSprite->m_wPy = 152;
+            xpgRoleDrawMask(pstRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, pstMask);
+        }
+        pstSprite->m_wWidth = 40;
+        pstSprite->m_wHeight = 40;
+        xpgSpriteEnableTouch(pstSprite);
+    }
+    else
+    {
+        xpgDrawSprite(pWin, pstSprite, boClip);
+        xpgSpriteEnableTouch(pstSprite);
+    }
     return PASS;
 }
 

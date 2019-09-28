@@ -412,6 +412,15 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
         {
         }
     }
+    else if (dwHashKey == xpgHash(DIALOG_PAGE_NAME))
+    {
+        int dialogType = xpgGetCurrDialogTypeId();
+        if (dialogType == Dialog_ReSuGuan)
+        {
+            dwDialogTempValue = dwIconId;
+            xpgUpdateStage();
+        }
+    }
     
     return 0;
 }
