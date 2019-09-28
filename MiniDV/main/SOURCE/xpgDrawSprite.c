@@ -72,9 +72,8 @@ int popupDialog(int dialogType, char * backToPage)
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
     
     xpgAddDialog(dialogType, backToPage, Idu_GetCurrWin());
-    if (dwHashKey != xpgHash("Dialog"))
-        xpgSearchAndGotoPage("Dialog");
-
+    //mpDebugPrint("dialogType = %d, backToPage = %s", dialogType, backToPage);
+    
     if (dialogType == Dialog_ReSuGuan)
     {
         xpgAddDialogSprite(SPRITE_TYPE_DIALOG, 0, 0);
@@ -82,6 +81,9 @@ int popupDialog(int dialogType, char * backToPage)
 
 
     
+    
+    xpgSearchAndGotoPage(DIALOG_PAGE_NAME);
+    return;
 }
 
 int exitDialog()
@@ -1973,7 +1975,7 @@ SWORD xpgDrawSprite_Dialog(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
         SetCurrIduFontID(FONT_ID_HeiTi19);
         Idu_PrintStringCenter(pWin, getstr(Str_GongJuXiang), pstSprite->m_wPx, pstSprite->m_wPy + 5, 0, pstSprite->m_wWidth);
     }
-    else if (dwHashKey == xpgHash("Dialog"))
+    else if (dwHashKey == xpgHash(DIALOG_PAGE_NAME))
     {
         int dialogId = xpgGetCurrDialogTypeId();
         if (dialogId == Dialog_ReSuGuan)

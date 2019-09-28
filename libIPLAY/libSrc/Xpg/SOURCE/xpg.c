@@ -254,10 +254,12 @@ STXPGPAGE *xpgSearchAndGotoPage(const char *name)
         return NULL;
     }
 
-    if (0 == strcmp(name, "DIALOG_PAGE_NAME"))
+#ifdef DIALOG_PAGE_NAME
+    if (0 == strcmp(name, DIALOG_PAGE_NAME))
         g_isDialogPage = 1;
     else
         g_isDialogPage = 0;
+#endif
 
 	//mpDebugPrint("---------xpgSearchAndGotoPage :%s-> %d",name,pstPage->m_wIndex);
     if (xpgGotoPage(pstPage->m_wIndex) != PASS)

@@ -606,6 +606,8 @@ void xpgExtraSpriteCopy(STXPGSPRITE * pstDst, XPGEXTRASPRITE * pstSrc)
     pstDst->m_bFlag = pstSrc->m_bFlag;
     pstDst->m_boVisible = true;
     pstDst->m_boExist = true;
+    pstDst->m_wWidth = 16;
+    pstDst->m_wHeight = 16;
 
     DWORD x, y;
     x = 0;

@@ -738,6 +738,7 @@
 #define Dialog_JiaReShiJian                 3           // 加热时间设置对话框
 
 #define XPG_DIALOG_EXTRA_SPRITE_ENABLE      1
+#define DIALOG_PAGE_NAME                    "Dialog"
 
 #endif
 

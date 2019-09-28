@@ -15,8 +15,6 @@
 #include "xpgMovie.h"
 #include "fs.h"
 
-#define DIALOG_PAGE_NAME            "Dialog"
-
 #if MAKE_XPG_PLAYER
     #define XPG_ENABLE          1
 #else
