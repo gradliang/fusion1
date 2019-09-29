@@ -166,6 +166,8 @@ typedef struct ST_SETUP_MENU_SETTING_VALUE
     MODEPARAM  CZ2;                     // CZ2模式参数
     MODEPARAM  AUTO;                    // AUTO模式参数
     BYTE bReSuGuanSheZhi;               // 热塑管设置
+    WORD wJiaReWenDu;                   // 加热温度
+    WORD wJiaReShiJian;                 // 加热时间
 #endif
 
     //BYTE bReserved[1];

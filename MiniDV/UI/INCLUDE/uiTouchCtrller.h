@@ -9,6 +9,8 @@ void uiTouchMsgReceiver(void);
 extern DWORD g_dwRecordListCurrPage;
 #define PAGE_RECORD_SIZE           (5)
 
+void (*dialogOnClose)();
+
 #endif
 
 

@@ -1218,6 +1218,14 @@ SWORD xpgDrawSprite_CloseIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite
             pstSprite->m_wPy = 152;
             xpgRoleDrawMask(pstRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, pstMask);
         }
+        else if (dialogType == Dialog_ModifyNumber)
+        {
+            pstSprite->m_wPx = 526;
+            pstSprite->m_wPy = 166;
+            xpgRoleDrawMask(pstRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, pstMask);
+        }
+        else
+            return PASS;
         pstSprite->m_wWidth = 40;
         pstSprite->m_wHeight = 40;
         xpgSpriteEnableTouch(pstSprite);
@@ -1476,9 +1484,9 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         if (dwTextId == 0)
             sprintf(tmpbuf, "%s >", getstr(Str_ZiDingYi));
         else if (dwTextId == 1)
-            sprintf(tmpbuf, "50%s", getstr(Str_DuC));
+            sprintf(tmpbuf, "%d%s", g_psSetupMenu->wJiaReWenDu, getstr(Str_DuC));
         else if (dwTextId == 2)
-            sprintf(tmpbuf, "%dS", 12);
+            sprintf(tmpbuf, "%dS", g_psSetupMenu->wJiaReShiJian);
         else
             return PASS;
         SetCurrIduFontID(FONT_ID_HeiTi16);
@@ -1672,6 +1680,25 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
                 break;
             }
             Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
+        }
+    }
+    if (dwHashKey == xpgHash(DIALOG_PAGE_NAME))
+    {
+        int dialogType = xpgGetCurrDialogTypeId();
+        if (dialogType == Dialog_ModifyNumber)
+        {
+            WORD width, height;
+            char tmpbuf[64];
+            pstSprite->m_wPx = 350;
+            pstSprite->m_wPy = 238;
+            width = 100;
+            height = 40;
+            Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy, width, height, 0xffff8080);
+            Idu_FontColorSet(0,0,0);
+            sprintf(tmpbuf, "%d", dwDialogTempValue);
+            SetCurrIduFontID(FONT_ID_HeiTi19);
+            Idu_PrintStringCenter(pWin, tmpbuf, pstSprite->m_wPx, pstSprite->m_wPy + 6, 0, 100);
+            Idu_FontColorSet(0xff,0xff,0xff);
         }
     }
     

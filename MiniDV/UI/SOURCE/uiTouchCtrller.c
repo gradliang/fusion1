@@ -21,6 +21,10 @@ DWORD dwLastTouchActionTime = 0;
 static void uiEnterRecordList();
 DWORD g_dwRecordListCurrPage = 0;
 static BYTE strSetupBackPageName[24] = {0};
+
+static void Dialog_JiaReWenDu_OnClose();
+static void Dialog_JiaReShiJian_OnClose();
+
 /*
 // Structure declarations
 */
@@ -420,6 +424,19 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
             dwDialogTempValue = dwIconId;
             xpgUpdateStage();
         }
+        else if (dialogType == Dialog_ModifyNumber)
+        {
+            if (dwIconId == 0)
+                dwDialogTempValue ++;
+            else if (dwIconId == 1)
+            {
+                if (dwDialogTempValue)
+                    dwDialogTempValue --;
+            }
+            else
+                return 0;
+            xpgUpdateStage();
+        }
     }
     
     return 0;
@@ -506,9 +523,36 @@ SWORD touchSprite_CloseIcon(STXPGSPRITE * sprite, WORD x, WORD y)
              exitDialog();
              WriteSetupChg();
         }
+        else if (dialogType == Dialog_ModifyNumber)
+        {
+            if (dialogOnClose != NULL)
+            {
+                dialogOnClose();
+            }
+        }
+        
     }
     return 0;
 }
+
+void (*dialogOnClose)() = NULL;
+
+static void Dialog_JiaReWenDu_OnClose()
+{
+    mpDebugPrint("%s()", __FUNCTION__);
+    g_psSetupMenu->wJiaReWenDu = dwDialogTempValue;
+    exitDialog();
+    WriteSetupChg();
+}
+
+static void Dialog_JiaReShiJian_OnClose()
+{
+    mpDebugPrint("%s()", __FUNCTION__);
+    g_psSetupMenu->wJiaReShiJian = dwDialogTempValue;
+    exitDialog();
+    WriteSetupChg();
+}
+
 
 SWORD touchSprite_Text(STXPGSPRITE * sprite, WORD x, WORD y)
 {
@@ -616,11 +660,15 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
         }
         else if (dwSpriteId == 3)
         {
+            dwDialogTempValue = g_psSetupMenu->wJiaReWenDu;
+            dialogOnClose = Dialog_JiaReWenDu_OnClose;
             popupDialog(Dialog_ModifyNumber, "FusionSet3");
             xpgUpdateStage();
         }
         else if (dwSpriteId == 4)
         {
+            dwDialogTempValue = g_psSetupMenu->wJiaReShiJian;
+            dialogOnClose = Dialog_JiaReShiJian_OnClose;
             popupDialog(Dialog_ModifyNumber, "FusionSet3");
             xpgUpdateStage();
         }

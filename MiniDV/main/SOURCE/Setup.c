@@ -87,6 +87,8 @@ void GetDefaultSetupMenuValue(void)
     initModeParamDefault(&(g_psSetupMenu->CZ2));
     initModeParamDefault(&(g_psSetupMenu->AUTO));
     g_psSetupMenu->bReSuGuanSheZhi = 0;
+    g_psSetupMenu->wJiaReWenDu = 50;
+    g_psSetupMenu->wJiaReShiJian = 12;
 #endif	
 }
 
@@ -135,6 +137,8 @@ void Update_gSetupMenuValue(void)
     memcpy(&gSetupMenuValue[103], &(g_psSetupMenu->CZ2), 11 * 4);
     memcpy(&gSetupMenuValue[114], &(g_psSetupMenu->AUTO), 11 * 4);
     *(gSetupMenuValue + 125) = g_psSetupMenu->bReSuGuanSheZhi;
+    *(gSetupMenuValue + 126) = g_psSetupMenu->wJiaReWenDu;
+    *(gSetupMenuValue + 127) = g_psSetupMenu->wJiaReShiJian;
 
 	MP_DEBUG("--Write setup value  g_psSetupMenu->wElectrodePos[1]=%d",g_psSetupMenu->wElectrodePos[1] );
 
@@ -191,6 +195,8 @@ void Recover_g_psSetupMenu(void)
     memcpy(&(g_psSetupMenu->CZ2), &gSetupMenuValue[103], 11 * 4);
     memcpy(&(g_psSetupMenu->AUTO), &gSetupMenuValue[114], 11 * 4);
     g_psSetupMenu->bReSuGuanSheZhi = gSetupMenuValue[125];
+    g_psSetupMenu->wJiaReWenDu = gSetupMenuValue[126];
+    g_psSetupMenu->wJiaReShiJian = gSetupMenuValue[127];
 	MP_DEBUG("--Read setup value  g_psSetupMenu->wElectrodePos[1]=%d",g_psSetupMenu->wElectrodePos[1] );
 }
 
