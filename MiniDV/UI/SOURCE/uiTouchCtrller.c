@@ -714,6 +714,27 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
             xpgUpdateStage();
         }
     }
+    else if (dwHashKey == xpgHash("SetTime"))
+    {
+        if (dwSpriteId == 1)
+        {
+            ST_SYSTEM_TIME curTime;
+            SystemTimeGet(&curTime);
+            dwDialogTempValue = (curTime.u08Hour<<16) | curTime.u08Minute;
+            popupDialog(Dialog_SetTime, "SetTime");
+            xpgUpdateStage();
+        }
+        else if (dwSpriteId == 2)
+        {
+            popupDialog(Dialog_SetDate, "SetTime");
+            xpgUpdateStage();
+        }
+        else if (dwSpriteId == 3)
+        {
+            popupDialog(Dialog_SetDateFormat, "SetTime");
+            xpgUpdateStage();
+        }
+    }
     
     return 0;
 }

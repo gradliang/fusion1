@@ -726,7 +726,14 @@
 #define XPG_ROLE_ADD_MINUS                  7
 #define XPG_ROLE_ADD_MASK                   8
 #define XPG_ROLE_MINUS_MASK                 9
-
+#define XPG_ROLE_UP_ICON                    10
+#define XPG_ROLE_UP_MASK                    11
+#define XPG_ROLE_DOWN_ICON                  12
+#define XPG_ROLE_DOWN_MASK                  13
+#define XPG_ROLE_CANCEL_ICON                14
+#define XPG_ROLE_CANCEL_MASK                15
+#define XPG_ROLE_OK_ICON                    16
+#define XPG_ROLE_OK_MASK                    17
 
 
 #define SPRITE_TYPE_HILIGHTFRAME            5
@@ -748,6 +755,9 @@
 #define Dialog_ReSuGuan                     1           // 热塑管设置对话框
 #define Dialog_ModifyNumber                 2           // 修改数字对话框(加热温度设置对话框, 加热时间设置对话框)
 #define Dialog_ShutdownTime                 5           // 关机时间对话框
+#define Dialog_SetTime                      6           // 设置时间对话框
+#define Dialog_SetDate                      7           // 设置日期对话框
+#define Dialog_SetDateFormat                8           // 设置日期格式对话框
 
 
 #define XPG_DIALOG_EXTRA_SPRITE_ENABLE      1

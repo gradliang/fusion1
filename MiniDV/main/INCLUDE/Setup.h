@@ -169,6 +169,8 @@ typedef struct ST_SETUP_MENU_SETTING_VALUE
     WORD wJiaReWenDu;                   // 加热温度
     WORD wJiaReShiJian;                 // 加热时间
     WORD wShutdownTime;                 // 关机时间
+    BYTE b24HourFormat;                 // 24 小时格式的时间
+    BYTE bDataFormatMMDDYYYY;           // 是否MMDDYYYY格式的日期
 #endif
 
     //BYTE bReserved[1];
