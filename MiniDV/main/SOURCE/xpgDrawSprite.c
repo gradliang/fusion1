@@ -596,6 +596,59 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             wH = pstSprite->m_wHeight = 40;
             xpgRoleDrawMask(pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask);
         }
+        else if (dialogType == Dialog_SetTime)
+        {
+            if (g_psSetupMenu->b24HourFormat)
+            {
+                if (dwSpriteId == 0)
+                {
+                    xpgSpriteSetTouchArea(pstSprite, 304, 134, 70, 70);
+                    return PASS;
+                }
+                else if (dwSpriteId == 1)
+                {
+                    xpgSpriteSetTouchArea(pstSprite, 304, 258, 70, 70);
+                    return PASS;
+                }
+                else if (dwSpriteId == 2)
+                {
+                    xpgSpriteSetTouchArea(pstSprite, 426, 134, 70, 70);
+                    return PASS;
+                }
+                else if (dwSpriteId == 3)
+                {
+                    xpgSpriteSetTouchArea(pstSprite, 426, 258, 70, 70);
+                    return PASS;
+                }
+                else if (dwSpriteId == 4 || dwSpriteId == 5)
+                {
+                    return PASS;
+                }
+                else if (dwSpriteId == 6)
+                {
+                    wX = pstSprite->m_wPx = 205;
+                    wY = pstSprite->m_wPy = 350;
+                    pstSprite->m_wWidth = 195;
+                    pstSprite->m_wHeight = 50;
+                    pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_OK_ICON];
+                    pstMask = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_OK_MASK];
+                    xpgRoleDrawMask(pstRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, pstMask);
+                    SetCurrIduFontID(FONT_ID_HeiTi19);
+                    Idu_PrintStringCenter(pWin, getstr(Str_BaoCun), pstSprite->m_wPx, pstSprite->m_wPy + 6, 0, pstSprite->m_wWidth);
+                }
+                else if (dwSpriteId == 7)
+                {
+                    wX = pstSprite->m_wPx = 400;
+                    wY = pstSprite->m_wPy = 350;
+                    pstSprite->m_wWidth = 195;
+                    pstSprite->m_wHeight = 50;
+                    pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_CANCEL_ICON];
+                    pstMask = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_CANCEL_MASK];
+                    xpgRoleDrawMask(pstRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, pstMask);
+                    Idu_PrintStringCenter(pWin, getstr(Str_BaoCun), pstSprite->m_wPx, pstSprite->m_wPy + 6, 0, pstSprite->m_wWidth);
+                }
+            }
+        }
         
     }
     else if (dwHashKey == xpgHash("Main"))

@@ -450,6 +450,65 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
                 return 0;
             xpgUpdateStage();
         }
+        else if (dialogType == Dialog_SetTime)
+        {
+            if (g_psSetupMenu->b24HourFormat)
+            {
+                WORD hour2 = dwDialogTempValue >> 16;
+                WORD minute2 = dwDialogTempValue & 0xffff;
+                if (dwIconId == 0)
+                {
+                    if (hour2 != 0)
+                    {
+                        hour2 --;
+                        dwDialogTempValue = (hour2 << 16) | minute2;
+                        xpgUpdateStage();
+                    }
+                }
+                else if (dwIconId == 1)
+                {
+                    if (hour2 < 23)
+                    {
+                        hour2 ++;
+                        dwDialogTempValue = (hour2 << 16) | minute2;
+                        xpgUpdateStage();
+                    }
+                }
+                else if (dwIconId == 2)
+                {
+                    if (minute2 != 0)
+                    {
+                        minute2 --;
+                        dwDialogTempValue = (hour2 << 16) | minute2;
+                        xpgUpdateStage();
+                    }
+                }
+                else if (dwIconId == 3)
+                {
+                    if (minute2 < 59)
+                    {
+                        minute2 ++;
+                        dwDialogTempValue = (hour2 << 16) | minute2;
+                        xpgUpdateStage();
+                    }
+                }
+                else if (dwIconId == 6)
+                {
+                    ST_SYSTEM_TIME curTime;
+                    SystemTimeGet(&curTime);
+                    curTime.u08Hour = dwDialogTempValue >> 16;
+                    curTime.u08Minute = dwDialogTempValue & 0xffff;
+                    SystemTimeSet(&curTime);
+                    exitDialog();
+                }
+                else if (dwIconId == 7)
+                {
+                    exitDialog();
+                }
+            }
+        }
+
+        
     }
     
     return 0;
@@ -559,6 +618,10 @@ SWORD touchSprite_CloseIcon(STXPGSPRITE * sprite, WORD x, WORD y)
             exitDialog();
             if (boNeedWriteSetup)
                 WriteSetupChg();
+        }
+        else if (dialogType == Dialog_SetTime)
+        {
+            exitDialog();
         }
         
     }
