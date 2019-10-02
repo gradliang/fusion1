@@ -437,6 +437,19 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
                 return 0;
             xpgUpdateStage();
         }
+        else if (dialogType == Dialog_ShutdownTime)
+        {
+            if (dwIconId == 0)
+                dwDialogTempValue += 10;
+            else if (dwIconId == 1)
+            {
+                if (dwDialogTempValue >= 20)
+                    dwDialogTempValue -= 10;
+            }
+            else
+                return 0;
+            xpgUpdateStage();
+        }
     }
     
     return 0;
@@ -505,6 +518,7 @@ SWORD touchSprite_BackIcon(STXPGSPRITE * sprite, WORD x, WORD y)
 
 SWORD touchSprite_CloseIcon(STXPGSPRITE * sprite, WORD x, WORD y)
 {
+    BOOL boNeedWriteSetup = FALSE;
     mpDebugPrint("touchSprite_CloseIcon  %d", sprite->m_dwTypeIndex);
     
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
@@ -519,9 +533,14 @@ SWORD touchSprite_CloseIcon(STXPGSPRITE * sprite, WORD x, WORD y)
         int dialogType = xpgGetCurrDialogTypeId();
         if (dialogType == Dialog_ReSuGuan)
         {
-             g_psSetupMenu->bReSuGuanSheZhi = dwDialogTempValue;
-             exitDialog();
-             WriteSetupChg();
+            if (g_psSetupMenu->bReSuGuanSheZhi != dwDialogTempValue)
+            {
+                g_psSetupMenu->bReSuGuanSheZhi = dwDialogTempValue;
+                boNeedWriteSetup = TRUE;
+            }
+            exitDialog();
+            if (boNeedWriteSetup)
+                WriteSetupChg();
         }
         else if (dialogType == Dialog_ModifyNumber)
         {
@@ -529,6 +548,17 @@ SWORD touchSprite_CloseIcon(STXPGSPRITE * sprite, WORD x, WORD y)
             {
                 dialogOnClose();
             }
+        }
+        else if (dialogType == Dialog_ShutdownTime)
+        {
+            if (g_psSetupMenu->wShutdownTime != dwDialogTempValue)
+            {
+                g_psSetupMenu->wShutdownTime = dwDialogTempValue;
+                boNeedWriteSetup = TRUE;
+            }
+            exitDialog();
+            if (boNeedWriteSetup)
+                WriteSetupChg();
         }
         
     }
@@ -675,6 +705,16 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
         else
             return 0;
     }
+    else if (dwHashKey == xpgHash("SetSleep"))
+    {
+        if (dwSpriteId == 3)
+        {
+            dwDialogTempValue = g_psSetupMenu->wShutdownTime;
+            popupDialog(Dialog_ShutdownTime, "SetSleep");
+            xpgUpdateStage();
+        }
+    }
+    
     return 0;
 }
 

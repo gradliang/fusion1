@@ -747,8 +747,8 @@
 // dialog define
 #define Dialog_ReSuGuan                     1           // 热塑管设置对话框
 #define Dialog_ModifyNumber                 2           // 修改数字对话框(加热温度设置对话框, 加热时间设置对话框)
-#define Dialog_JiaReWenDu                   3           // 
-#define Dialog_JiaReShiJian                 4           // 
+#define Dialog_ShutdownTime                 5           // 关机时间对话框
+
 
 #define XPG_DIALOG_EXTRA_SPRITE_ENABLE      1
 #define DIALOG_PAGE_NAME                    "Dialog"
