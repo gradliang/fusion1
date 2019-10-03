@@ -92,6 +92,10 @@ void GetDefaultSetupMenuValue(void)
     g_psSetupMenu->wShutdownTime = 10;
     g_psSetupMenu->b24HourFormat = 1;
     g_psSetupMenu->bDataFormatMMDDYYYY = 0;
+    g_psSetupMenu->bSmartBacklight = 0;
+    g_psSetupMenu->bAutoShutdown = 0;
+    g_psSetupMenu->bToundSoundEnable = 0;
+    g_psSetupMenu->bLanguage = 0;
 #endif	
 }
 
@@ -145,7 +149,10 @@ void Update_gSetupMenuValue(void)
     *(gSetupMenuValue + 128) = g_psSetupMenu->wShutdownTime;
     *(gSetupMenuValue + 129) = g_psSetupMenu->b24HourFormat;
     *(gSetupMenuValue + 130) = g_psSetupMenu->bDataFormatMMDDYYYY;
-    
+    *(gSetupMenuValue + 131) = g_psSetupMenu->bSmartBacklight;
+    *(gSetupMenuValue + 132) = g_psSetupMenu->bAutoShutdown;
+    *(gSetupMenuValue + 133) = g_psSetupMenu->bToundSoundEnable;
+    *(gSetupMenuValue + 134) = g_psSetupMenu->bLanguage;
 	MP_DEBUG("--Write setup value  g_psSetupMenu->wElectrodePos[1]=%d",g_psSetupMenu->wElectrodePos[1] );
 
 }
@@ -206,7 +213,10 @@ void Recover_g_psSetupMenu(void)
     g_psSetupMenu->wShutdownTime = gSetupMenuValue[128];
     g_psSetupMenu->b24HourFormat = gSetupMenuValue[129];
     g_psSetupMenu->bDataFormatMMDDYYYY = gSetupMenuValue[130];
-    
+    g_psSetupMenu->bSmartBacklight = gSetupMenuValue[131];
+    g_psSetupMenu->bAutoShutdown = gSetupMenuValue[132];
+    g_psSetupMenu->bToundSoundEnable = gSetupMenuValue[133];
+    g_psSetupMenu->bLanguage = 0;//gSetupMenuValue[134];
 	MP_DEBUG("--Read setup value  g_psSetupMenu->wElectrodePos[1]=%d",g_psSetupMenu->wElectrodePos[1] );
 }
 

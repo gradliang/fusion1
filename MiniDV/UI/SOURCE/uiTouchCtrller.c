@@ -418,9 +418,9 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
     }
     else if (dwHashKey == xpgHash("SetTime"))
     {
-        if (dwIconId == 0)
+        if (dwIconId != g_psSetupMenu->bLanguage)
         {
-            g_psSetupMenu->b24HourFormat = ! g_psSetupMenu->b24HourFormat;
+            g_psSetupMenu->bLanguage = dwIconId;
             xpgUpdateStage();
             WriteSetupChg();
         }
@@ -850,6 +850,40 @@ SWORD touchSprite_Radio(STXPGSPRITE * sprite, WORD x, WORD y)
             WriteSetupChg();
         }
     }
+    else if (dwHashKey == xpgHash("SetSleep"))
+    {
+        if (dwSpriteId == 0)
+        {
+            g_psSetupMenu->bSmartBacklight = !g_psSetupMenu->bSmartBacklight;
+            xpgUpdateStage();
+            WriteSetupChg();
+        }
+        else if (dwSpriteId == 1)
+        {
+            g_psSetupMenu->bAutoShutdown = !g_psSetupMenu->bAutoShutdown;
+            xpgUpdateStage();
+            WriteSetupChg();
+        }
+    }
+    else if (dwHashKey == xpgHash("SetSound"))
+    {
+        if (dwSpriteId == 0)
+        {
+            g_psSetupMenu->bToundSoundEnable = !g_psSetupMenu->bToundSoundEnable;
+            xpgUpdateStage();
+            WriteSetupChg();
+        }
+    }
+    else if (dwHashKey == xpgHash("SetTime"))
+    {
+        if (dwSpriteId == 0)
+        {
+            g_psSetupMenu->b24HourFormat = ! g_psSetupMenu->b24HourFormat;
+            xpgUpdateStage();
+            WriteSetupChg();
+        }
+    }
+    
     return 0;
 }
 

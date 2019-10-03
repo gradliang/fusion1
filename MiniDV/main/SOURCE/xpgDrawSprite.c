@@ -978,12 +978,33 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
     }
     else if (dwHashKey == xpgHash("SetTime"))
     {
+        pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 1);
+        if (pstMask)
+            xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
         if (dwSpriteId == 0)
-        {
-            pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 0);
-            if (pstMask)
-                xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
-        }
+            text = getstr(Str_JianTiZhongWen);
+        else if (dwSpriteId == 1)
+            text = getstr(Str_YingWen);
+        else if (dwSpriteId == 2)
+            text = getstr(Str_PuTaoYaWen);
+        else if (dwSpriteId == 3)
+            text = getstr(Str_XiBanYaWen);
+        else if (dwSpriteId == 4)
+            text = getstr(Str_EWen);
+        else if (dwSpriteId == 5)
+            text = getstr(Str_FaWen);
+        else if (dwSpriteId == 6)
+            text = getstr(Str_TaiWen);
+        else if (dwSpriteId == 7)
+            text = getstr(Str_ALaBoWen);
+        else
+            return PASS;
+        SetCurrIduFontID(FONT_ID_HeiTi16);
+        Idu_PrintStringCenter(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy+2, 0, pstSprite->m_wWidth);  
+    }
+    else if (dwHashKey == xpgHash("SetYun"))
+    {
+        xpgDrawSprite(pWin, pstSprite, boClip);
     }
     
     xpgSpriteEnableTouch(pstSprite);
@@ -1194,14 +1215,31 @@ SWORD xpgDrawSprite_LightIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite
     }
     else if (dwHashKey == xpgHash("SetTime"))
     {
-        if (dwSpriteId == 0)
+        if (dwSpriteId == g_psSetupMenu->bLanguage)
         {
-            if (g_psSetupMenu->b24HourFormat)
-            {
-                pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 0);
-                if (pstMask)
-                    xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
-            }
+            pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 1);
+            if (pstMask)
+                xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+            if (dwSpriteId == 0)
+                text = getstr(Str_JianTiZhongWen);
+            else if (dwSpriteId == 1)
+                text = getstr(Str_YingWen);
+            else if (dwSpriteId == 2)
+                text = getstr(Str_PuTaoYaWen);
+            else if (dwSpriteId == 3)
+                text = getstr(Str_XiBanYaWen);
+            else if (dwSpriteId == 4)
+                text = getstr(Str_EWen);
+            else if (dwSpriteId == 5)
+                text = getstr(Str_FaWen);
+            else if (dwSpriteId == 6)
+                text = getstr(Str_TaiWen);
+            else if (dwSpriteId == 7)
+                text = getstr(Str_ALaBoWen);
+            else
+                return PASS;
+            SetCurrIduFontID(FONT_ID_HeiTi16);
+            Idu_PrintStringCenter(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy+2, 0, pstSprite->m_wWidth); 
         }
     }
     
@@ -1258,6 +1296,24 @@ SWORD xpgDrawSprite_DarkIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite,
             if (pstMask)
                 xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
         }
+    }
+    else if (dwHashKey == xpgHash("SetSleep"))
+    {
+        pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 2);
+        if (pstMask)
+            xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+    }
+    else if (dwHashKey == xpgHash("SetSound"))
+    {
+        pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 2);
+        if (pstMask)
+            xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+    }
+    else if (dwHashKey == xpgHash("SetTime"))
+    {
+        pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 0);
+        if (pstMask)
+            xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
     }
     
     return PASS;
@@ -1868,7 +1924,88 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
         }
     }
-    if (dwHashKey == xpgHash(DIALOG_PAGE_NAME))
+    else if (dwHashKey == xpgHash("SetTime"))
+    {
+        char tmpbuf[256];
+        if (dwTextId == 1)
+        {
+            ST_SYSTEM_TIME curTime;
+            SystemTimeGet(&curTime);
+            if (g_psSetupMenu->b24HourFormat)
+            {
+                sprintf(tmpbuf, "%02d:%02d >", curTime.u08Hour, curTime.u08Minute);
+            }
+            else
+            {
+                BOOL isPm = FALSE;
+                BYTE newHour;
+                if (curTime.u08Hour >= 12)
+                    isPm = TRUE;
+                if (curTime.u08Hour == 0 || curTime.u08Hour == 12)
+                    newHour = 12;
+                else
+                    newHour = curTime.u08Hour > 12 ? curTime.u08Hour - 12 : curTime.u08Hour;
+                sprintf(tmpbuf, "%02d:%02d %s >", newHour, curTime.u08Minute, isPm ? "PM" : "AM");
+            }
+            Idu_PrintStringRight(pWin, tmpbuf, pstSprite->m_wPx, pstSprite->m_wPy, 0);
+        }
+        else if (dwTextId == 2)
+        {
+            ST_SYSTEM_TIME curTime;
+            SystemTimeGet(&curTime);
+            if (g_psSetupMenu->bDataFormatMMDDYYYY)
+                sprintf(tmpbuf, "%02d/%02d/%04d >", curTime.u08Month, curTime.u08Day, curTime.u16Year);
+            else
+                sprintf(tmpbuf, "%04d/%02d/%02d >", curTime.u16Year, curTime.u08Month, curTime.u08Day);
+            Idu_PrintStringRight(pWin, tmpbuf, pstSprite->m_wPx, pstSprite->m_wPy, 0);
+        }
+        else if (dwTextId == 3)
+        {
+            if (g_psSetupMenu->bDataFormatMMDDYYYY)
+                sprintf(tmpbuf, "%s >", "MM/DD/YYYY");
+            else
+                sprintf(tmpbuf, "%s >", "YYYY/MM/DD");
+            Idu_PrintStringRight(pWin, tmpbuf, pstSprite->m_wPx, pstSprite->m_wPy, 0);
+        }
+    }
+    else if (dwHashKey == xpgHash("SetYun"))
+    {
+        if (dwTextId == 1)
+        {
+            SetCurrIduFontID(FONT_ID_HeiTi19);
+            text = "13800138000";
+            Idu_PrintStringRight(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0);
+        }
+        else if (dwTextId == 2)
+        {
+            SetCurrIduFontID(FONT_ID_HeiTi19);
+            if (g_psSetupMenu->bCloudMode)
+                text = getstr(Str_ZaiXian);
+            else
+                text = "----";
+            Idu_PrintStringRight(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0);
+        }
+        else if (dwTextId == 3)
+        {
+            SetCurrIduFontID(FONT_ID_HeiTi16);
+            text = getstr(Str_SaoMiaoErWeiMa);
+            Idu_PrintStringCenter(pWin, text, 288, pstSprite->m_wPy, 0, 470);
+        }
+    }
+    else if (dwHashKey == xpgHash("SetSleep"))
+    {
+        char tmpbuf[64];
+        if (dwTextId == 3)
+        {
+            sprintf(tmpbuf, "%dmin >", g_psSetupMenu->wShutdownTime);
+            if (tmpbuf[0])
+            {
+                SetCurrIduFontID(FONT_ID_HeiTi19);
+                Idu_PrintStringRight(pWin, tmpbuf, pstSprite->m_wPx, pstSprite->m_wPy, 0);
+            }
+        }
+    }
+    else if (dwHashKey == xpgHash(DIALOG_PAGE_NAME))
     {
         int dialogType = xpgGetCurrDialogTypeId();
         if (dialogType == Dialog_ModifyNumber)
@@ -2279,13 +2416,10 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         
         SetCurrIduFontID(FONT_ID_HeiTi19);
         Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
-        Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + 38, 400, 2, RGB2YUV(0x2F, 0x2F, 0x2F));
+        Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + 38, 470, 2, RGB2YUV(0x2F, 0x2F, 0x2F));
     }
     else if (dwHashKey == xpgHash("SetSleep"))
     {
-        char tmpbuf[64];
-        tmpbuf[0] = 0;
-        
         if (dwListId == 0)
             text = getstr(Str_ZhiNengBeiGuang);
         else if (dwListId == 1)
@@ -2293,24 +2427,16 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         else if (dwListId == 2)
             text = getstr(Str_ZiDongGuanJi);
         else if (dwListId == 3)
-        {
             text = getstr(Str_GuanJiShiJian);
-            sprintf(tmpbuf, "%dmin >", 10);
-        }
+
         SetCurrIduFontID(FONT_ID_HeiTi19);
         Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
-        Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + 38, 400, 2, RGB2YUV(0x2F, 0x2F, 0x2F));
-        
-        if (tmpbuf[0])
-        {
-            SetCurrIduFontID(FONT_ID_HeiTi19);
-            Idu_PrintString(pWin, tmpbuf, pstSprite->m_wPx + 320, pstSprite->m_wPy, 0, 0);
-        }
+        Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + 38, 470, 2, RGB2YUV(0x2F, 0x2F, 0x2F));
 
         if (dwListId == 3)
         {
-            //Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy - 20, 400, 56, RGB2YUV(0xff, 0xff, 0x37));
-            xpgSpriteSetTouchArea(pstSprite, pstSprite->m_wPx, pstSprite->m_wPy - 20, 400, 56);
+            //Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy - 20, 470, 56, RGB2YUV(0xff, 0xff, 0x37));
+            xpgSpriteSetTouchArea(pstSprite, pstSprite->m_wPx, pstSprite->m_wPy - 20, 470, 56);
         }
         
     }
@@ -2322,7 +2448,7 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             text = getstr(Str_YinLiangTiaoJie);
         SetCurrIduFontID(FONT_ID_HeiTi19);
         Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
-        Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + 38, 400, 2, RGB2YUV(0x2F, 0x2F, 0x2F));
+        Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + 38, 470, 2, RGB2YUV(0x2F, 0x2F, 0x2F));
     }
     else if (dwHashKey == xpgHash("SetTime"))
     {
@@ -2340,7 +2466,8 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         
         SetCurrIduFontID(FONT_ID_HeiTi19);
         Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
-        Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + 38, 470, 2, RGB2YUV(0x2F, 0x2F, 0x2F));
+        if (dwListId < 4)
+            Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + 38, 470, 2, RGB2YUV(0x2F, 0x2F, 0x2F));
 
         if (dwListId >= 1 && dwListId <= 3)
         {
@@ -2684,6 +2811,7 @@ SWORD xpgDrawSprite_Status(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
 SWORD xpgDrawSprite_Radio(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOOL boClip)          // type25
 {
     STXPGSPRITE *pstMask;
+    DWORD dwSpriteId = pstSprite->m_dwTypeIndex;
     
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
     if (dwHashKey == xpgHash("SetYun"))
@@ -2698,10 +2826,54 @@ SWORD xpgDrawSprite_Radio(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BO
     }
     else if (dwHashKey == xpgHash("SetSleep"))
     {
+        if (dwSpriteId == 0)
+        {
+            if (g_psSetupMenu->bSmartBacklight)
+            {
+                pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 2);
+                if (pstMask)
+                    xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+            }
+            xpgSpriteEnableTouch(pstSprite);
+        }
+        else if (dwSpriteId == 1)
+        {
+            if (g_psSetupMenu->bAutoShutdown)
+            {
+                pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 2);
+                if (pstMask)
+                    xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+            }
+            xpgSpriteEnableTouch(pstSprite);
+        }
     }
     else if (dwHashKey == xpgHash("SetSound"))
     {
+        if (dwSpriteId == 0)
+        {
+            if (g_psSetupMenu->bToundSoundEnable)
+            {
+                pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 2);
+                if (pstMask)
+                    xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+            }
+            xpgSpriteEnableTouch(pstSprite);
+        }
     }
+    else if (dwHashKey == xpgHash("SetTime"))
+    {
+        if (dwSpriteId == 0)
+        {
+            if (g_psSetupMenu->b24HourFormat)
+            {
+                pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 0);
+                if (pstMask)
+                    xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+            }
+            xpgSpriteEnableTouch(pstSprite);
+        }
+    }
+    
     return PASS;
 }
 
