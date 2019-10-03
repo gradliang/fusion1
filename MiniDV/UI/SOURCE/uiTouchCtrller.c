@@ -416,6 +416,15 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
         {
         }
     }
+    else if (dwHashKey == xpgHash("SetTime"))
+    {
+        if (dwIconId == 0)
+        {
+            g_psSetupMenu->b24HourFormat = ! g_psSetupMenu->b24HourFormat;
+            xpgUpdateStage();
+            WriteSetupChg();
+        }
+    }
     else if (dwHashKey == xpgHash(DIALOG_PAGE_NAME))
     {
         int dialogType = xpgGetCurrDialogTypeId();

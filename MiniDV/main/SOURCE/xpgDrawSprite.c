@@ -976,6 +976,15 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             Idu_PrintStringCenter(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy+2, 0, pstSprite->m_wWidth);  
         }
     }
+    else if (dwHashKey == xpgHash("SetTime"))
+    {
+        if (dwSpriteId == 0)
+        {
+            pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 0);
+            if (pstMask)
+                xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+        }
+    }
     
     xpgSpriteEnableTouch(pstSprite);
 }
@@ -1182,6 +1191,18 @@ SWORD xpgDrawSprite_LightIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite
         text = (char*) FModeStrList[dwSpriteId];
         SetCurrIduFontID(FONT_ID_HeiTi16);
         Idu_PrintStringCenter(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy+2, 0, pstSprite->m_wWidth);   
+    }
+    else if (dwHashKey == xpgHash("SetTime"))
+    {
+        if (dwSpriteId == 0)
+        {
+            if (g_psSetupMenu->b24HourFormat)
+            {
+                pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 0);
+                if (pstMask)
+                    xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+            }
+        }
     }
     
     return PASS;
