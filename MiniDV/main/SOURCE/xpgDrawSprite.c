@@ -634,7 +634,7 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
                     pstMask = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_OK_MASK];
                     xpgRoleDrawMask(pstRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, pstMask);
                     SetCurrIduFontID(FONT_ID_HeiTi19);
-                    Idu_PrintStringCenter(pWin, getstr(Str_BaoCun), pstSprite->m_wPx, pstSprite->m_wPy + 6, 0, pstSprite->m_wWidth);
+                    Idu_PrintStringCenter(pWin, getstr(Str_QueRen), pstSprite->m_wPx, pstSprite->m_wPy + 8, 0, pstSprite->m_wWidth);
                 }
                 else if (dwSpriteId == 7)
                 {
@@ -645,7 +645,65 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
                     pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_CANCEL_ICON];
                     pstMask = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_CANCEL_MASK];
                     xpgRoleDrawMask(pstRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, pstMask);
-                    Idu_PrintStringCenter(pWin, getstr(Str_BaoCun), pstSprite->m_wPx, pstSprite->m_wPy + 6, 0, pstSprite->m_wWidth);
+                    SetCurrIduFontID(FONT_ID_HeiTi19);
+                    Idu_PrintStringCenter(pWin, getstr(Str_QuXiao), pstSprite->m_wPx, pstSprite->m_wPy + 8, 0, pstSprite->m_wWidth);
+                }
+            }
+            else    // 12 hour
+            {
+                if (dwSpriteId == 6)
+                {
+                    wX = pstSprite->m_wPx = 205;
+                    wY = pstSprite->m_wPy = 350;
+                    pstSprite->m_wWidth = 195;
+                    pstSprite->m_wHeight = 50;
+                    pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_OK_ICON];
+                    pstMask = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_OK_MASK];
+                    xpgRoleDrawMask(pstRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, pstMask);
+                    SetCurrIduFontID(FONT_ID_HeiTi19);
+                    Idu_PrintStringCenter(pWin, getstr(Str_QueRen), pstSprite->m_wPx, pstSprite->m_wPy + 8, 0, pstSprite->m_wWidth);
+                }
+                else if (dwSpriteId == 7)
+                {
+                    wX = pstSprite->m_wPx = 400;
+                    wY = pstSprite->m_wPy = 350;
+                    pstSprite->m_wWidth = 195;
+                    pstSprite->m_wHeight = 50;
+                    pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_CANCEL_ICON];
+                    pstMask = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_CANCEL_MASK];
+                    xpgRoleDrawMask(pstRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, pstMask);
+                    SetCurrIduFontID(FONT_ID_HeiTi19);
+                    Idu_PrintStringCenter(pWin, getstr(Str_QuXiao), pstSprite->m_wPx, pstSprite->m_wPy + 8, 0, pstSprite->m_wWidth);
+                }
+                else if (dwSpriteId == 0)
+                {
+                    xpgSpriteSetTouchArea(pstSprite, 224, 134, 70, 70);
+                    return PASS;
+                }
+                else if (dwSpriteId == 1)
+                {
+                    xpgSpriteSetTouchArea(pstSprite, 224, 258, 70, 70);
+                    return PASS;
+                }
+                else if (dwSpriteId == 2)
+                {
+                    xpgSpriteSetTouchArea(pstSprite, 366, 134, 70, 70);
+                    return PASS;
+                }
+                else if (dwSpriteId == 3)
+                {
+                    xpgSpriteSetTouchArea(pstSprite, 366, 258, 70, 70);
+                    return PASS;
+                }
+                else if (dwSpriteId == 4)
+                {
+                    xpgSpriteSetTouchArea(pstSprite, 488, 134, 70, 70);
+                    return PASS;
+                }
+                else if (dwSpriteId == 5)
+                {
+                    xpgSpriteSetTouchArea(pstSprite, 488, 258, 70, 70);
+                    return PASS;
                 }
             }
         }
@@ -1891,6 +1949,137 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
                 Idu_PaintWinArea(pWin, 304, 255, 70, 2, RGB2YUV(140,140,140));
                 Idu_PaintWinArea(pWin, 426, 205, 70, 2, RGB2YUV(140,140,140));
                 Idu_PaintWinArea(pWin, 426, 255, 70, 2, RGB2YUV(140,140,140));
+                SetCurrIduFontID(FONT_ID_HeiTi19);
+                Idu_PrintString(pWin, ":", 400, 220, 0, 0);
+            }
+            else
+            {
+                BYTE isPm = 0;
+                char hstr1[16], hstr2[16], hstr3[16];
+                char mstr1[16], mstr2[16], mstr3[16];
+                char apmstr1[64], apmstr2[64], apmstr3[64];
+                
+                hstr1[0] = hstr2[0] = hstr3[0] = 0;
+                mstr1[0] = mstr2[0] = mstr3[0] = 0;
+                apmstr1[0] = apmstr2[0] = apmstr3[0] = 0;
+
+                sprintf(mstr2, "%d", minute2);
+                if (minute2 != 0)
+                {
+                    minute1 = minute2 - 1;
+                    sprintf(mstr1, "%d", minute1);
+                }
+                if (minute2 != 59)
+                {
+                    minute3 = minute2 + 1;
+                    sprintf(mstr3, "%d", minute3);
+                }
+                
+                if (hour2 >= 12)
+                {
+                    isPm = 1;
+                }
+
+                if (hour2 == 0 || hour2 == 12)
+                    sprintf(hstr2, "%d", 12);
+                else
+                    sprintf(hstr2, "%d", hour2 > 12 ? hour2 - 12 : hour2);
+                
+                if (hour2 != 0)
+                {
+                    hour1 = hour2 - 1;
+                    if (hour1 == 0 || hour1 == 12)
+                        sprintf(hstr1, "%d", 12);
+                    else
+                        sprintf(hstr1, "%d", hour1 > 12 ? hour1 - 12 : hour1);
+                }
+                if (hour2 != 23)
+                {
+                    hour3 = hour2 + 1;
+                    if (hour3 == 0 || hour3 == 12)
+                        sprintf(hstr3, "%d", 12);
+                    else
+                        sprintf(hstr3, "%d", hour3 > 12 ? hour3 - 12 : hour3);
+                }
+
+                if (isPm)
+                {
+                    strcpy(apmstr1, "AM");
+                    strcpy(apmstr2, "PM");
+                }
+                else 
+                {
+                    strcpy(apmstr2, "AM");
+                    strcpy(apmstr3, "PM");
+                }
+                //////////////////////
+
+                if (hstr1[0] != 0)
+                {
+                    SetCurrIduFontID(FONT_ID_HeiTi16);
+                    Idu_PrintStringCenter(pWin, hstr1, 244, 174, 0, 70);
+                    pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_UP_ICON];
+                    pstMask = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_UP_MASK];
+                    xpgRoleDrawMask(pstRole, pWin->pdwStart, 268, 154, pWin->wWidth, pWin->wHeight, pstMask);
+                }
+                SetCurrIduFontID(FONT_ID_HeiTi19);
+                Idu_PrintStringCenter(pWin, hstr2, 244, 220, 0, 70);
+                if (hstr3[0] != 0)
+                {
+                    SetCurrIduFontID(FONT_ID_HeiTi16);
+                    Idu_PrintStringCenter(pWin, hstr3, 244, 270, 0, 70);
+                    pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_DOWN_ICON];
+                    pstMask = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_DOWN_MASK];
+                    xpgRoleDrawMask(pstRole, pWin->pdwStart, 268, 300, pWin->wWidth, pWin->wHeight, pstMask);
+                }
+
+                if (mstr1[0] != 0) 
+                {
+                    SetCurrIduFontID(FONT_ID_HeiTi16);
+                    Idu_PrintStringCenter(pWin, mstr1, 366, 174, 0, 70);
+                    pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_UP_ICON];
+                    pstMask = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_UP_MASK];
+                    xpgRoleDrawMask(pstRole, pWin->pdwStart, 392, 154, pWin->wWidth, pWin->wHeight, pstMask);
+                }
+                SetCurrIduFontID(FONT_ID_HeiTi19);
+                Idu_PrintStringCenter(pWin, mstr2, 366, 220, 0, 70);
+                if (mstr3[0] != 0)
+                {
+                    SetCurrIduFontID(FONT_ID_HeiTi16);
+                    Idu_PrintStringCenter(pWin, mstr3, 366, 270, 0, 70);
+                    pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_DOWN_ICON];
+                    pstMask = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_DOWN_MASK];
+                    xpgRoleDrawMask(pstRole, pWin->pdwStart, 392, 300, pWin->wWidth, pWin->wHeight, pstMask);
+                }
+
+                if (apmstr1[0] != 0)
+                {
+                    SetCurrIduFontID(FONT_ID_HeiTi16);
+                    Idu_PrintStringCenter(pWin, apmstr1, 488, 174, 0, 70);
+                    pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_UP_ICON];
+                    pstMask = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_UP_MASK];
+                    xpgRoleDrawMask(pstRole, pWin->pdwStart, 514, 154, pWin->wWidth, pWin->wHeight, pstMask);
+                }
+                SetCurrIduFontID(FONT_ID_HeiTi19);
+                Idu_PrintStringCenter(pWin, apmstr2, 488, 220, 0, 70);
+                if (apmstr3[0] != 0)
+                {
+                    SetCurrIduFontID(FONT_ID_HeiTi16);
+                    Idu_PrintStringCenter(pWin, apmstr3, 488, 270, 0, 70);
+                    pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_DOWN_ICON];
+                    pstMask = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_DOWN_MASK];
+                    xpgRoleDrawMask(pstRole, pWin->pdwStart, 514, 300, pWin->wWidth, pWin->wHeight, pstMask);
+                }
+
+                Idu_PaintWinArea(pWin, 244, 205, 70, 2, RGB2YUV(140,140,140));
+                Idu_PaintWinArea(pWin, 244, 255, 70, 2, RGB2YUV(140,140,140));
+                Idu_PaintWinArea(pWin, 366, 205, 70, 2, RGB2YUV(140,140,140));
+                Idu_PaintWinArea(pWin, 366, 255, 70, 2, RGB2YUV(140,140,140));
+                Idu_PaintWinArea(pWin, 488, 205, 70, 2, RGB2YUV(140,140,140));
+                Idu_PaintWinArea(pWin, 488, 255, 70, 2, RGB2YUV(140,140,140));
+                
+                SetCurrIduFontID(FONT_ID_HeiTi19);
+                Idu_PrintString(pWin, ":", 340, 220, 0, 0);
             }
         }
     }

@@ -452,59 +452,74 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
         }
         else if (dialogType == Dialog_SetTime)
         {
-            if (g_psSetupMenu->b24HourFormat)
+            WORD hour2 = dwDialogTempValue >> 16;
+            WORD minute2 = dwDialogTempValue & 0xffff;
+            if (dwIconId == 0)
             {
-                WORD hour2 = dwDialogTempValue >> 16;
-                WORD minute2 = dwDialogTempValue & 0xffff;
-                if (dwIconId == 0)
+                if (hour2 != 0)
                 {
-                    if (hour2 != 0)
-                    {
-                        hour2 --;
-                        dwDialogTempValue = (hour2 << 16) | minute2;
-                        xpgUpdateStage();
-                    }
+                    hour2 --;
+                    dwDialogTempValue = (hour2 << 16) | minute2;
+                    xpgUpdateStage();
                 }
-                else if (dwIconId == 1)
+            }
+            else if (dwIconId == 1)
+            {
+                if (hour2 < 23)
                 {
-                    if (hour2 < 23)
-                    {
-                        hour2 ++;
-                        dwDialogTempValue = (hour2 << 16) | minute2;
-                        xpgUpdateStage();
-                    }
+                    hour2 ++;
+                    dwDialogTempValue = (hour2 << 16) | minute2;
+                    xpgUpdateStage();
                 }
-                else if (dwIconId == 2)
+            }
+            else if (dwIconId == 2)
+            {
+                if (minute2 != 0)
                 {
-                    if (minute2 != 0)
-                    {
-                        minute2 --;
-                        dwDialogTempValue = (hour2 << 16) | minute2;
-                        xpgUpdateStage();
-                    }
+                    minute2 --;
+                    dwDialogTempValue = (hour2 << 16) | minute2;
+                    xpgUpdateStage();
                 }
-                else if (dwIconId == 3)
+            }
+            else if (dwIconId == 3)
+            {
+                if (minute2 < 59)
                 {
-                    if (minute2 < 59)
-                    {
-                        minute2 ++;
-                        dwDialogTempValue = (hour2 << 16) | minute2;
-                        xpgUpdateStage();
-                    }
+                    minute2 ++;
+                    dwDialogTempValue = (hour2 << 16) | minute2;
+                    xpgUpdateStage();
                 }
-                else if (dwIconId == 6)
+            }
+            else if (dwIconId == 4)
+            {
+                if (hour2 >= 12)
                 {
-                    ST_SYSTEM_TIME curTime;
-                    SystemTimeGet(&curTime);
-                    curTime.u08Hour = dwDialogTempValue >> 16;
-                    curTime.u08Minute = dwDialogTempValue & 0xffff;
-                    SystemTimeSet(&curTime);
-                    exitDialog();
+                    hour2 -= 12;
+                    dwDialogTempValue = (hour2 << 16) | minute2;
+                    xpgUpdateStage();
                 }
-                else if (dwIconId == 7)
+            }
+            else if (dwIconId == 5)
+            {
+                if (hour2 < 12)
                 {
-                    exitDialog();
+                    hour2 += 12;
+                    dwDialogTempValue = (hour2 << 16) | minute2;
+                    xpgUpdateStage();
                 }
+            }
+            else if (dwIconId == 6)
+            {
+                ST_SYSTEM_TIME curTime;
+                SystemTimeGet(&curTime);
+                curTime.u08Hour = dwDialogTempValue >> 16;
+                curTime.u08Minute = dwDialogTempValue & 0xffff;
+                SystemTimeSet(&curTime);
+                exitDialog();
+            }
+            else if (dwIconId == 7)
+            {
+                exitDialog();
             }
         }
 
@@ -789,12 +804,12 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
         }
         else if (dwSpriteId == 2)
         {
-            popupDialog(Dialog_SetDate, "SetTime");
+            //popupDialog(Dialog_SetDate, "SetTime");
             xpgUpdateStage();
         }
         else if (dwSpriteId == 3)
         {
-            popupDialog(Dialog_SetDateFormat, "SetTime");
+            //popupDialog(Dialog_SetDateFormat, "SetTime");
             xpgUpdateStage();
         }
     }

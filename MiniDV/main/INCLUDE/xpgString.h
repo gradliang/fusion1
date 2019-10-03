@@ -146,8 +146,8 @@ enum xpgStringId {
 	Str_BaoCun,						//   136
 	Str_LingCunWei,					//   137
 	Str_ShanChu,					//   138
-	
-	
+	Str_QueRen,						//   139
+	Str_QuXiao,						//   140
 	
 	
 	Str_MAX_ID,

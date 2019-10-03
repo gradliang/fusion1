@@ -204,8 +204,8 @@ void Recover_g_psSetupMenu(void)
     g_psSetupMenu->wJiaReWenDu = gSetupMenuValue[126];
     g_psSetupMenu->wJiaReShiJian = gSetupMenuValue[127];
     g_psSetupMenu->wShutdownTime = gSetupMenuValue[128];
-    g_psSetupMenu->b24HourFormat = 1;//gSetupMenuValue[129];
-    g_psSetupMenu->bDataFormatMMDDYYYY = 0;//gSetupMenuValue[130];
+    g_psSetupMenu->b24HourFormat = gSetupMenuValue[129];
+    g_psSetupMenu->bDataFormatMMDDYYYY = gSetupMenuValue[130];
     
 	MP_DEBUG("--Read setup value  g_psSetupMenu->wElectrodePos[1]=%d",g_psSetupMenu->wElectrodePos[1] );
 }
