@@ -734,6 +734,10 @@
 #define XPG_ROLE_CANCEL_MASK                15
 #define XPG_ROLE_OK_ICON                    16
 #define XPG_ROLE_OK_MASK                    17
+#define XPG_ROLE_LONG_LIST_DARK             18
+#define XPG_ROLE_LONG_LIST_LIGHT            19
+#define XPG_ROLE_LONG_LIST_MASK             20
+
 
 
 #define SPRITE_TYPE_HILIGHTFRAME            5

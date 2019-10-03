@@ -605,6 +605,21 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
                 exitDialog();
             }
         }
+        else if (dialogType == Dialog_SetDateFormat)
+        {
+            if (dwIconId == 0)
+            {
+                g_psSetupMenu->bDataFormatMMDDYYYY = 0;
+                xpgUpdateStage();
+                WriteSetupChg();
+            }
+            else if (dwIconId == 1)
+            {
+                g_psSetupMenu->bDataFormatMMDDYYYY = 1;
+                xpgUpdateStage();
+                WriteSetupChg();
+            }
+        }
         
     }
     
@@ -720,7 +735,10 @@ SWORD touchSprite_CloseIcon(STXPGSPRITE * sprite, WORD x, WORD y)
         {
             exitDialog();
         }
-        
+        else if (dialogType == Dialog_SetDateFormat)
+        {
+            exitDialog();
+        }
     }
     return 0;
 }
@@ -894,7 +912,7 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
         }
         else if (dwSpriteId == 3)
         {
-            //popupDialog(Dialog_SetDateFormat, "SetTime");
+            popupDialog(Dialog_SetDateFormat, "SetTime");
             xpgUpdateStage();
         }
     }
