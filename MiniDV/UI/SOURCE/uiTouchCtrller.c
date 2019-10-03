@@ -531,7 +531,80 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
                 exitDialog();
             }
         }
-
+        else if (dialogType == Dialog_SetDate)
+        {
+            WORD year2 = dwDialogTempValue >> 16;
+            WORD month2 = (dwDialogTempValue >> 8) & 0xff;
+            WORD day2 = dwDialogTempValue & 0xff;
+            if (dwIconId == 0)
+            {
+                if (year2 > 2000)
+                {
+                    year2 --;
+                    dwDialogTempValue = (year2 << 16) | (month2 << 8) | day2;
+                    xpgUpdateStage();
+                }
+            }
+            else if (dwIconId == 1)
+            {
+                if (year2 < 2050)
+                {
+                    year2 ++;
+                    dwDialogTempValue = (year2 << 16) | (month2 << 8) | day2;
+                    xpgUpdateStage();
+                }
+            }
+            else if (dwIconId == 2)
+            {
+                if (month2 > 1)
+                {
+                    month2 --;
+                    dwDialogTempValue = (year2 << 16) | (month2 << 8) | day2;
+                    xpgUpdateStage();
+                }
+            }
+            else if (dwIconId == 3)
+            {
+                if (month2 < 12)
+                {
+                    month2 ++;
+                    dwDialogTempValue = (year2 << 16) | (month2 << 8) | day2;
+                    xpgUpdateStage();
+                }
+            }
+            else if (dwIconId == 4)
+            {
+                if (day2 >= 1)
+                {
+                    day2 --;
+                    dwDialogTempValue = (year2 << 16) | (month2 << 8) | day2;
+                    xpgUpdateStage();
+                }
+            }
+            else if (dwIconId == 5)
+            {
+                if (day2 < 31)
+                {
+                    day2++;
+                    dwDialogTempValue = (year2 << 16) | (month2 << 8) | day2;
+                    xpgUpdateStage();
+                }
+            }
+            else if (dwIconId == 6)
+            {
+                ST_SYSTEM_TIME curTime;
+                SystemTimeGet(&curTime);
+                curTime.u16Year = dwDialogTempValue >> 16;
+                curTime.u08Month = (dwDialogTempValue >> 8) & 0xff;
+                curTime.u08Day = dwDialogTempValue & 0xff;
+                SystemTimeSet(&curTime);
+                exitDialog();
+            }
+            else if (dwIconId == 7)
+            {
+                exitDialog();
+            }
+        }
         
     }
     
@@ -643,7 +716,7 @@ SWORD touchSprite_CloseIcon(STXPGSPRITE * sprite, WORD x, WORD y)
             if (boNeedWriteSetup)
                 WriteSetupChg();
         }
-        else if (dialogType == Dialog_SetTime)
+        else if (dialogType == Dialog_SetTime || dialogType == Dialog_SetDate)
         {
             exitDialog();
         }
@@ -813,7 +886,10 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
         }
         else if (dwSpriteId == 2)
         {
-            //popupDialog(Dialog_SetDate, "SetTime");
+            ST_SYSTEM_TIME curTime;
+            SystemTimeGet(&curTime);
+            dwDialogTempValue = (curTime.u16Year<<16) | (curTime.u08Month<< 8) | curTime.u08Day;
+            popupDialog(Dialog_SetDate, "SetTime");
             xpgUpdateStage();
         }
         else if (dwSpriteId == 3)

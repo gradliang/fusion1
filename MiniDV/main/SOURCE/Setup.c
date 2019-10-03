@@ -216,7 +216,7 @@ void Recover_g_psSetupMenu(void)
     g_psSetupMenu->bSmartBacklight = gSetupMenuValue[131];
     g_psSetupMenu->bAutoShutdown = gSetupMenuValue[132];
     g_psSetupMenu->bToundSoundEnable = gSetupMenuValue[133];
-    g_psSetupMenu->bLanguage = 0;//gSetupMenuValue[134];
+    g_psSetupMenu->bLanguage = gSetupMenuValue[134];
 	MP_DEBUG("--Read setup value  g_psSetupMenu->wElectrodePos[1]=%d",g_psSetupMenu->wElectrodePos[1] );
 }
 
