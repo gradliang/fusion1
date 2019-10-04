@@ -920,15 +920,41 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
     {
         if (dwSpriteId == 2)
         {
+            if (g_psSetupMenu->bEnableOpenPassword)
+            {
+                popupDialog(Dialog_CheckPassword, "SetPassword");
+                xpgUpdateStage();
+            }
+            else
+            {
+                popupDialog(Dialog_SetPassword1, "SetPassword");
+                xpgUpdateStage();
+            }
         }
         else if (dwSpriteId == 4)
         {
+            if (g_psSetupMenu->bEnableHirePassword)
+            {
+                popupDialog(Dialog_CheckPassword, "SetPassword");
+                xpgUpdateStage();
+            }
+            else
+            {
+                popupDialog(Dialog_SetPassword1, "SetPassword");
+                xpgUpdateStage();
+            }
         }
         else if (dwSpriteId == 5)
         {
+            if (!g_psSetupMenu->bEnableHirePassword)
+            {
+            }
         }
         else if (dwSpriteId == 6)
         {
+            if (!g_psSetupMenu->bEnableHirePassword)
+            {
+            }
         }
         else if (dwSpriteId == 7)
         {

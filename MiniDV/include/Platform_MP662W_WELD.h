@@ -762,7 +762,9 @@
 #define Dialog_SetTime                      6           // 设置时间对话框
 #define Dialog_SetDate                      7           // 设置日期对话框
 #define Dialog_SetDateFormat                8           // 设置日期格式对话框
-
+#define Dialog_SetPassword1                 9           // 设置密码对话框
+#define Dialog_SetPassword2                 10          // 设置密码对话框2
+#define Dialog_CheckPassword                11          // 检查密码对话框
 
 #define XPG_DIALOG_EXTRA_SPRITE_ENABLE      1
 #define DIALOG_PAGE_NAME                    "Dialog"
