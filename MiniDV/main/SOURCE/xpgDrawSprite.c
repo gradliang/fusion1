@@ -2790,11 +2790,15 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             lineWidth = 210;
             text = getstr(Str_GengGaiZuJieMiMa);
         }
+
+        Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy - 14, lineWidth, 50, RGB2YUV(0x4F, 0x4F, 0x00));
+        xpgSpriteSetTouchArea(pstSprite, pstSprite->m_wPx, pstSprite->m_wPy - 14, lineWidth, 50);
         
         SetCurrIduFontID(FONT_ID_HeiTi19);
         Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
         Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + 38, lineWidth, 2, RGB2YUV(0x2F, 0x2F, 0x2F));
         Idu_FontColorSet(0xff,0xff,0xff);
+
     }
     else if (dwHashKey == xpgHash("SetUi"))
     {
