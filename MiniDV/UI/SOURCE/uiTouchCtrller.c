@@ -916,6 +916,27 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
             xpgUpdateStage();
         }
     }
+    else if (dwHashKey == xpgHash("SetPassword"))
+    {
+        if (dwSpriteId == 2)
+        {
+        }
+        else if (dwSpriteId == 4)
+        {
+        }
+        else if (dwSpriteId == 5)
+        {
+        }
+        else if (dwSpriteId == 6)
+        {
+        }
+        else if (dwSpriteId == 7)
+        {
+        }
+        else if (dwSpriteId == 8)
+        {
+        }
+    }
     
     return 0;
 }
