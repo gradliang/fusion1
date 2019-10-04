@@ -2742,22 +2742,59 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
     }
     else if (dwHashKey == xpgHash("SetPassword"))
     {
+        WORD lineWidth = 470; 
+        Idu_FontColorSet(0xff,0xff,0xff);
         if (dwListId == 0)
             text = getstr(Str_KaiJiMiMa);
         else if (dwListId == 1)
-            text = getstr(Str_SheZhiKaiJiMiMa);
+        {
+            if (g_psSetupMenu->bEnableOpenPassword)
+                text = getstr(Str_GuanBiKaiJiMiMa);
+            else
+                text = getstr(Str_SheZhiKaiJiMiMa);
+            lineWidth = 210;
+        }
         else if (dwListId == 2)
             text = getstr(Str_ZuJieMiMa);
         else if (dwListId == 3)
-            text = getstr(Str_SheZhiZuJieMiMa);
+        {
+            if (g_psSetupMenu->bEnableHirePassword)
+                text = getstr(Str_GuanBiZuJieMiMa);
+            else
+                text = getstr(Str_SheZhiZuJieMiMa);
+            lineWidth = 210;
+        }
         else if (dwListId == 4)
+        {
             text = getstr(Str_ZuJieRiQi);
+            if (g_psSetupMenu->bEnableHirePassword)
+                Idu_FontColorSet(130,130,130);
+        }
         else if (dwListId == 5)
+        {
             text = getstr(Str_SuoDingRongJieCiShu);
+            if (g_psSetupMenu->bEnableHirePassword)
+                Idu_FontColorSet(130,130,130);
+        }
+        else if (dwListId == 6)
+        {
+            if (g_psSetupMenu->bEnableOpenPassword == 0)
+                return PASS;
+            lineWidth = 210;
+            text = getstr(Str_GengGaiKaiJiMiMa);
+        }
+        else if (dwListId == 7)
+        {
+            if (g_psSetupMenu->bEnableHirePassword == 0)
+                return PASS;
+            lineWidth = 210;
+            text = getstr(Str_GengGaiZuJieMiMa);
+        }
         
         SetCurrIduFontID(FONT_ID_HeiTi19);
         Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
-        Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + 38, 470, 2, RGB2YUV(0x2F, 0x2F, 0x2F));
+        Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + 38, lineWidth, 2, RGB2YUV(0x2F, 0x2F, 0x2F));
+        Idu_FontColorSet(0xff,0xff,0xff);
     }
     else if (dwHashKey == xpgHash("SetUi"))
     {

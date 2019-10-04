@@ -96,6 +96,12 @@ void GetDefaultSetupMenuValue(void)
     g_psSetupMenu->bAutoShutdown = 0;
     g_psSetupMenu->bToundSoundEnable = 0;
     g_psSetupMenu->bLanguage = 0;
+    g_psSetupMenu->bEnableOpenPassword = 0;
+    g_psSetupMenu->bEnableHirePassword = 0;
+    memset(g_psSetupMenu->srtOpenPassword, 0, 8);
+    memset(g_psSetupMenu->strHirePassword, 0, 8);
+
+    
 #endif	
 }
 
@@ -153,6 +159,11 @@ void Update_gSetupMenuValue(void)
     *(gSetupMenuValue + 132) = g_psSetupMenu->bAutoShutdown;
     *(gSetupMenuValue + 133) = g_psSetupMenu->bToundSoundEnable;
     *(gSetupMenuValue + 134) = g_psSetupMenu->bLanguage;
+    *(gSetupMenuValue + 135) = g_psSetupMenu->bEnableOpenPassword;
+    *(gSetupMenuValue + 136) = g_psSetupMenu->bEnableHirePassword;
+    memcpy(gSetupMenuValue + 137, g_psSetupMenu->srtOpenPassword, 8);
+    memcpy(gSetupMenuValue + 139, g_psSetupMenu->strHirePassword, 8);
+    
 	MP_DEBUG("--Write setup value  g_psSetupMenu->wElectrodePos[1]=%d",g_psSetupMenu->wElectrodePos[1] );
 
 }
@@ -217,6 +228,11 @@ void Recover_g_psSetupMenu(void)
     g_psSetupMenu->bAutoShutdown = gSetupMenuValue[132];
     g_psSetupMenu->bToundSoundEnable = gSetupMenuValue[133];
     g_psSetupMenu->bLanguage = gSetupMenuValue[134];
+    g_psSetupMenu->bEnableOpenPassword = gSetupMenuValue[135];
+    g_psSetupMenu->bEnableHirePassword = gSetupMenuValue[136];
+    memcpy(g_psSetupMenu->srtOpenPassword, &gSetupMenuValue[137], 8);
+    memcpy(g_psSetupMenu->strHirePassword, &gSetupMenuValue[139], 8);
+    
 	MP_DEBUG("--Read setup value  g_psSetupMenu->wElectrodePos[1]=%d",g_psSetupMenu->wElectrodePos[1] );
 }
 
