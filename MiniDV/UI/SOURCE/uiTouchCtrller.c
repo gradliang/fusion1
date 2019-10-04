@@ -963,6 +963,29 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
         {
         }
     }
+    else if (dwHashKey == xpgHash("SetInfo"))
+    {
+        if (dwSpriteId == 0)
+        {
+            popupDialog(Dialog_About, "SetInfo");
+            xpgUpdateStage();
+        }
+        else if (dwSpriteId == 1)
+        {
+            popupDialog(Dialog_Times, "SetInfo");
+            xpgUpdateStage();
+        }
+        else if (dwSpriteId == 2)
+        {
+            popupDialog(Dialog_TempInfo, "SetInfo");
+            xpgUpdateStage();
+        }
+        else if (dwSpriteId == 3)
+        {
+            popupDialog(Dialog_BatInfo, "SetInfo");
+            xpgUpdateStage();
+        }
+    }
     
     return 0;
 }

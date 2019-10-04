@@ -765,6 +765,13 @@
 #define Dialog_SetPassword1                 9           // 设置密码对话框
 #define Dialog_SetPassword2                 10          // 设置密码对话框2
 #define Dialog_CheckPassword                11          // 检查密码对话框
+#define Dialog_About                        12          // 关于本机
+#define Dialog_Times                        13          // 电极棒信息
+#define Dialog_TempInfo                     14          // 温度信息
+#define Dialog_BatInfo                      15          // 电池信息
+
+
+
 
 #define XPG_DIALOG_EXTRA_SPRITE_ENABLE      1
 #define DIALOG_PAGE_NAME                    "Dialog"
