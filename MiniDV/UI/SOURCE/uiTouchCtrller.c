@@ -739,6 +739,10 @@ SWORD touchSprite_CloseIcon(STXPGSPRITE * sprite, WORD x, WORD y)
         {
             exitDialog();
         }
+        else if (dialogType == Dialog_About || dialogType == Dialog_Times || dialogType == Dialog_TempInfo || dialogType == Dialog_BatInfo)
+        {
+            exitDialog();
+        }
     }
     return 0;
 }
