@@ -2997,6 +2997,38 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         SetCurrIduFontID(FONT_ID_HeiTi19);
         Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
         Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + 38, 470, 2, RGB2YUV(0x2F, 0x2F, 0x2F));
+
+        char text1[128];
+        if (dwListId == 0)
+        {
+            sprintf(text1, "%s:%s", getstr(Str_XingHao), "K5");
+        }
+        else if (dwListId == 1)
+        {
+            sprintf(text1, "%s:%d", getstr(Str_ShengYuCiShu), 2800);
+        }
+        else if (dwListId == 2)
+        {
+            sprintf(text1, "%s:%d%s", getstr(Str_NeiBuWenDu), 30, getstr(Str_DuC));
+        }
+        else if (dwListId == 3)
+        {
+            sprintf(text1, "%s:%d%%", getstr(Str_DianChiRongLiang), 100);
+        }
+        else if (dwListId == 4)
+        {
+            sprintf(text1, "%d%s", 200, getstr(Str_Ci));
+        }
+        else if (dwListId == 5)
+        {
+            sprintf(text1, "110.00.01");
+        }
+        else if (dwListId == 6)
+        {
+            sprintf(text1, "MT.000.01");
+        }
+        SetCurrIduFontID(FONT_ID_HeiTi19);
+        Idu_PrintStringRight(pWin, text1, pstSprite->m_wPx + 470, pstSprite->m_wPy, 0);
     }
     else if (dwHashKey == xpgHash("User"))
     {
