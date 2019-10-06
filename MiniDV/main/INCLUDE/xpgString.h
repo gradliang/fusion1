@@ -152,6 +152,22 @@ enum xpgStringId {
 	Str_ShanChu,					//   142
 	Str_QueRen,						//   143
 	Str_QuXiao,						//   144
+	Str_ZhiZaoShang,				//   145
+	Str_GongSiMing,					//   146
+	Str_BanBen,						//   147
+	Str_XuLieHao,					//   148
+	Str_JiHuoRiQi,					//   149
+	Str_HuanJingWenDu,				//   150
+	Str_HuanJingShiDu,				//   151
+	Str_QiYa,						//   152
+	Str_FangDianCiShu,				//   153
+	Str_ShiYongShiJian,				//   154
+	Str_DaiJiShiJian,				//   155
+	Str_FenZhong,					//   156
+	Str_XiaoShi,					//   157
+	Str_Year,						//   158
+	Str_Month,						//   159
+	Str_Day,						//   160
 	
 	
 	Str_MAX_ID,

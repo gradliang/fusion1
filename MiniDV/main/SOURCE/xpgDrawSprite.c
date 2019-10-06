@@ -2547,6 +2547,127 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             Idu_PrintString(pWin, "/", 340, 220, 0, 0);
             Idu_PrintString(pWin, "/", 450, 220, 0, 0);
         }
+        else if (dialogType == Dialog_About)
+        {
+            char text1[128], text2[128];
+            if (dwTextId == 0)
+            {
+                sprintf(text1, "%s:", getstr(Str_XingHao));
+                sprintf(text2, "%s", "K5");
+                Idu_PrintString(pWin, text1, 228, 208, 0, 0);
+                Idu_PrintStringRight(pWin, text2, 572, 208, 0);
+            }
+            else if (dwTextId == 1)
+            {
+                sprintf(text1, "%s:", getstr(Str_ZhiZaoShang));
+                sprintf(text2, "%s", getstr(Str_GongSiMing));
+                Idu_PrintString(pWin, text1, 228, 236, 0, 0);
+                Idu_PrintStringRight(pWin, text2, 572, 236, 0);
+            }
+            else if (dwTextId == 2)
+            {
+                sprintf(text1, "%s:", getstr(Str_BanBen));
+                sprintf(text2, "%s", "11.0.01");
+                Idu_PrintString(pWin, text1, 228, 264, 0, 0);
+                Idu_PrintStringRight(pWin, text2, 572, 264, 0);
+            }
+            else if (dwTextId == 3)
+            {
+                sprintf(text1, "%s:", getstr(Str_XuLieHao));
+                sprintf(text2, "%s", "matengfx2018");
+                Idu_PrintString(pWin, text1, 228, 292, 0, 0);
+                Idu_PrintStringRight(pWin, text2, 572, 292, 0);
+            }
+        }
+        else if (dialogType == Dialog_Times)
+        {
+            char text1[128], text2[128];
+            if (dwTextId == 0)
+            {
+                sprintf(text1, "%s:", getstr(Str_XuLieHao));
+                sprintf(text2, "%s", "DJ201809080001");
+                Idu_PrintString(pWin, text1, 258, 222, 0, 0);
+                Idu_PrintStringRight(pWin, text2, 542, 222, 0);
+            }
+            else if (dwTextId == 1)
+            {
+                sprintf(text1, "%s:", getstr(Str_JiHuoRiQi));
+                sprintf(text2, "%d%s%d%s%d%s", 2018, getstr(Str_Year), 8, getstr(Str_Month), 8, getstr(Str_Day));
+                Idu_PrintString(pWin, text1, 258, 250, 0, 0);
+                Idu_PrintStringRight(pWin, text2, 542, 250, 0);
+            }
+            else if (dwTextId == 2)
+            {
+                sprintf(text1, "%s:", getstr(Str_ShengYuCiShu));
+                sprintf(text2, "%d", 2800);
+                Idu_PrintString(pWin, text1, 258, 278, 0, 0);
+                Idu_PrintStringRight(pWin, text2, 542, 278, 0);
+            }
+        }
+        else if (dialogType == Dialog_TempInfo)
+        {
+            char text1[128], text2[128];
+            if (dwTextId == 0)
+            {
+                sprintf(text1, "%s:", getstr(Str_HuanJingWenDu));
+                sprintf(text2, "%d%s", 28, getstr(Str_DuC));
+                Idu_PrintString(pWin, text1, 258, 208, 0, 0);
+                Idu_PrintStringRight(pWin, text2, 542, 208, 0);
+            }
+            else if (dwTextId == 1)
+            {
+                sprintf(text1, "%s:", getstr(Str_NeiBuWenDu));
+                sprintf(text2, "%d%s", 30, getstr(Str_DuC));
+                Idu_PrintString(pWin, text1, 258, 236, 0, 0);
+                Idu_PrintStringRight(pWin, text2, 542, 236, 0);
+            }
+            else if (dwTextId == 2)
+            {
+                sprintf(text1, "%s:", getstr(Str_HuanJingShiDu));
+                sprintf(text2, "%d%%", 60);
+                Idu_PrintString(pWin, text1, 258, 264, 0, 0);
+                Idu_PrintStringRight(pWin, text2, 542, 264, 0);
+            }
+            else if (dwTextId == 3)
+            {
+                sprintf(text1, "%s:", getstr(Str_QiYa));
+                sprintf(text2, "%dkPa", 101);
+                Idu_PrintString(pWin, text1, 258, 292, 0, 0);
+                Idu_PrintStringRight(pWin, text2, 542, 292, 0);
+            }
+        }
+        else if (dialogType == Dialog_BatInfo)
+        {
+            char text1[128], text2[128];
+            if (dwTextId == 0)
+            {
+                sprintf(text1, "%s:", getstr(Str_DianChiRongLiang));
+                sprintf(text2, "%d%%", 100);
+                Idu_PrintString(pWin, text1, 258, 208, 0, 0);
+                Idu_PrintStringRight(pWin, text2, 542, 208, 0);
+            }
+            else if (dwTextId == 1)
+            {
+                sprintf(text1, "%s:", getstr(Str_FangDianCiShu));
+                sprintf(text2, "%d%s", 15, getstr(Str_Ci));
+                Idu_PrintString(pWin, text1, 258, 236, 0, 0);
+                Idu_PrintStringRight(pWin, text2, 542, 236, 0);
+            }
+            else if (dwTextId == 2)
+            {
+                sprintf(text1, "%s:", getstr(Str_ShiYongShiJian));
+                sprintf(text2, "%d%s", 30, getstr(Str_FenZhong));
+                Idu_PrintString(pWin, text1, 258, 264, 0, 0);
+                Idu_PrintStringRight(pWin, text2, 542, 264, 0);
+            }
+            else if (dwTextId == 3)
+            {
+                sprintf(text1, "%s:", getstr(Str_DaiJiShiJian));
+                sprintf(text2, "%d%s%d%s", 3, getstr(Str_XiaoShi), 45, getstr(Str_FenZhong));
+                Idu_PrintString(pWin, text1, 258, 292, 0, 0);
+                Idu_PrintStringRight(pWin, text2, 542, 292, 0);
+            }
+        }
     }
     
     return PASS;
@@ -2870,7 +2991,7 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         else if (dwListId == 6)
             text = getstr(Str_XiTongBanBenHao);
 
-        Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy - 14, 470, 50, RGB2YUV(0x4F, 0x4F, 0x00));
+        //Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy - 14, 470, 50, RGB2YUV(0x4F, 0x4F, 0x00));
         xpgSpriteSetTouchArea(pstSprite, pstSprite->m_wPx, pstSprite->m_wPy - 14, 470, 50);
         
         SetCurrIduFontID(FONT_ID_HeiTi19);
