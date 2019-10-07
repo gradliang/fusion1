@@ -695,6 +695,31 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
                 exitDialog();
             }
         }
+        else if (dialogType == Dialog_EditValue)
+        {
+            int len = strlen(strEditValue);
+            if (dwIconId >= 0 && dwIconId <= 9)
+            {
+                WORD wStrWidth = Idu_GetStringWidth(strEditValue, 0);
+                if (wStrWidth < 176)
+                {
+                    strEditValue[len] = '0' + dwIconId;
+                    strEditValue[len+1] = 0;
+                    xpgUpdateStage();
+                }
+            }
+            else if (dwIconId == 10)
+            {
+            }
+            else if (dwIconId == 11)
+            {
+                if (len != 0)
+                {
+                    strEditValue[len - 1] = 0;
+                    xpgUpdateStage();
+                }
+            }
+        }
         
     }
     
@@ -828,6 +853,17 @@ SWORD touchSprite_CloseIcon(STXPGSPRITE * sprite, WORD x, WORD y)
         }
         else if (dialogType == Dialog_EditValue)
         {
+            if (strEditValue[0])
+            {
+                if (boDialogValueIsFloat)
+                {
+                }
+                else
+                {
+                    int newValue = atoi(strEditValue);
+                    dwDialogTempValue = newValue;
+                }
+            }
             exitDialog();
         }
     }
@@ -916,8 +952,6 @@ static void Dialog_SetValue_SuoDingRongJieCiShu()
     exitDialog();
     WriteSetupChg();
 }
-
-
 
 SWORD touchSprite_Text(STXPGSPRITE * sprite, WORD x, WORD y)
 {

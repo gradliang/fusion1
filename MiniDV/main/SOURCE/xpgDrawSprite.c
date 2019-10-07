@@ -2889,6 +2889,19 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
                 xpgSpriteSetTouchArea(pstSprite, x, y, w, h);
             }
         }
+        else if (dialogType == Dialog_EditValue)
+        {
+            WORD x = 298, y = 138, w = 202, h = 40;
+            SetCurrIduFontID(FONT_ID_HeiTi19);
+            Idu_FontColorSet(0,0,0);
+            if (dwTextId == 0)
+            {
+                Idu_PaintWinArea(pWin, x, y, w, h, RGB2YUV(255,255,255));
+                if (strEditValue[0])
+                    Idu_PrintString(pWin, strEditValue, x+4, y+4, 0, 0);
+            }
+            Idu_FontColorSet(0xff,0xff,0xff);
+        }
     }
     
     return PASS;
