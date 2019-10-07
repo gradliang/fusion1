@@ -3468,13 +3468,7 @@ SWORD xpgDrawSprite_Dialog(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
             MakeMaskRole(&stMaskRole, XPG_ROLE_ICON_MASK_0, dialogW, dialogH);
             xpgRoleDrawMask(&stRole, pWin->pdwStart, dailogX, dialogY, pWin->wWidth, pWin->wHeight, &stMaskRole);
             SetCurrIduFontID(FONT_ID_HeiTi19);
-            if (dialogId == Dialog_SetPassword1)
-                text = getstr(Str_SheZhiKaiJiMiMa);
-            else if (dialogId == Dialog_SetPassword2)
-                text = getstr(Str_ZaiXian);
-            else if (dialogId == Dialog_CheckPassword)
-                text = getstr(Str_QiYa);
-            Idu_PrintStringCenter(pWin, text, dailogX, dialogY + 5, 0, dialogW);
+            Idu_PrintStringCenter(pWin, strDialogTitle, dailogX, dialogY + 5, 0, dialogW);
         }
     }
     else if (dwHashKey == xpgHash("User"))

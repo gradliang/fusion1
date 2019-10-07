@@ -177,8 +177,8 @@ typedef struct ST_SETUP_MENU_SETTING_VALUE
     BYTE bLanguage;                     // 语言
     BYTE bEnableOpenPassword;           // 开启开机密码
     BYTE bEnableHirePassword;           // 开启租借密码
-    char srtOpenPassword[8];            // 开机密码
-    char strHirePassword[8];            // 租借密码
+    char srtOpenPassword[8];            // 开机密码  
+    char strHirePassword[8];            // 租借密码  
 #endif
 
     //BYTE bReserved[1];
