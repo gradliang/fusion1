@@ -922,7 +922,7 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
     }
     else if (dwHashKey == xpgHash("SetPassword"))
     {
-        if (dwSpriteId == 2)
+        if (dwSpriteId == 1)
         {
             if (g_psSetupMenu->bEnableOpenPassword)
             {
@@ -935,7 +935,7 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
                 xpgUpdateStage();
             }
         }
-        else if (dwSpriteId == 4)
+        else if (dwSpriteId == 3)
         {
             if (g_psSetupMenu->bEnableHirePassword)
             {
@@ -948,6 +948,12 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
                 xpgUpdateStage();
             }
         }
+        else if (dwSpriteId == 4)
+        {
+            if (!g_psSetupMenu->bEnableHirePassword)
+            {
+            }
+        }
         else if (dwSpriteId == 5)
         {
             if (!g_psSetupMenu->bEnableHirePassword)
@@ -956,14 +962,8 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
         }
         else if (dwSpriteId == 6)
         {
-            if (!g_psSetupMenu->bEnableHirePassword)
-            {
-            }
         }
         else if (dwSpriteId == 7)
-        {
-        }
-        else if (dwSpriteId == 8)
         {
         }
     }

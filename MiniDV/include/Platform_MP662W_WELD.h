@@ -737,7 +737,20 @@
 #define XPG_ROLE_LONG_LIST_DARK             18
 #define XPG_ROLE_LONG_LIST_LIGHT            19
 #define XPG_ROLE_LONG_LIST_MASK             20
-
+#define XPG_ROLE_KEYBOARD_0                 21
+#define XPG_ROLE_KEYBOARD_1                 22
+#define XPG_ROLE_KEYBOARD_2                 23
+#define XPG_ROLE_KEYBOARD_3                 24
+#define XPG_ROLE_KEYBOARD_4                 25
+#define XPG_ROLE_KEYBOARD_5                 26
+#define XPG_ROLE_KEYBOARD_6                 27
+#define XPG_ROLE_KEYBOARD_7                 28
+#define XPG_ROLE_KEYBOARD_8                 29
+#define XPG_ROLE_KEYBOARD_9                 30
+#define XPG_ROLE_KEYBOARD_NULL              31
+#define XPG_ROLE_KEYBOARD_BACKSPACE         32
+#define XPG_ROLE_KEYBOARD_LEFT_MASK         33
+#define XPG_ROLE_KEYBOARD_RIGHT_MASK        34
 
 
 #define SPRITE_TYPE_HILIGHTFRAME            5
