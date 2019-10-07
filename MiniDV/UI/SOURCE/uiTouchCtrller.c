@@ -683,6 +683,19 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
                 }
             }
         }   
+        else if(dialogType == Dialog_Value)
+        {
+            if (dwIconId == 0)
+            {
+                g_psSetupMenu->wLockedTimes = dwDialogTempValue;
+                exitDialog();
+                WriteSetupChg();
+            }
+            else if (dwIconId == 1)
+            {
+                exitDialog();
+            }
+        }
         
     }
     
@@ -1099,8 +1112,11 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
         {
             if (!g_psSetupMenu->bEnableHirePassword)
             {
-                strDialogTitle = getstr(Str_QingShuRuMiMa);
+                strDialogTitle = getstr(Str_SuoDingRongJieCiShu);
                 dialogOnClose = Dialog_CheckPassword_CloseHirePassword_OnInput;
+                dialogOnClose = NULL;
+                dwDialogTempValue = g_psSetupMenu->wLockedTimes;
+                boDialogValueIsFloat = 0;
                 popupDialog(Dialog_Value, "SetPassword");
                 xpgUpdateStage();
             }

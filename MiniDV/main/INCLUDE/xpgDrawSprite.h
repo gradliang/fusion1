@@ -11,6 +11,7 @@
 
 extern MODEPARAM tempModeParam;
 extern DWORD dwDialogTempValue;
+extern BOOL  boDialogValueIsFloat;
 extern char strEditPassword[8];
 extern char * strDialogTitle;
 

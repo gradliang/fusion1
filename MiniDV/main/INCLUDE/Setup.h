@@ -179,6 +179,8 @@ typedef struct ST_SETUP_MENU_SETTING_VALUE
     BYTE bEnableHirePassword;           // 开启租借密码
     char srtOpenPassword[8];            // 开机密码  
     char strHirePassword[8];            // 租借密码  
+    WORD wLockedTimes;                  // 锁定熔接次数
+    
 #endif
 
     //BYTE bReserved[1];

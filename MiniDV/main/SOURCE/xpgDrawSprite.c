@@ -44,6 +44,7 @@
 //---------------------------------------------------------------------------
 MODEPARAM tempModeParam;
 DWORD dwDialogTempValue = 0;
+BOOL  boDialogValueIsFloat = 0;
 char strEditPassword[8] = {0};                  // editing password
 char * strDialogTitle = NULL;
 
@@ -960,6 +961,33 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
                 pstMask = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_KEYBOARD_RIGHT_MASK];
                 xpgRoleDrawMask(pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask);
             }
+        }
+        else if(dialogType == Dialog_Value)
+        {
+            if (dwSpriteId == 0)
+            {
+                wX = pstSprite->m_wPx = 278;
+                wY = pstSprite->m_wPy = 274;
+                text = getstr(Str_QueRen);
+                pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_BUTTON_OK_ICON];
+            }
+            else if (dwSpriteId == 1)
+            {
+                wX = pstSprite->m_wPx = 438;
+                wY = pstSprite->m_wPy = 274;
+                text = getstr(Str_QuXiao);
+                pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_BUTTON_CANCEL_ICON];
+            }
+            else 
+                return PASS;
+            pstMask = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_BUTTON_MASK];
+            
+            wW = pstSprite->m_wWidth = 90;
+            wH = pstSprite->m_wHeight = 30;
+            xpgRoleDrawMask(pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask);
+            SetCurrIduFontID(FONT_ID_HeiTi19);
+            Idu_PrintStringCenter(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, pstSprite->m_wWidth);
+            
         }
         
     }
@@ -2824,6 +2852,19 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
                     Idu_PrintStringCenter(pWin, str, x, y+4, 0, w);
             }
             Idu_FontColorSet(0xff,0xff,0xff);
+        }
+        else if(dialogType == Dialog_Value)
+        {
+            WORD x = 260, y = 210, w = 278, h = 42;
+            char tmpbuf[128];
+            if (dwTextId == 0)
+            {
+                Idu_PaintWinArea(pWin, x, y, w, h, RGB2YUV(255,255,255));
+                Idu_FontColorSet(0,0,0);
+                sprintf(tmpbuf, "%d", dwDialogTempValue);
+                Idu_PrintString(pWin, tmpbuf, x + 6, y + 4, 0, 0);
+                Idu_FontColorSet(0xff,0xff,0xff);
+            }
         }
     }
     

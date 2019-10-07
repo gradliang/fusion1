@@ -751,6 +751,9 @@
 #define XPG_ROLE_KEYBOARD_BACKSPACE         32
 #define XPG_ROLE_KEYBOARD_LEFT_MASK         33
 #define XPG_ROLE_KEYBOARD_RIGHT_MASK        34
+#define XPG_ROLE_BUTTON_OK_ICON             35
+#define XPG_ROLE_BUTTON_CANCEL_ICON         36
+#define XPG_ROLE_BUTTON_MASK                37
 
 
 #define SPRITE_TYPE_HILIGHTFRAME            5

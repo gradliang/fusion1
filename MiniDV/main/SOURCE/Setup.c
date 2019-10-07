@@ -100,7 +100,7 @@ void GetDefaultSetupMenuValue(void)
     g_psSetupMenu->bEnableHirePassword = 0;
     memset(g_psSetupMenu->srtOpenPassword, 0, 8);
     memset(g_psSetupMenu->strHirePassword, 0, 8);
-
+    g_psSetupMenu->wLockedTimes = 200;
     
 #endif	
 }
@@ -163,6 +163,7 @@ void Update_gSetupMenuValue(void)
     *(gSetupMenuValue + 136) = g_psSetupMenu->bEnableHirePassword;
     memcpy(gSetupMenuValue + 137, g_psSetupMenu->srtOpenPassword, 8);
     memcpy(gSetupMenuValue + 139, g_psSetupMenu->strHirePassword, 8);
+    *(gSetupMenuValue + 141) = g_psSetupMenu->wLockedTimes;
     
 	MP_DEBUG("--Write setup value  g_psSetupMenu->wElectrodePos[1]=%d",g_psSetupMenu->wElectrodePos[1] );
 
@@ -232,6 +233,7 @@ void Recover_g_psSetupMenu(void)
     g_psSetupMenu->bEnableHirePassword = gSetupMenuValue[136];
     memcpy(g_psSetupMenu->srtOpenPassword, &gSetupMenuValue[137], 8);
     memcpy(g_psSetupMenu->strHirePassword, &gSetupMenuValue[139], 8);
+    g_psSetupMenu->wLockedTimes = gSetupMenuValue[141];
     
 	MP_DEBUG("--Read setup value  g_psSetupMenu->wElectrodePos[1]=%d",g_psSetupMenu->wElectrodePos[1] );
 }
