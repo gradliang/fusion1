@@ -500,6 +500,17 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
             WriteSetupChg();
         }
     }
+    else if (dwHashKey == xpgHash("ToolBox"))
+    {
+        if (dwIconId == 0)
+        {
+            xpgSearchAndGotoPage("RedLight");
+            xpgUpdateStage();
+        }
+        else if (dwIconId == 1)
+        {
+        }
+    }
     else if (dwHashKey == xpgHash(DIALOG_PAGE_NAME))
     {
         int dialogType = xpgGetCurrDialogTypeId();
@@ -829,7 +840,8 @@ SWORD touchSprite_BackIcon(STXPGSPRITE * sprite, WORD x, WORD y)
         dwHashKey == xpgHash("SetPassword") ||
         dwHashKey == xpgHash("SetUi") ||
         dwHashKey == xpgHash("SetInfo") ||
-        dwHashKey == xpgHash("Record"))
+        dwHashKey == xpgHash("Record") || 
+        dwHashKey == xpgHash("RedLight"))
     {
         xpgSearchAndGotoPage("Main");
         xpgUpdateStage();
