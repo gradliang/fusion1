@@ -32,6 +32,7 @@ static void Dialog_CheckPassword_CloseHirePassword_OnInput();       // ¹Ø±Õ×â½èÃ
 static void Dialog_CheckPassword_ChangeHirePassword_OnInput();      // ¸ü¸Ä×â½èÃÜÂëÖ®Ç°µÄ¼ì²éÃÜÂë
 static void Dialog_SetPassword_BootPassword_OnInput();              // ÉèÖÃ¿ª»úÃÜÂë
 static void Dialog_SetPassword_HirePassword_OnInput();              // ¸ü¸Ä¿ª»úÃÜÂë
+static void Dialog_SetValue_SuoDingRongJieCiShu();                  // Öµ¸ü¸Ä - Ëø¶¨ÈÛ½Ó´ÎÊý
 
 
 /*
@@ -687,9 +688,7 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
         {
             if (dwIconId == 0)
             {
-                g_psSetupMenu->wLockedTimes = dwDialogTempValue;
-                exitDialog();
-                WriteSetupChg();
+                if (dialogOnClose)  dialogOnClose();
             }
             else if (dwIconId == 1)
             {
@@ -907,6 +906,14 @@ static void Dialog_SetPassword_HirePassword_OnInput()
     WriteSetupChg();
 }
 
+static void Dialog_SetValue_SuoDingRongJieCiShu()
+{
+    g_psSetupMenu->wLockedTimes = dwDialogTempValue;
+    exitDialog();
+    WriteSetupChg();
+}
+
+
 
 SWORD touchSprite_Text(STXPGSPRITE * sprite, WORD x, WORD y)
 {
@@ -1113,8 +1120,7 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
             if (!g_psSetupMenu->bEnableHirePassword)
             {
                 strDialogTitle = getstr(Str_SuoDingRongJieCiShu);
-                dialogOnClose = Dialog_CheckPassword_CloseHirePassword_OnInput;
-                dialogOnClose = NULL;
+                dialogOnClose = Dialog_SetValue_SuoDingRongJieCiShu;
                 dwDialogTempValue = g_psSetupMenu->wLockedTimes;
                 boDialogValueIsFloat = 0;
                 popupDialog(Dialog_Value, "SetPassword");
