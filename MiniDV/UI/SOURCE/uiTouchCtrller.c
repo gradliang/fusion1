@@ -13,6 +13,7 @@
 #include "xpgFunc.h"
 #include "xpgDrawSprite.h"
 #include "uiTouchCtrller.h"
+#include "xpgString.h"
 
 #if (TOUCH_CONTROLLER_ENABLE == ENABLE)
 
@@ -24,7 +25,7 @@ static BYTE strSetupBackPageName[24] = {0};
 
 static void Dialog_JiaReWenDu_OnClose();
 static void Dialog_JiaReShiJian_OnClose();
-
+static void Dialog__OnClose();
 /*
 // Structure declarations
 */
@@ -620,6 +621,31 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
                 WriteSetupChg();
             }
         }
+        else if (dialogType == Dialog_SetPassword1 || dialogType == Dialog_SetPassword2 || dialogType == Dialog_CheckPassword)
+        {
+            int len = strlen(strEditPassword);
+            if (dwIconId >= 0 && dwIconId <= 9)
+            {
+                if (len >= 4)
+                {
+                }
+                else
+                {
+                    char ch = '0' + dwIconId;
+                    strEditPassword[len] = ch;
+                    strEditPassword[len+1] = 0;
+                    xpgUpdateStage();
+                }
+            }
+            else if (dwIconId == 11)
+            {
+                if (len)
+                {
+                    strEditPassword[len - 1] = 0;
+                    xpgUpdateStage();
+                }
+            }
+        }   
         
     }
     
@@ -926,11 +952,15 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
         {
             if (g_psSetupMenu->bEnableOpenPassword)
             {
+                memset(strEditPassword, 0, sizeof(strEditPassword));
+                strDialogTitle = getstr(Str_QingShuRuMiMa);
                 popupDialog(Dialog_CheckPassword, "SetPassword");
                 xpgUpdateStage();
             }
             else
             {
+                memset(strEditPassword, 0, sizeof(strEditPassword));
+                strDialogTitle = getstr(Str_SheZhiKaiJiMiMa);
                 popupDialog(Dialog_SetPassword1, "SetPassword");
                 xpgUpdateStage();
             }
@@ -939,11 +969,15 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
         {
             if (g_psSetupMenu->bEnableHirePassword)
             {
+                memset(strEditPassword, 0, sizeof(strEditPassword));
+                strDialogTitle = getstr(Str_QingShuRuMiMa);
                 popupDialog(Dialog_CheckPassword, "SetPassword");
                 xpgUpdateStage();
             }
             else
             {
+                memset(strEditPassword, 0, sizeof(strEditPassword));
+                strDialogTitle = getstr(Str_SheZhiZuJieMiMa);
                 popupDialog(Dialog_SetPassword1, "SetPassword");
                 xpgUpdateStage();
             }

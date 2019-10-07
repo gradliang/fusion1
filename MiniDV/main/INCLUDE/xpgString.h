@@ -168,7 +168,8 @@ enum xpgStringId {
 	Str_Year,						//   158
 	Str_Month,						//   159
 	Str_Day,						//   160
-	
+	Str_QingShuRuMiMa,				//   161
+	Str_ZaiQueRenMiMa,				//   162
 	
 	Str_MAX_ID,
 };

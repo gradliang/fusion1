@@ -11,6 +11,8 @@
 
 extern MODEPARAM tempModeParam;
 extern DWORD dwDialogTempValue;
+extern char strEditPassword[8];
+extern char * strDialogTitle;
 
 SWORD xpgDrawSprite_Null				  ( ST_IMGWIN *, STXPGSPRITE *, BOOL );
 SWORD xpgDrawSprite						    ( ST_IMGWIN *, STXPGSPRITE *, BOOL ); // type0
