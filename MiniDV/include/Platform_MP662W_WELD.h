@@ -769,15 +769,17 @@
 
 
 // dialog define
-#define Dialog_ReSuGuan                     1           // 热塑管设置对话框
-#define Dialog_ModifyNumber                 2           // 修改数字对话框(加热温度设置对话框, 加热时间设置对话框)
-#define Dialog_ShutdownTime                 5           // 关机时间对话框
-#define Dialog_SetTime                      6           // 设置时间对话框
-#define Dialog_SetDate                      7           // 设置日期对话框
-#define Dialog_SetDateFormat                8           // 设置日期格式对话框
-#define Dialog_SetPassword1                 9           // 设置密码对话框
-#define Dialog_SetPassword2                 10          // 设置密码对话框2
-#define Dialog_CheckPassword                11          // 检查密码对话框
+#define Dialog_Toast                        1           // 文字弹出
+#define Dialog_ReSuGuan                     2           // 热塑管设置对话框
+#define Dialog_ModifyNumber                 3           // 修改数字对话框(加热温度设置对话框, 加热时间设置对话框)
+#define Dialog_ShutdownTime                 4           // 关机时间对话框
+#define Dialog_SetTime                      5           // 设置时间对话框
+#define Dialog_SetDate                      6           // 设置日期对话框
+#define Dialog_SetDateFormat                7           // 设置日期格式对话框
+#define Dialog_SetPassword1                 8           // 设置密码对话框
+#define Dialog_SetPassword2                 9           // 设置密码对话框2
+#define Dialog_CheckPassword                10          // 检查密码对话框
+#define Dialog_Edit                         11          // 输入
 #define Dialog_About                        12          // 关于本机
 #define Dialog_Times                        13          // 电极棒信息
 #define Dialog_TempInfo                     14          // 温度信息
