@@ -810,6 +810,10 @@ SWORD touchSprite_CloseIcon(STXPGSPRITE * sprite, WORD x, WORD y)
         {
             exitDialog();
         }
+        else if (dialogType == Dialog_Value)
+        {
+            exitDialog();
+        }
     }
     return 0;
 }
@@ -1095,6 +1099,10 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
         {
             if (!g_psSetupMenu->bEnableHirePassword)
             {
+                strDialogTitle = getstr(Str_QingShuRuMiMa);
+                dialogOnClose = Dialog_CheckPassword_CloseHirePassword_OnInput;
+                popupDialog(Dialog_Value, "SetPassword");
+                xpgUpdateStage();
             }
         }
         else if (dwSpriteId == 6)

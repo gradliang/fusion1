@@ -200,6 +200,14 @@ int popupDialog(int dialogType, char * backToPage)
         xpgAddDialogSprite(SPRITE_TYPE_ICON, 10, 0);
         xpgAddDialogSprite(SPRITE_TYPE_ICON, 11, 0);
     }
+    else if(dialogType == Dialog_Value)
+    {
+        xpgAddDialogSprite(SPRITE_TYPE_DIALOG, 0, 0);
+        xpgAddDialogSprite(SPRITE_TYPE_CLOSE_ICON, 0, 0);
+        xpgAddDialogSprite(SPRITE_TYPE_TEXT, 0, 0);
+        xpgAddDialogSprite(SPRITE_TYPE_ICON, 0, 0);
+        xpgAddDialogSprite(SPRITE_TYPE_ICON, 1, 0);
+    }
     
     xpgSearchAndGotoPage(DIALOG_PAGE_NAME);
     return;
@@ -1757,6 +1765,12 @@ SWORD xpgDrawSprite_CloseIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite
         {
             pstSprite->m_wPx = 502;
             pstSprite->m_wPy = 72;
+            xpgRoleDrawMask(pstRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, pstMask);
+        }
+        else if (dialogType == Dialog_Value)
+        {
+            pstSprite->m_wPx = 528;
+            pstSprite->m_wPy = 152;
             xpgRoleDrawMask(pstRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, pstMask);
         }
         else
@@ -3470,6 +3484,19 @@ SWORD xpgDrawSprite_Dialog(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
             SetCurrIduFontID(FONT_ID_HeiTi19);
             Idu_PrintStringCenter(pWin, strDialogTitle, dailogX, dialogY + 5, 0, dialogW);
         }
+        else if (dialogId == Dialog_Value)
+        {
+            dialogW = 350;
+            dialogH = 180;
+            dailogX = (pWin->wWidth - dialogW) / 2;
+            dialogY = (pWin->wHeight - dialogH) / 2;
+            MakeDialogRole(&stRole, dialogW, dialogH);
+            MakeMaskRole(&stMaskRole, XPG_ROLE_ICON_MASK_0, dialogW, dialogH);
+            xpgRoleDrawMask(&stRole, pWin->pdwStart, dailogX, dialogY, pWin->wWidth, pWin->wHeight, &stMaskRole);
+            SetCurrIduFontID(FONT_ID_HeiTi19);
+            Idu_PrintStringCenter(pWin, strDialogTitle, dailogX, dialogY + 5, 0, dialogW);
+        }
+        
     }
     else if (dwHashKey == xpgHash("User"))
     {

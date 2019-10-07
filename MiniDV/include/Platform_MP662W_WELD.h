@@ -784,6 +784,7 @@
 #define Dialog_Times                        13          // 电极棒信息
 #define Dialog_TempInfo                     14          // 温度信息
 #define Dialog_BatInfo                      15          // 电池信息
+#define Dialog_Value                        16          // 值显示
 
 
 

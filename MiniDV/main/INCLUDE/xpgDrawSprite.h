@@ -41,12 +41,7 @@ SWORD xpgDrawSprite_Scroll(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
 SWORD xpgDrawSprite_Frame(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOOL boClip);         // type27
 
 
-typedef struct {
-    int         dialogType;
-    char        dialogBackPage[32];
-};
 
-#define DIALOG_TYPE_                (1)
 
 int popupDialog(int dialogType, char * backToPage);
 int exitDialog();
