@@ -782,12 +782,13 @@
 #define Dialog_SetPassword1                 8           // 设置密码对话框
 #define Dialog_SetPassword2                 9           // 设置密码对话框2
 #define Dialog_CheckPassword                10          // 检查密码对话框
-#define Dialog_Edit                         11          // 输入
-#define Dialog_About                        12          // 关于本机
-#define Dialog_Times                        13          // 电极棒信息
-#define Dialog_TempInfo                     14          // 温度信息
-#define Dialog_BatInfo                      15          // 电池信息
-#define Dialog_Value                        16          // 值显示
+#define Dialog_EditValue                    11          // 输入
+#define Dialog_Value                        12          // 值显示
+#define Dialog_About                        13          // 关于本机
+#define Dialog_Times                        14          // 电极棒信息
+#define Dialog_TempInfo                     15          // 温度信息
+#define Dialog_BatInfo                      16          // 电池信息
+
 
 
 

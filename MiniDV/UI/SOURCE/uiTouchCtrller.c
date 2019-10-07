@@ -826,6 +826,10 @@ SWORD touchSprite_CloseIcon(STXPGSPRITE * sprite, WORD x, WORD y)
         {
             exitDialog();
         }
+        else if (dialogType == Dialog_EditValue)
+        {
+            exitDialog();
+        }
     }
     return 0;
 }
@@ -917,6 +921,25 @@ static void Dialog_SetValue_SuoDingRongJieCiShu()
 
 SWORD touchSprite_Text(STXPGSPRITE * sprite, WORD x, WORD y)
 {
+    DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
+    int dialogType = xpgGetCurrDialogTypeId();
+    DWORD dwSpriteId = sprite->m_dwTypeIndex;
+    
+    if (dwHashKey == xpgHash(DIALOG_PAGE_NAME))
+    {
+        if (dialogType == Dialog_Value)
+        {
+            if (dwSpriteId == 0)
+            {
+                if (boDialogValueIsFloat)
+                    sprintf(strEditValue, "%d.%d", dwDialogTempValue>>6, dwDialogTempValue&0x3F);
+                else
+                    sprintf(strEditValue, "%d", dwDialogTempValue);
+                popupDialog(Dialog_EditValue, DIALOG_PAGE_NAME);
+                xpgUpdateStage();
+            }
+        }
+    }
     return 0;
 }
 
