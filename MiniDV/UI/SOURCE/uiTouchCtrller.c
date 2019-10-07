@@ -33,6 +33,7 @@ static void Dialog_CheckPassword_ChangeHirePassword_OnInput();      // ¸ü¸Ä×â½èÃ
 static void Dialog_SetPassword_BootPassword_OnInput();              // ÉèÖÃ¿ª»úÃÜÂë
 static void Dialog_SetPassword_HirePassword_OnInput();              // ¸ü¸Ä¿ª»úÃÜÂë
 static void Dialog_SetValue_SuoDingRongJieCiShu();                  // Öµ¸ü¸Ä - Ëø¶¨ÈÛ½Ó´ÎÊı
+static void Dialog_SetValue_RongJieSheZhi();                        // Öµ¸ü¸Ä - ÈÛ½ÓÉèÖÃÀïµÄ¶àÏîÖµ
 
 
 /*
@@ -390,6 +391,70 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
     {
         if (dwIconId <= 10)
         {
+            if (dwIconId == 0)
+            {
+                pdwEditingFusionValue = & tempModeParam.fangDianZhongXin;
+                strDialogTitle = getstr(Str_FangDianZhongXin);
+            }
+            else if (dwIconId == 1)
+            {
+                pdwEditingFusionValue = & tempModeParam.rongJieDianYa;
+                strDialogTitle = getstr(Str_RongJieDianYa);
+            }
+            else if (dwIconId == 2)
+            {
+                pdwEditingFusionValue = & tempModeParam.yuRongDianYa;
+                strDialogTitle = getstr(Str_YuRongDianYa);
+            }
+            else if (dwIconId == 3)
+            {
+                pdwEditingFusionValue = & tempModeParam.chuChenDianYa;
+                strDialogTitle = getstr(Str_ChuChenDianYa);
+            }
+            else if (dwIconId == 4)
+            {
+                pdwEditingFusionValue = & tempModeParam.rongJieChongDieLiang;
+                strDialogTitle = getstr(Str_RongJieChongDieLiang);
+            }
+            else if (dwIconId == 5)
+            {
+                pdwEditingFusionValue = & tempModeParam.duiJiaoMuBiaoZhi;
+                strDialogTitle = getstr(Str_DuiJiaoMuBiaoZhi);
+            }
+            else if (dwIconId == 6)
+            {
+                pdwEditingFusionValue = & tempModeParam.rongJieShiJian;
+                strDialogTitle = getstr(Str_RongJieShiJian);
+            }
+            else if (dwIconId == 7)
+            {
+                pdwEditingFusionValue = & tempModeParam.yuRongShiJian;
+                strDialogTitle = getstr(Str_YuRongShiJian);
+            }
+            else if (dwIconId == 8)
+            {
+                pdwEditingFusionValue = & tempModeParam.chuChenShiJian;
+                strDialogTitle = getstr(Str_ChuChenShiJian);
+            }
+            else if (dwIconId == 9)
+            {
+                pdwEditingFusionValue = & tempModeParam.qieGeJiaoDuShangXian;
+                strDialogTitle = getstr(Str_QieGeJiaoDuShangXian);
+            }
+            else if (dwIconId == 10)
+            {
+                pdwEditingFusionValue = & tempModeParam.fangDianJiaoZhengMuBiaoZhi;
+                strDialogTitle = getstr(Str_FangDianJiaoZhengMuBiaoZhi);
+            }
+            
+            dialogOnClose = Dialog_SetValue_RongJieSheZhi;
+            dwDialogTempValue = *pdwEditingFusionValue;
+            if (dwIconId == 9)
+                boDialogValueIsFloat = 1;
+            else
+                boDialogValueIsFloat = 0;
+            popupDialog(Dialog_Value, "FusionModeSet");
+            xpgUpdateStage();
         }
         else if (dwIconId == 11)
         {
@@ -949,6 +1014,13 @@ static void Dialog_SetPassword_HirePassword_OnInput()
 static void Dialog_SetValue_SuoDingRongJieCiShu()
 {
     g_psSetupMenu->wLockedTimes = dwDialogTempValue;
+    exitDialog();
+    WriteSetupChg();
+}
+
+static void Dialog_SetValue_RongJieSheZhi()
+{
+    *pdwEditingFusionValue = dwDialogTempValue;
     exitDialog();
     WriteSetupChg();
 }

@@ -48,6 +48,7 @@ BOOL  boDialogValueIsFloat = 0;
 char strEditPassword[8] = {0};                  // editing password
 char strEditValue[32] = {0};                  // editing value
 char * strDialogTitle = NULL;
+DWORD * pdwEditingFusionValue = NULL;
 
 const BYTE * FModeStrList[] = {
     "SM",

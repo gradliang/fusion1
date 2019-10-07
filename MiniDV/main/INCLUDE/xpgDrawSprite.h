@@ -15,6 +15,7 @@ extern BOOL  boDialogValueIsFloat;
 extern char strEditPassword[8];
 extern char strEditValue[32];
 extern char * strDialogTitle;
+extern DWORD * pdwEditingFusionValue;
 
 SWORD xpgDrawSprite_Null				  ( ST_IMGWIN *, STXPGSPRITE *, BOOL );
 SWORD xpgDrawSprite						    ( ST_IMGWIN *, STXPGSPRITE *, BOOL ); // type0
