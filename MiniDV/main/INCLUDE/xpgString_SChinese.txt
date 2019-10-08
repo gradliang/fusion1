@@ -171,7 +171,7 @@ static const BYTE* xpgString_SChinese[] =
 	"日",						//   160
 	"请输入密码",				//   161
 	"再确认密码",				//   162
-
+	"OPM控制面板",				//   163
 
 };
 

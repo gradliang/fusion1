@@ -509,7 +509,7 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
         }
         else if (dwIconId == 1)
         {
-            xpgSearchAndGotoPage("Light1");
+            xpgSearchAndGotoPage("opm1");
             xpgUpdateStage();
         }
     }
@@ -843,7 +843,11 @@ SWORD touchSprite_BackIcon(STXPGSPRITE * sprite, WORD x, WORD y)
         dwHashKey == xpgHash("SetUi") ||
         dwHashKey == xpgHash("SetInfo") ||
         dwHashKey == xpgHash("Record") || 
-        dwHashKey == xpgHash("RedLight"))
+        dwHashKey == xpgHash("RedLight") || 
+        dwHashKey == xpgHash("opm1") || 
+        dwHashKey == xpgHash("opm2") || 
+        dwHashKey == xpgHash("opm3") || 
+        dwHashKey == xpgHash("opm4") )
     {
         xpgSearchAndGotoPage("Main");
         xpgUpdateStage();

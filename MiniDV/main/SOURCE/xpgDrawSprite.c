@@ -1747,6 +1747,15 @@ SWORD xpgDrawSprite_Title(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BO
         SetCurrIduFontID(FONT_ID_HeiTi19);
         Idu_PrintString(pWin, getstr(Str_HongGuangBi), pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
     }
+    else if (dwHashKey == xpgHash("opm1") ||
+             dwHashKey == xpgHash("opm2") ||
+             dwHashKey == xpgHash("opm3") || 
+             dwHashKey == xpgHash("opm4"))
+    {
+        Idu_PaintWinArea(pWin, 0, 0, pWin->wWidth, 40, RGB2YUV(0x0B, 0x0C, 0x0E));
+        SetCurrIduFontID(FONT_ID_HeiTi19);
+        Idu_PrintString(pWin, getstr(Str_OPMKongZhiMianBan), pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
+    }
 
     return PASS;
 }
@@ -1769,6 +1778,13 @@ SWORD xpgDrawSprite_Aside(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BO
     {
         Idu_PaintWinArea(pWin, 248, 0, 2, pWin->wHeight, RGB2YUV(0x2E, 0x2E, 0x2E));
     }    
+    else if (dwHashKey == xpgHash("opm1") || 
+        dwHashKey == xpgHash("opm2") ||
+        dwHashKey == xpgHash("opm3") ||
+        dwHashKey == xpgHash("opm4"))
+    {
+        Idu_PaintWinArea(pWin, 200, 0, 2, pWin->wHeight, RGB2YUV(0x2E, 0x2E, 0x2E));
+    }
     return PASS;
 }
 
@@ -1788,7 +1804,11 @@ SWORD xpgDrawSprite_BackIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite,
         dwHashKey == xpgHash("FusionSet2") ||
         dwHashKey == xpgHash("FusionSet3") ||
         dwHashKey == xpgHash("Record") ||
-        dwHashKey == xpgHash("RedLight"))
+        dwHashKey == xpgHash("RedLight") || 
+        dwHashKey == xpgHash("opm1") || 
+        dwHashKey == xpgHash("opm2") || 
+        dwHashKey == xpgHash("opm3") || 
+        dwHashKey == xpgHash("opm4")  )
     {
         char tmpbuf[64];
         SetCurrIduFontID(FONT_ID_HeiTi19);

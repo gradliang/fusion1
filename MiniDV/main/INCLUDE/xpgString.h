@@ -170,6 +170,8 @@ enum xpgStringId {
 	Str_Day,						//   160
 	Str_QingShuRuMiMa,				//   161
 	Str_ZaiQueRenMiMa,				//   162
+	Str_OPMKongZhiMianBan,			//   163
+	
 	
 	Str_MAX_ID,
 };
