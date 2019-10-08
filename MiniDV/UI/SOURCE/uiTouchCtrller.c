@@ -509,6 +509,8 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
         }
         else if (dwIconId == 1)
         {
+            xpgSearchAndGotoPage("Light1");
+            xpgUpdateStage();
         }
     }
     else if (dwHashKey == xpgHash(DIALOG_PAGE_NAME))
