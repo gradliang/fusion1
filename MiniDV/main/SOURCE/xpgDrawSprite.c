@@ -49,6 +49,7 @@ char strEditPassword[8] = {0};                  // editing password
 char strEditValue[32] = {0};                  // editing value
 char * strDialogTitle = NULL;
 DWORD * pdwEditingFusionValue = NULL;
+BOOL isSelectOnlineOPM = 0;
 
 const BYTE * FModeStrList[] = {
     "SM",
@@ -1344,6 +1345,21 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         {
         }
     }
+    else if(dwHashKey == xpgHash("opm1") || dwHashKey == xpgHash("opm2") || dwHashKey == xpgHash("opm3") || dwHashKey == xpgHash("opm4"))
+    {
+        if (dwSpriteId == 0 || dwSpriteId == 1)
+        {
+            pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 0);
+            if (pstMask)
+                xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+            if (dwSpriteId == 0)
+                text = getstr(Str_LocalOPM);
+            else 
+                text = getstr(Str_CloudOPM);
+            SetCurrIduFontID(FONT_ID_HeiTi16);
+            Idu_PrintStringCenter(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy+2, 0, pstSprite->m_wWidth);  
+        }
+    }
     
     xpgSpriteEnableTouch(pstSprite);
 }
@@ -1607,6 +1623,25 @@ SWORD xpgDrawSprite_LightIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite
                 return PASS;
             SetCurrIduFontID(FONT_ID_HeiTi16);
             Idu_PrintStringCenter(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy+2, 0, pstSprite->m_wWidth); 
+        }
+    }
+    else if(dwHashKey == xpgHash("opm1") || dwHashKey == xpgHash("opm2") || dwHashKey == xpgHash("opm3") || dwHashKey == xpgHash("opm4"))
+    {
+        if (dwSpriteId == 0 || dwSpriteId == 1)
+        {
+            if (isSelectOnlineOPM && dwSpriteId == 0)
+                return PASS;
+            if (!isSelectOnlineOPM && dwSpriteId == 1)
+                return PASS;
+            pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 0);
+            if (pstMask)
+                xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+            if (dwSpriteId == 0)
+                text = getstr(Str_LocalOPM);
+            else 
+                text = getstr(Str_CloudOPM);
+            SetCurrIduFontID(FONT_ID_HeiTi16);
+            Idu_PrintStringCenter(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy+2, 0, pstSprite->m_wWidth);  
         }
     }
     

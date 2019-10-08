@@ -171,7 +171,8 @@ enum xpgStringId {
 	Str_QingShuRuMiMa,				//   161
 	Str_ZaiQueRenMiMa,				//   162
 	Str_OPMKongZhiMianBan,			//   163
-	
+	Str_LocalOPM,					//   164
+	Str_CloudOPM,					//   165
 	
 	Str_MAX_ID,
 };

@@ -509,6 +509,7 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
         }
         else if (dwIconId == 1)
         {
+            isSelectOnlineOPM = 0;
             xpgSearchAndGotoPage("opm1");
             xpgUpdateStage();
         }
