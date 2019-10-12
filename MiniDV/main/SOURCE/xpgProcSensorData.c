@@ -3740,7 +3740,7 @@ void TSPI_DataProc(void)
 					case 1:
 						#if 1
 						//DriveMotor(01,1,1000,8);//RIGHT_DOWN_FIBER  DOWN
-						st_swAFStep=100;
+						st_swAFStep=2;
 						ProcAFmotorAction();
 						//PrintWinData();
 						#else
@@ -3752,7 +3752,7 @@ void TSPI_DataProc(void)
 					case 2:
 						#if 1
 						//DriveMotor(02,0,1000,8);//RIGHT_DOWN_FIBER  UP
-						st_swAFStep=-100;
+						st_swAFStep=-2;
 						ProcAFmotorAction();
 						#else
 						Discharge(1000,0);
@@ -3919,17 +3919,27 @@ static BYTE st_bShowin=0;
 void ShowOSdline()
 {
 	ST_IMGWIN *pDstWin=(ST_IMGWIN *)Idu_GetNextWin();
-	WORD wW,wH;
+	WORD wX,wY,wW,wH;
 
 	wW=100; //half
 	wH=pDstWin->wHeight/6;//half
-OsdLineSet(1<<g_pstXpgMovie->m_wCurPage,1,pDstWin->wWidth/2-1-wW,pDstWin->wHeight/2-2,wW<<1,2,OSD_COLOR_RED);
-OsdLineSet(1<<g_pstXpgMovie->m_wCurPage,2,pDstWin->wWidth/2-1-1,pDstWin->wHeight/2-1-wH,2,wH<<1,OSD_COLOR_RED);
+	//中间的+字
+	OsdLineSet(1<<g_pstXpgMovie->m_wCurPage,1,pDstWin->wWidth/2-1-wW,pDstWin->wHeight/2-2,wW<<1,2,OSD_COLOR_RED);
+	OsdLineSet(1<<g_pstXpgMovie->m_wCurPage,2,pDstWin->wWidth/2-1-1,pDstWin->wHeight/2-1-wH,2,wH<<1,OSD_COLOR_RED);
+	//水平两条线
+	OsdLineSet(1<<g_pstXpgMovie->m_wCurPage,3,0,pDstWin->wHeight/2-1-wH,pDstWin->wWidth,2,OSD_COLOR_BLUE);
+	OsdLineSet(1<<g_pstXpgMovie->m_wCurPage,4,0,pDstWin->wHeight/2-1+wH,pDstWin->wWidth,2,OSD_COLOR_BLUE);
 
-OsdLineSet(1<<g_pstXpgMovie->m_wCurPage,3,0,pDstWin->wHeight/2-1-wH,pDstWin->wWidth,2,OSD_COLOR_BLUE);
-OsdLineSet(1<<g_pstXpgMovie->m_wCurPage,4,0,pDstWin->wHeight/2-1+wH,pDstWin->wWidth,2,OSD_COLOR_BLUE);
+	//垂直两条线
+	wW=2;
+	wH=pDstWin->wHeight;
+	wX=pDstWin->wWidth/2-200;
+	wY=0;
+	OsdLineSet(1<<g_pstXpgMovie->m_wCurPage,5,wX,wY,wW,wH,OSD_COLOR_RED);
+	wX=pDstWin->wWidth/2+200;
+	OsdLineSet(1<<g_pstXpgMovie->m_wCurPage,6,wX,wY,wW,wH,OSD_COLOR_RED);
 
-xpgUpdatePageOsd();
+	xpgUpdatePageOsd();
 
 }
 #endif

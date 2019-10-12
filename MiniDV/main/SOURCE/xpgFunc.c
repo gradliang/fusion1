@@ -1152,8 +1152,9 @@ void Timer_FirstEnterCamPreview()
 	WeldDataInit();
 #endif
 
-//    Ui_TimerProcAdd(10, xpgCb_EnterCamcoderPreview);//xpgCb_EnterCamcoderPreview
-	
+#if (PRODUCT_PCBA!=PCBA_MAIN_BOARD_V12)
+    Ui_TimerProcAdd(10, xpgCb_EnterCamcoderPreview);//xpgCb_EnterCamcoderPreview
+#endif
 }
 
 #endif //#if (SENSOR_ENABLE == ENABLE)
