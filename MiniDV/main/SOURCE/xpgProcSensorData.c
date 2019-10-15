@@ -487,7 +487,7 @@ void SetFillProcWinFlag(void)
 	IPU *ipu = (IPU *) IPU_BASE;
 
 #if  1//PROC_SENSOR_DATA_MODE
-		st_bNeedFillProcWin=0xe3; // bit0->up win  bit1->down win   bit7->init mode
+		st_bNeedFillProcWin=0x43; // bit0->up win  bit1->down win   bit7->init mode
 		//st_bNeedFillProcWin=0xe1; // bit0->up win  bit1->down win   bit7->init mode
 	#if (USE_IPW1_DISPLAY_MOTHOD == ENABLE) 
 			ipu->Ipu_reg_F0 &= ~BIT7;//open IPW2
@@ -3933,10 +3933,10 @@ void ShowOSdline()
 	//垂直两条线
 	wW=2;
 	wH=pDstWin->wHeight;
-	wX=pDstWin->wWidth/2-200;
+	wX=pDstWin->wWidth/2-50;
 	wY=0;
 	OsdLineSet(1<<g_pstXpgMovie->m_wCurPage,5,wX,wY,wW,wH,OSD_COLOR_RED);
-	wX=pDstWin->wWidth/2+200;
+	wX=pDstWin->wWidth/2+50;
 	OsdLineSet(1<<g_pstXpgMovie->m_wCurPage,6,wX,wY,wW,wH,OSD_COLOR_RED);
 
 	xpgUpdatePageOsd();
@@ -4112,9 +4112,15 @@ void CacheSensorData( BYTE bIpw2)
 
 		if (st_bNeedFillProcWin&0x40)
 		{
-			//mpDebugPrint("cache in");
+			//mpDebugPrint("cache in g_bDisplayMode=%p st_bNeedFillProcWin=%p",g_bDisplayMode,st_bNeedFillProcWin);
 			st_bBackupChanel=Sensor_CurChannel_Get();
 			st_bNeedFillProcWin &=0x3f;
+			//one sensor online
+			if ((g_bDisplayMode&0x0f) ==0)
+				st_bNeedFillProcWin &=0xfd;
+			if ((g_bDisplayMode&0x0f) ==0x01)
+				st_bNeedFillProcWin &=0xfe;
+
 			st_bNeedFillProcWin |=0x20;//for stop
 		}
 		if ((st_bNeedFillProcWin&0x03)==0x03)
@@ -4149,11 +4155,14 @@ void CacheSensorData( BYTE bIpw2)
 			//mpCopyWinAreaSameSize((ST_IMGWIN *)&SensorInWin[0],(ST_IMGWIN *)Idu_GetCurrWin(),0, 0, 0, 0,pDstWin->wWidth, pDstWin->wHeight);
 			if (st_bBackupChanel<2 && st_bBackupChanel!=Sensor_CurChannel_Get())
 				Sensor_Channel_Set(st_bBackupChanel);
+			st_bBackupChanel=0xff;
 			st_bNeedFillProcWin=0;
 			bCacheWinIndex=0;
 			*pIpwAddr = ((DWORD)((ST_IMGWIN *)Idu_GetNextWin()->pdwStart)| 0xA0000000);	
 			EventSet(UI_EVENT, EVENT_PROC_DATA);
 		}
+		else if (st_bNeedFillProcWin)
+			st_bNeedFillProcWin=0;
 
 		if (bCacheWinIndex==1) // up win
 		{
@@ -4176,16 +4185,16 @@ void CacheSensorData( BYTE bIpw2)
 		{
 			if (bIpw2)
 				ipu->Ipu_reg_F0 &= ~BIT7;//open IPW2
-			else
-				ipu->Ipu_reg_F0 &= ~BIT6; //open IPW1
 		}
 	}
+	if (!bIpw2) //  IPW1 must open ,because it is IPW2`s  base
+			ipu->Ipu_reg_F0 &= ~BIT6; //open IPW1
 
 }
 void ProcIpwFrameEvent(void) //IPW2
 {
-	IPU *ipu = (IPU *) IPU_BASE;
-	ST_IMGWIN *pDstWin=(ST_IMGWIN *)Idu_GetNextWin();
+	//IPU *ipu = (IPU *) IPU_BASE;
+	//ST_IMGWIN *pDstWin=(ST_IMGWIN *)Idu_GetNextWin();
 
 #if 0
 		//API_Close_Write_Into_EncBuf();
@@ -4227,9 +4236,9 @@ void ProcIpwFrameEvent(void) //IPW2
 
 void ProcIpwBit0Event(void) // IPW 1  same as record,for cache process data
 {
-	IPU *ipu = (IPU *) IPU_BASE;
-	ST_IMGWIN *pDstWin=(ST_IMGWIN *)&SensorInWin[0];
-	BYTE bCacheWinIndex=0;
+	//IPU *ipu = (IPU *) IPU_BASE;
+	//ST_IMGWIN *pDstWin=(ST_IMGWIN *)&SensorInWin[0];
+	//BYTE bCacheWinIndex=0;
 
 
 #if 0

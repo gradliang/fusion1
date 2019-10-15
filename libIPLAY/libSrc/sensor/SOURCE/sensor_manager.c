@@ -365,11 +365,11 @@ void Drive_Sensor(void)
 	#elif defined(SENSOR_TYPE_NT99140)
 #if (PRODUCT_UI==UI_WELDING)
 		Sensor_ChangeIO_Init();
-		Sensor_Channel_Set(1);
+		Sensor_Channel_Set(1); //->g_bDisplayMode=0x81; down sensor near to panel connect
 		Local_Sensor_GPIO_Reset();
 		Drive_Sensor_NT99140();
-		//IODelay(1000);
-		Sensor_Channel_Set(0);
+		IODelay(1000);
+		Sensor_Channel_Set(0); //->g_bDisplayMode=0x80; up sensor
 		Local_Sensor_GPIO_Reset();
 #elif (PRODUCT_UI==UI_SURFACE)
 		Sensor_ChangeIO_Init();
