@@ -112,6 +112,7 @@ void Update_gSetupMenuValue(void)
 	*(gSetupMenuValue + 7) = 0x00000001;                  //SETUP_INIT_BIT;
 
 //	*(gSetupMenuValue + 8)  = (DWORD) g_psSetupMenu->bUsbdMode;
+#if  (PRODUCT_UI==UI_WELDING)
 	*(gSetupMenuValue + 9)  =  g_psSetupMenu->wElectrodePos[0];
 	*(gSetupMenuValue + 10)  =  g_psSetupMenu->wElectrodePos[1];
 
@@ -166,6 +167,7 @@ void Update_gSetupMenuValue(void)
     *(gSetupMenuValue + 141) = g_psSetupMenu->wLockedTimes;
     
 	MP_DEBUG("--Write setup value  g_psSetupMenu->wElectrodePos[1]=%d",g_psSetupMenu->wElectrodePos[1] );
+#endif
 
 }
 
@@ -180,6 +182,7 @@ void Recover_g_psSetupMenu(void)
     }
  //   if (gSetupMenuValue[8] <= SETUP_MENU_USBD_MODE_UAVC)
  //       g_psSetupMenu->bUsbdMode = (BYTE) gSetupMenuValue[8];
+#if  (PRODUCT_UI==UI_WELDING)
     if (gSetupMenuValue[9] <= 0x0fff)
         g_psSetupMenu->wElectrodePos[0] =  gSetupMenuValue[9];
     if (gSetupMenuValue[10] <= 0x0fff)
@@ -236,6 +239,8 @@ void Recover_g_psSetupMenu(void)
     g_psSetupMenu->wLockedTimes = gSetupMenuValue[141];
     
 	MP_DEBUG("--Read setup value  g_psSetupMenu->wElectrodePos[1]=%d",g_psSetupMenu->wElectrodePos[1] );
+#endif
+
 }
 
 

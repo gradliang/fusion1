@@ -144,12 +144,14 @@ void uiTouchMsgReceiver(void)
         }
         
         MP_ALERT("s = %d, x1 = %d, y1 = %d, x2 = %d, y2 = %d", stTcData.status, stTcData.x1, stTcData.y1, stTcData.x2, stTcData.y2);
+#if  (PRODUCT_UI==UI_WELDING)
         uiDispatchTouchSprite(stTcData.x1, stTcData.y1);
+#endif
     }
 }
 
 
-
+#if  (PRODUCT_UI==UI_WELDING)
 SWORD touchSprite_Background(STXPGSPRITE * sprite, WORD x, WORD y)
 {
     return 0;
@@ -1541,7 +1543,7 @@ void uiDispatchTouchSprite(WORD x1, WORD y1)
         }
     }
 }
-
+#endif
 
 #endif  //#if (TOUCH_CONTROLLER_ENABLE == ENABLE)
 

@@ -568,8 +568,9 @@ void RecordVideoTask()
 	//	mpDebugPrint("b");
 
      //SensorApplication();	        
+#if (PRODUCT_UI==UI_WELDING)
 		ProcIpwBit0Event();
-
+#endif
 
     }
 }

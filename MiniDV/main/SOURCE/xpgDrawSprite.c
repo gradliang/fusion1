@@ -76,6 +76,7 @@ int popupDialog(int dialogType, char * backToPage)
 {
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
     
+#if  (PRODUCT_UI==UI_WELDING)
     xpgAddDialog(dialogType, backToPage, Idu_GetCurrWin());
     //mpDebugPrint("dialogType = %d, backToPage = %s", dialogType, backToPage);
     
@@ -232,13 +233,14 @@ int popupDialog(int dialogType, char * backToPage)
     }
     
     xpgSearchAndGotoPage(DIALOG_PAGE_NAME);
-    return;
+#endif
 }
 
 int exitDialog()
 {
     char backPage[32];
     char * pageName = xpgGetCurrDialogBackPage();
+
     strncpy(backPage, pageName, sizeof(backPage) - 1);
     backPage[sizeof(backPage) - 1] = 0;
     xpgDeleteDialog();
@@ -265,6 +267,7 @@ SWORD(*drawSpriteFunctions[]) (ST_IMGWIN *, STXPGSPRITE *, BOOL) =
 	xpgDrawSprite_Null,		        //type8
 	xpgDrawSprite_Null,		        //type9
 	xpgDrawSprite_FileView,		        //type10
+#if  (PRODUCT_UI==UI_WELDING)
     xpgDrawSprite_Background,           // type11
     xpgDrawSprite_Icon,                 // type12
     xpgDrawSprite_LightIcon,            // type13
@@ -282,6 +285,7 @@ SWORD(*drawSpriteFunctions[]) (ST_IMGWIN *, STXPGSPRITE *, BOOL) =
     xpgDrawSprite_Radio,                // type25
     xpgDrawSprite_Scroll,               // type26
     xpgDrawSprite_Frame,                // type27
+#endif
 };
 
 //---------------------------------------------------------------------------
@@ -579,6 +583,7 @@ SWORD xpgDrawSprite_FlashIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite
 }
 #endif
 
+#if  (PRODUCT_UI==UI_WELDING)
 SWORD xpgDrawSprite_Background(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOOL boClip)
 {
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
@@ -3874,7 +3879,7 @@ SWORD xpgDrawSprite_Frame(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BO
     
     return PASS;
 }
-
+#endif
 
 
 #endif

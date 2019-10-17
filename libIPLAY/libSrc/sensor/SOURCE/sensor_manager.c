@@ -404,7 +404,7 @@ int API_Sensor_Initial(void)
 #if (PRODUCT_UI==UI_WELDING)
 	Sensor_DisplayWindow_Set();
 #elif (PRODUCT_UI==UI_SURFACE)
-	API_SetSensorWindow(160, 0, 640, 600);
+	API_SetSensorWindow(0, 0, 800, 600);
 #endif
 
 	#if  defined(SENSOR_TYPE_MAGIC_SENSOR)
