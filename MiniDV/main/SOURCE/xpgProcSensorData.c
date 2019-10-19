@@ -45,7 +45,7 @@ static BYTE st_bTopVMotorUpValue=0,st_bBottomVMotorUpValue=0,st_bLastProcStep[2]
 static WORD st_wVmotorMoveValue[2][VMOTOR_CNT]; // 0->up motor  1->down motor
 static BYTE st_bDischargeMode=0; // 0->off 
 #if TEST_PLANE
-static BYTE st_bStrFace[MOTOR_NUM][POS_STR_LEN], st_bStrCenter[MOTOR_NUM][POS_STR_LEN], st_bStrInfo[POS_STR_LEN];
+static BYTE st_bStrFace[MOTOR_NUM][POS_STR_LEN], st_bStrCenter[MOTOR_NUM][POS_STR_LEN], st_bStrHLevel[MOTOR_NUM][POS_STR_LEN], st_bStrInfo[POS_STR_LEN];
 #endif
 BYTE g_bDisplayUseIpw2=1; // 0->ipw1  1->ipw2
 
@@ -725,17 +725,14 @@ SWORD SearchLeftFiberBottomEdge(ST_IMGWIN *pWin,BYTE bMode)
 							{
 								st_swFaceY3[bMode]=dwYValidStartAver;
 								mpDebugPrint(" st_swFaceY3[%d]=%d ",bMode,st_swFaceY3[bMode]);
-								#if OSD_LINE_NUM
+								#if OSD_LINE_NUM && !TEST_PLANE
 								OsdLineSet(1<<g_pstXpgMovie->m_wCurPage,12+bMode,0,dwYValidStartAver,pWin->wWidth/2,2,OSD_COLOR_BLUE);
 								#endif
 								#if TEST_PLANE
 								if (st_swFaceY1[bMode]>0 && st_swFaceY3[bMode]-st_swFaceY1[bMode])
 								{
 									dwYValidStartAver=st_swFaceY3[bMode]/2+st_swFaceY1[bMode]/2;
-									if (dwYValidStartAver>pWin->wHeight/2)
-										sprintf(&st_bStrCenter[bMode][0], "C_L:%d", dwYValidStartAver-pWin->wHeight/2);
-									else
-										sprintf(&st_bStrCenter[bMode][0], "C_L:-%d", pWin->wHeight/2-dwYValidStartAver);
+									sprintf(&st_bStrCenter[bMode][0], "C_L:%d", (SWORD)(dwYValidStartAver-pWin->wHeight/2));
 									xpgSetUpdateOsdFlag(1);
 								}
 								#endif
@@ -1402,6 +1399,104 @@ SWORD SearchRightFiberCore(ST_IMGWIN *pWin,BYTE bMode)
 	return FAIL;
 }
 
+
+SDWORD SearchTopEdge(ST_IMGWIN *pWin,SWORD swStartX,SWORD swXEnd,SWORD swStartY,SWORD swYEnd)
+{
+	DWORD dwOffset,dwYValidStartAver,dwYValidStartCnt,*pdwYValidStartArry;
+	WORD wValidPixelCnt,wInvalidPixelCnt,wValidLineCnt,wYvalidCnt;
+	SWORD i,x,y;
+	BYTE *pbWinBuffer,bContinueCnt;
+
+	pdwYValidStartArry = (DWORD *)ext_mem_malloc(ALIGN_32(swXEnd-swStartX+1));
+	if (pdwYValidStartArry==NULL)
+		return FAIL;
+	wValidLineCnt=0;
+	for (x=swStartX;x<swXEnd;x+=4)
+	{
+		wValidPixelCnt=0;
+		wInvalidPixelCnt=0;
+		y=swStartY;
+		pbWinBuffer = (BYTE *) pWin->pdwStart+x*2+y*pWin->dwOffset;
+		bContinueCnt=0;
+		//mpDebugPrint(" %d: ",x);
+		while (y<swYEnd)
+		{
+			//mpDebugPrintN("%02x ",*pbWinBuffer);
+			if (wValidPixelCnt)
+			{
+				if (*pbWinBuffer < st_bBackGroundLevel)
+					wValidPixelCnt++;
+				else
+					wInvalidPixelCnt++;
+			}
+			else
+			{
+				if (*pbWinBuffer < st_bBackGroundLevel*2/3 )
+				{
+					bContinueCnt++;
+					if (bContinueCnt>Y_CONTINUE_VALID_SUM)
+					{
+						wValidPixelCnt=bContinueCnt;
+					}
+				}
+				else
+				{
+					bContinueCnt=0;
+				}
+			}
+			if ((wValidPixelCnt>Y_VALID_PIXEL)&&wValidPixelCnt>(wInvalidPixelCnt<<3))
+			{
+				pdwYValidStartArry[wValidLineCnt++]=y-wValidPixelCnt-wInvalidPixelCnt;
+				break;
+			}
+
+			y++;
+			pbWinBuffer+=pWin->dwOffset;
+		}
+		TaskYield();
+		//mpDebugPrint(" ");
+
+		if (y>=swYEnd)
+		{
+			break;
+		}
+	}
+
+
+	//计算有效Y起始坐标
+	if (wValidLineCnt>4)
+	{
+		dwYValidStartAver=0;
+		for (i=0;i<wValidLineCnt;i++)
+			dwYValidStartAver+=pdwYValidStartArry[i];
+		dwYValidStartAver/=wValidLineCnt;
+		//mpDebugPrint("y: %02x  ",dwYValidStartAver);
+		//--去掉一些突然跳变的点，如灰尘
+		wYvalidCnt=0;
+		dwYValidStartCnt=0;
+		for (i=0;i<wValidLineCnt;i++)
+		{
+			//mpDebugPrintN("%02x ",wYValidStartArry[i]);
+			if ((dwYValidStartAver+Y_VALID_OFFSET>pdwYValidStartArry[i]) && (dwYValidStartAver-Y_VALID_OFFSET<pdwYValidStartArry[i]))
+			{
+				dwYValidStartCnt+=pdwYValidStartArry[i];
+				wYvalidCnt++;
+			}
+		}
+		//mpDebugPrint(" %d ",wYvalidCnt);
+		if (wYvalidCnt>wValidLineCnt/2)
+		{
+			dwYValidStartAver=dwYValidStartCnt/wYvalidCnt;
+			ext_mem_free(pdwYValidStartArry);
+			return (SDWORD)dwYValidStartAver;
+		}
+	}
+
+	ext_mem_free(pdwYValidStartArry);
+	return FAIL;
+}
+
+
 SWORD SearchLeftFiberFaceAndTopEdge(ST_IMGWIN *pWin,BYTE bMode,BYTE bScanEdge)
 {
 	DWORD dwOffset,dwYValidStartAver;
@@ -1509,7 +1604,7 @@ SWORD SearchLeftFiberFaceAndTopEdge(ST_IMGWIN *pWin,BYTE bMode,BYTE bScanEdge)
 								{
 									st_swFaceY1[bMode]=dwYValidStartAver;
 									mpDebugPrint(" st_swFaceY1[%d]=%d ",bMode,st_swFaceY1[bMode]);
-									#if OSD_LINE_NUM
+									#if OSD_LINE_NUM && !TEST_PLANE
 									OsdLineSet(1<<g_pstXpgMovie->m_wCurPage,4+bMode,0,dwYValidStartAver,pWin->wWidth/2,2,OSD_COLOR_BLUE);
 									#endif
 								}
@@ -1560,12 +1655,9 @@ SWORD SearchLeftFiberFaceAndTopEdge(ST_IMGWIN *pWin,BYTE bMode,BYTE bScanEdge)
 			//mpDebugPrint("0: %d :%d-%d ",x,wValidPixelCnt,wInvalidPixelCnt);
 		}
 	}
-	//无有效端面或者所有端都有效
-	if (!wValidLineCnt)
-	{
-		//UartOutText("-N-");
-	}
-	else //find
+
+	//--找到有效端面
+	if (wValidLineCnt>4)
 	{
 		//在最后一个有效端面与第一个无效端面间精确定位
 		swXEnd=x;
@@ -1635,21 +1727,32 @@ SWORD SearchLeftFiberFaceAndTopEdge(ST_IMGWIN *pWin,BYTE bMode,BYTE bScanEdge)
 			{
 				st_swFaceX[bMode]=x;
 				mpDebugPrint("X[%d]=%d",bMode,x);
-				#if OSD_LINE_NUM
+				#if TEST_PLANE
+				if (st_swFaceX[bMode]>80 && st_swFaceY1[bMode]>0)
+				{
+					y=SearchTopEdge(pWin,st_swFaceX[bMode]-80,st_swFaceX[bMode]-20,swStartY,swYEnd);
+					//mpDebugPrint("Y[%d]=%d",bMode,y);
+					if (y>0)
+						sprintf(&st_bStrHLevel[bMode][0], "F_V: %d", y-st_swFaceY1[bMode]);
+					else
+						st_bStrHLevel[bMode][0]=0;
+				}
+				else
+					st_bStrHLevel[bMode][0]=0;
+				xpgSetUpdateOsdFlag(1);
+				#endif
+
+				#if OSD_LINE_NUM && !TEST_PLANE
 				OsdLineSet(1<<g_pstXpgMovie->m_wCurPage,bMode,x,(bMode>1 ? pWin->wHeight/2:0),2,pWin->wHeight/2,OSD_COLOR_GREEN);
 				#endif
 				#if TEST_PLANE
-				if (st_swFaceX[bMode]>pWin->wWidth/2)
-					sprintf(&st_bStrFace[bMode][0], "F_L:%d", st_swFaceX[bMode]-pWin->wWidth/2);
-				else
-					sprintf(&st_bStrFace[bMode][0], "F_L:-%d", pWin->wWidth/2-st_swFaceX[bMode]);
+				sprintf(&st_bStrFace[bMode][0], "F_L:%d", st_swFaceX[bMode]-pWin->wWidth/2);
 				xpgSetUpdateOsdFlag(1);
 				#endif
 				return ENABLE;
 			}
 			return PASS;
 		}
-
 
 	}
 
@@ -1757,17 +1860,14 @@ SWORD SearchRightFiberBottomEdge(ST_IMGWIN *pWin,BYTE bMode)
 							{
 								st_swFaceY3[bMode]=dwYValidStartAver;
 								mpDebugPrint(" st_swFaceY3[%d]=%d ",bMode,st_swFaceY3[bMode]);
-								#if OSD_LINE_NUM
+								#if OSD_LINE_NUM && !TEST_PLANE
 								OsdLineSet(1<<g_pstXpgMovie->m_wCurPage,12+bMode,(bMode&0x01)>0 ? pWin->wWidth/2:0,dwYValidStartAver,pWin->wWidth/2,2,OSD_COLOR_BLUE);
 								#endif
 								#if TEST_PLANE
 								if (st_swFaceY1[bMode]>0 && st_swFaceY3[bMode]-st_swFaceY1[bMode])
 								{
 									dwYValidStartAver=st_swFaceY3[bMode]/2+st_swFaceY1[bMode]/2;
-									if (dwYValidStartAver>pWin->wHeight/2)
-										sprintf(&st_bStrCenter[bMode][0], "C_R:%d", dwYValidStartAver-pWin->wHeight/2);
-									else
-										sprintf(&st_bStrCenter[bMode][0], "C_R:-%d", pWin->wHeight/2-dwYValidStartAver);
+									sprintf(&st_bStrCenter[bMode][0], "C_R:%d", (SWORD)(dwYValidStartAver-pWin->wHeight/2));
 									xpgSetUpdateOsdFlag(1);
 								}
 								#endif
@@ -2033,7 +2133,7 @@ SWORD SearchRightFiberFaceAndTopEdge(ST_IMGWIN *pWin,BYTE bMode,BYTE bScanFace)
 							{
 								st_swFaceY1[bMode]=dwYValidStartAver;
 								mpDebugPrint(" st_swFaceY1[%d]=%d ",bMode,st_swFaceY1[bMode]);
-								#if OSD_LINE_NUM
+								#if OSD_LINE_NUM && !TEST_PLANE
 								OsdLineSet(1<<g_pstXpgMovie->m_wCurPage,4+bMode,(bMode&0x01)>0 ? pWin->wWidth/2:0,dwYValidStartAver,pWin->wWidth/2,2,OSD_COLOR_BLUE);
 								#endif
 							}
@@ -2135,14 +2235,25 @@ SWORD SearchRightFiberFaceAndTopEdge(ST_IMGWIN *pWin,BYTE bMode,BYTE bScanFace)
 			{
 				st_swFaceX[bMode]=x;
 				mpDebugPrint("X[%d]=%d",bMode,x);
-				#if OSD_LINE_NUM
+				#if TEST_PLANE
+				if (st_swFaceX[bMode]>80 && st_swFaceY1[bMode]>0)
+				{
+					y=SearchTopEdge(pWin,st_swFaceX[bMode]+20,st_swFaceX[bMode]+80,swStartY,swYEnd);
+					//mpDebugPrint("Y[%d]=%d",bMode,y);
+					if (y>0)
+						sprintf(&st_bStrHLevel[bMode][0], "F_V: %d", y-st_swFaceY1[bMode]);
+					else
+						st_bStrHLevel[bMode][0]=0;
+				}
+				else
+					st_bStrHLevel[bMode][0]=0;
+				xpgSetUpdateOsdFlag(1);
+				#endif
+				#if OSD_LINE_NUM && !TEST_PLANE
 				OsdLineSet(1<<g_pstXpgMovie->m_wCurPage,bMode,x,(bMode>1 ? pWin->wHeight/2:0),2,pWin->wHeight/2,OSD_COLOR_GREEN);
 				#endif
 				#if TEST_PLANE
-				if (st_swFaceX[bMode]>pWin->wWidth/2)
-					sprintf(&st_bStrFace[bMode][0], "F_R:%d", st_swFaceX[bMode]-pWin->wWidth/2);
-				else
-					sprintf(&st_bStrFace[bMode][0], "F_R:-%d", pWin->wWidth/2-st_swFaceX[bMode]);
+				sprintf(&st_bStrFace[bMode][0], "F_R:%d", st_swFaceX[bMode]-pWin->wWidth/2);
 				xpgSetUpdateOsdFlag(1);
 				#endif
 
@@ -3830,12 +3941,10 @@ void TSPI_DataProc(void)
 						//PrintWinData();
 						#elif TEST_PLANE
 						if (st_bToolMotoIndex==5 || st_bToolMotoIndex==6)
-							DriveMotor(st_bToolMotoIndex,0,100,8);
+							DriveMotor(st_bToolMotoIndex,0,10,8);
 						else
 							DriveMotor(st_bToolMotoIndex,0,1000,8);
 						#else
-						//DriveMotor(01,0,1000,8);//RIGHT_DOWN_FIBER  DOWN
-						Discharge(800,0);
 
 						#endif
 						break;
@@ -3846,11 +3955,11 @@ void TSPI_DataProc(void)
 						ProcAFmotorAction();
 						#elif TEST_PLANE
 						if (st_bToolMotoIndex==5 || st_bToolMotoIndex==6)
-							DriveMotor(st_bToolMotoIndex,1,100,8);
+							DriveMotor(st_bToolMotoIndex,1,10,8);
 						else
 							DriveMotor(st_bToolMotoIndex,1,1000,8);
 						#else
-						Discharge(1000,0);
+
 						#endif
 						break;
 					case 3:
@@ -3881,7 +3990,7 @@ void TSPI_DataProc(void)
 						xpgForceUpdateOsd();
 						#endif
 						#else
-						Discharge(1500,0);
+
 						#endif
 						break;
 
@@ -4455,6 +4564,7 @@ void ShowOSDstring(void)
 {
 	ST_OSDWIN * psWin=Idu_GetOsdWin();
 	ST_IMGWIN *pWin=(ST_IMGWIN *)Idu_GetNextWin();
+	BYTE bMotoIndex=0xff;
 		
 #if TEST_PLANE
 	if (st_bStrInfo[0])
@@ -4462,22 +4572,39 @@ void ShowOSDstring(void)
 		Idu_OSDPrint(psWin,st_bStrInfo, 8, 8, OSD_COLOR_RED);
 	}
 
-	if (st_bStrFace[MOTOR_LEFT_TOP][0])
+	if (g_bDisplayMode==0x00)
+		bMotoIndex=0;
+	else if (g_bDisplayMode==0x01)
+		bMotoIndex=1;
+	if (bMotoIndex<MOTOR_NUM)
 	{
-		Idu_OSDPrint(psWin,&st_bStrFace[MOTOR_LEFT_TOP][0], 8, 32, OSD_COLOR_RED);
-	}
-	if (st_bStrFace[MOTOR_RIGHT_TOP][0])
-	{
-		Idu_OSDPrint(psWin,&st_bStrFace[MOTOR_RIGHT_TOP][0], pWin->wWidth/2, 32, OSD_COLOR_RED);
-	}
-
-	if (st_bStrCenter[MOTOR_LEFT_TOP][0])
-	{
-		Idu_OSDPrint(psWin,&st_bStrCenter[MOTOR_LEFT_TOP][0], 8, pWin->wHeight>>1, OSD_COLOR_RED);
-	}
-	if (st_bStrCenter[MOTOR_RIGHT_TOP][0])
-	{
-		Idu_OSDPrint(psWin,&st_bStrCenter[MOTOR_RIGHT_TOP][0], pWin->wWidth/2, pWin->wHeight>>1, OSD_COLOR_RED);
+		//--face
+		if (st_bStrFace[MOTOR_LEFT_TOP][bMotoIndex])
+		{
+			Idu_OSDPrint(psWin,&st_bStrFace[MOTOR_LEFT_TOP][bMotoIndex], 8, 48, OSD_COLOR_RED);
+		}
+		if (st_bStrFace[MOTOR_RIGHT_TOP][bMotoIndex])
+		{
+			Idu_OSDPrint(psWin,&st_bStrFace[MOTOR_RIGHT_TOP][bMotoIndex], pWin->wWidth/2, 48, OSD_COLOR_RED);
+		}
+		//--水平度
+		if (st_bStrHLevel[MOTOR_LEFT_TOP][bMotoIndex])
+		{
+			Idu_OSDPrint(psWin,&st_bStrHLevel[MOTOR_LEFT_TOP][bMotoIndex], 8, 90, OSD_COLOR_RED);
+		}
+		if (st_bStrHLevel[MOTOR_RIGHT_TOP][bMotoIndex])
+		{
+			Idu_OSDPrint(psWin,&st_bStrHLevel[MOTOR_RIGHT_TOP][bMotoIndex], pWin->wWidth/2, 90, OSD_COLOR_RED);
+		}
+		//--center
+		if (st_bStrCenter[MOTOR_LEFT_TOP][bMotoIndex])
+		{
+			Idu_OSDPrint(psWin,&st_bStrCenter[MOTOR_LEFT_TOP][bMotoIndex], 8, pWin->wHeight>>1, OSD_COLOR_RED);
+		}
+		if (st_bStrCenter[MOTOR_RIGHT_TOP][bMotoIndex])
+		{
+			Idu_OSDPrint(psWin,&st_bStrCenter[MOTOR_RIGHT_TOP][bMotoIndex], pWin->wWidth/2, pWin->wHeight>>1, OSD_COLOR_RED);
+		}
 	}
 
 
@@ -4505,6 +4632,7 @@ void WeldDataInit(void)
 	{
 		st_bStrFace[i][0]=0;
 		st_bStrCenter[i][0]=0;
+		st_bStrHLevel[i][0]=0;
 	}
 	//st_bStrInfo[0]=0;
 	sprintf(st_bStrInfo, "Moto:%d", st_bToolMotoIndex);
