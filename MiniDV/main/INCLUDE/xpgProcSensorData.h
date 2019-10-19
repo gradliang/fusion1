@@ -58,6 +58,8 @@ enum {
 #define	VMOTOR_CNT														3 
 //  累计多少个黑边有效点
 #define	PIXEL_BLACK_CNT												10
+//string lenth
+#define	POS_STR_LEN														16
 
 
 #define ABS(A)          ((A) < 0 ? (-A) : (A))
@@ -68,6 +70,7 @@ void TSPI_DataProc();
 void DriveMotor(BYTE bMotorInex,BYTE bDirection,WORD wStep,BYTE bSpeed);
 void MotoHoldTimeoutSet(BYTE bMotorInex,BYTE bMode);
 void Discharge(WORD wMode,BYTE bStep);
+void ShowOSDstring(void);
 
 
 #endif

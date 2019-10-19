@@ -550,7 +550,7 @@ void SendWatchDog(void)
 #if 1//OSD_DISPLAY_CACHE
 #if OSD_LINE_NUM
 ST_LINE g_OsdLine[OSD_LINE_NUM];
-BYTE g_bNeedUpdateOsd=0;
+static BYTE st_bNeedUpdateOsd=0;
 
 void OsdLineInit(void)
 {
@@ -558,7 +558,7 @@ void OsdLineInit(void)
 
 	for (i=0;i<OSD_LINE_NUM;i++)
 		g_OsdLine[i].dwOnPageBit=0;
-	g_bNeedUpdateOsd=1;
+	st_bNeedUpdateOsd=1;
 }
 //--bLineIndex
 //--0-3 端面
@@ -580,7 +580,7 @@ BYTE OsdLineSet(DWORD dwOnPageBit,BYTE bLineIndex,WORD startX, WORD startY, WORD
 		g_OsdLine[bLineIndex].wW=SizeX;
 		g_OsdLine[bLineIndex].wX=startX;
 		g_OsdLine[bLineIndex].wY=startY;
-		g_bNeedUpdateOsd=1;
+		st_bNeedUpdateOsd=1;
 	}
 }
 #endif
@@ -593,13 +593,13 @@ void xpgUpdatePageOsd(void)
 	ST_IMGWIN *pDstWin= Idu_GetCurrWin();
 
 #if OSD_LINE_NUM
-	if (!g_bNeedUpdateOsd)
+	if (!st_bNeedUpdateOsd)
 		return;
     MP_DEBUG("-- xpgUpdatePageOsd --");
 	//OsdLineSet(1<<g_pstXpgMovie->m_wCurPage,16,400-1-1,0,2,pDstWin->wHeight,OSD_COLOR_WHITE); //4 屏中竖线//OSD_COLOR_RED
 	//OsdLineSet(1<<g_pstXpgMovie->m_wCurPage,17,476,0,2,pDstWin->wHeight/2,OSD_COLOR_RED);
 	//OsdLineSet(1<<g_pstXpgMovie->m_wCurPage,18,324,pDstWin->wHeight/2,2,pDstWin->wHeight/2,OSD_COLOR_RED);
-#if TEST_PLANE
+#if 0//TEST_PLANE
 	OsdLineSet(1<<g_pstXpgMovie->m_wCurPage,16,pDstWin->wWidth/2-1-1,0,2,pDstWin->wHeight,OSD_COLOR_WHITE); //4 屏中竖线//OSD_COLOR_RED
 	OsdLineSet(1<<g_pstXpgMovie->m_wCurPage,17,0,pDstWin->wHeight/4-1,pDstWin->wWidth,2,OSD_COLOR_WHITE); //4 上半屏水平中线//OSD_COLOR_GREEN
 	OsdLineSet(1<<g_pstXpgMovie->m_wCurPage,18,0,pDstWin->wHeight*3/4-1,pDstWin->wWidth,2,OSD_COLOR_WHITE); //4 下半屏水平中线
@@ -614,9 +614,21 @@ void xpgUpdatePageOsd(void)
 			Idu_OsdPaintArea(g_OsdLine[i].wX,g_OsdLine[i].wY,g_OsdLine[i].wW,g_OsdLine[i].wH,g_OsdLine[i].dwColor);
 		}
 	}
-	g_bNeedUpdateOsd=0;
+	ShowOSDstring();
+	st_bNeedUpdateOsd=0;
 #endif
 
+}
+
+void xpgSetUpdateOsdFlag(BYTE bMode)
+{
+	st_bNeedUpdateOsd=bMode;
+}
+
+void xpgForceUpdateOsd()
+{
+	st_bNeedUpdateOsd=1;
+	xpgUpdatePageOsd();
 }
 
 #endif
@@ -1099,8 +1111,8 @@ void xpgCb_EnterCamcoderPreview()
 #elif (PRODUCT_UI==UI_WELDING)
     //Camcorder_PreviewStart(CAMCORDER_RESOLUTION_VGA);
     //Camcorder_PreviewStart(CAMCORDER_RESOLUTION_720P);
-    //Camcorder_PreviewStart(CAMCORDER_RESOLUTION_800x480);
-    Camcorder_PreviewStart(CAMCORDER_RESOLUTION_SVGA);
+    Camcorder_PreviewStart(CAMCORDER_RESOLUTION_800x480);
+    //Camcorder_PreviewStart(CAMCORDER_RESOLUTION_SVGA);
 #else
    ////(PRODUCT_UI==UI_WELDING)
     Camcorder_PreviewStart(CAMCORDER_RESOLUTION_VGA);

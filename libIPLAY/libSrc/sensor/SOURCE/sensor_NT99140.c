@@ -457,11 +457,11 @@ static void Set_Ipw1(void)
 
 #else
 
-#if SENSOR_WIN_NUM
+#if 0//SENSOR_WIN_NUM
 	if (pbSensorWinBuffer)
 		pWin=&SensorInWin[0];
 #endif
-#if (SENSOR_WIN_NUM==2)
+#if 1//(SENSOR_WIN_NUM==2)
 		dwDisplayW = pWin->wWidth;
 		dwDisplayH = pWin->wHeight;
 #else
