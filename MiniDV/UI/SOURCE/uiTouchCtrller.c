@@ -288,8 +288,8 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
             }
             g_psSetupMenu->bCustomizeIconEnable[dwIconId] = !g_psSetupMenu->bCustomizeIconEnable[dwIconId];
             //xpgUpdateStage();
-            xpgSpriteRedraw(Idu_GetCurrWin(),SPRITE_TYPE_LIGHT_ICON, 100 + dwIconId);
-            xpgSpriteRedraw(Idu_GetCurrWin(),SPRITE_TYPE_DARK_ICON, 100 + dwIconId);
+            xpgSpriteRedraw(Idu_GetCurrWin(),SPRITE_TYPE_LIGHT_ICON, dwIconId);
+            xpgSpriteRedraw(Idu_GetCurrWin(),SPRITE_TYPE_DARK_ICON,  dwIconId);
             WriteSetupChg();
         }
         else if (dwIconId == 6)
