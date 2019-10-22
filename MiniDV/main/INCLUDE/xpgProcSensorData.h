@@ -68,6 +68,7 @@ enum {
 void TSPI_DataProc();
 //void DriveMotor(BYTE bMotorInex,BYTE bSpeed,BYTE bDiv,BYTE bDirector,WORD wStep);
 void DriveMotor(BYTE bMotorInex,BYTE bDirection,WORD wStep,BYTE bSpeed);
+void MotorSetStatus(BYTE bMotorInex,BYTE bMode);
 void MotoHoldTimeoutSet(BYTE bMotorInex,BYTE bMode);
 void Discharge(WORD wMode,BYTE bStep);
 void ShowOSDstring(void);

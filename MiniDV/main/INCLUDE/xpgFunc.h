@@ -179,6 +179,7 @@ ST_IMGWIN *Idu_GetCacheWin_WithInit();
 ST_IMGWIN *Idu_GetCacheWin();
 void Free_CacheWin();
 void DrakWin(ST_IMGWIN* pWin, DWORD largeNum, DWORD smallNum);
+STXPGPAGE *xpgPreactionAndGotoPage(const char *name);
 
 
 

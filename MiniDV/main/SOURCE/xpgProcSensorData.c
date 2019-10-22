@@ -33,7 +33,7 @@ extern ST_IMGWIN SensorInWin[SENSOR_WIN_NUM];
 
 static BYTE  st_bRetryTimes=0,st_bDiachargeTimes=0;
 SWORD g_swGetCenterState = GET_CENTER_OFF;
-SWORD g_swProcState = SENSOR_IDLE;//SENSOR_FACE_POS1A;//SENSOR_IDLE;
+SWORD g_swProcState = SENSOR_IDLE;//SENSOR_FACE_POS1A;//SENSOR_IDLE; //BIT30->PAUSE
 WORD g_wElectrodePos[2]={400,400};  //4 电极棒位置
 //SWORD g_swCenterOffset=0;  //4 电极棒位置  76
 
@@ -419,7 +419,7 @@ void TSPI_Receive_Check()
 
 
 #if (PRODUCT_UI==UI_WELDING)
-extern WORD SensorWindow_Width,SensorWindow_Height;
+extern WORD SensorWindow_PosX,SensorWindow_PosY,SensorWindow_Width,SensorWindow_Height;
 extern BYTE g_bDisplayMode;
 
 #define		FIBER_EDGE_LEVEL					0x40 //4   从背景到光纤的 黑白边界亮度值
@@ -520,6 +520,35 @@ void AutoStartWeld()
 		g_swProcState=SENSOR_IDLE;
 
 }
+
+void Weld_StartPause()
+{
+	BYTE i;
+
+	if (g_swProcState & BIT30)
+	{
+		g_swProcState &=~BIT30;
+	}
+	else if (g_swProcState==SENSOR_IDLE)
+	{
+		g_swProcState=SENSOR_FACE_POS1A;
+		st_bDischargeMode=0;
+		for (i=0;i<MOTOR_NUM;i++)
+		{
+			st_swFacexCurPos[i]=-1;
+			st_swLastPos[i]=-1;
+		}
+		SetFillProcWinFlag();
+	}
+	else
+	{
+		g_swProcState |= BIT30;
+		for (i=0;i<MOTOR_NUM;i++)
+			MotorSetStatus(i+1,MOTOR_STOP);
+	}
+
+}
+
 
 void AutoGetFiberLowPoint()
 {
@@ -2599,7 +2628,7 @@ void DriveMotor(BYTE bMotorInex,BYTE bDirection,WORD wStep,BYTE bSpeed)
 
 void MotorSetStatus(BYTE bMotorInex,BYTE bMode) //0xa3   bmode:0->stop  BYT4~7   0 停止 1 允许待机  2不允许待机
 {
-	BYTE bTxData[10];
+	BYTE bTxData[10],bDataIndex=bMotorInex-1;;
 
 	if (bMotorInex>7)
 		return;
@@ -2609,11 +2638,14 @@ void MotorSetStatus(BYTE bMotorInex,BYTE bMode) //0xa3   bmode:0->stop  BYT4~7  
 	}
 	else if (bMode==MOTOR_STOP) //stop
 	{
+		if (!(st_bMotorStaus&(1<<bDataIndex)))
+			return;
 		mpDebugPrint("bMotorInex=%d  bMode=%d ",bMotorInex,bMode);
 		bTxData[0]=0xa3;
 		bTxData[1]=3+1;
 		bTxData[2]=(bMode<<4)|bMotorInex; // 左马达0x01 右马达0x02   Y上马达0x03  Y下马达0x04
-		TSPI_PacketSend(bTxData,bTxData[1],1);
+		if (TSPI_PacketSend(bTxData,bTxData[1],1)==PASS)
+			st_bMotorStaus&= ~(1<<bDataIndex);
 	}
 
 }
@@ -3905,6 +3937,7 @@ void Proc_SensorData_State()
 void TSPI_DataProc(void)
 {
 	BYTE i,bChecksum,index;
+	DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
 	
 	if (!st_bTspiRxIndex)
 		return;
@@ -3929,11 +3962,12 @@ void TSPI_DataProc(void)
 	switch (st_bTspiRxArry[0])
 	{
 		case 0xb1:
-			//if (st_bTspiRxArry[3])
+			if (st_bTspiRxArry[3])
 			{
+    			AddAutoEnterPreview();
 				switch (st_bTspiRxArry[2])
 				{
-					case 1:
+					case 1://refresh
 						#if SHOW_CENTER
 						//DriveMotor(01,1,1000,8);//RIGHT_DOWN_FIBER  DOWN
 						st_swAFStep=2;
@@ -3948,7 +3982,7 @@ void TSPI_DataProc(void)
 
 						#endif
 						break;
-					case 2:
+					case 2: // start/pause
 						#if SHOW_CENTER
 						//DriveMotor(02,0,1000,8);//RIGHT_DOWN_FIBER  UP
 						st_swAFStep=-2;
@@ -3959,10 +3993,11 @@ void TSPI_DataProc(void)
 						else
 							DriveMotor(st_bToolMotoIndex,1,1000,8);
 						#else
-
+						if (dwHashKey == xpgHash("Auto_work") || dwHashKey == xpgHash("Manual_work"))
+							Weld_StartPause();
 						#endif
 						break;
-					case 3:
+					case 3: // main
 						#if SHOW_CENTER
 						index=st_bAFMotoIndex;
 						if (st_bMotorHold&(1<<index))
@@ -3990,23 +4025,21 @@ void TSPI_DataProc(void)
 						xpgForceUpdateOsd();
 						#endif
 						#else
-
+						if (dwHashKey == xpgHash("Main") )
+						{
+							WeldModeSet(0);
+							xpgCb_EnterCamcoderPreview();
+						}
+						else
+						{
+							xpgPreactionAndGotoPage("Main");
+							xpgUpdateStage();
+						}
 						#endif
 						break;
 
-					case 4:
-						#if 0
-						//AutoStartWeld();
-						//st_bDischargeMode=1;
-						//Discharge(st_bDischargeMode,0);
-						//st_dwAutoTestTime=0;
-						//st_dwAutoTestTotal=50;
-						//Ui_TimerProcAdd(1000, AutoTestTimer);
-						MotorSetStatus(1,MOTOR_NO_HOLD);
-						MotorSetStatus(2,MOTOR_NO_HOLD);
-						MotorSetStatus(3,MOTOR_NO_HOLD);
-						MotorSetStatus(4,MOTOR_NO_HOLD);
-						#elif SHOW_CENTER
+					case 4:// X/Y
+						#if  SHOW_CENTER
 						index=st_bAFMotoIndex;
 						if (st_bMotorHold&(1<<index))
 						{
@@ -4038,9 +4071,15 @@ void TSPI_DataProc(void)
 						*/
 						st_bBackGroundLevel=0;
 						Ui_TimerProcAdd(100, GetBackgroundLevel);
-						#elif 0
-						//DriveMotor(02,1,1000,8);
-						SetFillProcWinFlag();
+						#else
+						if (dwHashKey == xpgHash("Auto_work") || dwHashKey == xpgHash("Manual_work"))
+						{
+							if (g_bDisplayMode<3)
+								g_bDisplayMode++;
+							else
+								g_bDisplayMode=0;
+							g_bDisplayMode |= 0x80;
+						}
 						#endif
 						break;
 
@@ -4071,11 +4110,6 @@ void TSPI_DataProc(void)
 						ipu->Ipu_reg_F2 = ((DWORD) pDstWin->pdwStart| 0xA0000000)+(SensorWindow_Width<<1);	
 						mpClearWin(Idu_GetCurrWin());
 						#else
-						if (g_bDisplayMode<3)
-							g_bDisplayMode++;
-						else
-							g_bDisplayMode=0;
-						g_bDisplayMode |= 0x80;
 
 						#endif
 						break;
@@ -4120,6 +4154,11 @@ void TSPI_DataProc(void)
 			{
 				// 马达复位
 				ResetMotor();
+			}
+			else
+			{
+				WeldModeSet(0);
+				xpgCb_EnterCamcoderPreview();
 			}
 			break;
 		//放电状态
@@ -4279,7 +4318,7 @@ void DisplaySensorOnCurrWin( BYTE bIpw2)
 {
 	IPU *ipu = (IPU *) IPU_BASE;
 	ST_IMGWIN *pDstWin=(ST_IMGWIN *)Idu_GetCurrWin();
-	DWORD *pIpwAddr;
+	DWORD *pIpwAddr,DisplayWinStartAddr;
 
 	if (bIpw2)
 		pIpwAddr=(DWORD *)&ipu->Ipu_reg_F2;
@@ -4297,30 +4336,32 @@ void DisplaySensorOnCurrWin( BYTE bIpw2)
 	switch (g_bDisplayMode)
 	{
 		case 2:
+			DisplayWinStartAddr=pDstWin->dwOffset* SensorWindow_PosY  + (SensorWindow_PosX <<1);
 			if (Sensor_CurChannel_Get()==0)
 			{
 				Sensor_Channel_Set(1);
-				*pIpwAddr = ((DWORD) pDstWin->pdwStart| 0xA0000000)+pDstWin->dwOffset*SensorWindow_Height;	
+				*pIpwAddr = ((DWORD) pDstWin->pdwStart| 0xA0000000)+DisplayWinStartAddr+pDstWin->dwOffset*SensorWindow_Height;	
 				
 			}
 			else
 			{
 				Sensor_Channel_Set(0);
-				*pIpwAddr = ((DWORD) pDstWin->pdwStart| 0xA0000000);	
+				*pIpwAddr = ((DWORD) pDstWin->pdwStart| 0xA0000000)+DisplayWinStartAddr;	
 			}
 			break;
 
 		case 3:
+			DisplayWinStartAddr=pDstWin->dwOffset* SensorWindow_PosY  + (SensorWindow_PosX <<1);
 			if (Sensor_CurChannel_Get()==0)
 			{
 				Sensor_Channel_Set(1);
-				*pIpwAddr = ((DWORD) pDstWin->pdwStart| 0xA0000000)+(SensorWindow_Width<<1);
+				*pIpwAddr = ((DWORD) pDstWin->pdwStart| 0xA0000000)+DisplayWinStartAddr+(SensorWindow_Width<<1);
 				
 			}
 			else
 			{
 				Sensor_Channel_Set(0);
-				*pIpwAddr = ((DWORD) pDstWin->pdwStart| 0xA0000000);	
+				*pIpwAddr = ((DWORD) pDstWin->pdwStart| 0xA0000000)+DisplayWinStartAddr;	
 			}
 			break;
 

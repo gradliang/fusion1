@@ -244,6 +244,7 @@ WORD xpgGotoEnterPage()  //Mason 20060619  //From Athena
 ///
 ///@return  page index
 ///
+#if 0 // please use xpgPreactionAndGotoPage
 STXPGPAGE *xpgSearchAndGotoPage(const char *name)
 {
     STXPGPAGE *pstPage = xpgMovieSearchPage(name);
@@ -270,7 +271,8 @@ STXPGPAGE *xpgSearchAndGotoPage(const char *name)
 
     return pstPage;
 }
-
+#endif
+/*
 void xpgForcedSearchAndGotoPage(const char *name, DWORD len)
 {
     STXPGPAGE *pstPage = xpgSearchAndGotoPage(name);
@@ -282,7 +284,7 @@ void xpgForcedSearchAndGotoPage(const char *name, DWORD len)
     g_boNeedRepaint = true;
     xpgUpdateStage();
 }
-
+*/
 //-----------------------------------------------------------------------------
 ///
 ///@ingroup xpg

@@ -57,7 +57,7 @@ SDWORD TouchCtrllerCalProcess(WORD cross_width, WORD cross_single_width)
     {
         SDWORD val;
         {
-            xpgSearchAndGotoPage("touch");
+            xpgPreactionAndGotoPage("touch");
             xpgUpdateStage();
         }
 
@@ -170,7 +170,7 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
             Free_CacheWin();
             Idu_GetCacheWin_WithInit();
             DrakWin(Idu_GetCacheWin(), 2, 1);
-            xpgSearchAndGotoPage("User");
+            xpgPreactionAndGotoPage("User");
             xpgUpdateStage();
         }
         else if (dwIconId == 1) 
@@ -180,32 +180,34 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
         else if (dwIconId == 2) 
         {
             strcpy(strSetupBackPageName, "Main");
-            xpgSearchAndGotoPage("FusionSet1");
+            xpgPreactionAndGotoPage("FusionSet1");
             xpgUpdateStage();
         }
         else if (dwIconId == 3) 
         {
-            //xpgSearchAndGotoPage("Auto_work");
-            xpgSearchAndGotoPage("Manual_work");
-            xpgUpdateStage();
+            //xpgPreactionAndGotoPage("Auto_work");
+            //xpgPreactionAndGotoPage("Manual_work");
+           // xpgUpdateStage();
+           WeldModeSet(1);
+			xpgCb_EnterCamcoderPreview();
         }
         else if (dwIconId == 4) 
         {
             Free_CacheWin();
             Idu_GetCacheWin_WithInit();
             DrakWin(Idu_GetCacheWin(), 2, 1);
-            xpgSearchAndGotoPage("ToolBox");
+            xpgPreactionAndGotoPage("ToolBox");
             xpgUpdateStage();
         }
         else if (dwIconId == 5) 
         {
-            xpgSearchAndGotoPage("SetYun");
+            xpgPreactionAndGotoPage("SetYun");
             xpgUpdateStage();
         }
         else if (dwIconId == 6) 
         {
             strcpy(strSetupBackPageName, "Main");
-            xpgSearchAndGotoPage("FuncSet");
+            xpgPreactionAndGotoPage("FuncSet");
             xpgUpdateStage();
         }
     }
@@ -280,24 +282,26 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
             if (g_psSetupMenu->bCustomizeIcon[dwIconId] < 0)
             {
                 strcpy(strSetupBackPageName, "Auto_work");
-                xpgSearchAndGotoPage("FuncSet2");
+                xpgPreactionAndGotoPage("FuncSet2");
                 xpgUpdateStage();
                 return 0;
             }
             g_psSetupMenu->bCustomizeIconEnable[dwIconId] = !g_psSetupMenu->bCustomizeIconEnable[dwIconId];
-            xpgUpdateStage();
+            //xpgUpdateStage();
+            xpgSpriteRedraw(Idu_GetCurrWin(),SPRITE_TYPE_LIGHT_ICON, 100 + dwIconId);
+            xpgSpriteRedraw(Idu_GetCurrWin(),SPRITE_TYPE_DARK_ICON, 100 + dwIconId);
             WriteSetupChg();
         }
         else if (dwIconId == 6)
         {
             strcpy(strSetupBackPageName, "Auto_work");
-            xpgSearchAndGotoPage("FusionSet1");
+            xpgPreactionAndGotoPage("FusionSet1");
             xpgUpdateStage();
         }
         else if (dwIconId == 7)
         {
             strcpy(strSetupBackPageName, "Auto_work");
-            xpgSearchAndGotoPage("FuncSet2");
+            xpgPreactionAndGotoPage("FuncSet2");
             xpgUpdateStage();
         }
         else if (dwIconId == 8)
@@ -385,7 +389,7 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
                 return PASS;
         
             memcpy(&tempModeParam, pstModeParam, sizeof(MODEPARAM));
-            xpgSearchAndGotoPage("FusionModeSet");
+            xpgPreactionAndGotoPage("FusionModeSet");
             xpgUpdateStage();
         }
     }
@@ -506,13 +510,13 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
     {
         if (dwIconId == 0)
         {
-            xpgSearchAndGotoPage("RedLight");
+            xpgPreactionAndGotoPage("RedLight");
             xpgUpdateStage();
         }
         else if (dwIconId == 1)
         {
             isSelectOnlineOPM = 0;
-            xpgSearchAndGotoPage("opm1");
+            xpgPreactionAndGotoPage("opm1");
             xpgUpdateStage();
         }
     }
@@ -852,7 +856,7 @@ SWORD touchSprite_BackIcon(STXPGSPRITE * sprite, WORD x, WORD y)
         dwHashKey == xpgHash("opm3") || 
         dwHashKey == xpgHash("opm4") )
     {
-        xpgSearchAndGotoPage("Main");
+        xpgPreactionAndGotoPage("Main");
         xpgUpdateStage();
     }
     else if (dwHashKey == xpgHash("FuncSet") || 
@@ -861,12 +865,12 @@ SWORD touchSprite_BackIcon(STXPGSPRITE * sprite, WORD x, WORD y)
         dwHashKey == xpgHash("FusionSet2") ||
         dwHashKey == xpgHash("FusionSet3") )
     {
-        xpgSearchAndGotoPage("Main");
+        xpgPreactionAndGotoPage("Main");
         xpgUpdateStage();
     }
     else if (dwHashKey == xpgHash("FusionModeSet"))
     {
-        xpgSearchAndGotoPage("FusionSet1");
+        xpgPreactionAndGotoPage("FusionSet1");
         xpgUpdateStage();
     }
     
@@ -882,7 +886,7 @@ SWORD touchSprite_CloseIcon(STXPGSPRITE * sprite, WORD x, WORD y)
     if (dwHashKey == xpgHash("User") || 
         dwHashKey == xpgHash("ToolBox"))
     {
-        xpgSearchAndGotoPage("Main");
+        xpgPreactionAndGotoPage("Main");
         xpgUpdateStage();
     }
     else if (dwHashKey == xpgHash(DIALOG_PAGE_NAME))
@@ -1095,12 +1099,12 @@ SWORD touchSprite_Selector(STXPGSPRITE * sprite, WORD x, WORD y)
     
     if (dwHashKey == xpgHash("FuncSet"))
     {
-        xpgSearchAndGotoPage("FuncSet2");
+        xpgPreactionAndGotoPage("FuncSet2");
         xpgUpdateStage();
     }
     else if (dwHashKey == xpgHash("FuncSet2"))
     {
-        xpgSearchAndGotoPage("FuncSet");
+        xpgPreactionAndGotoPage("FuncSet");
         xpgUpdateStage();
     }
     else if (dwHashKey == xpgHash("SetYun") ||
@@ -1113,37 +1117,37 @@ SWORD touchSprite_Selector(STXPGSPRITE * sprite, WORD x, WORD y)
     {
         if (dwSelectorId == 0)
         {
-            xpgSearchAndGotoPage("SetYun");
+            xpgPreactionAndGotoPage("SetYun");
             xpgUpdateStage();
         }
         else if (dwSelectorId == 1)
         {
-            xpgSearchAndGotoPage("SetSleep");
+            xpgPreactionAndGotoPage("SetSleep");
             xpgUpdateStage();
         }
         else if (dwSelectorId == 2)
         {
-            xpgSearchAndGotoPage("SetSound");
+            xpgPreactionAndGotoPage("SetSound");
             xpgUpdateStage();
         }
         else if (dwSelectorId == 3)
         {
-            xpgSearchAndGotoPage("SetTime");
+            xpgPreactionAndGotoPage("SetTime");
             xpgUpdateStage();
         }
         else if (dwSelectorId == 4)
         {
-            xpgSearchAndGotoPage("SetPassword");
+            xpgPreactionAndGotoPage("SetPassword");
             xpgUpdateStage();
         }
         else if (dwSelectorId == 5)
         {
-            xpgSearchAndGotoPage("SetUi");
+            xpgPreactionAndGotoPage("SetUi");
             xpgUpdateStage();
         }
         else if (dwSelectorId == 6)
         {
-            xpgSearchAndGotoPage("SetInfo");
+            xpgPreactionAndGotoPage("SetInfo");
             xpgUpdateStage();
         }
         
@@ -1154,17 +1158,17 @@ SWORD touchSprite_Selector(STXPGSPRITE * sprite, WORD x, WORD y)
     {
         if (dwSelectorId == 0)
         {
-            xpgSearchAndGotoPage("FusionSet1");
+            xpgPreactionAndGotoPage("FusionSet1");
             xpgUpdateStage();
         }
         else if (dwSelectorId == 1)
         {
-            xpgSearchAndGotoPage("FusionSet2");
+            xpgPreactionAndGotoPage("FusionSet2");
             xpgUpdateStage();
         }
         else if (dwSelectorId == 2)
         {
-            xpgSearchAndGotoPage("FusionSet3");
+            xpgPreactionAndGotoPage("FusionSet3");
             xpgUpdateStage();
         }
     }
@@ -1450,7 +1454,7 @@ SWORD touchSprite_Scroll(STXPGSPRITE * sprite, WORD x, WORD y)
 static void uiEnterRecordList()
 {
     g_dwRecordListCurrPage = 0;
-    xpgSearchAndGotoPage("Record");
+    xpgPreactionAndGotoPage("Record");
     xpgUpdateStage();
 }
 
@@ -1539,6 +1543,9 @@ void uiDispatchTouchSprite(WORD x1, WORD y1)
                 if (!(pfunc->touchFlag& ENABLE_SLIDE))
                     dwLastTouchActionTime = GetSysTime();
                 pfunc->touchFunc (pstSprite, x1, y1);
+				#if (PRODUCT_UI==UI_WELDING)
+    			AddAutoEnterPreview();
+				#endif
             }
         }
     }

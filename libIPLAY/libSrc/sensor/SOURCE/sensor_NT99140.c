@@ -113,19 +113,19 @@ void Sensor_DisplayWindow_Set()
 	{
 		case 0:
 			Sensor_Channel_Set(0);
-			API_SetSensorWindow(0, 0, pDstWin->wWidth, pDstWin->wHeight);
+			API_SetSensorWindow(0, 70, pDstWin->wWidth, pDstWin->wHeight-180);
 			break;
 
 		case 1:
 			Sensor_Channel_Set(1);
-			API_SetSensorWindow(0, 0, pDstWin->wWidth, pDstWin->wHeight);
+			API_SetSensorWindow(0, 70, pDstWin->wWidth, pDstWin->wHeight-180);
 			break;
 
 		case 2:
-			API_SetSensorWindow(0, 0, pDstWin->wWidth, pDstWin->wHeight>>1);
+			API_SetSensorWindow(0, 70, pDstWin->wWidth, (pDstWin->wHeight-180)>>1);
 			break;
 		case 3:
-			API_SetSensorWindow(0, 0, pDstWin->wWidth>>1, pDstWin->wHeight);
+			API_SetSensorWindow(0, 70, pDstWin->wWidth>>1, pDstWin->wHeight-180);
 			break;
 
 		default:

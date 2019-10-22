@@ -246,13 +246,7 @@ void xpgUpdateStage()
     if (SystemCheckUsbdPlugIn()) TaskYield();
 #endif
  
-    xpgUpdateCanvas();
-#if SENSOR_ENABLE
-    if(RecordTaskStattusGet() == Preview_state || RecordTaskStattusGet() == Recording_state)
-    {
-			mpCopyWin(Idu_GetNextWin(), Idu_GetCurrWin());
-    }
-#endif
+   xpgUpdateCanvas();
     pstMovie->m_bUpdateStage = false;
     g_boNeedRepaint = false;
 
@@ -269,6 +263,25 @@ void xpgUpdateStage()
     MP_DEBUG("%s() exit, g_bXpgStatus = %u", __FUNCTION__, g_bXpgStatus);
 }
 
+//---------------------------------------------------------------------------
+void xpgSpriteRedraw(ST_IMGWIN * pWin, DWORD dwType, DWORD dwIndex)
+{
+	STXPGMOVIE *pstMovie = &g_stXpgMovie;
+	STXPGSPRITE *pstSprite;
+	DWORD i;
+
+    for (i = 0; i < pstMovie->m_dwSpriteCount; i++)
+    {
+        pstSprite = &(pstMovie->m_astSprite[i]);
+        if (dwType == pstSprite->m_dwType && dwIndex == pstSprite->m_dwTypeIndex&& pstSprite->m_boVisible && drawSpriteFunctions[pstSprite->m_dwType] != NULL)
+        {
+			//MP_DEBUG("sprite %d type = %d, width=%d, height=%d, wCurFrame=%d", i, pstSprite->m_dwType, pstSprite->m_wWidth, pstSprite->m_wHeight, pstSprite->m_wCurFrame);
+			(*drawSpriteFunctions[pstSprite->m_dwType]) (pWin, pstSprite, 0);
+			break;
+        }
+
+    }
+}
 
 //---------------------------------------------------------------------------
 static DWORD dwAllocSize;

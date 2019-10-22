@@ -960,6 +960,38 @@ void xpgCb_PressExitKey()
 {
 }
 
+STXPGPAGE *xpgPreactionAndGotoPage(const char *name)
+{
+    STXPGPAGE *pstPage = xpgMovieSearchPage(name);
+	DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
+
+    if (pstPage == NULL)
+    {
+        MP_ALERT("%s: XPG page name [%s] not found !", __FUNCTION__, name);
+        return NULL;
+    }
+
+#ifdef DIALOG_PAGE_NAME
+    if (0 == strcmp(name, DIALOG_PAGE_NAME))
+        g_isDialogPage = 1;
+    else
+        g_isDialogPage = 0;
+#endif
+#if  (PRODUCT_UI==UI_WELDING)
+	if (dwHashKey == xpgHash("Auto_work") || dwHashKey == xpgHash("Manual_work"))
+		xpgCb_StopAllSensorWork();
+#endif
+
+	//mpDebugPrint("---------xpgPreactionAndGotoPage :%s-> %d",name,pstPage->m_wIndex);
+    if (xpgGotoPage(pstPage->m_wIndex) != PASS)
+    {
+        MP_ALERT("xpgPreactionAndGotoPage : xpgGotoPage() failed !");
+        return NULL;
+    }
+
+    return pstPage;
+}
+
 #if (SENSOR_ENABLE == ENABLE)
 STREAM *GetNewCaptureHandle()
 {
@@ -1066,6 +1098,13 @@ SWORD xpgCb_CaptureWinToFile(ST_IMGWIN *pWin)
     return FAIL;
 }
 
+static BYTE st_bWeldMode=0;// 0->auto  1->manual
+
+void WeldModeSet(BYTE bMode)
+{
+	st_bWeldMode=bMode;
+}
+
 void xpgCb_EnterCamcoderPreview()
 {
     //MP_DEBUG("%s", __func__);
@@ -1091,6 +1130,7 @@ void xpgCb_EnterCamcoderPreview()
 	}
 #endif
 
+	Ui_TimerProcRemove(xpgCb_EnterCamcoderPreview);
     //ES8328_Codec_SetRecordMode();
     //Ui_TimerProcRemove(AutoSleep);
 #if RTC_ENABLE
@@ -1100,8 +1140,11 @@ void xpgCb_EnterCamcoderPreview()
 	mpClearWin(Idu_GetNextWin());
 #if MAKE_XPG_PLAYER
     xpgChangeMenuMode(OP_IMAGE_MODE, 1);
-
-    xpgSearchAndGotoPage("Preview");
+	if (st_bWeldMode)
+		xpgPreactionAndGotoPage("Manual_work");
+	else
+		xpgPreactionAndGotoPage("Auto_work");
+    //xpgPreactionAndGotoPage("Preview");
     xpgUpdateStage();
     mpCopyEqualWin(Idu_GetNextWin(), Idu_GetCurrWin());
 #endif
@@ -1125,6 +1168,17 @@ void xpgCb_EnterCamcoderPreview()
 
 }
 
+void xpgCb_StopAllSensorWork()
+{
+    if(RecordTaskStattusGet() == Recording_pause_state)
+    	Camcorder_RecordResume();
+
+    if(RecordTaskStattusGet() == Recording_state || RecordTaskStattusGet() == ExceptionCheck_state)
+    	Camcorder_RecordStop();
+
+    if(RecordTaskStattusGet() == Preview_state)
+    	Camcorder_PreviewStop();
+}
 
 void xpgCb_EnterSetupPage()
 {
@@ -1134,7 +1188,7 @@ void xpgCb_EnterSetupPage()
     	Camcorder_PreviewStop();
     g_bXpgStatus = XPG_MODE_SETUP;
 #if MAKE_XPG_PLAYER
-    xpgSearchAndGotoPage("Setup");
+    xpgPreactionAndGotoPage("Setup");
     xpgUpdateStage();
 #endif
     
@@ -1149,10 +1203,26 @@ void xpgCb_EnterPhotoViewPage()
     g_bXpgStatus = XPG_MODE_PHOTOVIEW;
 #if MAKE_XPG_PLAYER
     xpgChangeMenuMode(OP_IMAGE_MODE, 1);
-    xpgSearchAndGotoPage("PhotoView");
+    xpgPreactionAndGotoPage("PhotoView");
     xpgUpdateStage();
 #endif
     
+}
+
+void AddAutoEnterPreview(void)
+{
+#if (PRODUCT_PCBA!=PCBA_MAIN_BOARD_V12)
+	 if(RecordTaskStattusGet() == Rec_StandBy_state && g_pstXpgMovie->m_pstCurPage->m_dwHashKey==xpgHash("Main"))
+	 {
+		WeldModeSet(0);
+	    Ui_TimerProcAdd(15*1000, xpgCb_EnterCamcoderPreview);//xpgCb_EnterCamcoderPreview
+	 }
+#endif
+}
+
+void RemoveAutoEnterPreview(void)
+{
+	Ui_TimerProcRemove(xpgCb_EnterCamcoderPreview);
 }
 
 void Timer_FirstEnterCamPreview()
@@ -1160,13 +1230,16 @@ void Timer_FirstEnterCamPreview()
 #if MAKE_XPG_PLAYER
     xpgChangeMenuMode(OP_IMAGE_MODE, 1);
 #endif
-#if (PRODUCT_UI==UI_WELDING) && SENSOR_ENABLE
-	WeldDataInit();
-#endif
 
-#if (PRODUCT_PCBA!=PCBA_MAIN_BOARD_V12)
+#if SENSOR_ENABLE
+#if (PRODUCT_UI==UI_WELDING)
+	WeldDataInit();
+    AddAutoEnterPreview();
+#else
     Ui_TimerProcAdd(10, xpgCb_EnterCamcoderPreview);//xpgCb_EnterCamcoderPreview
 #endif
+#endif
+
 }
 
 #endif //#if (SENSOR_ENABLE == ENABLE)

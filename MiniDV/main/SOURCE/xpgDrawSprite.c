@@ -232,7 +232,7 @@ int popupDialog(int dialogType, char * backToPage)
         xpgAddDialogSprite(SPRITE_TYPE_ICON, 11, 0);
     }
     
-    xpgSearchAndGotoPage(DIALOG_PAGE_NAME);
+    xpgPreactionAndGotoPage(DIALOG_PAGE_NAME);
 #endif
 }
 
@@ -245,7 +245,7 @@ int exitDialog()
     backPage[sizeof(backPage) - 1] = 0;
     xpgDeleteDialog();
     if (backPage[0] != 0)
-        xpgSearchAndGotoPage(backPage);
+        xpgPreactionAndGotoPage(backPage);
     xpgUpdateStage();
 }
 
@@ -1062,9 +1062,9 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
     {
         if (dwSpriteId <= 5)
         {
-            pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 1);
-            if (pstMask)
-                xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+           // pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 1);
+          //  if (pstMask)
+         //       xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
         }
         else if (dwSpriteId == 6 || dwSpriteId == 7 || dwSpriteId == 8 )
         {
@@ -1504,10 +1504,12 @@ SWORD xpgDrawSprite_LightIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite
                 return PASS;
             if (g_psSetupMenu->bCustomizeIconEnable[dwSpriteId] == 0)
                 return PASS;
-            pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 0);
+            //pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 0);
             STXPGSPRITE * lightSprite = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_LIGHT_ICON, 100 + lightIdx);
-            if (pstMask && lightSprite)
-                xpgRoleDrawMask(lightSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+            //if (pstMask && lightSprite)
+            //    xpgRoleDrawMask(lightSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+            if (lightSprite)
+				xpgDirectDrawRoleOnWin(pWin, lightSprite->m_pstRole, pstSprite->m_wPx, pstSprite->m_wPy, pstSprite, boClip);
         }
         
     }
@@ -1683,10 +1685,12 @@ SWORD xpgDrawSprite_DarkIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite,
                 return PASS;
             if (g_psSetupMenu->bCustomizeIconEnable[dwSpriteId] != 0)       // disable
                 return PASS;
-            pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 0);
+            //pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 0);
             STXPGSPRITE * darkSprite = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_DARK_ICON, 100 + darkIdx);
-            if (pstMask && darkSprite)
-                xpgRoleDrawMask(darkSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+            //if (pstMask && darkSprite)
+            //    xpgRoleDrawMask(darkSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+            if (darkSprite)
+				xpgDirectDrawRoleOnWin(pWin, darkSprite->m_pstRole, pstSprite->m_wPx, pstSprite->m_wPy, pstSprite, boClip);
         }
     }
     else if (dwHashKey == xpgHash("Manual_work"))

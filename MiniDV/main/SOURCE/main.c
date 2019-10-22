@@ -1403,7 +1403,7 @@ static SWORD XpgInit(BYTE driveId, DWORD dwXPGTag)
         //g_pDrawIconBuffer = xpgMalloc(ICON_BUFFER_SIZE);	// alloc buffer for Icon Capture screen
 
         //if (xpgSearchAndGotoPage("Logo")!=NULL)
-        if (xpgSearchAndGotoPage("Main")!=NULL)
+        if (xpgPreactionAndGotoPage("Main")!=NULL)
         {
 			xpgUpdateStage();
         }
