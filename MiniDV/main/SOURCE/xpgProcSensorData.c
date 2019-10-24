@@ -4153,12 +4153,12 @@ void TSPI_DataProc(void)
 			if (st_bTspiRxArry[2]) //4 盖子打开
 			{
 				// 马达复位
-				ResetMotor();
+				//ResetMotor();
 			}
 			else
 			{
-				WeldModeSet(0);
-				xpgCb_EnterCamcoderPreview();
+				//WeldModeSet(0);
+				//xpgCb_EnterCamcoderPreview();
 			}
 			break;
 		//放电状态

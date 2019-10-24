@@ -1112,7 +1112,7 @@ void xpgCb_EnterCamcoderPreview()
     MP_DEBUG("%s: total=%d", __FUNCTION__,mem_get_free_space_total());
 
 #if (PRODUCT_UI==UI_WELDING)
-       if (!st_bWeldMode && (RecordTaskStattusGet() != Rec_StandBy_state))
+       if (RecordTaskStattusGet() != Rec_StandBy_state)
 		{
     		mpDebugPrint("%s:  state=%d", __FUNCTION__,RecordTaskStattusGet());
 			return;
@@ -1218,7 +1218,11 @@ void AddAutoEnterPreview(void)
 	 if(RecordTaskStattusGet() == Rec_StandBy_state && g_pstXpgMovie->m_pstCurPage->m_dwHashKey==xpgHash("Main"))
 	 {
 		WeldModeSet(0);
+#if TEST_PLANE
+	    Ui_TimerProcAdd(10, xpgCb_EnterCamcoderPreview);//xpgCb_EnterCamcoderPreview
+#else
 	    Ui_TimerProcAdd(15*1000, xpgCb_EnterCamcoderPreview);//xpgCb_EnterCamcoderPreview
+#endif
 	 }
 #endif
 }

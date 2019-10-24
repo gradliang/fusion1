@@ -394,8 +394,17 @@ void Drive_Sensor(void)
 		#error  Not Sellect SENSOR_TYPE
 	
 	#endif
-	
+
+	__sensor_nt99140_i2c_all_input();
 }
+/*
+	void __sensor_nt99140_i2c_all_input()
+	{
+	__sensor_nt99140_i2c_data_input();
+	__sensor_nt99140_i2c_clk_input();
+	}
+
+*/
 
 int API_Sensor_Initial(void)
 {
