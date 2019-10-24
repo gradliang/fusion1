@@ -1111,9 +1111,12 @@ void xpgCb_EnterCamcoderPreview()
 
     MP_DEBUG("%s: total=%d", __FUNCTION__,mem_get_free_space_total());
 
-#if 0
-       NonxpgEnterPhotoView();
-		return;
+#if (PRODUCT_UI==UI_WELDING)
+       if (!st_bWeldMode && (RecordTaskStattusGet() != Rec_StandBy_state))
+		{
+    		mpDebugPrint("%s:  state=%d", __FUNCTION__,RecordTaskStattusGet());
+			return;
+       }
 #endif
 
 #if USBOTG_WEB_CAM

@@ -3964,7 +3964,6 @@ void TSPI_DataProc(void)
 		case 0xb1:
 			if (st_bTspiRxArry[3])
 			{
-    			AddAutoEnterPreview();
 				switch (st_bTspiRxArry[2])
 				{
 					case 1://refresh
@@ -4135,6 +4134,7 @@ void TSPI_DataProc(void)
 					default:
 						break;
 				}
+    			AddAutoEnterPreview();
 			}
 			break;
 

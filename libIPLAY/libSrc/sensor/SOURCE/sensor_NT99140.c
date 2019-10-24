@@ -109,6 +109,31 @@ void Sensor_DisplayWindow_Set()
 	if (g_bDisplayMode>3)
 		g_bDisplayMode=0;
 
+#if TEST_PLANE
+	switch (g_bDisplayMode)
+	{
+		case 0:
+			Sensor_Channel_Set(0);
+			API_SetSensorWindow(0, 0, pDstWin->wWidth, pDstWin->wHeight);
+			break;
+
+		case 1:
+			Sensor_Channel_Set(1);
+			API_SetSensorWindow(0, 0, pDstWin->wWidth, pDstWin->wHeight);
+			break;
+
+		case 2:
+			API_SetSensorWindow(0, 0, pDstWin->wWidth, pDstWin->wHeight>>1);
+			break;
+		case 3:
+			API_SetSensorWindow(0, 70, pDstWin->wWidth>>1, pDstWin->wHeight);
+			break;
+
+		default:
+			break;
+	}
+
+#else
 	switch (g_bDisplayMode)
 	{
 		case 0:
@@ -131,7 +156,7 @@ void Sensor_DisplayWindow_Set()
 		default:
 			break;
 	}
-
+#endif
 }
 void Sensor_DisplayMode_Set()
 {
