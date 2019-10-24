@@ -843,7 +843,9 @@ static SWORD GoTransferMode(void)
 				#if ((STD_BOARD_VER == MP650_FPGA) || (CHIP_VER_MSB == CHIP_VER_615))
 				#else
 				// after card selected, try to switch to high speed mode
-				if (GoHiSpeedMode() == PASS)
+				//--SdInfo.dwCapacity unit byte,DIV2  ; 256MB is 475136
+				 // 解决小容量卡被识别为高速卡造成读卡失败
+				if (SdInfo.dwCapacity>1000000 &&  GoHiSpeedMode() == PASS)
 				{
 					SetClockSpeed(SD_HISPEED_CLK_KHZ);
 					SdInfo.dwClockAdj = HIGH_SPEED;
