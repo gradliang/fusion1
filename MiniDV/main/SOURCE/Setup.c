@@ -51,7 +51,7 @@ void GetDefaultSetupMenuValue(void)
 #if  (PRODUCT_UI==UI_WELDING)
 	g_psSetupMenu->wElectrodePos[0]=0;
 	g_psSetupMenu->wElectrodePos[1]=0;
-
+#if 0
     g_psSetupMenu->bEnableIcon_LaLiCeShi = 0;
     g_psSetupMenu->bEnableIcon_DuanMianJianCe = 0;
     g_psSetupMenu->bEnableIcon_ZiDongDuiJiao = 0;
@@ -60,6 +60,7 @@ void GetDefaultSetupMenuValue(void)
     g_psSetupMenu->bEnableIcon_HuiChenJianCe = 0;
     g_psSetupMenu->bEnableIcon_RongJieZanTing = 0;
     g_psSetupMenu->bEnableIcon_YunDuanCeLiang = 0;
+#endif
     g_psSetupMenu->bCustomizeIcon[0] = 0;
     g_psSetupMenu->bCustomizeIcon[1] = 1;
     g_psSetupMenu->bCustomizeIcon[2] = 2;
@@ -115,7 +116,7 @@ void Update_gSetupMenuValue(void)
 #if  (PRODUCT_UI==UI_WELDING)
 	*(gSetupMenuValue + 9)  =  g_psSetupMenu->wElectrodePos[0];
 	*(gSetupMenuValue + 10)  =  g_psSetupMenu->wElectrodePos[1];
-
+#if 0
     *(gSetupMenuValue + 11)  =  g_psSetupMenu->bEnableIcon_LaLiCeShi;
     *(gSetupMenuValue + 12)  =  g_psSetupMenu->bEnableIcon_DuanMianJianCe;
     *(gSetupMenuValue + 13)  =  g_psSetupMenu->bEnableIcon_ZiDongDuiJiao;
@@ -124,6 +125,7 @@ void Update_gSetupMenuValue(void)
     *(gSetupMenuValue + 16)  =  g_psSetupMenu->bEnableIcon_HuiChenJianCe;
     *(gSetupMenuValue + 17)  =  g_psSetupMenu->bEnableIcon_RongJieZanTing;
     *(gSetupMenuValue + 18)  =  g_psSetupMenu->bEnableIcon_YunDuanCeLiang;
+#endif
     *(gSetupMenuValue + 19)  =  (int)(g_psSetupMenu->bCustomizeIcon[0]);
     *(gSetupMenuValue + 20)  =  (int)(g_psSetupMenu->bCustomizeIcon[1]);
     *(gSetupMenuValue + 21)  =  (int)(g_psSetupMenu->bCustomizeIcon[2]);
@@ -187,7 +189,7 @@ void Recover_g_psSetupMenu(void)
         g_psSetupMenu->wElectrodePos[0] =  gSetupMenuValue[9];
     if (gSetupMenuValue[10] <= 0x0fff)
         g_psSetupMenu->wElectrodePos[1] =  gSetupMenuValue[10];
-
+#if 0
     g_psSetupMenu->bEnableIcon_LaLiCeShi = gSetupMenuValue[11];
     g_psSetupMenu->bEnableIcon_DuanMianJianCe = gSetupMenuValue[12];
     g_psSetupMenu->bEnableIcon_ZiDongDuiJiao = gSetupMenuValue[13];
@@ -196,6 +198,7 @@ void Recover_g_psSetupMenu(void)
     g_psSetupMenu->bEnableIcon_HuiChenJianCe = gSetupMenuValue[16];
     g_psSetupMenu->bEnableIcon_RongJieZanTing = gSetupMenuValue[17];
     g_psSetupMenu->bEnableIcon_YunDuanCeLiang = gSetupMenuValue[18];
+#endif
     g_psSetupMenu->bCustomizeIcon[0] = (int)(gSetupMenuValue[19]);
     g_psSetupMenu->bCustomizeIcon[1] = (int)(gSetupMenuValue[20]);
     g_psSetupMenu->bCustomizeIcon[2] = (int)(gSetupMenuValue[21]);

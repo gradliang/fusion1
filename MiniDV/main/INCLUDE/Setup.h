@@ -137,7 +137,7 @@ typedef struct ST_SETUP_MENU_SETTING_VALUE
 #endif
 #if  (PRODUCT_UI==UI_WELDING)
     WORD wElectrodePos[2];
-
+#if 0
     BYTE bEnableIcon_LaLiCeShi;
     BYTE bEnableIcon_DuanMianJianCe;
     BYTE bEnableIcon_ZiDongDuiJiao;
@@ -146,6 +146,7 @@ typedef struct ST_SETUP_MENU_SETTING_VALUE
     BYTE bEnableIcon_HuiChenJianCe;
     BYTE bEnableIcon_RongJieZanTing;
     BYTE bEnableIcon_YunDuanCeLiang;
+#endif
     char bCustomizeIcon[6];
     BYTE bCustomizeIconEnable[6];
     BYTE bCloudMode;

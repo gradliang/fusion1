@@ -213,6 +213,7 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
     }
     else if (dwHashKey == xpgHash("FuncSet"))
     {
+#if 0
         BYTE * pb;
         if (dwIconId == 0)
             pb = &(g_psSetupMenu->bEnableIcon_LaLiCeShi);
@@ -231,6 +232,8 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
         else
             pb = &(g_psSetupMenu->bEnableIcon_YunDuanCeLiang);
         *pb = !(*pb);
+#endif
+		g_psSetupMenu->bCustomizeIconEnable[dwIconId] = !g_psSetupMenu->bCustomizeIconEnable[dwIconId];
         xpgUpdateStage();
         WriteSetupChg();
     }
@@ -247,7 +250,7 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
         }
         else
         {
-            DWORD nowIdx = dwIconId - 6;
+            char nowIdx = dwIconId - 6;
             BOOL found = FALSE;
             DWORD foundIdx;
             for (foundIdx = 0; foundIdx < 6; foundIdx++) {
@@ -264,12 +267,12 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
 
             DWORD j1;
             for (j1 = 0; j1 < 6; j1++) {
-                if (g_psSetupMenu->bCustomizeIcon[j1] == (int)nowIdx) {
+                if (g_psSetupMenu->bCustomizeIcon[j1] == nowIdx) {
                     mpDebugPrint("has exist.");
                     return PASS;
                 }
             }
-            g_psSetupMenu->bCustomizeIcon[foundIdx] = (int)nowIdx;
+            g_psSetupMenu->bCustomizeIcon[foundIdx] = nowIdx;
             g_psSetupMenu->bCustomizeIconEnable[foundIdx] = 1;
             WriteSetupChg();
         }

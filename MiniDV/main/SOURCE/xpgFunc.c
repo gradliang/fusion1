@@ -1214,7 +1214,7 @@ void xpgCb_EnterPhotoViewPage()
 
 void AddAutoEnterPreview(void)
 {
-#if (PRODUCT_PCBA!=PCBA_MAIN_BOARD_V12)
+#if 1//(PRODUCT_PCBA!=PCBA_MAIN_BOARD_V12)
 	 if(RecordTaskStattusGet() == Rec_StandBy_state && g_pstXpgMovie->m_pstCurPage->m_dwHashKey==xpgHash("Main"))
 	 {
 		WeldModeSet(0);
