@@ -411,7 +411,8 @@
 #define	SENSOR_WITH_DISPLAY         					ENABLE
 //#define IPW1_DISABLE						 						ENABLE//Fast input mode
 //#define USE_IPW1_DISPLAY_MOTHOD     			ENABLE
-#define  SENSOR_TYPE_NT99140              			ENABLE
+#define  SENSOR_TYPE_NT99140              			ENABLE // really is 99142
+//#define  SENSOR_TYPE_NT99141              			ENABLE
 #if 1//PROC_SENSOR_DATA_MODE
 #define  SENSOR_WIN_NUM              						2
 #else

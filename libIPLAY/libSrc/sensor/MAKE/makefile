@@ -30,7 +30,7 @@ C_OBJS = $(OBJ)sensor_manager.o
 #C_OBJS += $(OBJ)sensor_OV2643_JH43A.o $(OBJ)sensor_driver_OV2643_JH43A.o 
 #C_OBJS += $(OBJ)sensor_S5K6AAFX13.o $(OBJ)sensor_driver_S5K6AAFX13.o
 #C_OBJS += $(OBJ)sensor_SensorTool.o $(OBJ)sensor_driver_SensorTool.o
-C_OBJS += $(OBJ)sensor_driver_NT99140.o $(OBJ)sensor_NT99140.o
+C_OBJS += $(OBJ)sensor_driver_NT99140.o $(OBJ)sensor_NT99140.o $(OBJ)sensor_driver_NT99141.o
 #C_OBJS += $(OBJ)sensor_driver_cvbs.o $(OBJ)sensor_cvbs.o
 #C_OBJS += $(OBJ)sensor_HM1355_AWA.o $(OBJ)sensor_driver_HM1355_AWA.o
 

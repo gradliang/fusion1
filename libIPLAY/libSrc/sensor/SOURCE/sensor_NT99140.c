@@ -14,7 +14,7 @@
 
 //#include "../../SpyCamera/main/include/ui_timer.h"
 
-#if ((SENSOR_ENABLE == ENABLE) && defined(SENSOR_TYPE_NT99140))
+#if ((SENSOR_ENABLE == ENABLE) && (defined(SENSOR_TYPE_NT99140) || defined(SENSOR_TYPE_NT99141)))
 
 /*The buffer pointer reference by JPEG and Sensor input -- Capure mode*/
 
