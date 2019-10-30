@@ -49,6 +49,7 @@ static BYTE st_bStrFace[MOTOR_NUM][POS_STR_LEN], st_bStrCenter[MOTOR_NUM][POS_ST
 #endif
 BYTE g_bDisplayUseIpw2=1; // 0->ipw1  1->ipw2
 
+static BYTE g_bHollSwitch=0xff;
 #endif
 
 
@@ -3861,7 +3862,7 @@ void Proc_Weld_State()
 
 
 		case SENSOR_IDLE:
-#if TEST_PLANE
+#if 0//TEST_PLANE
 	//pWin=(ST_IMGWIN *)Idu_GetCurrWin();
 #if 1
 	bMode=MOTOR_LEFT_TOP;
@@ -4137,7 +4138,7 @@ void TSPI_DataProc(void)
     			AddAutoEnterPreview();
 			}
 			break;
-
+//马达状态
 		case 0xb2:
 			st_bMotorStaus=st_bTspiRxArry[2];
 			if (g_swAutoFocusState!=AF_OFF && !(st_bMotorStaus&(1<<(AF_MOTO_INDEX-1))))
@@ -4148,17 +4149,25 @@ void TSPI_DataProc(void)
 				Proc_AutoFocus();
 			}
 			break;
-
+//检测状态
 		case 0xb3:
-			if (st_bTspiRxArry[2]) //4 盖子打开
+			if ((st_bTspiRxArry[2]&BIT0)!=g_bHollSwitch)
 			{
-				// 马达复位
-				//ResetMotor();
-			}
-			else
-			{
-				//WeldModeSet(0);
-				//xpgCb_EnterCamcoderPreview();
+				// 盖子打开
+				if (g_bHollSwitch!=0xff)
+				{
+					if (st_bTspiRxArry[2]&BIT0)
+					{
+						// 马达复位
+						//ResetMotor();
+					}
+					else
+					{
+						//WeldModeSet(0);
+						//xpgCb_EnterCamcoderPreview();
+					}
+				}
+				g_bHollSwitch=st_bTspiRxArry[2]&BIT0;
 			}
 			break;
 		//放电状态
@@ -4318,7 +4327,7 @@ void DisplaySensorOnCurrWin( BYTE bIpw2)
 {
 	IPU *ipu = (IPU *) IPU_BASE;
 	ST_IMGWIN *pDstWin=(ST_IMGWIN *)Idu_GetCurrWin();
-	DWORD *pIpwAddr,DisplayWinStartAddr;
+	register DWORD *pIpwAddr;
 
 	if (bIpw2)
 		pIpwAddr=(DWORD *)&ipu->Ipu_reg_F2;
@@ -4333,6 +4342,38 @@ void DisplaySensorOnCurrWin( BYTE bIpw2)
 	if (g_bDisplayMode&0xf0)
 		Sensor_DisplayMode_Set();
 
+#if 1
+	if (g_bDisplayMode==2)
+	{
+			if (Sensor_CurChannel_Get()==0)
+			{
+				Sensor_Channel_Set(1);
+				*pIpwAddr = ((DWORD) pDstWin->pdwStart| 0xA0000000)+pDstWin->dwOffset* SensorWindow_PosY  + (SensorWindow_PosX <<1)+pDstWin->dwOffset*SensorWindow_Height;	
+				
+			}
+			else
+			{
+				Sensor_Channel_Set(0);
+				*pIpwAddr = ((DWORD) pDstWin->pdwStart| 0xA0000000)+pDstWin->dwOffset* SensorWindow_PosY  + (SensorWindow_PosX <<1);	
+			}
+			IODelay(10);
+	}
+	else if (g_bDisplayMode==3)
+	{
+			if (Sensor_CurChannel_Get()==0)
+			{
+				Sensor_Channel_Set(1);
+				*pIpwAddr = ((DWORD) pDstWin->pdwStart| 0xA0000000)+pDstWin->dwOffset* SensorWindow_PosY  + (SensorWindow_PosX <<1)+(SensorWindow_Width<<1);
+				
+			}
+			else
+			{
+				Sensor_Channel_Set(0);
+				*pIpwAddr = ((DWORD) pDstWin->pdwStart| 0xA0000000)+pDstWin->dwOffset* SensorWindow_PosY  + (SensorWindow_PosX <<1);	
+			}
+	}
+
+#else
 	switch (g_bDisplayMode)
 	{
 		case 2:
@@ -4368,7 +4409,7 @@ void DisplaySensorOnCurrWin( BYTE bIpw2)
 			default:
 				break;
 	}
-
+#endif
 }
 
 void CacheSensorData( BYTE bIpw2)

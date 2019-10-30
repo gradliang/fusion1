@@ -126,7 +126,7 @@ void Sensor_DisplayWindow_Set()
 			API_SetSensorWindow(0, 0, pDstWin->wWidth, pDstWin->wHeight>>1);
 			break;
 		case 3:
-			API_SetSensorWindow(0, 70, pDstWin->wWidth>>1, pDstWin->wHeight);
+			API_SetSensorWindow(0, 0, pDstWin->wWidth>>1, pDstWin->wHeight);
 			break;
 
 		default:
