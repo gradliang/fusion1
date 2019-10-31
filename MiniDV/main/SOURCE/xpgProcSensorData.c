@@ -49,7 +49,6 @@ static BYTE st_bStrFace[MOTOR_NUM][POS_STR_LEN], st_bStrCenter[MOTOR_NUM][POS_ST
 #endif
 BYTE g_bDisplayUseIpw2=1; // 0->ipw1  1->ipw2
 
-static BYTE g_bHollSwitch=0xff;
 #endif
 
 
@@ -443,6 +442,8 @@ static BYTE st_bCacheWinNum=2,st_bNeedFillProcWin=0;  //   BIT7->new fill wait i
 static BYTE st_bBackGroundLevel=0;//FIBER_EDGE_LEVEL
 static BYTE st_bFiberBlackLevel=0;
 static WORD st_wFiberWidth=0;
+
+BYTE g_bOPMonline=0;
 
 #if SENSOR_WIN_NUM>1
 BYTE GetCachWinNum(void)
@@ -4151,12 +4152,10 @@ void TSPI_DataProc(void)
 			break;
 //检测状态
 		case 0xb3:
-			if ((st_bTspiRxArry[2]&BIT0)!=g_bHollSwitch)
+			switch (st_bTspiRxArry[2]>>4)
 			{
-				// 盖子打开
-				if (g_bHollSwitch!=0xff)
-				{
-					if (st_bTspiRxArry[2]&BIT0)
+				case 1:
+					if (st_bTspiRxArry[2]&BIT0)// 盖子打开
 					{
 						// 马达复位
 						//ResetMotor();
@@ -4166,9 +4165,27 @@ void TSPI_DataProc(void)
 						//WeldModeSet(0);
 						//xpgCb_EnterCamcoderPreview();
 					}
-				}
-				g_bHollSwitch=st_bTspiRxArry[2]&BIT0;
+					break;
+
+				case 2: //加热盖子状态
+				break;
+
+				case 3:
+					if (st_bTspiRxArry[2]&BIT0)
+					{
+						g_bOPMonline=1;
+					}
+					else
+					{
+						g_bOPMonline=0;
+					}
+					break;
+
+
+				default:
+					break;
 			}
+			
 			break;
 		//放电状态
 		case 0xb4:
@@ -4187,6 +4204,36 @@ void TSPI_DataProc(void)
 			{
 					//DriveMotor(01,1,200,10);
 					//DriveMotor(02,1,200,10);
+			}
+			break;
+		//AF镜头
+		case 0xb6:
+			if (st_bTspiRxArry[2]&BIT2) //  1->AFL镜头未超出行程
+			{
+			}
+			if (st_bTspiRxArry[2]&BIT3)//  1->AFL镜头未超出行程
+			{
+			}
+			break;
+		//熔接记录查询
+		case 0xb7:
+			if ((st_bTspiRxArry[2]==1||st_bTspiRxArry[2]==2) && st_bTspiRxArry[3]>0)
+			{
+				STRECORD * pr=GetRecord(st_bTspiRxArry[3]-1);
+				if (pr)
+				{
+					if (st_bTspiRxArry[2]==1)//4  查询熔接记录
+					{
+						pr->bHead=0xa6;
+						TSPI_PacketSend((BYTE *)pr,3+22,0);
+					}
+					else if (st_bTspiRxArry[2]==2)//4  查询熔接图片  
+					{
+						pr->bHead=0xae;
+						//TSPI_PacketSend(pr,3+22,0);
+        				//pstRecordList = (STRECORD**) ext_mem_malloc(dwAllocByte);
+					}
+				}
 			}
 			break;
 

@@ -198,16 +198,23 @@ void SetupMenuInit(void);
 
 
 typedef struct Record1 {
-    WORD        wYear;
+    BYTE        bHead;
+    BYTE        bLenth;
+    BYTE        bIndex;
+    BYTE        bYear;
     BYTE        bMonth;
     BYTE        bDay;
     BYTE        bHour;
     BYTE        bMinute;
     BYTE        bSecond;
-    BYTE        noused;
-    DWORD       dwPowerWaste;
-    BYTE        bRecordName[32];
-    BYTE        bRecordFileName[64];
+    BYTE        bRecordName[10];
+    BYTE        bFiberMode;
+    BYTE        bFiberL;
+    BYTE        bFiberR;
+    BYTE        bFiberLoss;
+    BYTE        bResult;
+    BYTE        bChecksum; // 25
+    BYTE        bRecordFileName[11];
 }STRECORD;
 
 

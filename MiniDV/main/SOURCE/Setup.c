@@ -679,16 +679,15 @@ void ClearAllRecord()
     dwRecordTotal = 0;
 }
 
-void InitRecord(STRECORD* pstRecord, WORD year, BYTE month, BYTE day, BYTE hour, BYTE minute, BYTE second, DWORD power, BYTE * recordName, BYTE* fileName)
+void InitRecord(STRECORD* pstRecord, WORD year, BYTE month, BYTE day, BYTE hour, BYTE minute, BYTE second, DWORD bLoss, BYTE * recordName, BYTE* fileName)
 {
-    pstRecord->wYear = year;
+    pstRecord->bYear = year;
     pstRecord->bMonth = month;
     pstRecord->bDay = day;
     pstRecord->bHour = hour;
     pstRecord->bMinute = minute;
     pstRecord->bSecond = second;
-    pstRecord->noused = 0;
-    pstRecord->dwPowerWaste = power;
+    pstRecord->bFiberLoss = bLoss;
     strncpy(pstRecord->bRecordName, recordName, sizeof(pstRecord->bRecordName)-1);
     pstRecord->bRecordName[sizeof(pstRecord->bRecordName)-1] = 0;
     strncpy(pstRecord->bRecordFileName, fileName, sizeof(pstRecord->bRecordFileName)-1);
@@ -699,31 +698,31 @@ int initRecordDummyData()
 {
     STRECORD  record;
     
-    InitRecord(&record, 2017, 2, 28, 1, 59, 59, (0<<6) | 1, "REC 1", "aaa.jpg");
+    InitRecord(&record, 17, 2, 28, 1, 59, 59, (0<<6) | 1, "REC 1", "aaa.jpg");
     AddRecord(&record);
-    InitRecord(&record, 2017, 3, 28, 1, 59, 59, (0<<6) | 1, "REC 2", "aaa.jpg");
+    InitRecord(&record, 17, 3, 28, 1, 59, 59, (0<<6) | 1, "REC 2", "aaa.jpg");
     AddRecord(&record);
-    InitRecord(&record, 2017, 4, 28, 1, 59, 59, (0<<6) | 1, "REC 3", "aaa.jpg");
+    InitRecord(&record, 17, 4, 28, 1, 59, 59, (0<<6) | 1, "REC 3", "aaa.jpg");
     AddRecord(&record);
-    InitRecord(&record, 2017, 5, 28, 1, 59, 59, (0<<6) | 1, "REC 4", "aaa.jpg");
+    InitRecord(&record, 17, 5, 28, 1, 59, 59, (0<<6) | 1, "REC 4", "aaa.jpg");
     AddRecord(&record);
-    InitRecord(&record, 2017, 6, 28, 1, 59, 59, (0<<6) | 1, "REC 5", "aaa.jpg");
+    InitRecord(&record, 17, 6, 28, 1, 59, 59, (0<<6) | 1, "REC 5", "aaa.jpg");
     AddRecord(&record);
-    InitRecord(&record, 2017, 7, 28, 1, 59, 59, (0<<6) | 1, "REC 6", "aaa.jpg");
+    InitRecord(&record, 17, 7, 28, 1, 59, 59, (0<<6) | 1, "REC 6", "aaa.jpg");
     AddRecord(&record);
-    InitRecord(&record, 2017, 8, 28, 1, 59, 59, (0<<6) | 1, "REC 7", "aaa.jpg");
+    InitRecord(&record, 17, 8, 28, 1, 59, 59, (0<<6) | 1, "REC 7", "aaa.jpg");
     AddRecord(&record);
-    InitRecord(&record, 2018, 2, 28, 1, 59, 59, (0<<6) | 1, "REC 8", "aaa.jpg");
+    InitRecord(&record, 18, 2, 28, 1, 59, 59, (0<<6) | 1, "REC 8", "aaa.jpg");
     AddRecord(&record);
-    InitRecord(&record, 2018, 5, 28, 1, 59, 59, (0<<6) | 1, "REC 9", "aaa.jpg");
+    InitRecord(&record, 18, 5, 28, 1, 59, 59, (0<<6) | 1, "REC 9", "aaa.jpg");
     AddRecord(&record);
-    InitRecord(&record, 2018, 7, 28, 1, 59, 59, (0<<6) | 1, "REC 10", "aaa.jpg");
+    InitRecord(&record, 18, 7, 28, 1, 59, 59, (0<<6) | 1, "REC 10", "aaa.jpg");
     AddRecord(&record);
-    InitRecord(&record, 2019, 9, 28, 1, 59, 59, (0<<6) | 1, "REC 11", "aaa.jpg");
+    InitRecord(&record, 19, 9, 28, 1, 59, 59, (0<<6) | 1, "REC 11", "aaa.jpg");
     AddRecord(&record);
-    InitRecord(&record, 2019, 12, 28, 1, 59, 59, (0<<6) | 1, "REC 12", "aaa.jpg");
+    InitRecord(&record, 19, 12, 28, 1, 59, 59, (0<<6) | 1, "REC 12", "aaa.jpg");
     AddRecord(&record);
-    InitRecord(&record, 2019, 12, 29, 1, 59, 59, (0<<6) | 1, "REC 13", "aaa.jpg");
+    InitRecord(&record, 19, 12, 29, 1, 59, 59, (0<<6) | 1, "REC 13", "aaa.jpg");
     AddRecord(&record);
 }
 

@@ -2373,8 +2373,9 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         }
         else if (dwTextId == 2)
         {
+			 extern BYTE g_bOPMonline;
             SetCurrIduFontID(FONT_ID_HeiTi19);
-            if (g_psSetupMenu->bCloudMode)
+            if (g_psSetupMenu->bCloudMode && g_bOPMonline)
                 text = getstr(Str_ZaiXian);
             else
                 text = "----";
@@ -3355,7 +3356,7 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         SetCurrIduFontID(FONT_ID_HeiTi16);
         Idu_PrintString(pWin, tmpbuff, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
 
-        sprintf(tmpbuff, "[%04d/%d/%d %02d:%02d:%02d]", pr->wYear, pr->bMonth, pr->bDay, pr->bHour, pr->bMinute, pr->bSecond);
+        sprintf(tmpbuff, "[%04d/%d/%d %02d:%02d:%02d]", pr->bYear, pr->bMonth, pr->bDay, pr->bHour, pr->bMinute, pr->bSecond);
         SetCurrIduFontID(FONT_ID_HeiTi16);
         Idu_PrintString(pWin, tmpbuff, pstSprite->m_wPx + 40, pstSprite->m_wPy, 0, 0);
 
@@ -3363,7 +3364,7 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         SetCurrIduFontID(FONT_ID_HeiTi16);
         Idu_PrintString(pWin, tmpbuff, pstSprite->m_wPx + 270, pstSprite->m_wPy, 0, 0);
 
-        sprintf(tmpbuff, "%d.%ddB", pr->dwPowerWaste >> 6, pr->dwPowerWaste & 0x3F);
+        sprintf(tmpbuff, "%d.%ddB", pr->bFiberLoss%100, pr->bFiberLoss /100);
         SetCurrIduFontID(FONT_ID_HeiTi16);
         Idu_PrintString(pWin, tmpbuff, pstSprite->m_wPx + 510, pstSprite->m_wPy, 0, 0);
 
