@@ -823,9 +823,9 @@ static void Local_HW_Set(void)
 
 //Hsync, Vsync pos
     ipu->Ipu_reg_100 |= BIT8;//HsRefPos: Hotizontal sync reference point: 0=falling edge; 1=rising edge
-    //ipu->Ipu_reg_100 &= ~BIT8;//Vsync pos=0
-    //ipu->Ipu_reg_100 |= BIT9;//Hsync pos=1
-    ipu->Ipu_reg_100 &= ~BIT9;//VsRefPos :Vertical sync reference point: 0=falling edge; 1=rising edge;
+    //ipu->Ipu_reg_100 &= ~BIT8;//Hsync pos=0
+    ipu->Ipu_reg_100 |= BIT9;//Vsync pos=1    is ok too
+    //ipu->Ipu_reg_100 &= ~BIT9;//VsRefPos :Vertical sync reference point: 0=falling edge; 1=rising edge;
 
     clock->MdClken |= BIT10;//enable mclk
     //**********************

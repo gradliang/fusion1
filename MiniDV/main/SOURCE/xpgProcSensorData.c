@@ -3863,7 +3863,9 @@ void Proc_Weld_State()
 
 
 		case SENSOR_IDLE:
-#if 0//TEST_PLANE
+#if TEST_PLANE
+		if (g_bDisplayMode < 0x02)
+		{
 	//pWin=(ST_IMGWIN *)Idu_GetCurrWin();
 #if 1
 	bMode=MOTOR_LEFT_TOP;
@@ -3896,6 +3898,7 @@ void Proc_Weld_State()
 #endif
 
 	SetFillProcWinFlag();
+		}
 #endif
 //	mpCopyWinAreaSameSize(pWin,Idu_GetCurrWin(),0, 0, 0, 0,pWin->wWidth, pWin->wHeight);
 	//SetFillProcWinFlag();
@@ -4370,6 +4373,7 @@ void DisplaySensorImage(void)
 
 }
 
+static BYTE st_bFrameIndex=0;
 void DisplaySensorOnCurrWin( BYTE bIpw2)
 {
 	IPU *ipu = (IPU *) IPU_BASE;
@@ -4387,23 +4391,64 @@ void DisplaySensorOnCurrWin( BYTE bIpw2)
 	}
 
 	if (g_bDisplayMode&0xf0)
+	{
 		Sensor_DisplayMode_Set();
+		#if TEST_PLANE
+		SetFillProcWinFlag();
+		#endif
+	}
 
 #if 1
+//    mpDebugPrintN("  %08x %08x  ", ipu->Ipu_reg_10A,ipu->Ipu_reg_10B);
 	if (g_bDisplayMode==2)
 	{
-			if (Sensor_CurChannel_Get()==0)
-			{
-				Sensor_Channel_Set(1);
-				*pIpwAddr = ((DWORD) pDstWin->pdwStart| 0xA0000000)+pDstWin->dwOffset* SensorWindow_PosY  + (SensorWindow_PosX <<1)+pDstWin->dwOffset*SensorWindow_Height;	
-				
-			}
-			else
+		#if defined(SENSOR_TYPE_NT99140)
+			if (Sensor_CurChannel_Get())
 			{
 				Sensor_Channel_Set(0);
 				*pIpwAddr = ((DWORD) pDstWin->pdwStart| 0xA0000000)+pDstWin->dwOffset* SensorWindow_PosY  + (SensorWindow_PosX <<1);	
 			}
-			IODelay(10);
+			else
+			{
+				Sensor_Channel_Set(1);
+				*pIpwAddr = ((DWORD) pDstWin->pdwStart| 0xA0000000)+pDstWin->dwOffset* SensorWindow_PosY  + (SensorWindow_PosX <<1)+pDstWin->dwOffset*SensorWindow_Height;	
+			}
+		//	IODelay(10);
+
+		#else
+			if (Sensor_CurChannel_Get())
+			{
+				if (st_bFrameIndex==1)
+				{
+					Sensor_Channel_Set(0);
+					st_bFrameIndex=0;
+					pDstWin=(ST_IMGWIN *)Idu_GetNextWin();
+					*pIpwAddr = ((DWORD) pDstWin->pdwStart| 0xA0000000)+pDstWin->dwOffset* SensorWindow_PosY  + (SensorWindow_PosX <<1);	
+				}
+				else
+				{
+					//mpDebugPrintN(" %08x ", ipu->Ipu_reg_10A);
+					st_bFrameIndex++;
+					*pIpwAddr = ((DWORD) pDstWin->pdwStart| 0xA0000000)+pDstWin->dwOffset* SensorWindow_PosY  + (SensorWindow_PosX <<1)+pDstWin->dwOffset*SensorWindow_Height;	
+				}
+			}
+			else
+			{
+				if (st_bFrameIndex==1)
+				{
+					Sensor_Channel_Set(1);
+					st_bFrameIndex=0;
+					pDstWin=(ST_IMGWIN *)Idu_GetNextWin();
+					*pIpwAddr = ((DWORD) pDstWin->pdwStart| 0xA0000000)+pDstWin->dwOffset* SensorWindow_PosY  + (SensorWindow_PosX <<1)+pDstWin->dwOffset*SensorWindow_Height;	
+				}
+				else
+				{
+					//mpDebugPrintN(" %08x ", ipu->Ipu_reg_10A);
+					st_bFrameIndex++;
+					*pIpwAddr = ((DWORD) pDstWin->pdwStart| 0xA0000000)+pDstWin->dwOffset* SensorWindow_PosY  + (SensorWindow_PosX <<1);	
+				}
+			}
+	#endif
 	}
 	else if (g_bDisplayMode==3)
 	{

@@ -1221,7 +1221,7 @@ void AddAutoEnterPreview(void)
 #if TEST_PLANE
 	    Ui_TimerProcAdd(10, xpgCb_EnterCamcoderPreview);//xpgCb_EnterCamcoderPreview
 #else
-	    Ui_TimerProcAdd(15*1000, xpgCb_EnterCamcoderPreview);//xpgCb_EnterCamcoderPreview
+	    Ui_TimerProcAdd(10*1000, xpgCb_EnterCamcoderPreview);//xpgCb_EnterCamcoderPreview
 #endif
 	 }
 #endif
