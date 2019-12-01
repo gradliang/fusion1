@@ -1280,7 +1280,7 @@ static void NT99140_setSVGA_800x480(void)
 #if 1//!SHOW_CENTER
 	sensor_nt99140_setRegister(0x32F1, 0x01);//BW 
 #endif
-#if 1 	 
+#if 0
 //MCLK:      12.00MHz 
 //PCLK:      48.00MHz 
 //Size:      800x480 

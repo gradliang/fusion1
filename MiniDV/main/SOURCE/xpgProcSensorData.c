@@ -1,7 +1,7 @@
 /*
 // define this module show debug message or not,  0 : disable, 1 : enable
 */
-#define LOCAL_DEBUG_ENABLE  1
+#define LOCAL_DEBUG_ENABLE  0
 /*
 // Include section
 */
@@ -26,6 +26,10 @@
 
 #include "peripheral.h"
 
+#define DEBUG_POS(...)                   DONOTHING
+//#define DEBUG_POS(...)                   mpDebugPrint
+
+
 #if (SENSOR_ENABLE == ENABLE)
 #if SENSOR_WIN_NUM
 extern BYTE *pbSensorWinBuffer;
@@ -44,8 +48,16 @@ static BYTE st_bDirectionArry[MOTOR_NUM],st_bMotorBaseStep[4]={15,15,30,30},st_b
 static BYTE st_bTopVMotorUpValue=0,st_bBottomVMotorUpValue=0,st_bLastProcStep[2]={0},st_bVmotorMoveTimes[2]={0};
 static WORD st_wVmotorMoveValue[2][VMOTOR_CNT]; // 0->up motor  1->down motor
 static BYTE st_bDischargeMode=0; // 0->off 
+static BYTE st_bBackGroundLevel[SENSER_TOTAL]={0,0};//FIBER_EDGE_LEVEL
+static BYTE st_bFiberBlackLevel[SENSER_TOTAL]={0,0};
+
+
 #if TEST_PLANE
-static BYTE st_bStrFace[MOTOR_NUM][POS_STR_LEN], st_bStrCenter[MOTOR_NUM][POS_STR_LEN], st_bStrHLevel[MOTOR_NUM][POS_STR_LEN], st_bStrInfo[POS_STR_LEN];
+static BYTE st_bStrFace[MOTOR_NUM][POS_STR_LEN], st_bStrCenter[MOTOR_NUM][POS_STR_LEN], st_bStrCore[MOTOR_NUM][POS_STR_LEN],st_bStrHLevel[MOTOR_NUM][POS_STR_LEN], st_bStrInfo[POS_STR_LEN],st_bAdjustMotoStep=0;
+static WORD st_wMotoStep[6]={50,50,50,50,10,10};
+#endif
+#if TEST_TWO_LED
+static DWORD st_dwBrightness[2]={0};
 #endif
 BYTE g_bDisplayUseIpw2=1; // 0->ipw1  1->ipw2
 
@@ -438,9 +450,7 @@ extern BYTE g_bDisplayMode;
 #define		LEVEL_OFFSET								8         //4 亮度偏差
 
 static BYTE st_bInProcWin=0,st_bBackupChanel=0xff,st_bBackupDisplayMode=0xff;
-static BYTE st_bCacheWinNum=2,st_bNeedFillProcWin=0;  //   BIT7->new fill wait init IPW  BIT6->first get data BIT5->get data end   BIT1->fill down   BIT0->FILL UP  0->not need fill
-static BYTE st_bBackGroundLevel=0;//FIBER_EDGE_LEVEL
-static BYTE st_bFiberBlackLevel=0;
+static BYTE st_bCacheWinNum=2,st_bFillWinFlag=0,st_bNeedFillProcWin=0;  //   BIT7->new fill wait init IPW  BIT6->first get data BIT5->get data end   BIT1->fill down   BIT0->FILL UP  0->not need fill
 static WORD st_wFiberWidth=0;
 
 BYTE g_bOPMonline=0;
@@ -462,6 +472,27 @@ void SetCachWinNum(BYTE bNum)
 #endif
 
 #if SENSOR_WIN_NUM
+//--初始化一个sensor win对应下的所有光纤相关信息参数
+void ResetFiberPara(void)
+{
+	DWORD i;
+
+	for (i=0;i<MOTOR_NUM;i++)
+	{
+		st_swFaceX[i]=-1;
+		st_swFacexCurPos[i]=-1;
+		st_swLastPos[i]=-1;
+		st_swFaceY1[i]=-1;
+		st_swFaceY2[i]=-1;
+		st_swFaceY20[i]=-1;
+		st_swFaceY3[i]=-1;
+	}
+
+	for (i=0;i<SENSER_TOTAL;i++)
+		st_bFiberBlackLevel[i]=0;
+
+}
+
 void PrintWinData()
 {
 	ST_IMGWIN *pWin;
@@ -486,12 +517,41 @@ void PrintWinData()
 
 }
 
+DWORD GetWinBrightness(ST_IMGWIN *pWin,BYTE bSkipX,BYTE bSkipY)// bSkipX->per 2pixel   bSkipY->one line
+{
+	BYTE *pbWinBuffer;
+	DWORD dwBrightness=0,dwCnt=0;
+	DWORD x,y;
+
+	pbWinBuffer = (BYTE *)((DWORD) pWin->pdwStart| 0xA0000000);
+	if (!bSkipX)
+		bSkipX=1;
+	if (!bSkipY)
+		bSkipY=1;
+	for (y=0;y<pWin->wHeight;y+=bSkipY)
+	{
+		for (x=0;x<pWin->dwOffset;x+=4*bSkipX)
+		{
+			dwBrightness+=*pbWinBuffer;
+			dwCnt++;
+			pbWinBuffer+=4*bSkipX;
+		}
+		pbWinBuffer+=pWin->dwOffset*(bSkipY-1);
+	}
+	if (dwCnt)
+		dwBrightness/=dwCnt;
+
+	return dwBrightness;
+}
+
 void SetFillProcWinFlag(void)
 {
 	IPU *ipu = (IPU *) IPU_BASE;
 
 #if  1//PROC_SENSOR_DATA_MODE
-		st_bNeedFillProcWin=0x43; // bit0->up win  bit1->down win   bit7->init mode
+	if (!st_bFillWinFlag || st_bFillWinFlag>0x03)
+		st_bFillWinFlag=0x03;
+	st_bNeedFillProcWin=0x60|st_bFillWinFlag; // bit0->up win  bit1->down win   bit7->init mode
 		//st_bNeedFillProcWin=0xe1; // bit0->up win  bit1->down win   bit7->init mode
 	#if (USE_IPW1_DISPLAY_MOTHOD == ENABLE) 
 			ipu->Ipu_reg_F0 &= ~BIT7;//open IPW2
@@ -501,6 +561,11 @@ void SetFillProcWinFlag(void)
 #else
 		st_bNeedFillProcWin=1;
 #endif
+}
+
+void TimerToFillProcWin(DWORD dwTime) // ms
+{
+	Ui_TimerProcAdd(dwTime, SetFillProcWinFlag);
 }
 
 void AutoStartWeld()
@@ -516,7 +581,7 @@ void AutoStartWeld()
 			st_swFacexCurPos[i]=-1;
 			st_swLastPos[i]=-1;
 		}
-		SetFillProcWinFlag();
+		TimerToFillProcWin(10);
 	}
 	else
 		g_swProcState=SENSOR_IDLE;
@@ -540,7 +605,7 @@ void Weld_StartPause()
 			st_swFacexCurPos[i]=-1;
 			st_swLastPos[i]=-1;
 		}
-		SetFillProcWinFlag();
+		TimerToFillProcWin(10);
 	}
 	else
 	{
@@ -559,7 +624,7 @@ void AutoGetFiberLowPoint()
 	if (g_swGetCenterState==GET_CENTER_OFF)
 	{
 		g_swGetCenterState=GET_CENTER_INIT;//GET_CENTER_INIT;GET_CENTER_LOW_POINT
-		SetFillProcWinFlag();
+		TimerToFillProcWin(10);
 	}
 	else
 		g_swGetCenterState=GET_CENTER_OFF;
@@ -570,7 +635,7 @@ void AutoGetFiberLowPoint()
 void GetBackgroundLevel(void)
 {
 	ST_IMGWIN *pWin;
-	BYTE *pbWinBuffer,bValidLevel,bNewLevel,bContinue;
+	BYTE *pbWinBuffer,bValidLevel,bNewLevel,bContinue,bSensorIndex;
 	WORD wValidCnt;
 	SWORD y;
 	static BYTE st_bRetryTimes=0;
@@ -580,7 +645,25 @@ void GetBackgroundLevel(void)
 		Ui_TimerProcAdd(500, GetBackgroundLevel);
 		return;
 	}
-	pWin=(ST_IMGWIN *)&SensorInWin[0];
+	if ((st_bFillWinFlag&BIT0) && !st_bBackGroundLevel[0])
+		bSensorIndex=SENSER_TOP;
+	else if ((st_bFillWinFlag&BIT1) && !st_bBackGroundLevel[1])
+		bSensorIndex=SENSER_BOTTOM;
+	else if (!st_bBackGroundLevel[0])
+	{
+		st_bFillWinFlag=BIT0;
+		TimerToFillProcWin(10);
+		Ui_TimerProcAdd(500, GetBackgroundLevel);
+		return;
+	}
+	else if (!st_bBackGroundLevel[1])
+	{
+		st_bFillWinFlag=BIT1;
+		TimerToFillProcWin(10);
+		Ui_TimerProcAdd(500, GetBackgroundLevel);
+		return;
+	}
+	pWin=(ST_IMGWIN *)&SensorInWin[bSensorIndex];
 
 	y=4;
 	pbWinBuffer = (BYTE *) pWin->pdwStart+(g_wElectrodePos[0]-st_bRetryTimes*4)*2+y*pWin->dwOffset;
@@ -624,20 +707,19 @@ void GetBackgroundLevel(void)
 				wValidCnt=0;
 		}
 
-		if (wValidCnt>pWin->wHeight/16 &&  bValidLevel>0x30) // /8
+		if (wValidCnt>pWin->wHeight/16 &&  bValidLevel>0x20) // /8
 		{
-			//st_bBackGroundLevel=(DWORD)bValidLevel*7/10; // ok1
-			st_bBackGroundLevel=(DWORD)bValidLevel*7/10; // 8
+			//st_bBackGroundLevel[bSensorIndex]=(DWORD)bValidLevel*7/10; // ok1
+			st_bBackGroundLevel[bSensorIndex]=(DWORD)bValidLevel*7/10; // 8
 			break;
 		}
 	}
 
-	if (st_bBackGroundLevel)
+	if (st_bBackGroundLevel[bSensorIndex])
 	{
-		mpDebugPrint("---GetBackgroundLevel:bValidLevel %p->%p",bValidLevel,st_bBackGroundLevel);
+		mpDebugPrint("---GetBackgroundLevel:%d %p->%p",bSensorIndex,bValidLevel,st_bBackGroundLevel[bSensorIndex]);
 		//DriveMotor(03,0,300,8);//RIGHT_DOWN_FIBER  DOWN
 		//Ui_TimerProcAdd(2000, AutoStartWeld);
-		SetFillProcWinFlag();
 	}
 	else
 	{
@@ -647,15 +729,32 @@ void GetBackgroundLevel(void)
 			st_bRetryTimes++;
 			//DriveMotor(01,0,50,8);
 			//DriveMotor(02,0,50,8);
-			SetFillProcWinFlag();
-			Ui_TimerProcAdd(600, GetBackgroundLevel);
+			TimerToFillProcWin(10);
+			Ui_TimerProcAdd(500, GetBackgroundLevel);
+			return;
 		}
 		else
 		{
-			st_bBackGroundLevel=FIBER_EDGE_LEVEL;
-			mpDebugPrint("----st_bBackGroundLevel FAIL !!!reset to %p ",st_bBackGroundLevel);
+			st_bBackGroundLevel[bSensorIndex]=FIBER_EDGE_LEVEL;
+			mpDebugPrint("----st_bBackGroundLevel[%d] FAIL !!!reset to %p ",bSensorIndex,st_bBackGroundLevel[bSensorIndex]);
 		}
 	}
+
+	if (!st_bBackGroundLevel[0])
+	{
+		st_bFillWinFlag=BIT0;
+		Ui_TimerProcAdd(500, GetBackgroundLevel);
+	}
+	else if (!st_bBackGroundLevel[1])
+	{
+		st_bFillWinFlag=BIT1;
+		Ui_TimerProcAdd(500, GetBackgroundLevel);
+	}
+	else
+	{
+		st_bFillWinFlag=0x03;
+	}
+	TimerToFillProcWin(10);
 
 }
 
@@ -664,9 +763,13 @@ SWORD SearchLeftFiberBottomEdge(ST_IMGWIN *pWin,BYTE bMode)
 	DWORD dwOffset,dwYValidStartAver;
 	WORD wValidPixelCnt,wInvalidPixelCnt,wYValidStartArry[X_VALID_SUM],wYStartIndex,wYvalidCnt;
 	SWORD x,y,i,swStartY,swYEnd;
-	BYTE *pbWinBuffer,bContinueCnt;
+	BYTE *pbWinBuffer,bContinueCnt,bSensorIndex;
 
 	dwOffset=pWin->dwOffset;
+	if ((DWORD)pWin==(DWORD)&SensorInWin[1])
+		bSensorIndex=SENSER_BOTTOM;
+	else
+		bSensorIndex=SENSER_TOP;
 
 #if (SENSOR_WIN_NUM==2)
 		swStartY=pWin->wHeight-1;
@@ -699,14 +802,14 @@ SWORD SearchLeftFiberBottomEdge(ST_IMGWIN *pWin,BYTE bMode)
 			//mpDebugPrintN("%02x ",*pbWinBuffer);
 			if (wValidPixelCnt)
 			{
-				if (*pbWinBuffer < st_bBackGroundLevel)
+				if (*pbWinBuffer < st_bBackGroundLevel[bSensorIndex] )
 					wValidPixelCnt++;
 				else
 					wInvalidPixelCnt++;
 			}
 			else
 			{
-				if (*pbWinBuffer < st_bBackGroundLevel )
+				if (*pbWinBuffer < st_bBackGroundLevel[bSensorIndex] )
 				{
 					bContinueCnt++;
 					if (bContinueCnt>Y_CONTINUE_VALID_SUM)
@@ -755,15 +858,18 @@ SWORD SearchLeftFiberBottomEdge(ST_IMGWIN *pWin,BYTE bMode)
 							if (st_swFaceY3[bMode]!=dwYValidStartAver)
 							{
 								st_swFaceY3[bMode]=dwYValidStartAver;
-								mpDebugPrint(" st_swFaceY3[%d]=%d ",bMode,st_swFaceY3[bMode]);
+								DEBUG_POS("Y3[%d]=%d ",bMode,st_swFaceY3[bMode]);
 								#if OSD_LINE_NUM && !TEST_PLANE
 								OsdLineSet(1<<g_pstXpgMovie->m_wCurPage,12+bMode,0,dwYValidStartAver,pWin->wWidth/2,2,OSD_COLOR_BLUE);
 								#endif
 								#if TEST_PLANE
 								if (st_swFaceY1[bMode]>0 && st_swFaceY3[bMode]-st_swFaceY1[bMode])
 								{
-									dwYValidStartAver=st_swFaceY3[bMode]/2+st_swFaceY1[bMode]/2;
-									sprintf(&st_bStrCenter[bMode][0], "C_L:%d", (SWORD)(dwYValidStartAver-pWin->wHeight/2));
+									dwYValidStartAver=(st_swFaceY3[bMode]+st_swFaceY1[bMode])>>1;
+									if (dwYValidStartAver>pWin->wHeight/2)
+										sprintf(&st_bStrCenter[bMode][0], "^:%d",(dwYValidStartAver-pWin->wHeight/2));
+									else
+										sprintf(&st_bStrCenter[bMode][0], "v:%d",pWin->wHeight/2-dwYValidStartAver);
 									xpgSetUpdateOsdFlag(1);
 								}
 								#endif
@@ -791,13 +897,17 @@ SWORD SearchLeftFiberCenter(ST_IMGWIN *pWin,BYTE bMode)
 	DWORD dwOffset,dwYValidStartAver;
 	WORD wValidPixelCnt,wContinueValidPixelCnt,wInvalidPixelCnt,wEndInvalidCnt,wYValidArry[X_VALID_SUM],wYStartIndex,wYvalidCnt;
 	SWORD x,y,i,swStartY,swYEnd;
-	BYTE *pbWinBuffer,bContinueCnt;
+	BYTE *pbWinBuffer,bContinueCnt,bSensorIndex;
 
 	if (st_swFaceY1[bMode]<0 || st_swFaceY3[bMode]<0||st_swFaceX[bMode]<0)
 	{
-		mpDebugPrint("!!!LeftCenter error!!! %d,%d: ",st_swFaceY1[bMode],st_swFaceY3[bMode]);
+		MP_DEBUG("!!!LeftCenter error!!! %d,%d: ",st_swFaceY1[bMode],st_swFaceY3[bMode]);
 		return FAIL;
 	}
+	if ((DWORD)pWin==(DWORD)&SensorInWin[1])
+		bSensorIndex=SENSER_BOTTOM;
+	else
+		bSensorIndex=SENSER_TOP;
 	dwOffset=pWin->dwOffset;
 	swStartY=st_swFaceY1[bMode]+(st_swFaceY3[bMode]-st_swFaceY1[bMode])/3;
 #if (SENSOR_WIN_NUM==2)
@@ -845,7 +955,7 @@ SWORD SearchLeftFiberCenter(ST_IMGWIN *pWin,BYTE bMode)
 			//Idu_OsdPaintArea(x>>1, y, 2, 1, OSD_COLOR_GREEN);
 			if (wValidPixelCnt)
 			{
-				if (*pbWinBuffer > st_bBackGroundLevel)
+				if (*pbWinBuffer > st_bBackGroundLevel[bSensorIndex] )
 				{
 					wValidPixelCnt++;
 					wEndInvalidCnt=0;
@@ -858,7 +968,7 @@ SWORD SearchLeftFiberCenter(ST_IMGWIN *pWin,BYTE bMode)
 			}
 			else
 			{
-				if (*pbWinBuffer > st_bBackGroundLevel )
+				if (*pbWinBuffer > st_bBackGroundLevel[bSensorIndex]  )
 				{
 					bContinueCnt++;
 					if (bContinueCnt>Y_CENTER_CONTINUE_VALID_SUM)
@@ -907,7 +1017,7 @@ SWORD SearchLeftFiberCenter(ST_IMGWIN *pWin,BYTE bMode)
 							if (st_swFaceY2[bMode]!=dwYValidStartAver)
 							{
 								st_swFaceY2[bMode]=dwYValidStartAver;
-								mpDebugPrint(" st_swFaceY2[%d]=%d ",bMode,st_swFaceY2[bMode]);
+								DEBUG_POS(" Y2[%d]=%d ",bMode,st_swFaceY2[bMode]);
 								#if OSD_LINE_NUM
 								OsdLineSet(1<<g_pstXpgMovie->m_wCurPage,8+bMode,0,dwYValidStartAver,pWin->wWidth/2,2,OSD_COLOR_RED);
 								#endif
@@ -976,19 +1086,22 @@ SWORD GetReallyData(WORD *wData,WORD wDataCnt)
 	return FAIL;
 }
 
-SDWORD GetFiberBlackLevel()
+SDWORD GetFiberBlackLevel(ST_IMGWIN *pWin,BYTE bMode)
 {
 	DWORD dwOffset,dwYValidStartAver,dwValidlevelcnt,dwBlackAverLevel=0,dwWhiteAverLevel;
 	WORD wValidPixelCnt,wInvalidPixelCnt,wEndInvalidCnt,wYStartIndex,wYvalidCnt;
 	SWORD x,y,i,k,swStartY,swYEnd,swY,swH,wCoreYUp=0,wCoreYDown=0;
-	BYTE *pbWinBuffer,bContinueCnt,bLastLevel,bMode=MOTOR_LEFT_TOP;
-	ST_IMGWIN *pWin=(ST_IMGWIN *)&SensorInWin[0]; 
+	BYTE *pbWinBuffer,bContinueCnt,bLastLevel,bSensorIndex;
 
 	if (st_swFaceY1[bMode]<0 || st_swFaceY3[bMode]<0||st_swFaceX[bMode]<0)
 	{
-		mpDebugPrint("!!!Left black error!!! %d,%d: ",st_swFaceY1[bMode],st_swFaceY3[bMode]);
+		MP_DEBUG("!!!Left black error!!! %d,%d: ",st_swFaceY1[bMode],st_swFaceY3[bMode]);
 		return FAIL;
 	}
+	if ((DWORD)pWin==(DWORD)&SensorInWin[1])
+		bSensorIndex=SENSER_BOTTOM;
+	else
+		bSensorIndex=SENSER_TOP;
 	dwOffset=pWin->dwOffset;
 
 	//--获取实际光纤边黑色部分的亮度值
@@ -1024,7 +1137,7 @@ SDWORD GetFiberBlackLevel()
 				//mpDebugPrintN("%02x ",*pbWinBuffer);
 				if (wValidPixelCnt)
 				{
-					if (*pbWinBuffer < st_bBackGroundLevel)
+					if (*pbWinBuffer < st_bBackGroundLevel[bSensorIndex] )
 					{
 						wValidPixelCnt++;
 						dwValidlevelcnt+=*pbWinBuffer;
@@ -1038,7 +1151,7 @@ SDWORD GetFiberBlackLevel()
 				}
 				else
 				{
-					if (*pbWinBuffer < st_bBackGroundLevel )
+					if (*pbWinBuffer < st_bBackGroundLevel[bSensorIndex]  )
 					{
 						bContinueCnt++;
 						dwValidlevelcnt+=*pbWinBuffer;
@@ -1059,7 +1172,7 @@ SDWORD GetFiberBlackLevel()
 				if (wValidPixelCnt==(st_swFaceY3[bMode]-st_swFaceY1[bMode])/5)
 				{
 					dwBlackAverLevel=dwValidlevelcnt/((st_swFaceY3[bMode]-st_swFaceY1[bMode])/5);
-					mpDebugPrint("Core B 0x%02x ",dwBlackAverLevel);
+					//mpDebugPrint("Core B 0x%02x ",dwBlackAverLevel);
 					break;
 				}
 
@@ -1080,23 +1193,31 @@ SWORD SearchLeftFiberCore(ST_IMGWIN *pWin,BYTE bMode)
 {
 	DWORD dwOffset,dwYValidStartAver,dwValidlevelcnt,dwBlackAverLevel,dwWhiteAverLevel;
 	WORD wValidPixelCnt,wInvalidPixelCnt,wEndInvalidCnt,wYValidArry[X_VALID_SUM],wYStartIndex,wYvalidCnt;
-	SWORD x,y,i,k,swStartY,swYEnd,swY,swH,wCoreYUp=0,wCoreYDown=0;
-	BYTE *pbWinBuffer,bContinueCnt,bLastLevel;
+	SWORD x,y,i,k,swStartY,swYEnd,swY,swH,wCoreYUp=0,wCoreYDown=0,swCoreLenth;
+	BYTE *pbWinBuffer,bContinueCnt,bLastLevel,bSensorIndex;
 	SDWORD sdwRet;
 
 	if (st_swFaceY1[bMode]<0 || st_swFaceY3[bMode]<0||st_swFaceX[bMode]<0)
 	{
-		mpDebugPrint("!!!Left core error!!! %d,%d: ",st_swFaceY1[bMode],st_swFaceY3[bMode]);
+		MP_DEBUG("!!!Left core error!!! %d,%d: ",st_swFaceY1[bMode],st_swFaceY3[bMode]);
 		return FAIL;
 	}
+	swCoreLenth=st_swFaceX[bMode];
+	if (swCoreLenth<(pWin->wWidth>>3))
+		return FAIL;
+	swCoreLenth=swCoreLenth/2/X_STEP;
+	if ((DWORD)pWin==(DWORD)&SensorInWin[1])
+		bSensorIndex=SENSER_BOTTOM;
+	else
+		bSensorIndex=SENSER_TOP;
 	dwOffset=pWin->dwOffset;
 
 	//--获取实际光纤边黑色部分的亮度值
-	if (!st_bFiberBlackLevel)
+	if (!st_bFiberBlackLevel[bSensorIndex])
 	{
-		sdwRet=GetFiberBlackLevel();
-		if (sdwRet>0)
-			st_bFiberBlackLevel=sdwRet<<1;
+		sdwRet=GetFiberBlackLevel(pWin,bMode);
+		if (sdwRet>=0)
+			st_bFiberBlackLevel[bSensorIndex]=sdwRet<<1;
 		else
 			return FAIL;
 	}
@@ -1131,7 +1252,7 @@ SWORD SearchLeftFiberCore(ST_IMGWIN *pWin,BYTE bMode)
 		//mpDebugPrint(" x=%d: ",x);
 		for (;y<swYEnd;y++,pbWinBuffer+=pWin->dwOffset)
 		{
-			if (*pbWinBuffer<st_bFiberBlackLevel)
+			if (*pbWinBuffer<st_bFiberBlackLevel[bSensorIndex])
 				continue;
 			//mpDebugPrintN("%02x ",*pbWinBuffer);
 				if (*pbWinBuffer<bLastLevel)
@@ -1157,7 +1278,7 @@ SWORD SearchLeftFiberCore(ST_IMGWIN *pWin,BYTE bMode)
 		{
 			return FAIL;
 		}
-		else if (wValidPixelCnt>10)
+		else if (wValidPixelCnt>swCoreLenth ||(wValidPixelCnt>10 &&  x<(X_STEP<<2)))
 		{
 			wCoreYUp=GetReallyData(wYValidArry,wValidPixelCnt);
 		}
@@ -1196,7 +1317,7 @@ SWORD SearchLeftFiberCore(ST_IMGWIN *pWin,BYTE bMode)
 		//mpDebugPrint(" x=%d: ",x);
 		for (;y>swYEnd;y--,pbWinBuffer-=pWin->dwOffset)
 		{
-			if (*pbWinBuffer<st_bFiberBlackLevel)
+			if (*pbWinBuffer<st_bFiberBlackLevel[bSensorIndex])
 				continue;
 			//mpDebugPrintN("%02x ",*pbWinBuffer);
 				if (*pbWinBuffer<bLastLevel)
@@ -1222,7 +1343,7 @@ SWORD SearchLeftFiberCore(ST_IMGWIN *pWin,BYTE bMode)
 		{
 			return FAIL;
 		}
-		else if (wValidPixelCnt>10)
+		else if (wValidPixelCnt>swCoreLenth ||(wValidPixelCnt>10 &&  x<(X_STEP<<2)))
 		{
 			wCoreYDown=GetReallyData(wYValidArry,wValidPixelCnt);
 			
@@ -1233,21 +1354,29 @@ SWORD SearchLeftFiberCore(ST_IMGWIN *pWin,BYTE bMode)
 		//mpDebugPrint(" ");
 	}
 
-	if (wCoreYUp&&wCoreYDown)
+	if (wCoreYUp&&wCoreYDown&&(st_swFaceY20[bMode]>wCoreYUp+wCoreYDown+1 || wCoreYUp+wCoreYDown>st_swFaceY20[bMode]+1))
 	{
-		st_swFaceY20[bMode]=(wCoreYUp+wCoreYDown)/2;
-		#if DISPLAY_IN_ONE_WIN
+		DEBUG_POS(" %d %d ",wCoreYUp,wCoreYDown);
+		st_swFaceY20[bMode]=wCoreYUp+wCoreYDown;
+		#if 0//DISPLAY_IN_ONE_WIN
 		if (g_bDisplayMode==0x02)
 		{
-			st_swFaceY20[bMode]>>=1;
+			wCoreYUp>>=1;
 			if (bMode>1)
-				st_swFaceY20[bMode]+=pWin->wHeight/2;
+				wCoreYUp+=pWin->wHeight/2;
 		}
 		#endif
 		//Idu_OsdPaintArea(x>>1, st_swFaceY20[bMode], 80, 4, OSD_COLOR_RED);
-		#if OSD_LINE_NUM
-		OsdLineSet(1<<g_pstXpgMovie->m_wCurPage,16+bMode,x>>1,st_swFaceY20[bMode],160,2,OSD_COLOR_RED);
+		{
+			DEBUG_POS("Y20[%d]=%d ",bMode,st_swFaceY20[bMode]>>1);
+			#if TEST_PLANE
+			sprintf(&st_bStrCore[bMode][0], "Qian xing0:%d", st_swFaceY20[bMode]>>1);
+			xpgSetUpdateOsdFlag(1);
+			#endif
+			#if OSD_LINE_NUM && !TEST_PLANE
+			OsdLineSet(1<<g_pstXpgMovie->m_wCurPage,16+bMode,x>>1,st_swFaceY20[bMode]>>1,160,2,OSD_COLOR_RED);
 		#endif
+		}
 		return PASS;
 	}
 
@@ -1258,24 +1387,32 @@ SWORD SearchRightFiberCore(ST_IMGWIN *pWin,BYTE bMode)
 {
 	DWORD dwOffset,dwYValidStartAver,dwValidlevelcnt,dwBlackAverLevel,dwWhiteAverLevel;
 	WORD wValidPixelCnt,wInvalidPixelCnt,wEndInvalidCnt,wYValidArry[X_VALID_SUM],wYStartIndex,wYvalidCnt;
-	SWORD x,y,i,k,swStartY,swYEnd,swY,swH,wCoreYUp=0,wCoreYDown=0;
-	BYTE *pbWinBuffer,bContinueCnt,bLastLevel;
+	SWORD x,y,i,k,swStartY,swYEnd,swY,swH,wCoreYUp=0,wCoreYDown=0,swCoreLenth;
+	BYTE *pbWinBuffer,bContinueCnt,bLastLevel,bSensorIndex;
 	SDWORD sdwRet;
 	BYTE bColorIndex=OSD_COLOR_WHITE;
 
 	if (st_swFaceY1[bMode]<0 || st_swFaceY3[bMode]<0||st_swFaceX[bMode]<0)
 	{
-		mpDebugPrint("!!!RightCenter error!!! %d,%d: ",st_swFaceY1[bMode],st_swFaceY3[bMode]);
+		MP_DEBUG("!!!RightCenter error!!! %d,%d: ",st_swFaceY1[bMode],st_swFaceY3[bMode]);
 		return FAIL;
 	}
+	swCoreLenth=pWin->wWidth-st_swFaceX[bMode];
+	if (swCoreLenth<(pWin->wWidth>>3))
+		return FAIL;
+	swCoreLenth=swCoreLenth/2/X_STEP;
+	if ((DWORD)pWin==(DWORD)&SensorInWin[1])
+		bSensorIndex=SENSER_BOTTOM;
+	else
+		bSensorIndex=SENSER_TOP;
 	dwOffset=pWin->dwOffset;
 
 	//--获取实际光纤边黑色部分的亮度值
-	if (!st_bFiberBlackLevel)
+	if (!st_bFiberBlackLevel[bSensorIndex])
 	{
-		sdwRet=GetFiberBlackLevel();
-		if (sdwRet>0)
-			st_bFiberBlackLevel=sdwRet<<1;
+		sdwRet=GetFiberBlackLevel(pWin,MOTOR_LEFT_TOP);
+		if (sdwRet>=0)
+			st_bFiberBlackLevel[bSensorIndex]=sdwRet<<1;
 		else
 			return FAIL;
 	}
@@ -1309,7 +1446,7 @@ SWORD SearchRightFiberCore(ST_IMGWIN *pWin,BYTE bMode)
 		//mpDebugPrint(" x=%d: ",x);
 		for (;y<swYEnd;y++,pbWinBuffer+=pWin->dwOffset)
 		{
-			if (*pbWinBuffer<st_bFiberBlackLevel)
+			if (*pbWinBuffer<st_bFiberBlackLevel[bSensorIndex])
 				continue;
 			//mpDebugPrintN("%02x ",*pbWinBuffer);
 				if (*pbWinBuffer<bLastLevel)
@@ -1335,7 +1472,7 @@ SWORD SearchRightFiberCore(ST_IMGWIN *pWin,BYTE bMode)
 		{
 			return FAIL;
 		}
-		else if (wValidPixelCnt>10)
+		else if (wValidPixelCnt>swCoreLenth ||(wValidPixelCnt>10 &&  x<(X_STEP<<2)))
 		{
 			wCoreYUp=GetReallyData(wYValidArry,wValidPixelCnt);
 		}
@@ -1373,7 +1510,7 @@ SWORD SearchRightFiberCore(ST_IMGWIN *pWin,BYTE bMode)
 		//mpDebugPrint(" x=%d: ",x);
 		for (;y>swYEnd;y--,pbWinBuffer-=pWin->dwOffset)
 		{
-			if (*pbWinBuffer<st_bFiberBlackLevel)
+			if (*pbWinBuffer<st_bFiberBlackLevel[bSensorIndex])
 				continue;
 			//mpDebugPrintN("%02x ",*pbWinBuffer);
 				if (*pbWinBuffer<bLastLevel)
@@ -1383,7 +1520,7 @@ SWORD SearchRightFiberCore(ST_IMGWIN *pWin,BYTE bMode)
 					{
 						//bColorIndex++;
 						wYValidArry[wValidPixelCnt]=y+bContinueCnt-1;
-						//Idu_OsdPaintArea(x>>1, wYValidArry[wValidPixelCnt], 2, 1, OSD_COLOR_RED);
+						Idu_OsdPaintArea(x>>1, wYValidArry[wValidPixelCnt], 2, 1, OSD_COLOR_RED);
 						wValidPixelCnt++;
 						break;
 					}
@@ -1399,7 +1536,7 @@ SWORD SearchRightFiberCore(ST_IMGWIN *pWin,BYTE bMode)
 		{
 			return FAIL;
 		}
-		else if (wValidPixelCnt>10)
+		else if (wValidPixelCnt>swCoreLenth ||(wValidPixelCnt>10 &&  x<(X_STEP<<2)))
 		{
 			wCoreYDown=GetReallyData(wYValidArry,wValidPixelCnt);
 			
@@ -1410,10 +1547,10 @@ SWORD SearchRightFiberCore(ST_IMGWIN *pWin,BYTE bMode)
 		//mpDebugPrint(" ");
 	}
 
-	if (wCoreYUp&&wCoreYDown)
+	if (wCoreYUp&&wCoreYDown&&(st_swFaceY20[bMode]>wCoreYUp+wCoreYDown+1 || wCoreYUp+wCoreYDown>st_swFaceY20[bMode]+1))
 	{
-		st_swFaceY20[bMode]=(wCoreYUp+wCoreYDown)/2;
-		#if DISPLAY_IN_ONE_WIN
+		st_swFaceY20[bMode]=(wCoreYUp+wCoreYDown);
+		#if 0//DISPLAY_IN_ONE_WIN
 		if (g_bDisplayMode==0x02)
 		{
 			st_swFaceY20[bMode]>>=1;
@@ -1421,8 +1558,13 @@ SWORD SearchRightFiberCore(ST_IMGWIN *pWin,BYTE bMode)
 				st_swFaceY20[bMode]+=pWin->wHeight/2;
 		}
 		#endif
-		#if OSD_LINE_NUM
-		OsdLineSet(1<<g_pstXpgMovie->m_wCurPage,16+bMode,(x>>1)-160,st_swFaceY20[bMode],160,2,OSD_COLOR_RED);
+			DEBUG_POS("%d Y20[%d]=%d ",bSensorIndex,bMode,st_swFaceY20[bMode]>>1);
+			#if TEST_PLANE
+			sprintf(&st_bStrCore[bMode][0], "Qian xing1:%d", st_swFaceY20[bMode]>>1);
+			xpgSetUpdateOsdFlag(1);
+			#endif
+		#if OSD_LINE_NUM && !TEST_PLANE
+		OsdLineSet(1<<g_pstXpgMovie->m_wCurPage,16+bMode,(x>>1)-160,st_swFaceY20[bMode]>>1,160,2,OSD_COLOR_RED);
 		#endif
 		return PASS;
 	}
@@ -1436,11 +1578,15 @@ SDWORD SearchTopEdge(ST_IMGWIN *pWin,SWORD swStartX,SWORD swXEnd,SWORD swStartY,
 	DWORD dwOffset,dwYValidStartAver,dwYValidStartCnt,*pdwYValidStartArry;
 	WORD wValidPixelCnt,wInvalidPixelCnt,wValidLineCnt,wYvalidCnt;
 	SWORD i,x,y;
-	BYTE *pbWinBuffer,bContinueCnt;
+	BYTE *pbWinBuffer,bContinueCnt,bSensorIndex;
 
 	pdwYValidStartArry = (DWORD *)ext_mem_malloc(ALIGN_32(swXEnd-swStartX+1));
 	if (pdwYValidStartArry==NULL)
 		return FAIL;
+	if ((DWORD)pWin==(DWORD)&SensorInWin[1])
+		bSensorIndex=SENSER_BOTTOM;
+	else
+		bSensorIndex=SENSER_TOP;
 	wValidLineCnt=0;
 	for (x=swStartX;x<swXEnd;x+=4)
 	{
@@ -1455,14 +1601,14 @@ SDWORD SearchTopEdge(ST_IMGWIN *pWin,SWORD swStartX,SWORD swXEnd,SWORD swStartY,
 			//mpDebugPrintN("%02x ",*pbWinBuffer);
 			if (wValidPixelCnt)
 			{
-				if (*pbWinBuffer < st_bBackGroundLevel)
+				if (*pbWinBuffer < st_bBackGroundLevel[bSensorIndex] )
 					wValidPixelCnt++;
 				else
 					wInvalidPixelCnt++;
 			}
 			else
 			{
-				if (*pbWinBuffer < st_bBackGroundLevel*2/3 )
+				if (*pbWinBuffer < st_bBackGroundLevel[bSensorIndex] *2/3 )
 				{
 					bContinueCnt++;
 					if (bContinueCnt>Y_CONTINUE_VALID_SUM)
@@ -1533,8 +1679,12 @@ SWORD SearchLeftFiberFaceAndTopEdge(ST_IMGWIN *pWin,BYTE bMode,BYTE bScanEdge)
 	DWORD dwOffset,dwYValidStartAver;
 	WORD wValidPixelCnt,wInvalidPixelCnt,wValidLineCnt,wYValidStartArry[X_VALID_SUM],wYStartIndex,wYvalidCnt;
 	SWORD i,x,y,swXEnd,swStartY,swYEnd;
-	BYTE *pbWinBuffer,bContinueCnt;
+	BYTE *pbWinBuffer,bContinueCnt,bSensorIndex;
 
+	if ((DWORD)pWin==(DWORD)&SensorInWin[1])
+		bSensorIndex=SENSER_BOTTOM;
+	else
+		bSensorIndex=SENSER_TOP;
 	dwOffset=pWin->dwOffset;
 	swXEnd=pWin->dwOffset;//(g_wCenterPos<<1)+(g_wCenterPos>>1);
 	//mpDebugPrint(" SearchLeftFiberFaceAndTopEdge bMode=%d: bScanEdge=%d",bMode,bScanEdge);
@@ -1576,14 +1726,14 @@ SWORD SearchLeftFiberFaceAndTopEdge(ST_IMGWIN *pWin,BYTE bMode,BYTE bScanEdge)
 			//mpDebugPrintN("%02x ",*pbWinBuffer);
 			if (wValidPixelCnt)
 			{
-				if (*pbWinBuffer < st_bBackGroundLevel)
+				if (*pbWinBuffer < st_bBackGroundLevel[bSensorIndex] )
 					wValidPixelCnt++;
 				else
 					wInvalidPixelCnt++;
 			}
 			else
 			{
-				if (*pbWinBuffer < st_bBackGroundLevel*2/3 )
+				if (*pbWinBuffer < st_bBackGroundLevel[bSensorIndex] *2/3 )
 				{
 					bContinueCnt++;
 					if (bContinueCnt>Y_CONTINUE_VALID_SUM)
@@ -1634,7 +1784,7 @@ SWORD SearchLeftFiberFaceAndTopEdge(ST_IMGWIN *pWin,BYTE bMode,BYTE bScanEdge)
 								if (st_swFaceY1[bMode]!=dwYValidStartAver)
 								{
 									st_swFaceY1[bMode]=dwYValidStartAver;
-									mpDebugPrint(" st_swFaceY1[%d]=%d ",bMode,st_swFaceY1[bMode]);
+									DEBUG_POS("Y1[%d]=%d ",bMode,st_swFaceY1[bMode]);
 									#if OSD_LINE_NUM && !TEST_PLANE
 									OsdLineSet(1<<g_pstXpgMovie->m_wCurPage,4+bMode,0,dwYValidStartAver,pWin->wWidth/2,2,OSD_COLOR_BLUE);
 									#endif
@@ -1669,7 +1819,7 @@ SWORD SearchLeftFiberFaceAndTopEdge(ST_IMGWIN *pWin,BYTE bMode,BYTE bScanEdge)
 			y=swStartY;
 		pbWinBuffer = (BYTE *) pWin->pdwStart+x+y*pWin->dwOffset;
 
-		mpDebugPrint("x=%d y=%d valid=%d/%d  level=%02x",x>>1,y,wValidPixelCnt,wInvalidPixelCnt,st_bBackGroundLevel);
+		mpDebugPrint("x=%d y=%d valid=%d/%d  level=%02x",x>>1,y,wValidPixelCnt,wInvalidPixelCnt,st_bBackGroundLevel[bSensorIndex] );
 		while (y<swYEnd)
 		{
 			mpDebugPrintN("%08x ",*(pbWinBuffer));
@@ -1708,14 +1858,14 @@ SWORD SearchLeftFiberFaceAndTopEdge(ST_IMGWIN *pWin,BYTE bMode,BYTE bScanEdge)
 				//mpDebugPrintN("%02x ",*pbWinBuffer);
 				if (wValidPixelCnt)
 				{
-					if (*pbWinBuffer < st_bBackGroundLevel)
+					if (*pbWinBuffer < st_bBackGroundLevel[bSensorIndex] )
 						wValidPixelCnt++;
 					else
 						wInvalidPixelCnt++;
 				}
 				else
 				{
-					if (*pbWinBuffer < st_bBackGroundLevel )
+					if (*pbWinBuffer < st_bBackGroundLevel[bSensorIndex]  )
 					{
 						bContinueCnt++;
 						if (bContinueCnt>Y_CONTINUE_VALID_SUM)
@@ -1757,14 +1907,14 @@ SWORD SearchLeftFiberFaceAndTopEdge(ST_IMGWIN *pWin,BYTE bMode,BYTE bScanEdge)
 			if (st_swFaceX[bMode]>=x+X_SHAKE || st_swFaceX[bMode]+X_SHAKE<=x)
 			{
 				st_swFaceX[bMode]=x;
-				mpDebugPrint("X[%d]=%d",bMode,x);
+				DEBUG_POS("X[%d]=%d",bMode,x);
 				#if TEST_PLANE
 				if (st_swFaceX[bMode]>80 && st_swFaceY1[bMode]>0)
 				{
 					y=SearchTopEdge(pWin,st_swFaceX[bMode]-80,st_swFaceX[bMode]-20,swStartY,swYEnd);
-					//mpDebugPrint("Y[%d]=%d",bMode,y);
+					//DEBUG_POS("Y[%d]=%d",bMode,y);
 					if (y>0)
-						sprintf(&st_bStrHLevel[bMode][0], "F_V: %d", y-st_swFaceY1[bMode]);
+						sprintf(&st_bStrHLevel[bMode][0], "Shui ping0: %d", y-st_swFaceY1[bMode]);
 					else
 						st_bStrHLevel[bMode][0]=0;
 				}
@@ -1777,7 +1927,10 @@ SWORD SearchLeftFiberFaceAndTopEdge(ST_IMGWIN *pWin,BYTE bMode,BYTE bScanEdge)
 				OsdLineSet(1<<g_pstXpgMovie->m_wCurPage,bMode,x,(bMode>1 ? pWin->wHeight/2:0),2,pWin->wHeight/2,OSD_COLOR_GREEN);
 				#endif
 				#if TEST_PLANE
-				sprintf(&st_bStrFace[bMode][0], "F_L:%d", st_swFaceX[bMode]-pWin->wWidth/2);
+				if (st_swFaceX[bMode]>pWin->wWidth/2)
+					sprintf(&st_bStrFace[bMode][0], "%03d<|", st_swFaceX[bMode]-pWin->wWidth/2);
+				else
+					sprintf(&st_bStrFace[bMode][0], "%03d>|", st_swFaceX[bMode]-pWin->wWidth/2);
 				xpgSetUpdateOsdFlag(1);
 				#endif
 				return ENABLE;
@@ -1795,8 +1948,12 @@ SWORD SearchRightFiberBottomEdge(ST_IMGWIN *pWin,BYTE bMode)
 	DWORD dwOffset,dwYValidStartAver;
 	WORD wValidPixelCnt,wInvalidPixelCnt,wYValidStartArry[X_VALID_SUM],wYStartIndex,wYvalidCnt;
 	SWORD i,x,y,swXstart,swStartY,swYEnd;
-	BYTE *pbWinBuffer,bContinueCnt;
+	BYTE *pbWinBuffer,bContinueCnt,bSensorIndex;
 
+	if ((DWORD)pWin==(DWORD)&SensorInWin[1])
+		bSensorIndex=SENSER_BOTTOM;
+	else
+		bSensorIndex=SENSER_TOP;
 	dwOffset=pWin->dwOffset;
 
 	/* 找端面  */
@@ -1833,14 +1990,14 @@ SWORD SearchRightFiberBottomEdge(ST_IMGWIN *pWin,BYTE bMode)
 			//mpDebugPrintN("%02x ",*pbWinBuffer);
 			if (wValidPixelCnt)
 			{
-				if (*pbWinBuffer < st_bBackGroundLevel)
+				if (*pbWinBuffer < st_bBackGroundLevel[bSensorIndex] )
 					wValidPixelCnt++;
 				else
 					wInvalidPixelCnt++;
 			}
 			else
 			{
-				if (*pbWinBuffer < st_bBackGroundLevel )
+				if (*pbWinBuffer < st_bBackGroundLevel[bSensorIndex]  )
 				{
 					bContinueCnt++;
 					if (bContinueCnt>Y_CONTINUE_VALID_SUM)
@@ -1890,15 +2047,18 @@ SWORD SearchRightFiberBottomEdge(ST_IMGWIN *pWin,BYTE bMode)
 							if (st_swFaceY3[bMode]!=dwYValidStartAver)
 							{
 								st_swFaceY3[bMode]=dwYValidStartAver;
-								mpDebugPrint(" st_swFaceY3[%d]=%d ",bMode,st_swFaceY3[bMode]);
+								DEBUG_POS(" Y3[%d]=%d ",bMode,st_swFaceY3[bMode]);
 								#if OSD_LINE_NUM && !TEST_PLANE
 								OsdLineSet(1<<g_pstXpgMovie->m_wCurPage,12+bMode,(bMode&0x01)>0 ? pWin->wWidth/2:0,dwYValidStartAver,pWin->wWidth/2,2,OSD_COLOR_BLUE);
 								#endif
 								#if TEST_PLANE
-								if (st_swFaceY1[bMode]>0 && st_swFaceY3[bMode]-st_swFaceY1[bMode])
+								if (st_swFaceY1[bMode]>0 && st_swFaceY3[bMode]>st_swFaceY1[bMode])
 								{
-									dwYValidStartAver=st_swFaceY3[bMode]/2+st_swFaceY1[bMode]/2;
-									sprintf(&st_bStrCenter[bMode][0], "C_R:%d", (SWORD)(dwYValidStartAver-pWin->wHeight/2));
+									dwYValidStartAver=(st_swFaceY3[bMode]+st_swFaceY1[bMode])>>1;
+									if (dwYValidStartAver>pWin->wHeight/2)
+										sprintf(&st_bStrCenter[bMode][0], "^:%d",(dwYValidStartAver-pWin->wHeight/2));
+									else
+										sprintf(&st_bStrCenter[bMode][0], "v:%d",pWin->wHeight/2-dwYValidStartAver);
 									xpgSetUpdateOsdFlag(1);
 								}
 								#endif
@@ -1926,13 +2086,17 @@ SWORD SearchRightFiberCenter(ST_IMGWIN *pWin,BYTE bMode)
 	DWORD dwOffset,dwYValidStartAver;
 	WORD wValidPixelCnt,wInvalidPixelCnt,wEndInvalidCnt,wYValidArry[X_VALID_SUM],wYStartIndex,wYvalidCnt;
 	SWORD x,y,i,swStartY,swYEnd;
-	BYTE *pbWinBuffer,bContinueCnt;
+	BYTE *pbWinBuffer,bContinueCnt,bSensorIndex;
 
 	if (st_swFaceY1[bMode]<0 || st_swFaceY3[bMode]<0||st_swFaceX[bMode]<0)
 	{
-		mpDebugPrint("!!!RightCenter error!!! %d,%d: ",st_swFaceY1[bMode],st_swFaceY3[bMode]);
+		MP_DEBUG("!!!RightCenter error!!! %d,%d: ",st_swFaceY1[bMode],st_swFaceY3[bMode]);
 		return FAIL;
 	}
+	if ((DWORD)pWin==(DWORD)&SensorInWin[1])
+		bSensorIndex=SENSER_BOTTOM;
+	else
+		bSensorIndex=SENSER_TOP;
 	dwOffset=pWin->dwOffset;
 	swStartY=st_swFaceY1[bMode]+(st_swFaceY3[bMode]-st_swFaceY1[bMode])/3;
 #if (SENSOR_WIN_NUM==2)
@@ -1974,7 +2138,7 @@ SWORD SearchRightFiberCenter(ST_IMGWIN *pWin,BYTE bMode)
 			//mpDebugPrintN("%02x ",*pbWinBuffer);
 			if (wValidPixelCnt)
 			{
-				if (*pbWinBuffer > st_bBackGroundLevel)
+				if (*pbWinBuffer > st_bBackGroundLevel[bSensorIndex] )
 				{
 					wValidPixelCnt++;
 					wEndInvalidCnt=0;
@@ -1987,7 +2151,7 @@ SWORD SearchRightFiberCenter(ST_IMGWIN *pWin,BYTE bMode)
 			}
 			else
 			{
-				if (*pbWinBuffer > st_bBackGroundLevel )
+				if (*pbWinBuffer > st_bBackGroundLevel[bSensorIndex]  )
 				{
 					bContinueCnt++;
 					if (bContinueCnt>Y_CENTER_CONTINUE_VALID_SUM)
@@ -2033,7 +2197,7 @@ SWORD SearchRightFiberCenter(ST_IMGWIN *pWin,BYTE bMode)
 							if (st_swFaceY2[bMode]!=dwYValidStartAver)
 							{
 								st_swFaceY2[bMode]=dwYValidStartAver;
-								mpDebugPrint(" st_swFaceY2[%d]=%d ",bMode,st_swFaceY2[bMode]);
+								DEBUG_POS(" st_swFaceY2[%d]=%d ",bMode,st_swFaceY2[bMode]);
 								#if OSD_LINE_NUM
 								OsdLineSet(1<<g_pstXpgMovie->m_wCurPage,8+bMode,pWin->wWidth/2,dwYValidStartAver,pWin->wWidth,2,OSD_COLOR_RED);
 								#endif
@@ -2061,8 +2225,12 @@ SWORD SearchRightFiberFaceAndTopEdge(ST_IMGWIN *pWin,BYTE bMode,BYTE bScanFace)
 	DWORD dwOffset,dwYValidStartAver;
 	WORD wValidPixelCnt,wInvalidPixelCnt,wValidLineCnt,wYValidStartArry[X_VALID_SUM],wYStartIndex,wYvalidCnt;
 	SWORD i,x,y,swXEnd,swXstart,swStartY,swYEnd;
-	BYTE *pbWinBuffer,bContinueCnt;
+	BYTE *pbWinBuffer,bContinueCnt,bSensorIndex;
 
+	if ((DWORD)pWin==(DWORD)&SensorInWin[1])
+		bSensorIndex=SENSER_BOTTOM;
+	else
+		bSensorIndex=SENSER_TOP;
 	dwOffset=pWin->dwOffset;
 
 	/* 找端面  */
@@ -2105,14 +2273,14 @@ SWORD SearchRightFiberFaceAndTopEdge(ST_IMGWIN *pWin,BYTE bMode,BYTE bScanFace)
 			//mpDebugPrintN("%02x ",*pbWinBuffer);
 			if (wValidPixelCnt)
 			{
-				if (*pbWinBuffer < st_bBackGroundLevel)
+				if (*pbWinBuffer < st_bBackGroundLevel[bSensorIndex] )
 					wValidPixelCnt++;
 				else
 					wInvalidPixelCnt++;
 			}
 			else
 			{
-				if (*pbWinBuffer < st_bBackGroundLevel )
+				if (*pbWinBuffer < st_bBackGroundLevel[bSensorIndex]  )
 				{
 					bContinueCnt++;
 					if (bContinueCnt>Y_CONTINUE_VALID_SUM)
@@ -2163,7 +2331,7 @@ SWORD SearchRightFiberFaceAndTopEdge(ST_IMGWIN *pWin,BYTE bMode,BYTE bScanFace)
 							if (st_swFaceY1[bMode]!=dwYValidStartAver)
 							{
 								st_swFaceY1[bMode]=dwYValidStartAver;
-								mpDebugPrint(" st_swFaceY1[%d]=%d ",bMode,st_swFaceY1[bMode]);
+								DEBUG_POS("Y1[%d]=%d ",bMode,st_swFaceY1[bMode]);
 								#if OSD_LINE_NUM && !TEST_PLANE
 								OsdLineSet(1<<g_pstXpgMovie->m_wCurPage,4+bMode,(bMode&0x01)>0 ? pWin->wWidth/2:0,dwYValidStartAver,pWin->wWidth/2,2,OSD_COLOR_BLUE);
 								#endif
@@ -2225,14 +2393,14 @@ SWORD SearchRightFiberFaceAndTopEdge(ST_IMGWIN *pWin,BYTE bMode,BYTE bScanFace)
 				//mpDebugPrintN("%02x ",*pbWinBuffer);
 				if (wValidPixelCnt)
 				{
-					if (*pbWinBuffer < st_bBackGroundLevel)
+					if (*pbWinBuffer < st_bBackGroundLevel[bSensorIndex] )
 						wValidPixelCnt++;
 					else
 						wInvalidPixelCnt++;
 				}
 				else
 				{
-					if (*pbWinBuffer < st_bBackGroundLevel )
+					if (*pbWinBuffer < st_bBackGroundLevel[bSensorIndex]  )
 					{
 						bContinueCnt++;
 						if (bContinueCnt>Y_CONTINUE_VALID_SUM)
@@ -2265,14 +2433,14 @@ SWORD SearchRightFiberFaceAndTopEdge(ST_IMGWIN *pWin,BYTE bMode,BYTE bScanFace)
 			if (st_swFaceX[bMode]>=x+X_SHAKE || st_swFaceX[bMode]+X_SHAKE<=x)
 			{
 				st_swFaceX[bMode]=x;
-				mpDebugPrint("X[%d]=%d",bMode,x);
+				DEBUG_POS("X[%d]=%d",bMode,x);
 				#if TEST_PLANE
 				if (st_swFaceX[bMode]>80 && st_swFaceY1[bMode]>0)
 				{
 					y=SearchTopEdge(pWin,st_swFaceX[bMode]+20,st_swFaceX[bMode]+80,swStartY,swYEnd);
-					//mpDebugPrint("Y[%d]=%d",bMode,y);
+					//DEBUG_POS("Y[%d]=%d",bMode,y);
 					if (y>0)
-						sprintf(&st_bStrHLevel[bMode][0], "F_V: %d", y-st_swFaceY1[bMode]);
+						sprintf(&st_bStrHLevel[bMode][0], "Shui ping1: %d", y-st_swFaceY1[bMode]);
 					else
 						st_bStrHLevel[bMode][0]=0;
 				}
@@ -2284,7 +2452,10 @@ SWORD SearchRightFiberFaceAndTopEdge(ST_IMGWIN *pWin,BYTE bMode,BYTE bScanFace)
 				OsdLineSet(1<<g_pstXpgMovie->m_wCurPage,bMode,x,(bMode>1 ? pWin->wHeight/2:0),2,pWin->wHeight/2,OSD_COLOR_GREEN);
 				#endif
 				#if TEST_PLANE
-				sprintf(&st_bStrFace[bMode][0], "F_R:%d", st_swFaceX[bMode]-pWin->wWidth/2);
+				if (st_swFaceX[bMode]>pWin->wWidth/2)
+					sprintf(&st_bStrFace[bMode][0], "|<%03d", pWin->wWidth/2-st_swFaceX[bMode]);
+				else
+					sprintf(&st_bStrFace[bMode][0], "|>%03d",  pWin->wWidth/2-st_swFaceX[bMode]);
 				xpgSetUpdateOsdFlag(1);
 				#endif
 
@@ -2309,8 +2480,12 @@ SWORD SearchWholeFiber(ST_IMGWIN *pWin)
 	//WORD wValidPixelCnt,wInvalidPixelCnt,wValidLineCnt,wYValidStartArry[X_VALID_SUM],wYStartIndex,wYvalidCnt;
 	WORD wLastY,wCurY;
 	SWORD i,x,y,swXEnd,swStartY,swYEnd;
-	BYTE *pbWinBuffer,bContinueCnt;
+	BYTE *pbWinBuffer,bContinueCnt,bSensorIndex;
 
+	if ((DWORD)pWin==(DWORD)&SensorInWin[1])
+		bSensorIndex=SENSER_BOTTOM;
+	else
+		bSensorIndex=SENSER_TOP;
 	dwOffset=pWin->dwOffset;
 	swXEnd=pWin->dwOffset;//(g_wCenterPos<<1)+(g_wCenterPos>>1);
 	mpDebugPrint(" _SearchWholeFiber_");
@@ -2329,7 +2504,7 @@ SWORD SearchWholeFiber(ST_IMGWIN *pWin)
 		while (y<swYEnd)
 		{
 			//mpDebugPrintN("%02x ",*pbWinBuffer);
-			if (*pbWinBuffer < st_bBackGroundLevel )
+			if (*pbWinBuffer < st_bBackGroundLevel[bSensorIndex]  )
 			{
 				bContinueCnt++;
 				if (bContinueCnt>=Y_CONTINUE_VALID_SUM)
@@ -2398,8 +2573,12 @@ SWORD SearchFiberLowPoint(ST_IMGWIN *pWin,BYTE bWinIndex)
 	DWORD dwOffset;
 	WORD wCurY,wMaxY,wMinY,wSamePoint,wReverse,wReverseMax;
 	SWORD i,x,y,swXEnd,swStartY,swYEnd,swLowX,swRet=FAIL;
-	BYTE *pbWinBuffer,bContinueCnt,bGetLowPiont,bError=0;
+	BYTE *pbWinBuffer,bContinueCnt,bGetLowPiont,bError=0,bSensorIndex;
 
+	if ((DWORD)pWin==(DWORD)&SensorInWin[1])
+		bSensorIndex=SENSER_BOTTOM;
+	else
+		bSensorIndex=SENSER_TOP;
 	dwOffset=pWin->dwOffset;
 	swXEnd=pWin->dwOffset;//(g_wCenterPos<<1)+(g_wCenterPos>>1);
 	//mpDebugPrint(" SearchLeftFiberFaceAndTopEdge bMode=%d: bScanEdge=%d",bMode,bScanEdge);
@@ -2424,7 +2603,7 @@ SWORD SearchFiberLowPoint(ST_IMGWIN *pWin,BYTE bWinIndex)
 			while (y<swYEnd)
 			{
 				//mpDebugPrintN("%02x ",*pbWinBuffer);
-				if (*pbWinBuffer < st_bBackGroundLevel)
+				if (*pbWinBuffer < st_bBackGroundLevel[bSensorIndex] )
 				{
 					bContinueCnt++;
 					if (bContinueCnt>=Y_CONTINUE_VALID_SUM)
@@ -3093,19 +3272,19 @@ void Discharge(WORD wMode,BYTE bStep)
 					bTxData[5]=1000&0xff;
 					break;
 
-				case 3://2300
-					bTxData[2]=0x08;
-					bTxData[3]=0xfc;
-					bTxData[4]=1000>>8;
-					bTxData[5]=1000&0xff;
+				case 3://1.750v  2300ms
+					bTxData[2]=1750>>8;
+					bTxData[3]=1750&0xff;
+					bTxData[4]=2300>>8;
+					bTxData[5]=2300&0xff;
 					break;
 
 				case 1:
 				default:
-					bTxData[2]=0;
-					bTxData[3]=200;
-					bTxData[4]=1000>>8;
-					bTxData[5]=1000&0xff;
+					bTxData[2]=1750>>8;
+					bTxData[3]=1750&0xff;
+					bTxData[4]=130>>8;
+					bTxData[5]=130&0xff;
 					break;
 			}
 		}
@@ -3161,7 +3340,7 @@ void Proc_GetFiberLowPoint(void)
 				if (st_bRetryTimes)
 				{
 					st_bRetryTimes--;
-					SetFillProcWinFlag();
+					TimerToFillProcWin(10);
 					bSetEvent=0;
 				}
 				else
@@ -3191,7 +3370,7 @@ void Proc_GetFiberLowPoint(void)
 				if (swRet<0 && st_bRetryTimes)
 				{
 					st_bRetryTimes--;
-					SetFillProcWinFlag();
+					TimerToFillProcWin(10);
 					bSetEvent=0;
 				}
 				else
@@ -3277,7 +3456,7 @@ void ProcAFData()
 	bCnt=0;
 	for (;y<swEndY;y++)
 	{
-		if (*pbWinBuffer>st_bBackGroundLevel)
+		if (*pbWinBuffer>st_bBackGroundLevel[0])
 		{
 			bCnt++;
 			if (bCnt==4)
@@ -3396,7 +3575,7 @@ void Proc_AutoFocus()
 				bCnt=0;
 				for (;y<swEndY;y++)
 				{
-					if (*pbWinBuffer<st_bBackGroundLevel)
+					if (*pbWinBuffer<st_bBackGroundLevel[0])
 					{
 						bCnt++;
 						if (bCnt==4)
@@ -3415,7 +3594,7 @@ void Proc_AutoFocus()
 					bCnt=0;
 					for (;y<swEndY;y++)
 					{
-						if (*pbWinBuffer>st_bBackGroundLevel)
+						if (*pbWinBuffer>st_bBackGroundLevel[0])
 						{
 							bCnt++;
 							if (bCnt==4)
@@ -3539,6 +3718,10 @@ void TimerToNextState(void)
 
 void Proc_Weld_State()
 {
+#if TEST_TWO_LED
+	ST_OSDWIN * psWin=Idu_GetOsdWin();
+	BYTE bString[64];
+#endif
 	ST_IMGWIN *pWin=(ST_IMGWIN *)&SensorInWin[0];
 	SWORD swRet,swPos1,swPos2;
 	BYTE bMode=0; //4 0->左上  1->右上 2->左下 3->右下
@@ -3561,7 +3744,7 @@ void Proc_Weld_State()
 				MoveHMotorToSpecPosition(bMode,swPos1);
 				//if (st_swFacexCurPos[bMode]==swPos1)
 				//	SearchLeftFiberFaceAndTopEdge(pWin,bMode,1);
-				SetFillProcWinFlag();
+				TimerToFillProcWin(10);
 			}
 			else
 			{
@@ -3581,7 +3764,7 @@ void Proc_Weld_State()
 				MoveHMotorToSpecPosition(bMode,swPos2);
 				//if (st_swFacexCurPos[bMode]==swPos2)
 				//	SearchLeftFiberFaceAndTopEdge(pWin,bMode,1);
-				SetFillProcWinFlag();
+				TimerToFillProcWin(10);
 			}
 			else
 			{
@@ -3613,7 +3796,7 @@ void Proc_Weld_State()
 				{
 						MoveVMotorToSpecPosition(bMode,st_swFaceY2[bMode-1]);
 				}
-				SetFillProcWinFlag();
+				TimerToFillProcWin(10);
 			}
 			else
 			{
@@ -3633,7 +3816,7 @@ void Proc_Weld_State()
 				{
 					MoveVMotorToSpecPosition(bMode,st_swFaceY2[bMode-1]);
 				}
-				SetFillProcWinFlag();
+				TimerToFillProcWin(10);
 			}
 			else
 			{
@@ -3693,7 +3876,7 @@ void Proc_Weld_State()
 					//if (st_swFacexCurPos[bMode]==swPos1)
 					//	SearchLeftFiberFaceAndTopEdge(pWin,bMode,1);
 				}
-				SetFillProcWinFlag();
+				TimerToFillProcWin(10);
 			}
 			else
 			{
@@ -3715,7 +3898,7 @@ void Proc_Weld_State()
 					//if (st_swFacexCurPos[bMode]==swPos2)
 					//	SearchLeftFiberFaceAndTopEdge(pWin,bMode,1);
 				}
-				SetFillProcWinFlag();
+				TimerToFillProcWin(10);
 			}
 			else
 			{
@@ -3741,7 +3924,7 @@ void Proc_Weld_State()
 				{
 						MoveVMotorToSpecPosition(bMode,st_swFaceY2[bMode-1]);
 				}
-				SetFillProcWinFlag();
+				TimerToFillProcWin(10);
 			}
 			else
 			{
@@ -3764,7 +3947,7 @@ void Proc_Weld_State()
 				{
 					MoveVMotorToSpecPosition(bMode,st_swFaceY2[bMode-1]);
 				}
-				SetFillProcWinFlag();
+				TimerToFillProcWin(10);
 			}
 			else
 			{
@@ -3776,15 +3959,15 @@ void Proc_Weld_State()
 
 		case SENSOR_ALIGN_H3A:
 			bMode=MOTOR_RIGHT_TOP;
-			if (st_swFaceY20[bMode]!=st_swFaceY20[MOTOR_LEFT_TOP])
+			if ((st_swFaceY20[bMode]>>1)!=(st_swFaceY20[MOTOR_LEFT_TOP]>>1))
 			{
 				pWin=(ST_IMGWIN *)&SensorInWin[0];
 				swRet=SearchRightFiberCore(pWin,bMode);
 				if (swRet!=FAIL)
 				{
-						MoveVMotorByPosition(bMode,st_swFaceY20[bMode],st_swFaceY20[MOTOR_LEFT_TOP]);
+						MoveVMotorByPosition(bMode,st_swFaceY20[bMode]>>1,st_swFaceY20[MOTOR_LEFT_TOP]>>1);
 				}
-				SetFillProcWinFlag();
+				TimerToFillProcWin(10);
 			}
 			else
 			{
@@ -3795,15 +3978,15 @@ void Proc_Weld_State()
 
 		case SENSOR_ALIGN_H3B:
 			bMode=MOTOR_RIGHT_BOTTOM;
-			if (st_swFaceY20[bMode]!=st_swFaceY20[MOTOR_LEFT_BOTTOM])
+			if ((st_swFaceY20[bMode]>>1)!=(st_swFaceY20[MOTOR_LEFT_BOTTOM]>>1))
 			{
 				pWin=(ST_IMGWIN *)&SensorInWin[1];
 				swRet=SearchRightFiberCore(pWin,bMode);
 				if (swRet!=FAIL)
 				{
-						MoveVMotorByPosition(bMode,st_swFaceY20[bMode],st_swFaceY20[MOTOR_LEFT_BOTTOM]);
+						MoveVMotorByPosition(bMode,st_swFaceY20[bMode]>>1,st_swFaceY20[MOTOR_LEFT_BOTTOM]>>1);
 				}
-				SetFillProcWinFlag();
+				TimerToFillProcWin(10);
 			}
 			else
 			{
@@ -3866,20 +4049,21 @@ void Proc_Weld_State()
 #if TEST_PLANE
 		if (g_bDisplayMode < 0x02)
 		{
-	//pWin=(ST_IMGWIN *)Idu_GetCurrWin();
+			if (g_bDisplayMode==1)
+				pWin=(ST_IMGWIN *)&SensorInWin[1];
 #if 1
 	bMode=MOTOR_LEFT_TOP;
 	SearchLeftFiberFaceAndTopEdge(pWin,bMode,1);
 	SearchLeftFiberBottomEdge(pWin,bMode);
 	//SearchLeftFiberCenter(pWin,bMode);
-	//SearchLeftFiberCore(pWin,bMode);
+	SearchLeftFiberCore(pWin,bMode);
 #endif
 #if 1
 	bMode=MOTOR_RIGHT_TOP;
 	SearchRightFiberFaceAndTopEdge(pWin,bMode,1);
 	SearchRightFiberBottomEdge(pWin,bMode);
 	//SearchRightFiberCenter(pWin,bMode);
-	//SearchRightFiberCore(pWin,bMode);
+	SearchRightFiberCore(pWin,bMode);
 #endif
 	//pWin=(ST_IMGWIN *)&SensorInWin[1];
 #if 0
@@ -3897,11 +4081,30 @@ void Proc_Weld_State()
 	SearchRightFiberCore(pWin,bMode);
 #endif
 
-	SetFillProcWinFlag();
+	if (g_bDisplayMode==0)
+		st_bFillWinFlag=BIT0;
+	else if (g_bDisplayMode==1)
+		st_bFillWinFlag=BIT1;
+	TimerToFillProcWin(10);
 		}
 #endif
+#if TEST_TWO_LED
+	for (bMode=0;bMode<2;bMode++)
+	{
+		swRet=GetWinBrightness((ST_IMGWIN *)&SensorInWin[bMode],8,2);
+		if (st_dwBrightness[bMode]!=swRet)
+		{
+			st_dwBrightness[bMode]=swRet;
+			sprintf(bString, "%d", st_dwBrightness[bMode]);
+			Idu_OsdPaintArea(pWin->wWidth/2,pWin->wHeight*bMode/2+20, 80, 40, 0);
+			Idu_OSDPrint(psWin,bString, pWin->wWidth/2,pWin->wHeight*bMode/2+20, OSD_COLOR_RED);
+		}
+	}
+	TimerToFillProcWin(100);
+#endif
+
 //	mpCopyWinAreaSameSize(pWin,Idu_GetCurrWin(),0, 0, 0, 0,pWin->wWidth, pWin->wHeight);
-	//SetFillProcWinFlag();
+	//TimerToFillProcWin(10);
 		default:
 			break;
 	}
@@ -3922,8 +4125,8 @@ void Proc_SensorData_State()
 	SWORD swRet,swPos1,swPos2;
 	BYTE bMode=0; //4 0->左上  1->右上 2->左下 3->右下
 
-	//mpDebugPrint("P %p %d %p",st_bBackGroundLevel,st_bInProcWin,st_bNeedFillProcWin);
-	if (!st_bBackGroundLevel)
+	//mpDebugPrint("P %p %d %p",st_bBackGroundLevel[1],st_bInProcWin,st_bNeedFillProcWin);
+	if (!st_bBackGroundLevel[1])
 		return ;
 	if (st_bInProcWin || st_bNeedFillProcWin)
 	{
@@ -3978,10 +4181,17 @@ void TSPI_DataProc(void)
 						ProcAFmotorAction();
 						//PrintWinData();
 						#elif TEST_PLANE
-						if (st_bToolMotoIndex==5 || st_bToolMotoIndex==6)
-							DriveMotor(st_bToolMotoIndex,0,10,8);
+						if (st_bAdjustMotoStep)
+						{
+							if (st_bToolMotoIndex<5)
+								st_wMotoStep[st_bToolMotoIndex-1]-=10;
+							else
+								st_wMotoStep[st_bToolMotoIndex-1]--;
+							sprintf(st_bStrInfo, "Moto[%d]=%d", st_bToolMotoIndex,st_wMotoStep[st_bToolMotoIndex-1]);
+							xpgForceUpdateOsd();
+						}
 						else
-							DriveMotor(st_bToolMotoIndex,0,1000,8);
+						DriveMotor(st_bToolMotoIndex,0,st_wMotoStep[st_bToolMotoIndex-1],8);
 						#else
 
 						#endif
@@ -3992,10 +4202,17 @@ void TSPI_DataProc(void)
 						st_swAFStep=-2;
 						ProcAFmotorAction();
 						#elif TEST_PLANE
-						if (st_bToolMotoIndex==5 || st_bToolMotoIndex==6)
-							DriveMotor(st_bToolMotoIndex,1,10,8);
+						if (st_bAdjustMotoStep)
+						{
+							if (st_bToolMotoIndex<5)
+								st_wMotoStep[st_bToolMotoIndex-1]+=10;
+							else
+								st_wMotoStep[st_bToolMotoIndex-1]++;
+							sprintf(st_bStrInfo, "Moto[%d]=%d", st_bToolMotoIndex,st_wMotoStep[st_bToolMotoIndex-1]);
+							xpgForceUpdateOsd();
+						}
 						else
-							DriveMotor(st_bToolMotoIndex,1,1000,8);
+							DriveMotor(st_bToolMotoIndex,1,st_wMotoStep[st_bToolMotoIndex-1],8);
 						#else
 						if (dwHashKey == xpgHash("Auto_work") || dwHashKey == xpgHash("Manual_work"))
 							Weld_StartPause();
@@ -4024,10 +4241,15 @@ void TSPI_DataProc(void)
 						if (st_bToolMotoIndex>6)
 							st_bToolMotoIndex=1;
 						//mpDebugPrint("st_bToolMotoIndex=%d",st_bToolMotoIndex);
-						#if TEST_PLANE
-						sprintf(st_bStrInfo, "Moto:%d", st_bToolMotoIndex);
+						if (st_bAdjustMotoStep)
+						{
+							sprintf(st_bStrInfo, "Moto[%d]=%d", st_bToolMotoIndex,st_wMotoStep[st_bToolMotoIndex-1]);
+						}
+						else
+						{
+							sprintf(st_bStrInfo, "Moto:%d", st_bToolMotoIndex);
+						}
 						xpgForceUpdateOsd();
-						#endif
 						#else
 						if (dwHashKey == xpgHash("Main") )
 						{
@@ -4073,8 +4295,8 @@ void TSPI_DataProc(void)
 							mpDebugPrint(" motor %d hold on",index);
 						}
 						*/
-						st_bBackGroundLevel=0;
-						Ui_TimerProcAdd(100, GetBackgroundLevel);
+						//st_bBackGroundLevel[bSensorIndex] =0;
+						//Ui_TimerProcAdd(100, GetBackgroundLevel);
 						#else
 						if (dwHashKey == xpgHash("Auto_work") || dwHashKey == xpgHash("Manual_work"))
 						{
@@ -4092,16 +4314,24 @@ void TSPI_DataProc(void)
 						//DriveMotor(01,1,200,8);//RIGHT_UP_FIBER DOWN
 						MoveAFMotor(6,-100);
 						/*
-						SetFillProcWinFlag();
+						TimerToFillProcWin(10);
 						g_swAutoFocusState=AF_INIT;
 						Proc_AutoFocus();
 						*/
-						#elif SHOW_CENTER||TEST_PLANE
-						if (g_bDisplayMode<3)
-							g_bDisplayMode++;
+						#elif SHOW_CENTER||TEST_PLANE||TEST_TWO_LED
+						if (st_bAdjustMotoStep)
+						{
+							st_bDischargeMode=1;
+							Discharge(st_bDischargeMode,0);
+						}
 						else
-							g_bDisplayMode=0;
-						g_bDisplayMode |= 0x80;
+						{
+							if (g_bDisplayMode<3)
+								g_bDisplayMode++;
+							else
+								g_bDisplayMode=0;
+							g_bDisplayMode |= 0x80;
+						}
 						#elif 0
 						if (g_bDisplayUseIpw2)
 							g_bDisplayUseIpw2=0;
@@ -4125,12 +4355,23 @@ void TSPI_DataProc(void)
 						#elif SHOW_CENTER||TEST_PLANE
 						//g_swProcState=SENSOR_IDLE;
 						//ResetMotor();
-						st_bDischargeMode=1;
-						Discharge(st_bDischargeMode,0);
+						//st_bDischargeMode=1;
+						//Discharge(st_bDischargeMode,0);
+						if (st_bAdjustMotoStep)
+						{
+							st_bAdjustMotoStep=0;
+							sprintf(st_bStrInfo, "Moto:%d", st_bToolMotoIndex);
+						}
+						else
+						{
+							st_bAdjustMotoStep=1;
+							sprintf(st_bStrInfo, "Moto[%d]=%d", st_bToolMotoIndex,st_wMotoStep[st_bToolMotoIndex-1]);
+						}
+						xpgForceUpdateOsd();
 
 						#elif 0
 						//AutoStartWeld();
-						//SetFillProcWinFlag();
+						//TimerToFillProcWin(10);
 						AutoGetFiberLowPoint();
 						#endif
 						break;
@@ -4149,7 +4390,7 @@ void TSPI_DataProc(void)
 			{
 				Ui_TimerProcRemove(SetFillProcWinFlag);
 				Ui_TimerProcRemove(Proc_AutoFocus);
-				SetFillProcWinFlag();
+				TimerToFillProcWin(10);
 				Proc_AutoFocus();
 			}
 			break;
@@ -4285,7 +4526,10 @@ void DisplaySensorImage(void)
 
 
 	if (g_bDisplayMode&0xf0)
+	{
 		Sensor_DisplayMode_Set();
+		ResetFiberPara();
+	}
 
 	switch (g_bDisplayMode)
 	{
@@ -4393,8 +4637,9 @@ void DisplaySensorOnCurrWin( BYTE bIpw2)
 	if (g_bDisplayMode&0xf0)
 	{
 		Sensor_DisplayMode_Set();
-		#if TEST_PLANE
-		SetFillProcWinFlag();
+		ResetFiberPara();
+		#if TEST_PLANE||TEST_TWO_LED
+		TimerToFillProcWin(10);
 		#endif
 	}
 
@@ -4508,7 +4753,7 @@ void CacheSensorData( BYTE bIpw2)
 {
 	IPU *ipu = (IPU *) IPU_BASE;
 	ST_IMGWIN *pDstWin=(ST_IMGWIN *)&SensorInWin[0];
-	BYTE bCacheWinIndex=0;
+	BYTE bCacheWinIndex=0xff;
 	DWORD *pIpwAddr;
 
 
@@ -4523,17 +4768,14 @@ void CacheSensorData( BYTE bIpw2)
 		{
 			//mpDebugPrint("cache in g_bDisplayMode=%p st_bNeedFillProcWin=%p",g_bDisplayMode,st_bNeedFillProcWin);
 			st_bBackupChanel=Sensor_CurChannel_Get();
-			st_bNeedFillProcWin &=0x3f;
-			//one sensor online
-			if ((g_bDisplayMode&0x0f) ==0)
-				st_bNeedFillProcWin &=0xfd;
-			if ((g_bDisplayMode&0x0f) ==0x01)
-				st_bNeedFillProcWin &=0xfe;
+			//st_bNeedFillProcWin &=0x3f;
 
-			st_bNeedFillProcWin |=0x20;//for stop
+			//st_bNeedFillProcWin |=0x20;//for stop
 		}
+
 		if ((st_bNeedFillProcWin&0x03)==0x03)
 		{
+			//one sensor online
 				if (Sensor_CurChannel_Get())
 				{
 					bCacheWinIndex=2;
@@ -4578,7 +4820,7 @@ void CacheSensorData( BYTE bIpw2)
 		{
 				*pIpwAddr = ((DWORD) pDstWin->pdwStart| 0xA0000000);	
 		}
-		else if (bCacheWinIndex==2) // down win
+		else //if (bCacheWinIndex==2) // down win
 		{
 			if (st_bCacheWinNum==2)
 			{
@@ -4738,7 +4980,6 @@ void ShowOSDstring(void)
 {
 	ST_OSDWIN * psWin=Idu_GetOsdWin();
 	ST_IMGWIN *pWin=(ST_IMGWIN *)Idu_GetNextWin();
-	BYTE bMotoIndex=0xff;
 		
 #if TEST_PLANE
 	if (st_bStrInfo[0])
@@ -4746,39 +4987,45 @@ void ShowOSDstring(void)
 		Idu_OSDPrint(psWin,st_bStrInfo, 8, 8, OSD_COLOR_RED);
 	}
 
-	if (g_bDisplayMode==0x00)
-		bMotoIndex=0;
-	else if (g_bDisplayMode==0x01)
-		bMotoIndex=1;
-	if (bMotoIndex<MOTOR_NUM)
+	if (g_bDisplayMode==0x00||g_bDisplayMode==0x01)
 	{
 		//--face
-		if (st_bStrFace[MOTOR_LEFT_TOP][bMotoIndex])
+		if (st_bStrFace[MOTOR_LEFT_TOP][0])
 		{
-			Idu_OSDPrint(psWin,&st_bStrFace[MOTOR_LEFT_TOP][bMotoIndex], 8, 48, OSD_COLOR_RED);
+			Idu_OSDPrint(psWin,&st_bStrFace[MOTOR_LEFT_TOP][0], pWin->wWidth/2-80, 48, OSD_COLOR_RED);
 		}
-		if (st_bStrFace[MOTOR_RIGHT_TOP][bMotoIndex])
+		if (st_bStrFace[MOTOR_RIGHT_TOP][0])
 		{
-			Idu_OSDPrint(psWin,&st_bStrFace[MOTOR_RIGHT_TOP][bMotoIndex], pWin->wWidth/2, 48, OSD_COLOR_RED);
+			Idu_OSDPrint(psWin,&st_bStrFace[MOTOR_RIGHT_TOP][0], pWin->wWidth/2+40, 48, OSD_COLOR_RED);
 		}
 		//--水平度
-		if (st_bStrHLevel[MOTOR_LEFT_TOP][bMotoIndex])
+		if (st_bStrHLevel[MOTOR_LEFT_TOP][0])
 		{
-			Idu_OSDPrint(psWin,&st_bStrHLevel[MOTOR_LEFT_TOP][bMotoIndex], 8, 90, OSD_COLOR_RED);
+			Idu_OSDPrint(psWin,&st_bStrHLevel[MOTOR_LEFT_TOP][0], 8, 48, OSD_COLOR_RED);//  90
 		}
-		if (st_bStrHLevel[MOTOR_RIGHT_TOP][bMotoIndex])
+		if (st_bStrHLevel[MOTOR_RIGHT_TOP][0])
 		{
-			Idu_OSDPrint(psWin,&st_bStrHLevel[MOTOR_RIGHT_TOP][bMotoIndex], pWin->wWidth/2, 90, OSD_COLOR_RED);
+			Idu_OSDPrint(psWin,&st_bStrHLevel[MOTOR_RIGHT_TOP][0], pWin->wWidth-200, 48, OSD_COLOR_RED);
 		}
 		//--center
-		if (st_bStrCenter[MOTOR_LEFT_TOP][bMotoIndex])
+		if (st_bStrCenter[MOTOR_LEFT_TOP][0])
 		{
-			Idu_OSDPrint(psWin,&st_bStrCenter[MOTOR_LEFT_TOP][bMotoIndex], 8, pWin->wHeight>>1, OSD_COLOR_RED);
+			Idu_OSDPrint(psWin,&st_bStrCenter[MOTOR_LEFT_TOP][0], 8, (st_swFaceY3[MOTOR_LEFT_TOP]+st_swFaceY1[MOTOR_LEFT_TOP])>>1, OSD_COLOR_RED);
 		}
-		if (st_bStrCenter[MOTOR_RIGHT_TOP][bMotoIndex])
+		if (st_bStrCenter[MOTOR_RIGHT_TOP][0])
 		{
-			Idu_OSDPrint(psWin,&st_bStrCenter[MOTOR_RIGHT_TOP][bMotoIndex], pWin->wWidth/2, pWin->wHeight>>1, OSD_COLOR_RED);
+			Idu_OSDPrint(psWin,&st_bStrCenter[MOTOR_RIGHT_TOP][0], pWin->wWidth-80, (st_swFaceY3[MOTOR_RIGHT_TOP]+st_swFaceY1[MOTOR_RIGHT_TOP])>>1, OSD_COLOR_RED);
 		}
+		//--core
+		if (st_bStrCore[MOTOR_LEFT_TOP][0])
+		{
+			Idu_OSDPrint(psWin,&st_bStrCore[MOTOR_LEFT_TOP][0], 120,(st_swFaceY20[MOTOR_LEFT_TOP]>>1)-10, OSD_COLOR_RED);
+		}
+		if (st_bStrCore[MOTOR_RIGHT_TOP][0])
+		{
+			Idu_OSDPrint(psWin,&st_bStrCore[MOTOR_RIGHT_TOP][0], pWin->wWidth/2+40, (st_swFaceY20[MOTOR_RIGHT_TOP]>>1)-10, OSD_COLOR_RED);
+		}
+
 	}
 
 
@@ -4806,6 +5053,7 @@ void WeldDataInit(void)
 	{
 		st_bStrFace[i][0]=0;
 		st_bStrCenter[i][0]=0;
+		st_bStrCore[i][0]=0;
 		st_bStrHLevel[i][0]=0;
 	}
 	//st_bStrInfo[0]=0;
@@ -4826,6 +5074,10 @@ void WeldDataInit(void)
 	//WriteSetupChg();
 
 	//ResetMotor();
+	if ((g_bDisplayMode&0x0f)==0)
+		st_bFillWinFlag=BIT0;
+	else if ((g_bDisplayMode&0x0f)==1)
+		st_bFillWinFlag=BIT1;
 	Ui_TimerProcAdd(5000, SetFillProcWinFlag);
 	Ui_TimerProcAdd(5100, GetBackgroundLevel);
 }

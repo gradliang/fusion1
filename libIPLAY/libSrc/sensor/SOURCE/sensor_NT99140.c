@@ -109,7 +109,7 @@ void Sensor_DisplayWindow_Set()
 	if (g_bDisplayMode>3)
 		g_bDisplayMode=0;
 
-#if TEST_PLANE
+#if TEST_PLANE||TEST_TWO_LED
 	switch (g_bDisplayMode)
 	{
 		case 0:

@@ -10,8 +10,8 @@
 //--产品总开关
 //#define PRODUCT_ID									(PCBA_MAIN_BOARD_V10|PANEL_800x600|UI_SURFACE)
 //#define PRODUCT_ID									(PCBA_MAIN_BOARD_V11|PANEL_LVDS_1024x600|UI_SURFACE)
-#define PRODUCT_ID									(PCBA_MAIN_BOARD_V12|PANEL_800x480|UI_WELDING)
-//#define PRODUCT_ID									(PCBA_MAIN_BOARD_V20|PANEL_800x480|UI_WELDING)
+//#define PRODUCT_ID									(PCBA_MAIN_BOARD_V12|PANEL_800x480|UI_WELDING)
+#define PRODUCT_ID									(PCBA_MAIN_BOARD_V20|PANEL_800x480|UI_WELDING)
 
 
 //common function
@@ -33,7 +33,8 @@
 //---For test machine
 #define		SHOW_CENTER											0  //4 在显示屏中间固定画个十字架及两条水平线，看画面是否居中及水平，用于在装摄像头的夹具上
 #define		TEST_DISPLAY_PANEL							0 //4  显示出几个像素，用于在装摄像头的夹具上
-#define		TEST_PLANE												0 //4  测试光纤安装水平度程序
+#define		TEST_PLANE												1 //4  测试光纤安装水平度程序
+#define		TEST_TWO_LED										0 //4  测试照射光纤的两个LED灯的亮度
 //#define		VAUTO_PLAY_VIDEO									1
 #define		PROC_SENSOR_DATA_MODE					0
 #endif
@@ -411,8 +412,8 @@
 #define	SENSOR_WITH_DISPLAY         					ENABLE
 //#define IPW1_DISABLE						 						ENABLE//Fast input mode
 //#define USE_IPW1_DISPLAY_MOTHOD     			ENABLE
-#define  SENSOR_TYPE_NT99140              			ENABLE // really is 99142
-//#define  SENSOR_TYPE_NT99141              			ENABLE
+//#define  SENSOR_TYPE_NT99140              			ENABLE // really is 99142
+#define  SENSOR_TYPE_NT99141              			ENABLE
 #if 1//PROC_SENSOR_DATA_MODE
 #define  SENSOR_WIN_NUM              						2
 #else

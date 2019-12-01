@@ -40,6 +40,12 @@ enum {
     GET_CENTER_FINISH,
 };
 
+enum {
+    SENSER_TOP,
+    SENSER_BOTTOM,
+    SENSER_TOTAL,
+};
+
 
  // 0->左上  1->右上 2->左下 3->右下
 #define	MOTOR_LEFT_TOP												0
