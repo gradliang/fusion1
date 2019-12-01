@@ -450,7 +450,9 @@ extern BYTE g_bDisplayMode;
 #define		LEVEL_OFFSET								8         //4 ÁÁ¶ÈÆ«²î
 
 static BYTE st_bInProcWin=0,st_bBackupChanel=0xff,st_bBackupDisplayMode=0xff;
-static BYTE st_bCacheWinNum=2,st_bFillWinFlag=0,st_bNeedFillProcWin=0;  //   BIT7->new fill wait init IPW  BIT6->first get data BIT5->get data end   BIT1->fill down   BIT0->FILL UP  0->not need fill
+static BYTE st_bCacheWinNum=2,st_bFillWinFlag=0;
+ // BIT7->new fill wait init IPW  BIT6->first get data BIT5->get data end        BIT3->in fill down   BIT2->in FILL UP      BIT1->need fill down   BIT0->need FILL UP  0->not need fill
+static BYTE st_bNeedFillProcWin=0; 
 static WORD st_wFiberWidth=0;
 
 BYTE g_bOPMonline=0;
@@ -4081,10 +4083,12 @@ void Proc_Weld_State()
 	SearchRightFiberCore(pWin,bMode);
 #endif
 
+/*
 	if (g_bDisplayMode==0)
 		st_bFillWinFlag=BIT0;
 	else if (g_bDisplayMode==1)
 		st_bFillWinFlag=BIT1;
+		*/
 	TimerToFillProcWin(10);
 		}
 #endif
@@ -4665,14 +4669,18 @@ void DisplaySensorOnCurrWin( BYTE bIpw2)
 			{
 				if (st_bFrameIndex==1)
 				{
-					Sensor_Channel_Set(0);
-					st_bFrameIndex=0;
-					pDstWin=(ST_IMGWIN *)Idu_GetNextWin();
-					*pIpwAddr = ((DWORD) pDstWin->pdwStart| 0xA0000000)+pDstWin->dwOffset* SensorWindow_PosY  + (SensorWindow_PosX <<1);	
+					//mpDebugPrintN("A %08x ", ipu->Ipu_reg_10A);
+					if ((ipu->Ipu_reg_10A>>16)==pDstWin->wHeight)
+					{
+						Sensor_Channel_Set(0);
+						st_bFrameIndex=0;
+						pDstWin=(ST_IMGWIN *)Idu_GetNextWin();
+						*pIpwAddr = ((DWORD) pDstWin->pdwStart| 0xA0000000)+pDstWin->dwOffset* SensorWindow_PosY  + (SensorWindow_PosX <<1);	
+					}
 				}
 				else
 				{
-					//mpDebugPrintN(" %08x ", ipu->Ipu_reg_10A);
+					//mpDebugPrintN("B %08x ", ipu->Ipu_reg_10A);
 					st_bFrameIndex++;
 					*pIpwAddr = ((DWORD) pDstWin->pdwStart| 0xA0000000)+pDstWin->dwOffset* SensorWindow_PosY  + (SensorWindow_PosX <<1)+pDstWin->dwOffset*SensorWindow_Height;	
 				}
@@ -4681,14 +4689,18 @@ void DisplaySensorOnCurrWin( BYTE bIpw2)
 			{
 				if (st_bFrameIndex==1)
 				{
-					Sensor_Channel_Set(1);
-					st_bFrameIndex=0;
-					pDstWin=(ST_IMGWIN *)Idu_GetNextWin();
-					*pIpwAddr = ((DWORD) pDstWin->pdwStart| 0xA0000000)+pDstWin->dwOffset* SensorWindow_PosY  + (SensorWindow_PosX <<1)+pDstWin->dwOffset*SensorWindow_Height;	
+					//mpDebugPrintN("C %08x ", ipu->Ipu_reg_10A);
+					if ((ipu->Ipu_reg_10A>>16)==pDstWin->wHeight)
+					{
+						Sensor_Channel_Set(1);
+						st_bFrameIndex=0;
+						pDstWin=(ST_IMGWIN *)Idu_GetNextWin();
+						*pIpwAddr = ((DWORD) pDstWin->pdwStart| 0xA0000000)+pDstWin->dwOffset* SensorWindow_PosY  + (SensorWindow_PosX <<1)+pDstWin->dwOffset*SensorWindow_Height;	
+					}
 				}
 				else
 				{
-					//mpDebugPrintN(" %08x ", ipu->Ipu_reg_10A);
+					//mpDebugPrintN("D %08x ", ipu->Ipu_reg_10A);
 					st_bFrameIndex++;
 					*pIpwAddr = ((DWORD) pDstWin->pdwStart| 0xA0000000)+pDstWin->dwOffset* SensorWindow_PosY  + (SensorWindow_PosX <<1);	
 				}
@@ -4697,6 +4709,7 @@ void DisplaySensorOnCurrWin( BYTE bIpw2)
 	}
 	else if (g_bDisplayMode==3)
 	{
+		#if defined(SENSOR_TYPE_NT99140)
 			if (Sensor_CurChannel_Get()==0)
 			{
 				Sensor_Channel_Set(1);
@@ -4708,6 +4721,48 @@ void DisplaySensorOnCurrWin( BYTE bIpw2)
 				Sensor_Channel_Set(0);
 				*pIpwAddr = ((DWORD) pDstWin->pdwStart| 0xA0000000)+pDstWin->dwOffset* SensorWindow_PosY  + (SensorWindow_PosX <<1);	
 			}
+		#else
+			if (Sensor_CurChannel_Get())
+			{
+				if (st_bFrameIndex==1)
+				{
+					if ((ipu->Ipu_reg_10A>>16)==pDstWin->wHeight)
+					{
+						Sensor_Channel_Set(0);
+						st_bFrameIndex=0;
+						pDstWin=(ST_IMGWIN *)Idu_GetNextWin();
+						*pIpwAddr = ((DWORD) pDstWin->pdwStart| 0xA0000000)+pDstWin->dwOffset* SensorWindow_PosY  + (SensorWindow_PosX <<1);	
+					}
+				}
+				else
+				{
+					//mpDebugPrintN("B %08x ", ipu->Ipu_reg_10A);
+					st_bFrameIndex++;
+					*pIpwAddr = ((DWORD) pDstWin->pdwStart| 0xA0000000)+pDstWin->dwOffset* SensorWindow_PosY  + (SensorWindow_PosX <<1)+(SensorWindow_Width<<1);	
+				}
+			}
+			else
+			{
+				if (st_bFrameIndex==1)
+				{
+					//mpDebugPrintN("C %08x ", ipu->Ipu_reg_10A);
+					if ((ipu->Ipu_reg_10A>>16)==pDstWin->wHeight)
+					{
+						Sensor_Channel_Set(1);
+						st_bFrameIndex=0;
+						pDstWin=(ST_IMGWIN *)Idu_GetNextWin();
+						*pIpwAddr = ((DWORD) pDstWin->pdwStart| 0xA0000000)+pDstWin->dwOffset* SensorWindow_PosY  + (SensorWindow_PosX <<1)+(SensorWindow_Width<<1);	
+					}
+				}
+				else
+				{
+					//mpDebugPrintN("D %08x ", ipu->Ipu_reg_10A);
+					st_bFrameIndex++;
+					*pIpwAddr = ((DWORD) pDstWin->pdwStart| 0xA0000000)+pDstWin->dwOffset* SensorWindow_PosY  + (SensorWindow_PosX <<1);	
+				}
+			}
+
+		#endif
 	}
 
 #else
@@ -4768,60 +4823,84 @@ void CacheSensorData( BYTE bIpw2)
 		{
 			//mpDebugPrint("cache in g_bDisplayMode=%p st_bNeedFillProcWin=%p",g_bDisplayMode,st_bNeedFillProcWin);
 			st_bBackupChanel=Sensor_CurChannel_Get();
-			//st_bNeedFillProcWin &=0x3f;
-
+			st_bNeedFillProcWin &=0x3f;
 			//st_bNeedFillProcWin |=0x20;//for stop
 		}
 
+		if (st_bNeedFillProcWin&BIT2)
+		{
+			if ((ipu->Ipu_reg_10A>>16)==pDstWin->wHeight)
+				st_bNeedFillProcWin &=~BIT2;
+			else
+				st_bNeedFillProcWin |=BIT0;
+		}
+		else if (st_bNeedFillProcWin&BIT3)
+		{
+			if ((ipu->Ipu_reg_10A>>16)==pDstWin->wHeight)
+				st_bNeedFillProcWin &=~BIT3;
+			else
+				st_bNeedFillProcWin |=BIT1;
+		}
+		
 		if ((st_bNeedFillProcWin&0x03)==0x03)
 		{
 			//one sensor online
 				if (Sensor_CurChannel_Get())
 				{
 					bCacheWinIndex=2;
-					st_bNeedFillProcWin &=0xfd;
 				}
 				else
 				{
 					bCacheWinIndex=1;
-					st_bNeedFillProcWin &=0xfe;
 				}
 		}
-		else if (st_bNeedFillProcWin&0x02)
+		else if (st_bNeedFillProcWin&BIT1)
 		{
-				Sensor_Channel_Set(1);
 				bCacheWinIndex=2;
-				st_bNeedFillProcWin &=0xfd;
 		}
-		else if (st_bNeedFillProcWin&0x01)
+		else if (st_bNeedFillProcWin&BIT0)
 		{
-				Sensor_Channel_Set(0);
 				bCacheWinIndex=1;
-				st_bNeedFillProcWin &=0xfe;
 		}
-		else if ((st_bNeedFillProcWin&0x20)==0x20)
+		else// if ((st_bNeedFillProcWin&0x20)==0x20)
 		{
 			//mpDebugPrint("cache end");
 			//ipu->Ipu_reg_F2 = ((DWORD)((ST_IMGWIN *)Idu_GetNextWin()->pdwStart)| 0xA0000000);	
 			//mpCopyWinAreaSameSize((ST_IMGWIN *)&SensorInWin[0],(ST_IMGWIN *)Idu_GetCurrWin(),0, 0, 0, 0,pDstWin->wWidth, pDstWin->wHeight);
 			if (st_bBackupChanel<2 && st_bBackupChanel!=Sensor_CurChannel_Get())
+			{
 				Sensor_Channel_Set(st_bBackupChanel);
+				ipu->Ipu_reg_F2 = ((DWORD)((ST_IMGWIN *)Idu_GetNextWin()->pdwStart)| 0xA0000000);
+			}
+			else
+			{
+				ipu->Ipu_reg_F2 = ((DWORD)((ST_IMGWIN *)Idu_GetCurrWin()->pdwStart)| 0xA0000000);
+			}
+			ipu->Ipu_reg_A3 = ((DWORD)((ST_IMGWIN *)Idu_GetNextWin()->pdwStart)| 0xA0000000);	
+
 			st_bBackupChanel=0xff;
 			st_bNeedFillProcWin=0;
 			bCacheWinIndex=0;
-			ipu->Ipu_reg_A3 = ((DWORD)((ST_IMGWIN *)Idu_GetNextWin()->pdwStart)| 0xA0000000);	
-			ipu->Ipu_reg_F2 = ((DWORD)((ST_IMGWIN *)Idu_GetCurrWin()->pdwStart)| 0xA0000000);	
 			EventSet(UI_EVENT, EVENT_PROC_DATA);
 		}
-		else if (st_bNeedFillProcWin)
-			st_bNeedFillProcWin=0;
+		//else if (st_bNeedFillProcWin)
+		//	st_bNeedFillProcWin=0;
 
 		if (bCacheWinIndex==1) // up win
 		{
-				*pIpwAddr = ((DWORD) pDstWin->pdwStart| 0xA0000000);	
+			if (Sensor_CurChannel_Get() !=0)
+				Sensor_Channel_Set(0);
+			st_bNeedFillProcWin &=0xfe;
+			st_bNeedFillProcWin |=BIT2;
+			*pIpwAddr = ((DWORD) pDstWin->pdwStart| 0xA0000000);	
 		}
-		else //if (bCacheWinIndex==2) // down win
+		else if (bCacheWinIndex==2) // down win
 		{
+			if (Sensor_CurChannel_Get() !=1)
+				Sensor_Channel_Set(1);
+			st_bNeedFillProcWin &=0xfD;
+			st_bNeedFillProcWin |=BIT3;
+
 			if (st_bCacheWinNum==2)
 			{
 				pDstWin=(ST_IMGWIN *)&SensorInWin[1];
