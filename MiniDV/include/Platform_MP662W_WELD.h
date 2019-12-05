@@ -421,7 +421,7 @@
 #endif
 
 #if (SENSOR_WIN_NUM == 2)
-#define  DISPLAY_IN_ONE_WIN              						1
+#define  DISPLAY_IN_ONE_WIN              						0
 #endif
 
 #endif

@@ -46,6 +46,11 @@ enum {
     SENSER_TOTAL,
 };
 
+typedef struct{
+    WORD    wNewData;
+    WORD    wCnt;
+} ST_NEWDATACNT;
+
 
  // 0->左上  1->右上 2->左下 3->右下
 #define	MOTOR_LEFT_TOP												0

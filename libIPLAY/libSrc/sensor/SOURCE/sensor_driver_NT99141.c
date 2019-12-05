@@ -943,7 +943,154 @@ sensor_nt99140_setRegister(0x3021, 0x06);
 sensor_nt99140_setRegister(0x3060, 0x01); 
 
 #endif                                           
-                                           
+#if 0
+//[YUYV_800x480_40.00_40.04_Fps]
+ 
+sensor_nt99140_setRegister(0x32BF, 0x60); 
+sensor_nt99140_setRegister(0x32C0, 0x54); 
+sensor_nt99140_setRegister(0x32C1, 0x54); 
+sensor_nt99140_setRegister(0x32C2, 0x54); 
+sensor_nt99140_setRegister(0x32C3, 0x00); 
+sensor_nt99140_setRegister(0x32C4, 0x20); 
+sensor_nt99140_setRegister(0x32C5, 0x20); 
+sensor_nt99140_setRegister(0x32C6, 0x20); 
+sensor_nt99140_setRegister(0x32C7, 0x40); 
+sensor_nt99140_setRegister(0x32C8, 0x31); 
+sensor_nt99140_setRegister(0x32C9, 0x54); 
+sensor_nt99140_setRegister(0x32CA, 0x74); 
+sensor_nt99140_setRegister(0x32CB, 0x74); 
+sensor_nt99140_setRegister(0x32CC, 0x74); 
+sensor_nt99140_setRegister(0x32CD, 0x74); 
+sensor_nt99140_setRegister(0x32DB, 0x83); 
+sensor_nt99140_setRegister(0x3200, 0x3E); 
+sensor_nt99140_setRegister(0x3201, 0x0F); 
+sensor_nt99140_setRegister(0x3028, 0x17); 
+sensor_nt99140_setRegister(0x3029, 0x00); 
+sensor_nt99140_setRegister(0x302A, 0x04); 
+sensor_nt99140_setRegister(0x3022, 0x24); 
+sensor_nt99140_setRegister(0x3023, 0x24); 
+sensor_nt99140_setRegister(0x3002, 0x00); 
+sensor_nt99140_setRegister(0x3003, 0xF4); 
+sensor_nt99140_setRegister(0x3004, 0x00); 
+sensor_nt99140_setRegister(0x3005, 0x7C); 
+sensor_nt99140_setRegister(0x3006, 0x04); 
+sensor_nt99140_setRegister(0x3007, 0x13); 
+sensor_nt99140_setRegister(0x3008, 0x02); 
+sensor_nt99140_setRegister(0x3009, 0x5B); 
+sensor_nt99140_setRegister(0x300A, 0x04); 
+sensor_nt99140_setRegister(0x300B, 0x9C); 
+sensor_nt99140_setRegister(0x300C, 0x02); 
+sensor_nt99140_setRegister(0x300D, 0xFA); 
+sensor_nt99140_setRegister(0x300E, 0x03); 
+sensor_nt99140_setRegister(0x300F, 0x20); 
+sensor_nt99140_setRegister(0x3010, 0x01); 
+sensor_nt99140_setRegister(0x3011, 0xE0); 
+sensor_nt99140_setRegister(0x3012, 0x02); 
+sensor_nt99140_setRegister(0x3013, 0x5C);
+sensor_nt99140_setRegister(0x3201, 0x3F); 
+sensor_nt99140_setRegister(0x3021, 0x06); 
+sensor_nt99140_setRegister(0x3060, 0x01); 
+#endif
+
+#if 0
+//[YUYV_800x480_50.00_50.01_Fps]
+
+sensor_nt99140_setRegister(0x32BF, 0x60); 
+sensor_nt99140_setRegister(0x32C0, 0x50); 
+sensor_nt99140_setRegister(0x32C1, 0x50); 
+sensor_nt99140_setRegister(0x32C2, 0x50); 
+sensor_nt99140_setRegister(0x32C3, 0x00); 
+sensor_nt99140_setRegister(0x32C4, 0x20); 
+sensor_nt99140_setRegister(0x32C5, 0x20); 
+sensor_nt99140_setRegister(0x32C6, 0x20); 
+sensor_nt99140_setRegister(0x32C7, 0x40); 
+sensor_nt99140_setRegister(0x32C8, 0x31); 
+sensor_nt99140_setRegister(0x32C9, 0x50); 
+sensor_nt99140_setRegister(0x32CA, 0x70); 
+sensor_nt99140_setRegister(0x32CB, 0x70); 
+sensor_nt99140_setRegister(0x32CC, 0x70); 
+sensor_nt99140_setRegister(0x32CD, 0x70); 
+sensor_nt99140_setRegister(0x32DB, 0x83); 
+sensor_nt99140_setRegister(0x3200, 0x3E); 
+sensor_nt99140_setRegister(0x3201, 0x0F); 
+sensor_nt99140_setRegister(0x3028, 0x17); 
+sensor_nt99140_setRegister(0x3029, 0x00); 
+sensor_nt99140_setRegister(0x302A, 0x04); 
+sensor_nt99140_setRegister(0x3022, 0x24); 
+sensor_nt99140_setRegister(0x3023, 0x24); 
+sensor_nt99140_setRegister(0x3002, 0x00); 
+sensor_nt99140_setRegister(0x3003, 0xF4); 
+sensor_nt99140_setRegister(0x3004, 0x00); 
+sensor_nt99140_setRegister(0x3005, 0x7C); 
+sensor_nt99140_setRegister(0x3006, 0x04); 
+sensor_nt99140_setRegister(0x3007, 0x13); 
+sensor_nt99140_setRegister(0x3008, 0x02); 
+sensor_nt99140_setRegister(0x3009, 0x5B); 
+sensor_nt99140_setRegister(0x300A, 0x04); 
+sensor_nt99140_setRegister(0x300B, 0x9C); 
+sensor_nt99140_setRegister(0x300C, 0x02); 
+sensor_nt99140_setRegister(0x300D, 0x62); 
+sensor_nt99140_setRegister(0x300E, 0x03); 
+sensor_nt99140_setRegister(0x300F, 0x20); 
+sensor_nt99140_setRegister(0x3010, 0x01); 
+sensor_nt99140_setRegister(0x3011, 0xE0); 
+sensor_nt99140_setRegister(0x3012, 0x02); 
+sensor_nt99140_setRegister(0x3013, 0x5C);
+sensor_nt99140_setRegister(0x3201, 0x3F); 
+sensor_nt99140_setRegister(0x3021, 0x06); 
+sensor_nt99140_setRegister(0x3060, 0x01); 
+#endif
+
+#if 0
+//[YUYV_800x480_60.00_60.06_Fps]
+
+sensor_nt99140_setRegister(0x32BF, 0x60); 
+sensor_nt99140_setRegister(0x32C0, 0x4A); 
+sensor_nt99140_setRegister(0x32C1, 0x4B); 
+sensor_nt99140_setRegister(0x32C2, 0x4B); 
+sensor_nt99140_setRegister(0x32C3, 0x00); 
+sensor_nt99140_setRegister(0x32C4, 0x20); 
+sensor_nt99140_setRegister(0x32C5, 0x20); 
+sensor_nt99140_setRegister(0x32C6, 0x20); 
+sensor_nt99140_setRegister(0x32C7, 0x40); 
+sensor_nt99140_setRegister(0x32C8, 0x31); 
+sensor_nt99140_setRegister(0x32C9, 0x4B); 
+sensor_nt99140_setRegister(0x32CA, 0x6B); 
+sensor_nt99140_setRegister(0x32CB, 0x6B); 
+sensor_nt99140_setRegister(0x32CC, 0x6B); 
+sensor_nt99140_setRegister(0x32CD, 0x6A); 
+sensor_nt99140_setRegister(0x32DB, 0x83); 
+sensor_nt99140_setRegister(0x3200, 0x3E); 
+sensor_nt99140_setRegister(0x3201, 0x0F); 
+sensor_nt99140_setRegister(0x3028, 0x17); 
+sensor_nt99140_setRegister(0x3029, 0x00); 
+sensor_nt99140_setRegister(0x302A, 0x04); 
+sensor_nt99140_setRegister(0x3022, 0x24); 
+sensor_nt99140_setRegister(0x3023, 0x24); 
+sensor_nt99140_setRegister(0x3002, 0x00); 
+sensor_nt99140_setRegister(0x3003, 0xF4); 
+sensor_nt99140_setRegister(0x3004, 0x00); 
+sensor_nt99140_setRegister(0x3005, 0x7C); 
+sensor_nt99140_setRegister(0x3006, 0x04); 
+sensor_nt99140_setRegister(0x3007, 0x13); 
+sensor_nt99140_setRegister(0x3008, 0x02); 
+sensor_nt99140_setRegister(0x3009, 0x5B); 
+sensor_nt99140_setRegister(0x300A, 0x04); 
+sensor_nt99140_setRegister(0x300B, 0x9C); 
+sensor_nt99140_setRegister(0x300C, 0x01); 
+sensor_nt99140_setRegister(0x300D, 0xFC); 
+sensor_nt99140_setRegister(0x300E, 0x03); 
+sensor_nt99140_setRegister(0x300F, 0x20); 
+sensor_nt99140_setRegister(0x3010, 0x01); 
+sensor_nt99140_setRegister(0x3011, 0xE0); 
+sensor_nt99140_setRegister(0x3012, 0x02); 
+sensor_nt99140_setRegister(0x3013, 0x5C);
+sensor_nt99140_setRegister(0x3201, 0x3F); 
+sensor_nt99140_setRegister(0x3021, 0x06); 
+sensor_nt99140_setRegister(0x3060, 0x01); 
+#endif
+
+
 }                                          
                                            
 static void NT99140_setSVGA_800x600(void)  
