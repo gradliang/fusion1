@@ -85,14 +85,14 @@ void WaitMs(DWORD ms)
 void TimerDelay(DWORD dwDelayTime)
 {
     DWORD dwCurTime;
-
+#if 0
     if ((SysTimerStatusGet() == FALSE) || (ContextStatusGet() != 0))
     {   // In ISR or system timer not active yet
         IODelay(dwDelayTime);
 
         return;
     }
-
+#endif
     dwCurTime = GetSysTime();
 
     while (SystemGetElapsedTime(dwCurTime) < dwDelayTime)
