@@ -3418,8 +3418,8 @@ void MakeDialogRole(STXPGROLE * pstRole, WORD width, WORD height)
     if (pstRole->m_wWidth % 2)
         pstRole->m_wWidth ++;
     pstRole->m_wHeight = height;
-    if (pstRole->m_wHeight < 41)
-        pstRole->m_wHeight = 41;
+    if (pstRole->m_wHeight < 51)
+        pstRole->m_wHeight = 51;
     
     dwSize = ALIGN_16(pstRole->m_wWidth) * ALIGN_16(pstRole->m_wHeight) * 2 + 256;
 
@@ -3432,8 +3432,8 @@ void MakeDialogRole(STXPGROLE * pstRole, WORD width, WORD height)
     mpWinInit(&win, pstRole->m_pRawImage, pstRole->m_wHeight, pstRole->m_wWidth);
     pWin = &win;
 
-    Idu_PaintWinArea(pWin, 0, 0, pWin->wWidth, 40, RGB2YVU(0x28, 0x29, 0x2D));
-    Idu_PaintWinArea(pWin, 0, 40, pWin->wWidth, pstRole->m_wHeight - 40, RGB2YVU(0x1C, 0x1D, 0x21));
+    Idu_PaintWinArea(pWin, 0, 0, pWin->wWidth, 50, RGB2YUV(255, 192, 0));
+    Idu_PaintWinArea(pWin, 0, 50, pWin->wWidth, pstRole->m_wHeight - 50, RGB2YUV(0xff, 0xff, 0xff));
     
     return;
 }
@@ -3628,8 +3628,8 @@ SWORD xpgDrawSprite_Dialog(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
     }
     else if (dwHashKey == xpgHash("ToolBox"))
     {
-        MakeDialogRole(&stRole, 500, 250);
-        MakeMaskRole(&stMaskRole, XPG_ROLE_ICON_MASK_0, 500, 250);
+        MakeDialogRole(&stRole, 560, 300);
+        MakeMaskRole(&stMaskRole, XPG_ROLE_ICON_MASK_0, 560, 300);
         xpgRoleDrawMask(&stRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, &stMaskRole);
 
         SetCurrIduFontID(FONT_ID_HeiTi19);
