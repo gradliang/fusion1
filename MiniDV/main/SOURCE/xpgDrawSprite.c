@@ -50,6 +50,10 @@ char strEditValue[32] = {0};                  // editing value
 char * strDialogTitle = NULL;
 DWORD * pdwEditingFusionValue = NULL;
 BOOL isSelectOnlineOPM = 0;
+BOOL isEnableRedPen = FALSE;
+BOOL isEnableRedPenManShan = FALSE;
+BOOL isEnableRedPenDingShi = FALSE;
+
 
 const BYTE * FModeStrList[] = {
     "SM",
@@ -1601,6 +1605,48 @@ SWORD xpgDrawSprite_LightIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite
                 text = getstr(Str_CloudOPM);
             SetCurrIduFontID(FONT_ID_HeiTi16);
             Idu_PrintStringCenter(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy+2, 0, pstSprite->m_wWidth);  
+        }
+    }
+    else if(dwHashKey == xpgHash("RedLight"))
+    {
+        if (dwSpriteId == 0)
+        {
+            if (isEnableRedPen)
+            {
+                pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 0);
+                if (pstMask)
+                    xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+            }
+        }
+        else if (dwSpriteId == 1)
+        {
+        }
+        else if (dwSpriteId == 2)
+        {
+            if (isEnableRedPen)
+            {
+                pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 2);
+                if (pstMask)
+                    xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+            }
+        }
+        else if (dwSpriteId == 3)
+        {
+            if (isEnableRedPen && isEnableRedPenManShan)
+            {
+                pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 2);
+                if (pstMask)
+                    xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+            }
+        }
+        else if (dwSpriteId == 4)
+        {
+            if (isEnableRedPen && isEnableRedPenDingShi)
+            {
+                pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 2);
+                if (pstMask)
+                    xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+            }
         }
     }
     

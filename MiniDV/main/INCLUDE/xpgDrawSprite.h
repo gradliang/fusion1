@@ -17,6 +17,10 @@ extern char strEditValue[32];
 extern char * strDialogTitle;
 extern DWORD * pdwEditingFusionValue;
 extern BOOL isSelectOnlineOPM;
+extern BOOL isEnableRedPen;
+extern BOOL isEnableRedPenManShan;
+extern BOOL isEnableRedPenDingShi;
+
 
 SWORD xpgDrawSprite_Null				  ( ST_IMGWIN *, STXPGSPRITE *, BOOL );
 SWORD xpgDrawSprite						    ( ST_IMGWIN *, STXPGSPRITE *, BOOL ); // type0

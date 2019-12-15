@@ -513,6 +513,8 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
     {
         if (dwIconId == 0)
         {
+            isEnableRedPen = FALSE;
+            isEnableRedPenManShan = FALSE;
             xpgPreactionAndGotoPage("RedLight");
             xpgUpdateStage();
         }
@@ -521,6 +523,41 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
             isSelectOnlineOPM = 0;
             xpgPreactionAndGotoPage("opm1");
             xpgUpdateStage();
+        }
+    }
+    else if (dwHashKey == xpgHash("RedLight"))
+    {
+        if (dwIconId == 0)
+        {
+        }
+        else if (dwIconId == 1)
+        {
+        }
+        else if (dwIconId == 2)
+        {
+            isEnableRedPen = !isEnableRedPen;
+            if (!isEnableRedPen) 
+            {
+                isEnableRedPenManShan = FALSE;
+                isEnableRedPenDingShi = FALSE;
+            }
+            xpgUpdateStage();
+        }
+        else if (dwIconId == 3)
+        {
+            if (isEnableRedPen)
+            {
+                isEnableRedPenManShan = !isEnableRedPenManShan;
+                xpgUpdateStage();
+            }
+        }
+        else if (dwIconId == 4)
+        {
+            if (isEnableRedPen)
+            {
+                isEnableRedPenDingShi = !isEnableRedPenDingShi;
+                xpgUpdateStage();
+            }
         }
     }
     else if (dwHashKey == xpgHash(DIALOG_PAGE_NAME))
