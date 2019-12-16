@@ -2083,8 +2083,10 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             text = getstr(Str_GuangGongLvJi);
         else if (dwTextId == 2)
             text = getstr(Str_Str_DuanMianJianCeYi);
+        Idu_FontColorSet(0,0,0);
         SetCurrIduFontID(FONT_ID_HeiTi19);
         Idu_PrintStringCenter(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 66);
+        Idu_FontColorSet(0xff,0xff,0xff);
     }
     else if (dwHashKey == xpgHash("Manual_work"))
     {
