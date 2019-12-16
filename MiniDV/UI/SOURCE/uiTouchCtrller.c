@@ -559,6 +559,26 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
                 xpgUpdateStage();
             }
         }
+        else if (dwIconId == 6)
+        {
+            if (isEnableRedPen && isEnableRedPenDingShi)
+            {
+                dwRedPenTime += 10;
+                if (dwRedPenTime > 990)
+                    dwRedPenTime = 990;
+                xpgUpdateStage();
+            }
+        }
+        else if (dwIconId == 7)
+        {
+            if (isEnableRedPen && isEnableRedPenDingShi)
+            {
+                dwRedPenTime -= 10;
+                if (dwRedPenTime < 10)
+                    dwRedPenTime = 10;
+                xpgUpdateStage();
+            }
+        }
     }
     else if (dwHashKey == xpgHash(DIALOG_PAGE_NAME))
     {

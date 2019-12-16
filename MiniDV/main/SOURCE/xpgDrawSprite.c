@@ -53,7 +53,7 @@ BOOL isSelectOnlineOPM = 0;
 BOOL isEnableRedPen = FALSE;
 BOOL isEnableRedPenManShan = FALSE;
 BOOL isEnableRedPenDingShi = FALSE;
-
+DWORD dwRedPenTime = 10;
 
 const BYTE * FModeStrList[] = {
     "SM",
@@ -1354,6 +1354,34 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         }
         else if (dwSpriteId == 5)
         {
+            pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 5);
+            if (pstMask)
+                xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+        }
+        else if (dwSpriteId == 6)
+        {
+            pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 6);
+            if (pstMask)
+                xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+        }
+        else if (dwSpriteId == 7)
+        {
+            pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 7);
+            if (pstMask)
+                xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+        }
+        else if (dwSpriteId == 8)
+        {
+            pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 8);
+            if (pstMask)
+                xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+
+            char tempstr[32];
+            Idu_FontColorSet(0,0,0);
+            SetCurrIduFontID(FONT_ID_HeiTi19);
+            sprintf(tempstr, "%dmin", dwRedPenTime);
+            Idu_PrintStringCenter(pWin, tempstr, pstSprite->m_wPx, pstSprite->m_wPy+4, 0, pstSprite->m_wWidth);
+            Idu_FontColorSet(255,255,255);
         }
     }
     else if(dwHashKey == xpgHash("opm1") || dwHashKey == xpgHash("opm2") || dwHashKey == xpgHash("opm3") || dwHashKey == xpgHash("opm4"))
@@ -1644,6 +1672,15 @@ SWORD xpgDrawSprite_LightIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite
             if (isEnableRedPen && isEnableRedPenDingShi)
             {
                 pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 2);
+                if (pstMask)
+                    xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+            }
+        }
+        else if (dwSpriteId == 5)
+        {
+            if (isEnableRedPen && isEnableRedPenDingShi)
+            {
+                pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 5);
                 if (pstMask)
                     xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
             }
