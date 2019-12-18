@@ -597,6 +597,10 @@ SWORD xpgDrawSprite_Background(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprit
     {
         mpCopyEqualWin(pWin, Idu_GetCacheWin());
     }
+    else if (dwHashKey == xpgHash("opm1"))
+    {
+        Idu_PaintWin(pWin, RGB2YUV(32, 33, 38));
+    }
     else if (dwHashKey == xpgHash(DIALOG_PAGE_NAME))
     {
         ST_IMGWIN * pCacheWin = xpgGetCurrDialogCacheWin();
@@ -1388,7 +1392,7 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
     {
         if (dwSpriteId == 0 || dwSpriteId == 1)
         {
-            pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 0);
+            pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, dwSpriteId);
             if (pstMask)
                 xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
             if (dwSpriteId == 0)
@@ -1397,6 +1401,74 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
                 text = getstr(Str_CloudOPM);
             SetCurrIduFontID(FONT_ID_HeiTi16);
             Idu_PrintStringCenter(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy+2, 0, pstSprite->m_wWidth);  
+        }
+        else if (dwSpriteId == 2)
+        {
+            pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 2);
+            if (pstMask)
+                xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+        }
+        else if (dwSpriteId == 3)
+        {
+            pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 3);
+            if (pstMask)
+                xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+        }
+        else if (dwSpriteId == 4)
+        {
+            pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 4);
+            if (pstMask)
+                xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+        }
+        else if (dwSpriteId == 5)
+        {
+            xpgDrawSprite(pWin, pstSprite, boClip);
+        }
+        else if (dwSpriteId == 6)
+        {
+            xpgDrawSprite(pWin, pstSprite, boClip);
+        }
+        else if (dwSpriteId == 7)
+        {
+            xpgDrawSprite(pWin, pstSprite, boClip);
+        }
+        else if (dwSpriteId == 8)
+        {
+            xpgDrawSprite(pWin, pstSprite, boClip);
+        }
+        else if (dwSpriteId == 9)
+        {
+            pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 9);
+            if (pstMask)
+                xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+        }
+        else if (dwSpriteId == 10)
+        {
+            pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 10);
+            if (pstMask)
+                xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+        }
+        else if (dwSpriteId == 11)
+        {
+            pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 11);
+            if (pstMask)
+                xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+        }
+        else if (dwSpriteId == 12)
+        {
+            xpgDrawSprite(pWin, pstSprite, boClip);
+        }
+        else if (dwSpriteId == 13)
+        {
+            pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 13);
+            if (pstMask)
+                xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+        }
+        else if (dwSpriteId == 14)
+        {
+            pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 14);
+            if (pstMask)
+                xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
         }
     }
     
