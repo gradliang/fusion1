@@ -173,6 +173,9 @@ enum xpgStringId {
 	Str_OPMKongZhiMianBan,			//   163
 	Str_LocalOPM,					//   164
 	Str_CloudOPM,					//   165
+	Str_LocalOPMCtrlPanel,			//   166
+	Str_RemoteOPMCtrlPanel,			//   167
+	
 	
 	Str_MAX_ID,
 };

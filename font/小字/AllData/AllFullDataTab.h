@@ -22319,7 +22319,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x572D 
   0xFFFFFFFF,  // char code : 0x572E 
   0xFFFFFFFF,  // char code : 0x572F 
-  0xFFFFFFFF,  // char code : 0x5730 
+  0x00003DB6,  // char code : 0x5730 
   0xFFFFFFFF,  // char code : 0x5731 
   0xFFFFFFFF,  // char code : 0x5732 
   0xFFFFFFFF,  // char code : 0x5733 
@@ -22790,13 +22790,13 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x5904 
   0xFFFFFFFF,  // char code : 0x5905 
   0xFFFFFFFF,  // char code : 0x5906 
-  0x00003DB6,  // char code : 0x5907 
+  0x00003E76,  // char code : 0x5907 
   0xFFFFFFFF,  // char code : 0x5908 
   0xFFFFFFFF,  // char code : 0x5909 
   0xFFFFFFFF,  // char code : 0x590A 
   0xFFFFFFFF,  // char code : 0x590B 
   0xFFFFFFFF,  // char code : 0x590C 
-  0x00003E80,  // char code : 0x590D 
+  0x00003F40,  // char code : 0x590D 
   0xFFFFFFFF,  // char code : 0x590E 
   0xFFFFFFFF,  // char code : 0x590F 
   0xFFFFFFFF,  // char code : 0x5910 
@@ -22809,7 +22809,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x5917 
   0xFFFFFFFF,  // char code : 0x5918 
   0xFFFFFFFF,  // char code : 0x5919 
-  0x00003F36,  // char code : 0x591A 
+  0x00003FF6,  // char code : 0x591A 
   0xFFFFFFFF,  // char code : 0x591B 
   0xFFFFFFFF,  // char code : 0x591C 
   0xFFFFFFFF,  // char code : 0x591D 
@@ -23383,7 +23383,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x5B55 
   0xFFFFFFFF,  // char code : 0x5B56 
   0xFFFFFFFF,  // char code : 0x5B57 
-  0x00003FEC,  // char code : 0x5B58 
+  0x000040AC,  // char code : 0x5B58 
   0xFFFFFFFF,  // char code : 0x5B59 
   0xFFFFFFFF,  // char code : 0x5B5A 
   0xFFFFFFFF,  // char code : 0x5B5B 
@@ -23449,7 +23449,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x5B97 
   0xFFFFFFFF,  // char code : 0x5B98 
   0xFFFFFFFF,  // char code : 0x5B99 
-  0x000040A2,  // char code : 0x5B9A 
+  0x00004162,  // char code : 0x5B9A 
   0xFFFFFFFF,  // char code : 0x5B9B 
   0xFFFFFFFF,  // char code : 0x5B9C 
   0xFFFFFFFF,  // char code : 0x5B9D 
@@ -23544,7 +23544,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x5BF6 
   0xFFFFFFFF,  // char code : 0x5BF7 
   0xFFFFFFFF,  // char code : 0x5BF8 
-  0x00004158,  // char code : 0x5BF9 
+  0x00004218,  // char code : 0x5BF9 
   0xFFFFFFFF,  // char code : 0x5BFA 
   0xFFFFFFFF,  // char code : 0x5BFB 
   0xFFFFFFFF,  // char code : 0x5BFC 
@@ -23557,7 +23557,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x5C03 
   0xFFFFFFFF,  // char code : 0x5C04 
   0xFFFFFFFF,  // char code : 0x5C05 
-  0x00004222,  // char code : 0x5C06 
+  0x000042E2,  // char code : 0x5C06 
   0xFFFFFFFF,  // char code : 0x5C07 
   0xFFFFFFFF,  // char code : 0x5C08 
   0xFFFFFFFF,  // char code : 0x5C09 
@@ -23575,7 +23575,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x5C15 
   0xFFFFFFFF,  // char code : 0x5C16 
   0xFFFFFFFF,  // char code : 0x5C17 
-  0x000042D8,  // char code : 0x5C18 
+  0x00004398,  // char code : 0x5C18 
   0xFFFFFFFF,  // char code : 0x5C19 
   0xFFFFFFFF,  // char code : 0x5C1A 
   0xFFFFFFFF,  // char code : 0x5C1B 
@@ -23617,7 +23617,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x5C3F 
   0xFFFFFFFF,  // char code : 0x5C40 
   0xFFFFFFFF,  // char code : 0x5C41 
-  0x0000438E,  // char code : 0x5C42 
+  0x0000444E,  // char code : 0x5C42 
   0xFFFFFFFF,  // char code : 0x5C43 
   0xFFFFFFFF,  // char code : 0x5C44 
   0xFFFFFFFF,  // char code : 0x5C45 
@@ -23630,7 +23630,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x5C4C 
   0xFFFFFFFF,  // char code : 0x5C4D 
   0xFFFFFFFF,  // char code : 0x5C4E 
-  0x00004444,  // char code : 0x5C4F 
+  0x00004504,  // char code : 0x5C4F 
   0xFFFFFFFF,  // char code : 0x5C50 
   0xFFFFFFFF,  // char code : 0x5C51 
   0xFFFFFFFF,  // char code : 0x5C52 
@@ -24036,8 +24036,8 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x5DE2 
   0xFFFFFFFF,  // char code : 0x5DE3 
   0xFFFFFFFF,  // char code : 0x5DE4 
-  0x000044FA,  // char code : 0x5DE5 
-  0x000045BA,  // char code : 0x5DE6 
+  0x000045BA,  // char code : 0x5DE5 
+  0x0000467A,  // char code : 0x5DE6 
   0xFFFFFFFF,  // char code : 0x5DE7 
   0xFFFFFFFF,  // char code : 0x5DE8 
   0xFFFFFFFF,  // char code : 0x5DE9 
@@ -24186,7 +24186,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x5E78 
   0xFFFFFFFF,  // char code : 0x5E79 
   0xFFFFFFFF,  // char code : 0x5E7A 
-  0x00004670,  // char code : 0x5E7B 
+  0x00004730,  // char code : 0x5E7B 
   0xFFFFFFFF,  // char code : 0x5E7C 
   0xFFFFFFFF,  // char code : 0x5E7D 
   0xFFFFFFFF,  // char code : 0x5E7E 
@@ -24229,7 +24229,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x5EA3 
   0xFFFFFFFF,  // char code : 0x5EA4 
   0xFFFFFFFF,  // char code : 0x5EA5 
-  0x00004726,  // char code : 0x5EA6 
+  0x000047E6,  // char code : 0x5EA6 
   0xFFFFFFFF,  // char code : 0x5EA7 
   0xFFFFFFFF,  // char code : 0x5EA8 
   0xFFFFFFFF,  // char code : 0x5EA9 
@@ -24319,7 +24319,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x5EFD 
   0xFFFFFFFF,  // char code : 0x5EFE 
   0xFFFFFFFF,  // char code : 0x5EFF 
-  0x000047DC,  // char code : 0x5F00 
+  0x0000489C,  // char code : 0x5F00 
   0xFFFFFFFF,  // char code : 0x5F01 
   0xFFFFFFFF,  // char code : 0x5F02 
   0xFFFFFFFF,  // char code : 0x5F03 
@@ -24334,7 +24334,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x5F0C 
   0xFFFFFFFF,  // char code : 0x5F0D 
   0xFFFFFFFF,  // char code : 0x5F0E 
-  0x00004892,  // char code : 0x5F0F 
+  0x00004952,  // char code : 0x5F0F 
   0xFFFFFFFF,  // char code : 0x5F10 
   0xFFFFFFFF,  // char code : 0x5F11 
   0xFFFFFFFF,  // char code : 0x5F12 
@@ -24404,7 +24404,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x5F52 
   0xFFFFFFFF,  // char code : 0x5F53 
   0xFFFFFFFF,  // char code : 0x5F54 
-  0x00004948,  // char code : 0x5F55 
+  0x00004A08,  // char code : 0x5F55 
   0xFFFFFFFF,  // char code : 0x5F56 
   0xFFFFFFFF,  // char code : 0x5F57 
   0xFFFFFFFF,  // char code : 0x5F58 
@@ -24424,7 +24424,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x5F66 
   0xFFFFFFFF,  // char code : 0x5F67 
   0xFFFFFFFF,  // char code : 0x5F68 
-  0x000049FE,  // char code : 0x5F69 
+  0x00004ABE,  // char code : 0x5F69 
   0xFFFFFFFF,  // char code : 0x5F6A 
   0xFFFFFFFF,  // char code : 0x5F6B 
   0xFFFFFFFF,  // char code : 0x5F6C 
@@ -24514,7 +24514,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x5FC0 
   0xFFFFFFFF,  // char code : 0x5FC1 
   0xFFFFFFFF,  // char code : 0x5FC2 
-  0x00004AC8,  // char code : 0x5FC3 
+  0x00004B88,  // char code : 0x5FC3 
   0xFFFFFFFF,  // char code : 0x5FC4 
   0xFFFFFFFF,  // char code : 0x5FC5 
   0xFFFFFFFF,  // char code : 0x5FC6 
@@ -24673,7 +24673,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x605F 
   0xFFFFFFFF,  // char code : 0x6060 
   0xFFFFFFFF,  // char code : 0x6061 
-  0x00004B7E,  // char code : 0x6062 
+  0x00004C3E,  // char code : 0x6062 
   0xFFFFFFFF,  // char code : 0x6063 
   0xFFFFFFFF,  // char code : 0x6064 
   0xFFFFFFFF,  // char code : 0x6065 
@@ -24862,7 +24862,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x611C 
   0xFFFFFFFF,  // char code : 0x611D 
   0xFFFFFFFF,  // char code : 0x611E 
-  0x00004C48,  // char code : 0x611F 
+  0x00004D08,  // char code : 0x611F 
   0xFFFFFFFF,  // char code : 0x6120 
   0xFFFFFFFF,  // char code : 0x6121 
   0xFFFFFFFF,  // char code : 0x6122 
@@ -25142,7 +25142,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x6234 
   0xFFFFFFFF,  // char code : 0x6235 
   0xFFFFFFFF,  // char code : 0x6236 
-  0x00004D12,  // char code : 0x6237 
+  0x00004DD2,  // char code : 0x6237 
   0xFFFFFFFF,  // char code : 0x6238 
   0xFFFFFFFF,  // char code : 0x6239 
   0xFFFFFFFF,  // char code : 0x623A 
@@ -25162,7 +25162,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x6248 
   0xFFFFFFFF,  // char code : 0x6249 
   0xFFFFFFFF,  // char code : 0x624A 
-  0x00004DC8,  // char code : 0x624B 
+  0x00004E88,  // char code : 0x624B 
   0xFFFFFFFF,  // char code : 0x624C 
   0xFFFFFFFF,  // char code : 0x624D 
   0xFFFFFFFF,  // char code : 0x624E 
@@ -25170,7 +25170,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x6250 
   0xFFFFFFFF,  // char code : 0x6251 
   0xFFFFFFFF,  // char code : 0x6252 
-  0x00004E7E,  // char code : 0x6253 
+  0x00004F3E,  // char code : 0x6253 
   0xFFFFFFFF,  // char code : 0x6254 
   0xFFFFFFFF,  // char code : 0x6255 
   0xFFFFFFFF,  // char code : 0x6256 
@@ -25194,7 +25194,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x6268 
   0xFFFFFFFF,  // char code : 0x6269 
   0xFFFFFFFF,  // char code : 0x626A 
-  0x00004F34,  // char code : 0x626B 
+  0x00004FF4,  // char code : 0x626B 
   0xFFFFFFFF,  // char code : 0x626C 
   0xFFFFFFFF,  // char code : 0x626D 
   0xFFFFFFFF,  // char code : 0x626E 
@@ -25251,7 +25251,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x62A1 
   0xFFFFFFFF,  // char code : 0x62A2 
   0xFFFFFFFF,  // char code : 0x62A3 
-  0x00004FEA,  // char code : 0x62A4 
+  0x000050AA,  // char code : 0x62A4 
   0xFFFFFFFF,  // char code : 0x62A5 
   0xFFFFFFFF,  // char code : 0x62A6 
   0xFFFFFFFF,  // char code : 0x62A7 
@@ -25288,7 +25288,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x62C6 
   0xFFFFFFFF,  // char code : 0x62C7 
   0xFFFFFFFF,  // char code : 0x62C8 
-  0x000050A0,  // char code : 0x62C9 
+  0x00005160,  // char code : 0x62C9 
   0xFFFFFFFF,  // char code : 0x62CA 
   0xFFFFFFFF,  // char code : 0x62CB 
   0xFFFFFFFF,  // char code : 0x62CC 
@@ -25508,9 +25508,9 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x63A2 
   0xFFFFFFFF,  // char code : 0x63A3 
   0xFFFFFFFF,  // char code : 0x63A4 
-  0x0000516A,  // char code : 0x63A5 
+  0x0000522A,  // char code : 0x63A5 
   0xFFFFFFFF,  // char code : 0x63A6 
-  0x00005234,  // char code : 0x63A7 
+  0x000052F4,  // char code : 0x63A7 
   0xFFFFFFFF,  // char code : 0x63A8 
   0xFFFFFFFF,  // char code : 0x63A9 
   0xFFFFFFFF,  // char code : 0x63AA 
@@ -25550,7 +25550,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x63CC 
   0xFFFFFFFF,  // char code : 0x63CD 
   0xFFFFFFFF,  // char code : 0x63CE 
-  0x000052FE,  // char code : 0x63CF 
+  0x000053BE,  // char code : 0x63CF 
   0xFFFFFFFF,  // char code : 0x63D0 
   0xFFFFFFFF,  // char code : 0x63D1 
   0xFFFFFFFF,  // char code : 0x63D2 
@@ -25804,7 +25804,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x64CA 
   0xFFFFFFFF,  // char code : 0x64CB 
   0xFFFFFFFF,  // char code : 0x64CC 
-  0x000053C8,  // char code : 0x64CD 
+  0x00005488,  // char code : 0x64CD 
   0xFFFFFFFF,  // char code : 0x64CE 
   0xFFFFFFFF,  // char code : 0x64CF 
   0xFFFFFFFF,  // char code : 0x64D0 
@@ -25912,12 +25912,12 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x6536 
   0xFFFFFFFF,  // char code : 0x6537 
   0xFFFFFFFF,  // char code : 0x6538 
-  0x00005492,  // char code : 0x6539 
+  0x00005552,  // char code : 0x6539 
   0xFFFFFFFF,  // char code : 0x653A 
   0xFFFFFFFF,  // char code : 0x653B 
   0xFFFFFFFF,  // char code : 0x653C 
   0xFFFFFFFF,  // char code : 0x653D 
-  0x00005548,  // char code : 0x653E 
+  0x00005608,  // char code : 0x653E 
   0xFFFFFFFF,  // char code : 0x653F 
   0xFFFFFFFF,  // char code : 0x6540 
   0xFFFFFFFF,  // char code : 0x6541 
@@ -25967,7 +25967,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x656D 
   0xFFFFFFFF,  // char code : 0x656E 
   0xFFFFFFFF,  // char code : 0x656F 
-  0x00005612,  // char code : 0x6570 
+  0x000056D2,  // char code : 0x6570 
   0xFFFFFFFF,  // char code : 0x6571 
   0xFFFFFFFF,  // char code : 0x6572 
   0xFFFFFFFF,  // char code : 0x6573 
@@ -25990,7 +25990,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x6584 
   0xFFFFFFFF,  // char code : 0x6585 
   0xFFFFFFFF,  // char code : 0x6586 
-  0x000056C8,  // char code : 0x6587 
+  0x00005788,  // char code : 0x6587 
   0xFFFFFFFF,  // char code : 0x6588 
   0xFFFFFFFF,  // char code : 0x6589 
   0xFFFFFFFF,  // char code : 0x658A 
@@ -26079,7 +26079,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x65DD 
   0xFFFFFFFF,  // char code : 0x65DE 
   0xFFFFFFFF,  // char code : 0x65DF 
-  0x0000577E,  // char code : 0x65E0 
+  0x0000583E,  // char code : 0x65E0 
   0xFFFFFFFF,  // char code : 0x65E1 
   0xFFFFFFFF,  // char code : 0x65E2 
   0xFFFFFFFF,  // char code : 0x65E3 
@@ -26101,7 +26101,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x65F3 
   0xFFFFFFFF,  // char code : 0x65F4 
   0xFFFFFFFF,  // char code : 0x65F5 
-  0x00005834,  // char code : 0x65F6 
+  0x000058F4,  // char code : 0x65F6 
   0xFFFFFFFF,  // char code : 0x65F7 
   0xFFFFFFFF,  // char code : 0x65F8 
   0xFFFFFFFF,  // char code : 0x65F9 
@@ -26142,7 +26142,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x661C 
   0xFFFFFFFF,  // char code : 0x661D 
   0xFFFFFFFF,  // char code : 0x661E 
-  0x000058EA,  // char code : 0x661F 
+  0x000059AA,  // char code : 0x661F 
   0xFFFFFFFF,  // char code : 0x6620 
   0xFFFFFFFF,  // char code : 0x6621 
   0xFFFFFFFF,  // char code : 0x6622 
@@ -26222,7 +26222,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x666C 
   0xFFFFFFFF,  // char code : 0x666D 
   0xFFFFFFFF,  // char code : 0x666E 
-  0x000059A0,  // char code : 0x666F 
+  0x00005A60,  // char code : 0x666F 
   0xFFFFFFFF,  // char code : 0x6670 
   0xFFFFFFFF,  // char code : 0x6671 
   0xFFFFFFFF,  // char code : 0x6672 
@@ -26241,7 +26241,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x667F 
   0xFFFFFFFF,  // char code : 0x6680 
   0xFFFFFFFF,  // char code : 0x6681 
-  0x00005A56,  // char code : 0x6682 
+  0x00005B16,  // char code : 0x6682 
   0xFFFFFFFF,  // char code : 0x6683 
   0xFFFFFFFF,  // char code : 0x6684 
   0xFFFFFFFF,  // char code : 0x6685 
@@ -26366,8 +26366,8 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x66FC 
   0xFFFFFFFF,  // char code : 0x66FD 
   0xFFFFFFFF,  // char code : 0x66FE 
-  0x00005B0C,  // char code : 0x66FF 
-  0x00005BC2,  // char code : 0x6700 
+  0x00005BCC,  // char code : 0x66FF 
+  0x00005C82,  // char code : 0x6700 
   0xFFFFFFFF,  // char code : 0x6701 
   0xFFFFFFFF,  // char code : 0x6702 
   0xFFFFFFFF,  // char code : 0x6703 
@@ -26411,7 +26411,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x6729 
   0xFFFFFFFF,  // char code : 0x672A 
   0xFFFFFFFF,  // char code : 0x672B 
-  0xFFFFFFFF,  // char code : 0x672C 
+  0x00005D38,  // char code : 0x672C 
   0xFFFFFFFF,  // char code : 0x672D 
   0xFFFFFFFF,  // char code : 0x672E 
   0xFFFFFFFF,  // char code : 0x672F 
@@ -26425,7 +26425,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x6737 
   0xFFFFFFFF,  // char code : 0x6738 
   0xFFFFFFFF,  // char code : 0x6739 
-  0x00005C78,  // char code : 0x673A 
+  0x00005DEE,  // char code : 0x673A 
   0xFFFFFFFF,  // char code : 0x673B 
   0xFFFFFFFF,  // char code : 0x673C 
   0xFFFFFFFF,  // char code : 0x673D 
@@ -26494,7 +26494,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x677C 
   0xFFFFFFFF,  // char code : 0x677D 
   0xFFFFFFFF,  // char code : 0x677E 
-  0xFFFFFFFF,  // char code : 0x677F 
+  0x00005EB8,  // char code : 0x677F 
   0xFFFFFFFF,  // char code : 0x6780 
   0xFFFFFFFF,  // char code : 0x6781 
   0xFFFFFFFF,  // char code : 0x6782 
@@ -26630,7 +26630,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x6804 
   0xFFFFFFFF,  // char code : 0x6805 
   0xFFFFFFFF,  // char code : 0x6806 
-  0x00005D42,  // char code : 0x6807 
+  0x00005F82,  // char code : 0x6807 
   0xFFFFFFFF,  // char code : 0x6808 
   0xFFFFFFFF,  // char code : 0x6809 
   0xFFFFFFFF,  // char code : 0x680A 
@@ -26656,7 +26656,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x681E 
   0xFFFFFFFF,  // char code : 0x681F 
   0xFFFFFFFF,  // char code : 0x6820 
-  0x00005E0C,  // char code : 0x6821 
+  0x0000604C,  // char code : 0x6821 
   0xFFFFFFFF,  // char code : 0x6822 
   0xFFFFFFFF,  // char code : 0x6823 
   0xFFFFFFFF,  // char code : 0x6824 
@@ -26815,7 +26815,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x68BD 
   0xFFFFFFFF,  // char code : 0x68BE 
   0xFFFFFFFF,  // char code : 0x68BF 
-  0x00005ED6,  // char code : 0x68C0 
+  0x00006116,  // char code : 0x68C0 
   0xFFFFFFFF,  // char code : 0x68C1 
   0xFFFFFFFF,  // char code : 0x68C2 
   0xFFFFFFFF,  // char code : 0x68C3 
@@ -27168,7 +27168,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x6A1E 
   0xFFFFFFFF,  // char code : 0x6A1F 
   0xFFFFFFFF,  // char code : 0x6A20 
-  0x00005FA0,  // char code : 0x6A21 
+  0x000061E0,  // char code : 0x6A21 
   0xFFFFFFFF,  // char code : 0x6A22 
   0xFFFFFFFF,  // char code : 0x6A23 
   0xFFFFFFFF,  // char code : 0x6A24 
@@ -27490,9 +27490,9 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x6B60 
   0xFFFFFFFF,  // char code : 0x6B61 
   0xFFFFFFFF,  // char code : 0x6B62 
-  0x0000606A,  // char code : 0x6B63 
+  0x000062AA,  // char code : 0x6B63 
   0xFFFFFFFF,  // char code : 0x6B64 
-  0x00006117,  // char code : 0x6B65 
+  0x00006357,  // char code : 0x6B65 
   0xFFFFFFFF,  // char code : 0x6B66 
   0xFFFFFFFF,  // char code : 0x6B67 
   0xFFFFFFFF,  // char code : 0x6B68 
@@ -27860,7 +27860,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x6CD2 
   0xFFFFFFFF,  // char code : 0x6CD3 
   0xFFFFFFFF,  // char code : 0x6CD4 
-  0x000061CD,  // char code : 0x6CD5 
+  0x0000640D,  // char code : 0x6CD5 
   0xFFFFFFFF,  // char code : 0x6CD6 
   0xFFFFFFFF,  // char code : 0x6CD7 
   0xFFFFFFFF,  // char code : 0x6CD8 
@@ -27887,7 +27887,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x6CED 
   0xFFFFFFFF,  // char code : 0x6CEE 
   0xFFFFFFFF,  // char code : 0x6CEF 
-  0x00006283,  // char code : 0x6CF0 
+  0x000064C3,  // char code : 0x6CF0 
   0xFFFFFFFF,  // char code : 0x6CF1 
   0xFFFFFFFF,  // char code : 0x6CF2 
   0xFFFFFFFF,  // char code : 0x6CF3 
@@ -27978,7 +27978,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x6D48 
   0xFFFFFFFF,  // char code : 0x6D49 
   0xFFFFFFFF,  // char code : 0x6D4A 
-  0x00006339,  // char code : 0x6D4B 
+  0x00006579,  // char code : 0x6D4B 
   0xFFFFFFFF,  // char code : 0x6D4C 
   0xFFFFFFFF,  // char code : 0x6D4D 
   0xFFFFFFFF,  // char code : 0x6D4E 
@@ -28154,7 +28154,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x6DF8 
   0xFFFFFFFF,  // char code : 0x6DF9 
   0xFFFFFFFF,  // char code : 0x6DFA 
-  0x000063EF,  // char code : 0x6DFB 
+  0x0000662F,  // char code : 0x6DFB 
   0xFFFFFFFF,  // char code : 0x6DFC 
   0xFFFFFFFF,  // char code : 0x6DFD 
   0xFFFFFFFF,  // char code : 0x6DFE 
@@ -28783,7 +28783,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x706D 
   0xFFFFFFFF,  // char code : 0x706E 
   0xFFFFFFFF,  // char code : 0x706F 
-  0x000064B9,  // char code : 0x7070 
+  0x000066F9,  // char code : 0x7070 
   0xFFFFFFFF,  // char code : 0x7071 
   0xFFFFFFFF,  // char code : 0x7072 
   0xFFFFFFFF,  // char code : 0x7073 
@@ -28842,7 +28842,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x70A8 
   0xFFFFFFFF,  // char code : 0x70A9 
   0xFFFFFFFF,  // char code : 0x70AA 
-  0x00006583,  // char code : 0x70AB 
+  0x000067C3,  // char code : 0x70AB 
   0xFFFFFFFF,  // char code : 0x70AC 
   0xFFFFFFFF,  // char code : 0x70AD 
   0xFFFFFFFF,  // char code : 0x70AE 
@@ -28856,7 +28856,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x70B6 
   0xFFFFFFFF,  // char code : 0x70B7 
   0xFFFFFFFF,  // char code : 0x70B8 
-  0x0000664D,  // char code : 0x70B9 
+  0x0000688D,  // char code : 0x70B9 
   0xFFFFFFFF,  // char code : 0x70BA 
   0xFFFFFFFF,  // char code : 0x70BB 
   0xFFFFFFFF,  // char code : 0x70BC 
@@ -28908,7 +28908,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x70EA 
   0xFFFFFFFF,  // char code : 0x70EB 
   0xFFFFFFFF,  // char code : 0x70EC 
-  0x00006703,  // char code : 0x70ED 
+  0x00006943,  // char code : 0x70ED 
   0xFFFFFFFF,  // char code : 0x70EE 
   0xFFFFFFFF,  // char code : 0x70EF 
   0xFFFFFFFF,  // char code : 0x70F0 
@@ -28965,7 +28965,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x7123 
   0xFFFFFFFF,  // char code : 0x7124 
   0xFFFFFFFF,  // char code : 0x7125 
-  0x000067B9,  // char code : 0x7126 
+  0x000069F9,  // char code : 0x7126 
   0xFFFFFFFF,  // char code : 0x7127 
   0xFFFFFFFF,  // char code : 0x7128 
   0xFFFFFFFF,  // char code : 0x7129 
@@ -29075,7 +29075,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x7191 
   0xFFFFFFFF,  // char code : 0x7192 
   0xFFFFFFFF,  // char code : 0x7193 
-  0x00006883,  // char code : 0x7194 
+  0x00006AC3,  // char code : 0x7194 
   0xFFFFFFFF,  // char code : 0x7195 
   0xFFFFFFFF,  // char code : 0x7196 
   0xFFFFFFFF,  // char code : 0x7197 
@@ -29272,7 +29272,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x7256 
   0xFFFFFFFF,  // char code : 0x7257 
   0xFFFFFFFF,  // char code : 0x7258 
-  0x0000694D,  // char code : 0x7259 
+  0x00006B8D,  // char code : 0x7259 
   0xFFFFFFFF,  // char code : 0x725A 
   0xFFFFFFFF,  // char code : 0x725B 
   0xFFFFFFFF,  // char code : 0x725C 
@@ -29574,7 +29574,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x7384 
   0xFFFFFFFF,  // char code : 0x7385 
   0xFFFFFFFF,  // char code : 0x7386 
-  0x00006A03,  // char code : 0x7387 
+  0x00006C43,  // char code : 0x7387 
   0xFFFFFFFF,  // char code : 0x7388 
   0xFFFFFFFF,  // char code : 0x7389 
   0xFFFFFFFF,  // char code : 0x738A 
@@ -29676,7 +29676,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x73EA 
   0xFFFFFFFF,  // char code : 0x73EB 
   0xFFFFFFFF,  // char code : 0x73EC 
-  0x00006AB9,  // char code : 0x73ED 
+  0x00006CF9,  // char code : 0x73ED 
   0xFFFFFFFF,  // char code : 0x73EE 
   0xFFFFFFFF,  // char code : 0x73EF 
   0xFFFFFFFF,  // char code : 0x73F0 
@@ -29991,7 +29991,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x7525 
   0xFFFFFFFF,  // char code : 0x7526 
   0xFFFFFFFF,  // char code : 0x7527 
-  0x00006B83,  // char code : 0x7528 
+  0x00006DC3,  // char code : 0x7528 
   0xFFFFFFFF,  // char code : 0x7529 
   0xFFFFFFFF,  // char code : 0x752A 
   0xFFFFFFFF,  // char code : 0x752B 
@@ -30004,7 +30004,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x7532 
   0xFFFFFFFF,  // char code : 0x7533 
   0xFFFFFFFF,  // char code : 0x7534 
-  0x00006C25,  // char code : 0x7535 
+  0x00006E65,  // char code : 0x7535 
   0xFFFFFFFF,  // char code : 0x7536 
   0xFFFFFFFF,  // char code : 0x7537 
   0xFFFFFFFF,  // char code : 0x7538 
@@ -30445,7 +30445,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x76EB 
   0xFFFFFFFF,  // char code : 0x76EC 
   0xFFFFFFFF,  // char code : 0x76ED 
-  0x00006CDB,  // char code : 0x76EE 
+  0x00006F1B,  // char code : 0x76EE 
   0xFFFFFFFF,  // char code : 0x76EF 
   0xFFFFFFFF,  // char code : 0x76F0 
   0xFFFFFFFF,  // char code : 0x76F1 
@@ -30720,7 +30720,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x77FE 
   0xFFFFFFFF,  // char code : 0x77FF 
   0xFFFFFFFF,  // char code : 0x7800 
-  0x00006D69,  // char code : 0x7801 
+  0x00006FA9,  // char code : 0x7801 
   0xFFFFFFFF,  // char code : 0x7802 
   0xFFFFFFFF,  // char code : 0x7803 
   0xFFFFFFFF,  // char code : 0x7804 
@@ -31242,7 +31242,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x7A08 
   0xFFFFFFFF,  // char code : 0x7A09 
   0xFFFFFFFF,  // char code : 0x7A0A 
-  0xFFFFFFFF,  // char code : 0x7A0B 
+  0x0000705F,  // char code : 0x7A0B 
   0xFFFFFFFF,  // char code : 0x7A0C 
   0xFFFFFFFF,  // char code : 0x7A0D 
   0xFFFFFFFF,  // char code : 0x7A0E 
@@ -31353,7 +31353,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x7A77 
   0xFFFFFFFF,  // char code : 0x7A78 
   0xFFFFFFFF,  // char code : 0x7A79 
-  0x00006E1F,  // char code : 0x7A7A 
+  0x00007129,  // char code : 0x7A7A 
   0xFFFFFFFF,  // char code : 0x7A7B 
   0xFFFFFFFF,  // char code : 0x7A7C 
   0xFFFFFFFF,  // char code : 0x7A7D 
@@ -31470,7 +31470,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x7AEC 
   0xFFFFFFFF,  // char code : 0x7AED 
   0xFFFFFFFF,  // char code : 0x7AEE 
-  0x00006ED5,  // char code : 0x7AEF 
+  0x000071DF,  // char code : 0x7AEF 
   0xFFFFFFFF,  // char code : 0x7AF0 
   0xFFFFFFFF,  // char code : 0x7AF1 
   0xFFFFFFFF,  // char code : 0x7AF2 
@@ -31507,7 +31507,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x7B11 
   0xFFFFFFFF,  // char code : 0x7B12 
   0xFFFFFFFF,  // char code : 0x7B13 
-  0x00006F8B,  // char code : 0x7B14 
+  0x00007295,  // char code : 0x7B14 
   0xFFFFFFFF,  // char code : 0x7B15 
   0xFFFFFFFF,  // char code : 0x7B16 
   0xFFFFFFFF,  // char code : 0x7B17 
@@ -31615,7 +31615,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x7B7D 
   0xFFFFFFFF,  // char code : 0x7B7E 
   0xFFFFFFFF,  // char code : 0x7B7F 
-  0x00007055,  // char code : 0x7B80 
+  0x0000735F,  // char code : 0x7B80 
   0xFFFFFFFF,  // char code : 0x7B81 
   0xFFFFFFFF,  // char code : 0x7B82 
   0xFFFFFFFF,  // char code : 0x7B83 
@@ -31664,7 +31664,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x7BAE 
   0xFFFFFFFF,  // char code : 0x7BAF 
   0xFFFFFFFF,  // char code : 0x7BB0 
-  0x0000710B,  // char code : 0x7BB1 
+  0x00007415,  // char code : 0x7BB1 
   0xFFFFFFFF,  // char code : 0x7BB2 
   0xFFFFFFFF,  // char code : 0x7BB3 
   0xFFFFFFFF,  // char code : 0x7BB4 
@@ -31933,7 +31933,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x7CBB 
   0xFFFFFFFF,  // char code : 0x7CBC 
   0xFFFFFFFF,  // char code : 0x7CBD 
-  0x000071C1,  // char code : 0x7CBE 
+  0x000074CB,  // char code : 0x7CBE 
   0xFFFFFFFF,  // char code : 0x7CBF 
   0xFFFFFFFF,  // char code : 0x7CC0 
   0xFFFFFFFF,  // char code : 0x7CC1 
@@ -31994,7 +31994,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x7CF8 
   0xFFFFFFFF,  // char code : 0x7CF9 
   0xFFFFFFFF,  // char code : 0x7CFA 
-  0x00007277,  // char code : 0x7CFB 
+  0x00007581,  // char code : 0x7CFB 
   0xFFFFFFFF,  // char code : 0x7CFC 
   0xFFFFFFFF,  // char code : 0x7CFD 
   0xFFFFFFFF,  // char code : 0x7CFE 
@@ -32417,11 +32417,11 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x7E9F 
   0xFFFFFFFF,  // char code : 0x7EA0 
   0xFFFFFFFF,  // char code : 0x7EA1 
-  0x0000732D,  // char code : 0x7EA2 
+  0x00007637,  // char code : 0x7EA2 
   0xFFFFFFFF,  // char code : 0x7EA3 
-  0x000073DA,  // char code : 0x7EA4 
+  0x000076E4,  // char code : 0x7EA4 
   0xFFFFFFFF,  // char code : 0x7EA5 
-  0x000074A4,  // char code : 0x7EA6 
+  0x000077AE,  // char code : 0x7EA6 
   0xFFFFFFFF,  // char code : 0x7EA7 
   0xFFFFFFFF,  // char code : 0x7EA8 
   0xFFFFFFFF,  // char code : 0x7EA9 
@@ -32446,14 +32446,14 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x7EBC 
   0xFFFFFFFF,  // char code : 0x7EBD 
   0xFFFFFFFF,  // char code : 0x7EBE 
-  0x0000755A,  // char code : 0x7EBF 
+  0x00007864,  // char code : 0x7EBF 
   0xFFFFFFFF,  // char code : 0x7EC0 
   0xFFFFFFFF,  // char code : 0x7EC1 
   0xFFFFFFFF,  // char code : 0x7EC2 
   0xFFFFFFFF,  // char code : 0x7EC3 
   0xFFFFFFFF,  // char code : 0x7EC4 
   0xFFFFFFFF,  // char code : 0x7EC5 
-  0x0000762E,  // char code : 0x7EC6 
+  0x00007938,  // char code : 0x7EC6 
   0xFFFFFFFF,  // char code : 0x7EC7 
   0xFFFFFFFF,  // char code : 0x7EC8 
   0xFFFFFFFF,  // char code : 0x7EC9 
@@ -32478,7 +32478,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x7EDC 
   0xFFFFFFFF,  // char code : 0x7EDD 
   0xFFFFFFFF,  // char code : 0x7EDE 
-  0x000076E4,  // char code : 0x7EDF 
+  0x000079EE,  // char code : 0x7EDF 
   0xFFFFFFFF,  // char code : 0x7EE0 
   0xFFFFFFFF,  // char code : 0x7EE1 
   0xFFFFFFFF,  // char code : 0x7EE2 
@@ -32499,7 +32499,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x7EF1 
   0xFFFFFFFF,  // char code : 0x7EF2 
   0xFFFFFFFF,  // char code : 0x7EF3 
-  0x000077AE,  // char code : 0x7EF4 
+  0x00007AB8,  // char code : 0x7EF4 
   0xFFFFFFFF,  // char code : 0x7EF5 
   0xFFFFFFFF,  // char code : 0x7EF6 
   0xFFFFFFFF,  // char code : 0x7EF7 
@@ -32621,7 +32621,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x7F6B 
   0xFFFFFFFF,  // char code : 0x7F6C 
   0xFFFFFFFF,  // char code : 0x7F6D 
-  0x00007864,  // char code : 0x7F6E 
+  0x00007B6E,  // char code : 0x7F6E 
   0xFFFFFFFF,  // char code : 0x7F6F 
   0xFFFFFFFF,  // char code : 0x7F70 
   0xFFFFFFFF,  // char code : 0x7F71 
@@ -32971,7 +32971,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x80C9 
   0xFFFFFFFF,  // char code : 0x80CA 
   0xFFFFFFFF,  // char code : 0x80CB 
-  0x0000791A,  // char code : 0x80CC 
+  0x00007C24,  // char code : 0x80CC 
   0xFFFFFFFF,  // char code : 0x80CD 
   0xFFFFFFFF,  // char code : 0x80CE 
   0xFFFFFFFF,  // char code : 0x80CF 
@@ -33020,7 +33020,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x80FA 
   0xFFFFFFFF,  // char code : 0x80FB 
   0xFFFFFFFF,  // char code : 0x80FC 
-  0x000079D0,  // char code : 0x80FD 
+  0x00007CDA,  // char code : 0x80FD 
   0xFFFFFFFF,  // char code : 0x80FE 
   0xFFFFFFFF,  // char code : 0x80FF 
   0xFFFFFFFF,  // char code : 0x8100 
@@ -33257,7 +33257,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x81E7 
   0xFFFFFFFF,  // char code : 0x81E8 
   0xFFFFFFFF,  // char code : 0x81E9 
-  0x00007A86,  // char code : 0x81EA 
+  0x00007D90,  // char code : 0x81EA 
   0xFFFFFFFF,  // char code : 0x81EB 
   0xFFFFFFFF,  // char code : 0x81EC 
   0xFFFFFFFF,  // char code : 0x81ED 
@@ -33323,7 +33323,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x8229 
   0xFFFFFFFF,  // char code : 0x822A 
   0xFFFFFFFF,  // char code : 0x822B 
-  0x00007B14,  // char code : 0x822C 
+  0x00007E1E,  // char code : 0x822C 
   0xFFFFFFFF,  // char code : 0x822D 
   0xFFFFFFFF,  // char code : 0x822E 
   0xFFFFFFFF,  // char code : 0x822F 
@@ -33454,7 +33454,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x82AC 
   0xFFFFFFFF,  // char code : 0x82AD 
   0xFFFFFFFF,  // char code : 0x82AE 
-  0x00007BDE,  // char code : 0x82AF 
+  0x00007EE8,  // char code : 0x82AF 
   0xFFFFFFFF,  // char code : 0x82B0 
   0xFFFFFFFF,  // char code : 0x82B1 
   0xFFFFFFFF,  // char code : 0x82B2 
@@ -33520,7 +33520,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x82EE 
   0xFFFFFFFF,  // char code : 0x82EF 
   0xFFFFFFFF,  // char code : 0x82F0 
-  0x00007C94,  // char code : 0x82F1 
+  0x00007F9E,  // char code : 0x82F1 
   0xFFFFFFFF,  // char code : 0x82F2 
   0xFFFFFFFF,  // char code : 0x82F3 
   0xFFFFFFFF,  // char code : 0x82F4 
@@ -33795,7 +33795,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x8401 
   0xFFFFFFFF,  // char code : 0x8402 
   0xFFFFFFFF,  // char code : 0x8403 
-  0x00007D4A,  // char code : 0x8404 
+  0x00008054,  // char code : 0x8404 
   0xFFFFFFFF,  // char code : 0x8405 
   0xFFFFFFFF,  // char code : 0x8406 
   0xFFFFFFFF,  // char code : 0x8407 
@@ -33888,7 +33888,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x845E 
   0xFFFFFFFF,  // char code : 0x845F 
   0xFFFFFFFF,  // char code : 0x8460 
-  0x00007E00,  // char code : 0x8461 
+  0x0000810A,  // char code : 0x8461 
   0xFFFFFFFF,  // char code : 0x8462 
   0xFFFFFFFF,  // char code : 0x8463 
   0xFFFFFFFF,  // char code : 0x8464 
@@ -35198,7 +35198,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x897C 
   0xFFFFFFFF,  // char code : 0x897D 
   0xFFFFFFFF,  // char code : 0x897E 
-  0x00007EB6,  // char code : 0x897F 
+  0x000081C0,  // char code : 0x897F 
   0xFFFFFFFF,  // char code : 0x8980 
   0xFFFFFFFF,  // char code : 0x8981 
   0xFFFFFFFF,  // char code : 0x8982 
@@ -35281,7 +35281,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x89CF 
   0xFFFFFFFF,  // char code : 0x89D0 
   0xFFFFFFFF,  // char code : 0x89D1 
-  0x00007F6C,  // char code : 0x89D2 
+  0x00008276,  // char code : 0x89D2 
   0xFFFFFFFF,  // char code : 0x89D3 
   0xFFFFFFFF,  // char code : 0x89D4 
   0xFFFFFFFF,  // char code : 0x89D5 
@@ -35744,10 +35744,10 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x8B9E 
   0xFFFFFFFF,  // char code : 0x8B9F 
   0xFFFFFFFF,  // char code : 0x8BA0 
-  0x0000800E,  // char code : 0x8BA1 
+  0x00008318,  // char code : 0x8BA1 
   0xFFFFFFFF,  // char code : 0x8BA2 
   0xFFFFFFFF,  // char code : 0x8BA3 
-  0x000080C4,  // char code : 0x8BA4 
+  0x000083CE,  // char code : 0x8BA4 
   0xFFFFFFFF,  // char code : 0x8BA5 
   0xFFFFFFFF,  // char code : 0x8BA6 
   0xFFFFFFFF,  // char code : 0x8BA7 
@@ -35759,7 +35759,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x8BAD 
   0xFFFFFFFF,  // char code : 0x8BAE 
   0xFFFFFFFF,  // char code : 0x8BAF 
-  0x0000817A,  // char code : 0x8BB0 
+  0x00008484,  // char code : 0x8BB0 
   0xFFFFFFFF,  // char code : 0x8BB1 
   0xFFFFFFFF,  // char code : 0x8BB2 
   0xFFFFFFFF,  // char code : 0x8BB3 
@@ -35773,7 +35773,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x8BBB 
   0xFFFFFFFF,  // char code : 0x8BBC 
   0xFFFFFFFF,  // char code : 0x8BBD 
-  0x00008230,  // char code : 0x8BBE 
+  0x0000853A,  // char code : 0x8BBE 
   0xFFFFFFFF,  // char code : 0x8BBF 
   0xFFFFFFFF,  // char code : 0x8BC0 
   0xFFFFFFFF,  // char code : 0x8BC1 
@@ -35796,7 +35796,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x8BD2 
   0xFFFFFFFF,  // char code : 0x8BD3 
   0xFFFFFFFF,  // char code : 0x8BD4 
-  0x000082FA,  // char code : 0x8BD5 
+  0x00008604,  // char code : 0x8BD5 
   0xFFFFFFFF,  // char code : 0x8BD6 
   0xFFFFFFFF,  // char code : 0x8BD7 
   0xFFFFFFFF,  // char code : 0x8BD8 
@@ -35812,7 +35812,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x8BE2 
   0xFFFFFFFF,  // char code : 0x8BE3 
   0xFFFFFFFF,  // char code : 0x8BE4 
-  0x000083B0,  // char code : 0x8BE5 
+  0x000086BA,  // char code : 0x8BE5 
   0xFFFFFFFF,  // char code : 0x8BE6 
   0xFFFFFFFF,  // char code : 0x8BE7 
   0xFFFFFFFF,  // char code : 0x8BE8 
@@ -36827,7 +36827,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x8FD9 
   0xFFFFFFFF,  // char code : 0x8FDA 
   0xFFFFFFFF,  // char code : 0x8FDB 
-  0xFFFFFFFF,  // char code : 0x8FDC 
+  0x00008770,  // char code : 0x8FDC 
   0xFFFFFFFF,  // char code : 0x8FDD 
   0xFFFFFFFF,  // char code : 0x8FDE 
   0xFFFFFFFF,  // char code : 0x8FDF 
@@ -36894,7 +36894,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x901C 
   0xFFFFFFFF,  // char code : 0x901D 
   0xFFFFFFFF,  // char code : 0x901E 
-  0x00008466,  // char code : 0x901F 
+  0x0000883A,  // char code : 0x901F 
   0xFFFFFFFF,  // char code : 0x9020 
   0xFFFFFFFF,  // char code : 0x9021 
   0xFFFFFFFF,  // char code : 0x9022 
@@ -37196,7 +37196,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x914A 
   0xFFFFFFFF,  // char code : 0x914B 
   0xFFFFFFFF,  // char code : 0x914C 
-  0x00008530,  // char code : 0x914D 
+  0x00008904,  // char code : 0x914D 
   0xFFFFFFFF,  // char code : 0x914E 
   0xFFFFFFFF,  // char code : 0x914F 
   0xFFFFFFFF,  // char code : 0x9150 
@@ -37324,9 +37324,9 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x91CA 
   0xFFFFFFFF,  // char code : 0x91CB 
   0xFFFFFFFF,  // char code : 0x91CC 
-  0x000085FA,  // char code : 0x91CD 
+  0x000089CE,  // char code : 0x91CD 
   0xFFFFFFFF,  // char code : 0x91CE 
-  0x000086B0,  // char code : 0x91CF 
+  0x00008A84,  // char code : 0x91CF 
   0xFFFFFFFF,  // char code : 0x91D0 
   0xFFFFFFFF,  // char code : 0x91D1 
   0xFFFFFFFF,  // char code : 0x91D2 
@@ -38046,7 +38046,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x949C 
   0xFFFFFFFF,  // char code : 0x949D 
   0xFFFFFFFF,  // char code : 0x949E 
-  0x00008766,  // char code : 0x949F 
+  0x00008B3A,  // char code : 0x949F 
   0xFFFFFFFF,  // char code : 0x94A0 
   0xFFFFFFFF,  // char code : 0x94A1 
   0xFFFFFFFF,  // char code : 0x94A2 
@@ -38380,14 +38380,14 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x95EA 
   0xFFFFFFFF,  // char code : 0x95EB 
   0xFFFFFFFF,  // char code : 0x95EC 
-  0x0000881C,  // char code : 0x95ED 
+  0x00008BF0,  // char code : 0x95ED 
   0xFFFFFFFF,  // char code : 0x95EE 
   0xFFFFFFFF,  // char code : 0x95EF 
   0xFFFFFFFF,  // char code : 0x95F0 
   0xFFFFFFFF,  // char code : 0x95F1 
   0xFFFFFFFF,  // char code : 0x95F2 
   0xFFFFFFFF,  // char code : 0x95F3 
-  0x000088D2,  // char code : 0x95F4 
+  0x00008CA6,  // char code : 0x95F4 
   0xFFFFFFFF,  // char code : 0x95F5 
   0xFFFFFFFF,  // char code : 0x95F6 
   0xFFFFFFFF,  // char code : 0x95F7 
@@ -38462,7 +38462,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x963C 
   0xFFFFFFFF,  // char code : 0x963D 
   0xFFFFFFFF,  // char code : 0x963E 
-  0x00008988,  // char code : 0x963F 
+  0x00008D5C,  // char code : 0x963F 
   0xFFFFFFFF,  // char code : 0x9640 
   0xFFFFFFFF,  // char code : 0x9641 
   0xFFFFFFFF,  // char code : 0x9642 
@@ -38479,7 +38479,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x964D 
   0xFFFFFFFF,  // char code : 0x964E 
   0xFFFFFFFF,  // char code : 0x964F 
-  0x00008A3E,  // char code : 0x9650 
+  0x00008E12,  // char code : 0x9650 
   0xFFFFFFFF,  // char code : 0x9651 
   0xFFFFFFFF,  // char code : 0x9652 
   0xFFFFFFFF,  // char code : 0x9653 
@@ -38499,7 +38499,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x9661 
   0xFFFFFFFF,  // char code : 0x9662 
   0xFFFFFFFF,  // char code : 0x9663 
-  0x00008AF4,  // char code : 0x9664 
+  0x00008EC8,  // char code : 0x9664 
   0xFFFFFFFF,  // char code : 0x9665 
   0xFFFFFFFF,  // char code : 0x9666 
   0xFFFFFFFF,  // char code : 0x9667 
@@ -38753,7 +38753,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x975F 
   0xFFFFFFFF,  // char code : 0x9760 
   0xFFFFFFFF,  // char code : 0x9761 
-  0x00008BAA,  // char code : 0x9762 
+  0x00008F7E,  // char code : 0x9762 
   0xFFFFFFFF,  // char code : 0x9763 
   0xFFFFFFFF,  // char code : 0x9764 
   0xFFFFFFFF,  // char code : 0x9765 
@@ -39043,7 +39043,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x9881 
   0xFFFFFFFF,  // char code : 0x9882 
   0xFFFFFFFF,  // char code : 0x9883 
-  0x00008C60,  // char code : 0x9884 
+  0x00009034,  // char code : 0x9884 
   0xFFFFFFFF,  // char code : 0x9885 
   0xFFFFFFFF,  // char code : 0x9886 
   0xFFFFFFFF,  // char code : 0x9887 
@@ -39763,7 +39763,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x9B51 
   0xFFFFFFFF,  // char code : 0x9B52 
   0xFFFFFFFF,  // char code : 0x9B53 
-  0x00008D16,  // char code : 0x9B54 
+  0x000090EA,  // char code : 0x9B54 
   0xFFFFFFFF,  // char code : 0x9B55 
   0xFFFFFFFF,  // char code : 0x9B56 
   0xFFFFFFFF,  // char code : 0x9B57 
@@ -40663,7 +40663,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x9ED5 
   0xFFFFFFFF,  // char code : 0x9ED6 
   0xFFFFFFFF,  // char code : 0x9ED7 
-  0x00008DE0,  // char code : 0x9ED8 
+  0x000091B4,  // char code : 0x9ED8 
   0xFFFFFFFF,  // char code : 0x9ED9 
   0xFFFFFFFF,  // char code : 0x9EDA 
   0xFFFFFFFF,  // char code : 0x9EDB 
@@ -65287,11 +65287,11 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0xFF05 
   0xFFFFFFFF,  // char code : 0xFF06 
   0xFFFFFFFF,  // char code : 0xFF07 
-  0x00008E96,  // char code : 0xFF08 
-  0x00008ED1,  // char code : 0xFF09 
+  0x0000926A,  // char code : 0xFF08 
+  0x000092A5,  // char code : 0xFF09 
   0xFFFFFFFF,  // char code : 0xFF0A 
   0xFFFFFFFF,  // char code : 0xFF0B 
-  0x00008F0C,  // char code : 0xFF0C 
+  0x000092E0,  // char code : 0xFF0C 
   0xFFFFFFFF,  // char code : 0xFF0D 
   0xFFFFFFFF,  // char code : 0xFF0E 
   0xFFFFFFFF,  // char code : 0xFF0F 
@@ -65305,7 +65305,7 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0xFF17 
   0xFFFFFFFF,  // char code : 0xFF18 
   0xFFFFFFFF,  // char code : 0xFF19 
-  0x00008F38,  // char code : 0xFF1A 
+  0x0000930C,  // char code : 0xFF1A 
   0xFFFFFFFF,  // char code : 0xFF1B 
   0xFFFFFFFF,  // char code : 0xFF1C 
   0xFFFFFFFF,  // char code : 0xFF1D 

@@ -174,7 +174,8 @@ static const BYTE* xpgString_SChinese[] =
 	"OPM控制面板",				//   163
 	"本地OPM",					//   164
 	"云端OPM",					//   165
-
+	"本地OPM控制面板",			//   166
+	"远程OPM控制面板",			//   167
 
 };
 

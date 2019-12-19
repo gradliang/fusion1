@@ -597,7 +597,7 @@ SWORD xpgDrawSprite_Background(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprit
     {
         mpCopyEqualWin(pWin, Idu_GetCacheWin());
     }
-    else if (dwHashKey == xpgHash("opm1"))
+    else if (dwHashKey == xpgHash("opm1") || dwHashKey == xpgHash("opm2") || dwHashKey == xpgHash("opm3") || dwHashKey == xpgHash("opm4"))
     {
         Idu_PaintWin(pWin, RGB2YUV(32, 33, 38));
     }
@@ -1399,14 +1399,23 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
                 text = getstr(Str_LocalOPM);
             else 
                 text = getstr(Str_CloudOPM);
+            Idu_FontColorSet(0,0,0);
             SetCurrIduFontID(FONT_ID_HeiTi16);
             Idu_PrintStringCenter(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy+2, 0, pstSprite->m_wWidth);  
+            Idu_FontColorSet(255,255,255);
         }
         else if (dwSpriteId == 2)
         {
             pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 2);
             if (pstMask)
                 xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+            Idu_FontColorSet(255,255,255);
+            SetCurrIduFontID(FONT_ID_HeiTi16);
+            if (dwHashKey == xpgHash("opm1"))
+                text = getstr(Str_LocalOPMCtrlPanel);
+            else if (dwHashKey == xpgHash("opm2"))
+                text = getstr(Str_RemoteOPMCtrlPanel);
+            Idu_PrintStringCenter(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy+4, 0, pstSprite->m_wWidth);  
         }
         else if (dwSpriteId == 3)
         {
@@ -1450,9 +1459,16 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         }
         else if (dwSpriteId == 11)
         {
-            pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 11);
-            if (pstMask)
-                xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+            if (dwHashKey == xpgHash("opm1"))
+            {
+                pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 11);
+                if (pstMask)
+                    xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+            }
+            else if (dwHashKey == xpgHash("opm2"))
+            {
+                xpgDrawSprite(pWin, pstSprite, boClip);
+            }
         }
         else if (dwSpriteId == 12)
         {
@@ -1469,6 +1485,15 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 14);
             if (pstMask)
                 xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+        }
+        else if (dwSpriteId == 15)
+        {
+            if (dwHashKey == xpgHash("opm2"))
+            {
+                pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 15);
+                if (pstMask)
+                    xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+            }
         }
     }
     
@@ -1688,15 +1713,26 @@ SWORD xpgDrawSprite_LightIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite
             Idu_PrintStringCenter(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy+2, 0, pstSprite->m_wWidth); 
         }
     }
-    else if(dwHashKey == xpgHash("opm1") || dwHashKey == xpgHash("opm2") || dwHashKey == xpgHash("opm3") || dwHashKey == xpgHash("opm4"))
+    else if(dwHashKey == xpgHash("opm1"))
     {
-        if (dwSpriteId == 0 || dwSpriteId == 1)
+        if (dwSpriteId == 0)
         {
-            if (isSelectOnlineOPM && dwSpriteId == 0)
-                return PASS;
-            if (!isSelectOnlineOPM && dwSpriteId == 1)
-                return PASS;
             pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 0);
+            if (pstMask)
+                xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+            if (dwSpriteId == 0)
+                text = getstr(Str_LocalOPM);
+            else 
+                text = getstr(Str_CloudOPM);
+            SetCurrIduFontID(FONT_ID_HeiTi16);
+            Idu_PrintStringCenter(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy+2, 0, pstSprite->m_wWidth);  
+        }
+    }
+    else if(dwHashKey == xpgHash("opm2"))
+    {
+        if (dwSpriteId == 1)
+        {
+            pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 1);
             if (pstMask)
                 xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
             if (dwSpriteId == 0)

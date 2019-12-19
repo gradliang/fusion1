@@ -580,6 +580,31 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
             }
         }
     }
+    else if(dwHashKey == xpgHash("opm1") )
+    {
+        if (dwIconId == 0)
+        {
+        }
+        else if (dwIconId == 1)
+        {
+            isSelectOnlineOPM = 1;
+            xpgPreactionAndGotoPage("opm2");
+            xpgUpdateStage();
+        }
+    }
+    else if(dwHashKey == xpgHash("opm2") )
+    {
+        if (dwIconId == 0)
+        {
+            isSelectOnlineOPM = 0;
+            xpgPreactionAndGotoPage("opm1");
+            xpgUpdateStage();
+        }
+        else if (dwIconId == 1)
+        {
+            
+        }
+    }
     else if (dwHashKey == xpgHash(DIALOG_PAGE_NAME))
     {
         int dialogType = xpgGetCurrDialogTypeId();
