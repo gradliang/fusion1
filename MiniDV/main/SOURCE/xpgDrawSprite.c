@@ -3287,8 +3287,28 @@ SWORD xpgDrawSprite_Selector(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite,
             xpgSpriteEnableTouch(pstSprite);
         }
     }
-    
-
+    else if (dwHashKey == xpgHash("opm1"))
+    {
+        Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy, pstSprite->m_wWidth, pstSprite->m_wHeight, RGB2YUV(20, 20, 20));
+        Idu_PaintWinArea(pWin, pstSprite->m_wPx + pstSprite->m_wWidth - 2, pstSprite->m_wPy, 2, pstSprite->m_wHeight, RGB2YUV(0x2E, 0x2E, 0x2E));
+        Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy, pstSprite->m_wWidth, 2, RGB2YUV(0x2E, 0x2E, 0x2E));
+        Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + pstSprite->m_wHeight - 2, pstSprite->m_wWidth, 2, RGB2YUV(0x2E, 0x2E, 0x2E));
+        SetCurrIduFontID(FONT_ID_HeiTi19);
+        Idu_PrintString(pWin, getstr(Str_BenDiShuJu), pstSprite->m_wPx + 20, pstSprite->m_wPy + 12, 0, 0);
+        Idu_PrintString(pWin, ">", pstSprite->m_wPx + 168, pstSprite->m_wPy + 12, 0, 0);
+        xpgSpriteEnableTouch(pstSprite);
+    }
+    else if (dwHashKey == xpgHash("opm2"))
+    {
+        Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy, pstSprite->m_wWidth, pstSprite->m_wHeight, RGB2YUV(20, 20, 20));
+        Idu_PaintWinArea(pWin, pstSprite->m_wPx + pstSprite->m_wWidth - 2, pstSprite->m_wPy, 2, pstSprite->m_wHeight, RGB2YUV(0x2E, 0x2E, 0x2E));
+        Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy, pstSprite->m_wWidth, 2, RGB2YUV(0x2E, 0x2E, 0x2E));
+        Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + pstSprite->m_wHeight - 2, pstSprite->m_wWidth, 2, RGB2YUV(0x2E, 0x2E, 0x2E));
+        SetCurrIduFontID(FONT_ID_HeiTi19);
+        Idu_PrintString(pWin, getstr(Str_YunDuanShuJu), pstSprite->m_wPx + 20, pstSprite->m_wPy + 12, 0, 0);
+        Idu_PrintString(pWin, ">", pstSprite->m_wPx + 168, pstSprite->m_wPy + 12, 0, 0);
+        xpgSpriteEnableTouch(pstSprite);
+    }
 
 
 
