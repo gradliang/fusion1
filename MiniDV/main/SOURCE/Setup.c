@@ -76,6 +76,7 @@ void GetDefaultSetupMenuValue(void)
     g_psSetupMenu->bCustomizeIconEnable[3] = 1;
     g_psSetupMenu->bCustomizeIconEnable[4] = 1;
     g_psSetupMenu->bCustomizeIconEnable[5] = 1;
+	g_psSetupMenu->bVolume=8;
     g_psSetupMenu->bPreHotEnable = 0;
     g_psSetupMenu->bHotUpMode = SETUP_MENU_HOT_UP_MODE_AUTO;
     g_psSetupMenu->bRongJieZhiLiang = 0;
@@ -201,6 +202,8 @@ void Recover_g_psSetupMenu(void)
         g_psSetupMenu->wElectrodePos[0] =  0;
     if (g_psSetupMenu->wElectrodePos[1] > 0x0fff)
         g_psSetupMenu->wElectrodePos[1] =  0;
+	if (g_psSetupMenu->bVolume>15)
+		g_psSetupMenu->bVolume=15;
 
 #else
  //   if (gSetupMenuValue[8] <= SETUP_MENU_USBD_MODE_UAVC)
@@ -452,9 +455,23 @@ void SetupMenuReset(void)
 //>------------Send setup data to mcu
 static DWORD st_dwSetupSendFlag=0,st_dwSetupResendTimes=0;
 
+
+SWORD  SetupSendTouchVoice(void)
+{
+	BYTE bTxData[8];
+
+	bTxData[0]=0xab;
+	bTxData[1]=3+1;
+	if (g_psSetupMenu->bToundSoundEnable)
+		bTxData[2]=g_psSetupMenu->bVolume;
+	else
+		bTxData[2]=0;
+	return TSPI_PacketSend(bTxData,bTxData[1],0);
+}
+
 SWORD  SetupSendSmartBacklight(void)
 {
-	BYTE i,bTxData[8];
+	BYTE bTxData[8];
 
 	bTxData[0]=0xA9;
 	bTxData[1]=3+2;
@@ -465,7 +482,7 @@ SWORD  SetupSendSmartBacklight(void)
 
 SWORD  SetupSendCloudOnOff(void)
 {
-	BYTE i,bTxData[8];
+	BYTE bTxData[8];
 
 	bTxData[0]=0xA9;
 	bTxData[1]=3+2;
@@ -476,7 +493,7 @@ SWORD  SetupSendCloudOnOff(void)
 
 SWORD  SetupSendRedPen(void)
 {
-	BYTE i,bTxData[8];
+	BYTE bTxData[8];
 
 	bTxData[0]=0x95;
 	bTxData[1]=3+3;
@@ -491,7 +508,7 @@ SWORD  SetupSendRedPen(void)
 
 SWORD  SetupSendHot(void)
 {
-	BYTE i,bTxData[8];
+	BYTE bTxData[8];
 
 	bTxData[0]=0x96;
 	bTxData[1]=3+3;
@@ -511,6 +528,7 @@ SWORD(*SetupSendFunctions[]) (void) =
 	SetupSendRedPen,
 	SetupSendCloudOnOff,
 	SetupSendSmartBacklight,
+	SetupSendTouchVoice,
 	NULL
 };
 //SETUP_SEND_MAXNUM
@@ -523,6 +541,8 @@ void SetupSendFlagSend(void)
 	{
 		if (!(st_dwSetupSendFlag &(1<<i)))
 			continue;
+		if (i>=SETUP_SEND_MAXNUM)
+			break;
 		if (SetupSendFunctions[i] !=NULL)
 		{
 			if ((*SetupSendFunctions[i])()==PASS)
@@ -577,6 +597,10 @@ void WriteSetupChg(void)
 	else if (dwHashKey == xpgHash("SetSleep"))
 	{
 		SetupSendFlagSet(SETUP_SEND_SMARTBACKLIGHT);
+	}
+	else if (dwHashKey == xpgHash("SetSound"))
+	{
+		SetupSendFlagSet(SETUP_SEND_TOUCHVOICE);
 	}
 }
 

@@ -3969,14 +3969,14 @@ SWORD xpgDrawSprite_Scroll(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
             pstRound = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_SCROLL, 1); 
             if (pstMask && pstRound){
 
-                DWORD xadd = (g_psSetupMenu->bVolume) * 250 / 100;
-                DWORD xpoint = pstSprite->m_wPx + (32-8) + xadd;
+                DWORD xadd =  (g_psSetupMenu->bVolume)* (pstSprite->m_wWidth-70) / 15;
+                DWORD xpoint = pstSprite->m_wPx + 20 + xadd;
                 
                 xpgRoleDrawMask(pstRound->m_pstRole, pWin->pdwStart, xpoint, pstSprite->m_wPy + 6, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
-                Idu_PaintWinArea(pWin, pstSprite->m_wPx + 24, pstSprite->m_wPy + 11, xadd, 2, RGB2YUV(0x14, 0xb6, 0xff));
+                Idu_PaintWinArea(pWin, pstSprite->m_wPx + 22, pstSprite->m_wPy + 11, xadd, 2, RGB2YUV(0x14, 0xb6, 0xff));
             }
             
-            xpgSpriteSetTouchArea(pstSprite, pstSprite->m_wPx, pstSprite->m_wPy-8, pstSprite->m_wWidth, pstSprite->m_wHeight+8);
+            xpgSpriteSetTouchArea(pstSprite, pstSprite->m_wPx-20, pstSprite->m_wPy-20, pstSprite->m_wWidth+40, pstSprite->m_wHeight+40);
         }
     }
     return PASS;

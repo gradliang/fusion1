@@ -181,6 +181,7 @@ void Free_CacheWin();
 void DrakWin(ST_IMGWIN* pWin, DWORD largeNum, DWORD smallNum);
 STXPGPAGE *xpgPreactionAndGotoPage(const char *name);
 
+void xpgCb_AutoPowerOff(BYTE bEnable,DWORD dwTime);
 
 
 #endif

@@ -1015,6 +1015,7 @@ SWORD touchSprite_CloseIcon(STXPGSPRITE * sprite, WORD x, WORD y)
             {
                 g_psSetupMenu->wShutdownTime = dwDialogTempValue;
                 boNeedWriteSetup = TRUE;
+					xpgCb_AutoPowerOff(g_psSetupMenu->bAutoShutdown,g_psSetupMenu->wShutdownTime);
             }
             exitDialog();
             if (boNeedWriteSetup)
@@ -1484,6 +1485,7 @@ SWORD touchSprite_Radio(STXPGSPRITE * sprite, WORD x, WORD y)
             g_psSetupMenu->bAutoShutdown = !g_psSetupMenu->bAutoShutdown;
             xpgUpdateStage();
             WriteSetupChg();
+			xpgCb_AutoPowerOff(g_psSetupMenu->bAutoShutdown,g_psSetupMenu->wShutdownTime);
         }
     }
     else if (dwHashKey == xpgHash("SetSound"))
@@ -1534,18 +1536,19 @@ SWORD touchSprite_Scroll(STXPGSPRITE * sprite, WORD x, WORD y)
     }
     else if (dwHashKey == xpgHash("SetSound"))
     {
-        if (x1 >= 0 && y1 >= 0)
+       // if (x1 >= 0)
         {
             // scroll left_x = 32, scroll right_x = 282
-            if (x1 <= 32)
+            if (x1 <=0)
                 g_psSetupMenu->bVolume = 0;
-            else if (x1 >= 282)
-                g_psSetupMenu->bVolume = 100;
+            else if (x1 >= sprite->m_wWidth)
+                g_psSetupMenu->bVolume = 15;
             else {
                 // 282 - 32 = 250
-                g_psSetupMenu->bVolume = (x1-32)*100/250;
+                g_psSetupMenu->bVolume = x1*15/sprite->m_wWidth;
             }
             xpgUpdateStage();
+            WriteSetupChg();
         }
     }
 }

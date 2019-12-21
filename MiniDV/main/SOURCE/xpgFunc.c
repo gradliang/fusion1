@@ -1252,5 +1252,30 @@ void Timer_FirstEnterCamPreview()
 
 #endif //#if (SENSOR_ENABLE == ENABLE)
 
+//>------------TOUCH UI FUNCION-----------------------
+void SendCmdPowerOff()
+{
+	BYTE bTxData[8];
+
+	bTxData[0]=0x98;
+	bTxData[1]=3+1;
+	bTxData[2]=0;
+	return TSPI_PacketSend(bTxData,bTxData[1],0);
+}
+
+void xpgCb_AutoPowerOff(BYTE bEnable,DWORD dwTime)
+{
+
+	if (bEnable)
+	{
+		Ui_TimerProcAdd(dwTime*60000, SendCmdPowerOff);
+	}
+	else
+	{
+		Ui_TimerProcRemove(SendCmdPowerOff);
+	}
+}
+
+//<------------TOUCH UI FUNCION-----------------------
 
 

@@ -277,6 +277,10 @@ SWORD TSPI_Send(BYTE *pbDataBuf,DWORD dwLenth )
 
 
 		TSPI_Reset();
+		if (swRet==PASS)
+			mpDebugPrintN("-O-");
+		else
+			mpDebugPrintN("-N-");
 		return swRet;
 }
 
@@ -5335,6 +5339,7 @@ void WeldDataInit(void)
 	}
 	g_psSetupMenu->wElectrodePos[1]=400;
 	//WriteSetupChg();
+	xpgCb_AutoPowerOff(g_psSetupMenu->bAutoShutdown,g_psSetupMenu->wShutdownTime);
 
 	//ResetMotor();
 	if ((g_bDisplayMode&0x0f)==0)
