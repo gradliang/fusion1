@@ -21,6 +21,7 @@
 #include "mpapi.h"
 #include "camera_func.h" 
 #include "xpgCamFunc.h"
+#include "xpgProcSensorData.h"
 
 BOOL bSetUpChg = false;
 static ST_SETUP_MENU g_sSetupMenu;
@@ -32,6 +33,8 @@ DWORD gSetupMenuValue[SETTING_NUMBER+8];
 void GetDefaultSetupMenuValue(void)
 {
     MP_DEBUG("%s() ", __FUNCTION__);
+
+	memset(&g_sSetupMenu,0, sizeof(g_sSetupMenu));
 
 	g_psSetupMenu->dwSetupFlag=USER_SET_TAG;
 	g_psSetupMenu->dwSetupLenth=sizeof(ST_SETUP_MENU);
@@ -112,6 +115,12 @@ void Update_gSetupMenuValue(void)
 
 	*(gSetupMenuValue + 7) = 0x00000001;                  //SETUP_INIT_BIT;
 
+#if 1
+	*(gSetupMenuValue + 8)  = SETUP_STRUCT_CHANGE_TIMES;
+	//*(gSetupMenuValue + )  =  ;  reserver
+    memcpy(&gSetupMenuValue[12], &g_sSetupMenu, sizeof(g_sSetupMenu));
+
+#else
 //	*(gSetupMenuValue + 8)  = (DWORD) g_psSetupMenu->bUsbdMode;
 #if  (PRODUCT_UI==UI_WELDING)
 	*(gSetupMenuValue + 9)  =  g_psSetupMenu->wElectrodePos[0];
@@ -170,7 +179,7 @@ void Update_gSetupMenuValue(void)
     
 	MP_DEBUG("--Write setup value  g_psSetupMenu->wElectrodePos[1]=%d",g_psSetupMenu->wElectrodePos[1] );
 #endif
-
+#endif
 }
 
 void Recover_g_psSetupMenu(void)
@@ -182,6 +191,18 @@ void Recover_g_psSetupMenu(void)
         mpDebugPrint("Recover_g_psSetupMenu error! %p",gSetupMenuValue[7]);
         return; //Jasmine 4/26 CH: if init bit not equal to 1, then use default value only
     }
+
+#if 1
+	*(gSetupMenuValue + 8)  = SETUP_STRUCT_CHANGE_TIMES;
+	//*(gSetupMenuValue + )  =  ;  reserver
+    memcpy(&g_sSetupMenu, &gSetupMenuValue[12], sizeof(g_sSetupMenu));
+
+    if (g_psSetupMenu->wElectrodePos[0]  > 0x0fff)
+        g_psSetupMenu->wElectrodePos[0] =  0;
+    if (g_psSetupMenu->wElectrodePos[1] > 0x0fff)
+        g_psSetupMenu->wElectrodePos[1] =  0;
+
+#else
  //   if (gSetupMenuValue[8] <= SETUP_MENU_USBD_MODE_UAVC)
  //       g_psSetupMenu->bUsbdMode = (BYTE) gSetupMenuValue[8];
 #if  (PRODUCT_UI==UI_WELDING)
@@ -243,7 +264,7 @@ void Recover_g_psSetupMenu(void)
     
 	MP_DEBUG("--Read setup value  g_psSetupMenu->wElectrodePos[1]=%d",g_psSetupMenu->wElectrodePos[1] );
 #endif
-
+#endif
 }
 
 
@@ -427,16 +448,106 @@ void SetupMenuReset(void)
 	SetupMenuInit();
 }
 
+
+//>------------Send setup data to mcu
+static DWORD st_dwSetupSendFlag=0,st_dwSetupResendTimes=0;
+
+
+SWORD  SetupSendRedPen(void)
+{
+	BYTE i,bTxData[8];
+
+	bTxData[0]=0x95;
+	bTxData[1]=3+3;
+	bTxData[2]=g_psSetupMenu->bRedPenEnable;
+	bTxData[3]=g_psSetupMenu->bRedPenHZ;
+	if (g_psSetupMenu->bRedPenTimerEnable)
+		bTxData[4]=g_psSetupMenu->wRedPenTime;
+	else
+		bTxData[4]=0;
+	return TSPI_PacketSend(bTxData,bTxData[1],0);
+}
+
+SWORD  SetupSendHot(void)
+{
+	BYTE i,bTxData[8];
+
+	bTxData[0]=0x96;
+	bTxData[1]=3+3;
+	bTxData[2]=g_psSetupMenu->bPreHotEnable>0;
+	if (g_psSetupMenu->bHotUpMode)
+		bTxData[2] |=BIT1;
+	bTxData[2] |=g_psSetupMenu->bReSuGuanSheZhi<<4;
+	bTxData[3]=g_psSetupMenu->wJiaReWenDu;
+	bTxData[4]=g_psSetupMenu->wJiaReShiJian;
+	return TSPI_PacketSend(bTxData,bTxData[1],0);
+}
+
+
+void SetupSendFlagSend(void)
+{
+	BYTE i;
+	
+	for (i=0;i<32;i++)
+	{
+		if (!(st_dwSetupSendFlag &(1<<i)))
+			continue;
+		switch (i)
+		{
+			case SETUP_SEND_HOT:
+				if (SetupSendHot()==PASS)
+					SetupSendFlagClear(SETUP_SEND_HOT);
+				break;
+
+			case SETUP_SEND_REDPEN:
+				if (SetupSendRedPen()==PASS)
+					SetupSendFlagClear(SETUP_SEND_REDPEN);
+				break;
+
+			default:
+				break;
+		}
+	}
+
+	if (st_dwSetupSendFlag)
+	{
+		st_dwSetupResendTimes--;
+		if (st_dwSetupResendTimes)
+			Ui_TimerProcAdd(500, SetupSendFlagSend);
+	}
+}
+
+void SetupSendFlagSet(DWORD dwFlag)
+{
+		st_dwSetupSendFlag|=(1<<dwFlag);
+		st_dwSetupResendTimes=SETUP_RESET_TIMES;
+		SetupSendFlagSend();
+}
+
+void SetupSendFlagClear(DWORD dwFlag)
+{
+		st_dwSetupSendFlag&=~(1<<dwFlag);
+}
+
+
+//<------------------
+
 //------------sub function
 void WriteSetupChg(void)
 {
+    DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
+
 	bSetUpChg = 1;
 	PutSetupMenuValueWait();
-}
 
-void TimerToWriteSetup(DWORD dwTime)
-{
-	Ui_TimerProcAdd(dwTime, WriteSetupChg);
+	if (dwHashKey == xpgHash("FusionSet3"))
+	{
+		SetupSendFlagSet(SETUP_SEND_HOT);
+	}
+	else if (dwHashKey == xpgHash("RedLight"))
+	{
+		SetupSendFlagSet(SETUP_SEND_REDPEN);
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

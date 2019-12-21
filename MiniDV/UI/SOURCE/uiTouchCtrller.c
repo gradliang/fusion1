@@ -21,7 +21,7 @@ DWORD dwLastTouchActionTime = 0;
 
 static void uiEnterRecordList();
 DWORD g_dwRecordListCurrPage = 0;
-static BYTE strSetupBackPageName[24] = {0};
+static BYTE st_bGoSetupFrom=0;// 0->from main   1->for work pgage    strSetupBackPageName[24] = {0};
 
 static void Dialog_JiaReWenDu_OnClose();
 static void Dialog_JiaReShiJian_OnClose();
@@ -157,6 +157,7 @@ SWORD touchSprite_Background(STXPGSPRITE * sprite, WORD x, WORD y)
     return 0;
 }
 
+extern BYTE g_bDisplayMode;
 SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
 {
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
@@ -179,7 +180,7 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
         }
         else if (dwIconId == 2) 
         {
-            strcpy(strSetupBackPageName, "Main");
+			st_bGoSetupFrom=0;
             xpgPreactionAndGotoPage("FusionSet1");
             xpgUpdateStage();
         }
@@ -206,7 +207,7 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
         }
         else if (dwIconId == 6) 
         {
-            strcpy(strSetupBackPageName, "Main");
+			st_bGoSetupFrom=0;
             xpgPreactionAndGotoPage("FuncSet");
             xpgUpdateStage();
         }
@@ -284,7 +285,7 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
         {
             if (g_psSetupMenu->bCustomizeIcon[dwIconId] < 0)
             {
-                strcpy(strSetupBackPageName, "Auto_work");
+					st_bGoSetupFrom=1;
                 xpgPreactionAndGotoPage("FuncSet2");
                 xpgUpdateStage();
                 return 0;
@@ -297,13 +298,13 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
         }
         else if (dwIconId == 6)
         {
-            strcpy(strSetupBackPageName, "Auto_work");
+			st_bGoSetupFrom=1;
             xpgPreactionAndGotoPage("FusionSet1");
             xpgUpdateStage();
         }
         else if (dwIconId == 7)
         {
-            strcpy(strSetupBackPageName, "Auto_work");
+			st_bGoSetupFrom=1;
             xpgPreactionAndGotoPage("FuncSet2");
             xpgUpdateStage();
         }
@@ -355,6 +356,7 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
         else if (dwIconId == 5 || dwIconId == 6 || dwIconId == 7 || dwIconId == 8)
         {
         	g_psSetupMenu->bPingXianFangShi = dwIconId - 5;
+			g_bDisplayMode=0x80|g_psSetupMenu->bPingXianFangShi;
         	xpgUpdateStage();
         	WriteSetupChg();
         }
@@ -513,8 +515,8 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
     {
         if (dwIconId == 0)
         {
-            isEnableRedPen = FALSE;
-            isEnableRedPenManShan = FALSE;
+            g_psSetupMenu->bRedPenEnable = FALSE;
+            g_psSetupMenu->bRedPenHZ = FALSE;
             xpgPreactionAndGotoPage("RedLight");
             xpgUpdateStage();
         }
@@ -535,48 +537,53 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
         }
         else if (dwIconId == 2)
         {
-            isEnableRedPen = !isEnableRedPen;
-            if (!isEnableRedPen) 
+            g_psSetupMenu->bRedPenEnable = !g_psSetupMenu->bRedPenEnable;
+            if (!g_psSetupMenu->bRedPenEnable) 
             {
-                isEnableRedPenManShan = FALSE;
-                isEnableRedPenDingShi = FALSE;
+                g_psSetupMenu->bRedPenHZ = FALSE;
+                g_psSetupMenu->bRedPenTimerEnable = FALSE;
+					WriteSetupChg();
             }
             xpgUpdateStage();
         }
         else if (dwIconId == 3)
         {
-            if (isEnableRedPen)
+            if (g_psSetupMenu->bRedPenEnable)
             {
-                isEnableRedPenManShan = !isEnableRedPenManShan;
+                g_psSetupMenu->bRedPenHZ = !g_psSetupMenu->bRedPenHZ;
                 xpgUpdateStage();
+					WriteSetupChg();
             }
         }
         else if (dwIconId == 4)
         {
-            if (isEnableRedPen)
+            if (g_psSetupMenu->bRedPenEnable)
             {
-                isEnableRedPenDingShi = !isEnableRedPenDingShi;
+                g_psSetupMenu->bRedPenTimerEnable = !g_psSetupMenu->bRedPenTimerEnable;
                 xpgUpdateStage();
+					WriteSetupChg();
             }
         }
         else if (dwIconId == 6)
         {
-            if (isEnableRedPen && isEnableRedPenDingShi)
+            if (g_psSetupMenu->bRedPenEnable && g_psSetupMenu->bRedPenTimerEnable)
             {
-                dwRedPenTime += 10;
-                if (dwRedPenTime > 990)
-                    dwRedPenTime = 990;
+                g_psSetupMenu->wRedPenTime += 10;
+                if (g_psSetupMenu->wRedPenTime > 990)
+                    g_psSetupMenu->wRedPenTime = 990;
                 xpgUpdateStage();
+					WriteSetupChg();
             }
         }
         else if (dwIconId == 7)
         {
-            if (isEnableRedPen && isEnableRedPenDingShi)
+            if (g_psSetupMenu->bRedPenEnable && g_psSetupMenu->bRedPenTimerEnable)
             {
-                dwRedPenTime -= 10;
-                if (dwRedPenTime < 10)
-                    dwRedPenTime = 10;
+                g_psSetupMenu->wRedPenTime -= 10;
+                if (g_psSetupMenu->wRedPenTime < 10)
+                    g_psSetupMenu->wRedPenTime = 0;
                 xpgUpdateStage();
+					WriteSetupChg();
             }
         }
     }
@@ -950,8 +957,15 @@ SWORD touchSprite_BackIcon(STXPGSPRITE * sprite, WORD x, WORD y)
         dwHashKey == xpgHash("FusionSet2") ||
         dwHashKey == xpgHash("FusionSet3") )
     {
-        xpgPreactionAndGotoPage("Main");
-        xpgUpdateStage();
+		if (st_bGoSetupFrom)
+		{
+			xpgCb_EnterCamcoderPreview();
+		}
+		else
+		{
+	        xpgPreactionAndGotoPage("Main");
+	        xpgUpdateStage();
+		}
     }
     else if (dwHashKey == xpgHash("FusionModeSet"))
     {

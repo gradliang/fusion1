@@ -99,6 +99,14 @@ enum {
 
 #define						SETTING_NUMBER					256  //对应下面设置的数量
 
+//use to st_dwSetupSendFlag
+#define						SETUP_RESET_TIMES					10
+enum{
+    SETUP_SEND_HOT,
+    SETUP_SEND_REDPEN,
+};
+
+
 typedef struct {
     unsigned int    fangDianZhongXin;
     unsigned int    rongJieDianYa;
@@ -181,12 +189,18 @@ typedef struct ST_SETUP_MENU_SETTING_VALUE
     char srtOpenPassword[8];            // 开机密码  
     char strHirePassword[8];            // 租借密码  
     WORD wLockedTimes;                  // 锁定熔接次数
+//红光笔
+    BYTE bRedPenEnable;
+    BYTE bRedPenHZ;
+    BYTE bRedPenTimerEnable;
+    WORD wRedPenTime;
     
 #endif
 
     //BYTE bReserved[1];
 
 } ST_SETUP_MENU;
+#define						SETUP_STRUCT_CHANGE_TIMES					1  //4     更改了g_psSetupMenu结构体后，把此数值递增1
 
 
 extern ST_SETUP_MENU *g_psSetupMenu;
@@ -230,7 +244,9 @@ void InitRecord(STRECORD* pstRecord, WORD year, BYTE month, BYTE day, BYTE hour,
 int initRecordDummyData();      // Jia Shu Ju
 void initModeParamDefault(MODEPARAM *);
 
-
+void SetupSendFlagSet(DWORD dwFlag);
+void SetupSendFlagClear(DWORD dwFlag);
+void SetupSendFlagSend(void);
 
 
 

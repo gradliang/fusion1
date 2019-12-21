@@ -1215,25 +1215,23 @@ void xpgCb_EnterPhotoViewPage()
     
 }
 
+
 void AddAutoEnterPreview(void)
 {
 #if 1//(PRODUCT_PCBA!=PCBA_MAIN_BOARD_V12)
+	Ui_TimerProcRemove(xpgCb_EnterCamcoderPreview);
 	 if(RecordTaskStattusGet() == Rec_StandBy_state && g_pstXpgMovie->m_pstCurPage->m_dwHashKey==xpgHash("Main"))
 	 {
 		WeldModeSet(0);
 #if TEST_PLANE||TEST_TWO_LED
 	    Ui_TimerProcAdd(10, xpgCb_EnterCamcoderPreview);//xpgCb_EnterCamcoderPreview
 #else
-	    Ui_TimerProcAdd(10*1000, xpgCb_EnterCamcoderPreview);//xpgCb_EnterCamcoderPreview
+	    Ui_TimerProcAdd(5*1000, xpgCb_EnterCamcoderPreview);//xpgCb_EnterCamcoderPreview  10
 #endif
 	 }
 #endif
 }
 
-void RemoveAutoEnterPreview(void)
-{
-	Ui_TimerProcRemove(xpgCb_EnterCamcoderPreview);
-}
 
 void Timer_FirstEnterCamPreview()
 {

@@ -296,7 +296,7 @@ void TSPI_TimerToResend(void)
 		st_bTspiTxRetry=0;
 }
 
-SWORD TSPI_SendWithCheck(BYTE *pbDataBuf,DWORD dwLenth )
+SWORD TSPI_SendWithAutoResend(BYTE *pbDataBuf,DWORD dwLenth )
 {
 	BYTE i;
 	SWORD swRet;
@@ -328,7 +328,7 @@ SWORD TSPI_PacketSend(BYTE *pbDataBuf,DWORD dwLenth ,BYTE bCheckResend)
 	for (i=1;i<dwLenth;i++)
 		pbDataBuf[dwLenth]+=pbDataBuf[i];
 	if (bCheckResend)
-		return TSPI_SendWithCheck(pbDataBuf,pbDataBuf[1]);
+		return TSPI_SendWithAutoResend(pbDataBuf,pbDataBuf[1]);
 	return TSPI_Send(pbDataBuf,pbDataBuf[1]);
 }
 
@@ -825,6 +825,7 @@ void Weld_StartPause()
 			st_swLastPos[i]=-1;
 		}
 		TimerToFillProcWin(10);
+		SendWeldStaus(0);
 	}
 	else
 	{
@@ -3408,6 +3409,19 @@ void Discharge(WORD wMode,BYTE bStep)
 	TSPI_PacketSend(bTxData,bTxData[1],1);
 }
 
+SWORD  SendWeldStaus(BYTE bStart)
+{
+	BYTE i,bTxData[8];
+
+	bTxData[0]=0x96;
+	bTxData[1]=3+1;
+	if (bStart)
+		bTxData[2] =BIT1;
+	return TSPI_PacketSend(bTxData,bTxData[1],0);
+		
+}
+
+
 #endif
 
 void TimerToProcWin(void)
@@ -4150,6 +4164,7 @@ void Proc_Weld_State()
 			break;
 
 		case SENSOR_GET_LOSS:
+			SendWeldStaus(1);
 			g_swProcState=SENSOR_IDLE;
 			Ui_TimerProcAdd(2000, TimerToReleaseAllHold);
 			/*
@@ -4520,7 +4535,7 @@ void TSPI_DataProc(void)
 					default:
 						break;
 				}
-    			AddAutoEnterPreview();
+    			//AddAutoEnterPreview();
 			}
 			break;
 //马达状态
@@ -4628,6 +4643,15 @@ void TSPI_DataProc(void)
 					}
 				}
 			}
+			break;
+
+		//加热数据
+		case 0xbe:
+			g_psSetupMenu->bPreHotEnable=(st_bTspiRxArry[2]&BIT0);
+			g_psSetupMenu->bHotUpMode=(st_bTspiRxArry[2]&BIT1)>1;
+			g_psSetupMenu->bReSuGuanSheZhi=st_bTspiRxArry[2]>>4;
+			g_psSetupMenu->wJiaReWenDu=st_bTspiRxArry[3];
+			g_psSetupMenu->wJiaReShiJian=st_bTspiRxArry[4];
 			break;
 
 		default:
@@ -5277,7 +5301,14 @@ void WeldDataInit(void)
 	g_bDisplayMode=0x80;
 	g_swProcState = SENSOR_IDLE;
 #else
-	g_bDisplayMode=0x82;
+	if (g_psSetupMenu->bPingXianFangShi<4)
+		g_bDisplayMode=0x80|g_psSetupMenu->bPingXianFangShi;
+	else
+	{
+		g_psSetupMenu->bPingXianFangShi=2;
+		g_bDisplayMode=0x82;
+		WriteSetupChg();
+	}
 #endif
 
 #if TEST_PLANE
