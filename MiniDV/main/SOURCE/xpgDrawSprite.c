@@ -3727,8 +3727,7 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         Idu_PrintString(pWin, tempbuf, pstSprite->m_wPx, pstSprite->m_wPy + 40, 0, 0);
         sprintf(tempbuf, "%dnm %dBm %ddB", curItem->nm, curItem->db1, curItem->db2);
         Idu_PrintString(pWin, tempbuf, pstSprite->m_wPx + 278, pstSprite->m_wPy + 30, 0, 0);
-        
-        //Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + 42, 472, 2, RGB2YUV(0x37, 0x37, 0x37));
+        Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + 66, 540, 2, RGB2YUV(0x41, 0x41, 0x41));
         
     }
     
