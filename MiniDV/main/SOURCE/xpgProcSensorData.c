@@ -4766,7 +4766,7 @@ void DisplaySensorImage(void)
 
 }
 
-static BYTE st_bFrameIndex=0;
+static BYTE st_bFrameIndex=0,st_bDispOff=0;
 void DisplaySensorOnCurrWin( BYTE bIpw2)
 {
 	IPU *ipu = (IPU *) IPU_BASE;
@@ -4908,8 +4908,11 @@ void DisplaySensorOnCurrWin( BYTE bIpw2)
 			}
 		#endif
 	}
-	else if ((ipu->Ipu_reg_10A>>16)==pDstWin->wHeight)
-		*pIpwAddr = ((DWORD) pDstWin->pdwStart| 0xA0000000);	
+	else if (st_bDispOff && (ipu->Ipu_reg_10A>>16)==pDstWin->wHeight)
+	{
+		*pIpwAddr = ((DWORD) pDstWin->pdwStart| 0xA0000000)+DisplayWindowOffset_Get();
+		st_bDispOff=0;
+	}
 
 #else
 	switch (g_bDisplayMode)
@@ -5017,6 +5020,7 @@ void CacheSensorData( BYTE bIpw2)
 			{
 				Sensor_Channel_Set(st_bBackupChanel);
 				ipu->Ipu_reg_F2 = ((DWORD)((ST_IMGWIN *)Idu_GetNextWin()->pdwStart)| 0xA0000000);
+				st_bDispOff=1;
 			}
 			else
 			{

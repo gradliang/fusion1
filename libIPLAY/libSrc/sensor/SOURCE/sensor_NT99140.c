@@ -100,6 +100,12 @@ static BYTE st_bCurChannel=0;
 
 // 0-> display sensor 1   1->sensor 2     2-> 1(up)+2(down)  3->1(left)+2(right) 
 BYTE g_bDisplayMode=0x82;// 0x80
+static DWORD st_dwDisplayOffset=0;
+
+DWORD DisplayWindowOffset_Get()
+{
+	return st_dwDisplayOffset;
+}
 
 void Sensor_DisplayWindow_Set()
 {
@@ -732,7 +738,8 @@ static void Set_Ipw2(void)
 	ipu->Ipu_reg_F7 = DisplayWin_W-1 ;    
 	ipu->Ipu_reg_F1 = (SrcWidth - DisplayWin_W)<<1;
 
-	ipu->Ipu_reg_F2 = ((DWORD) pWin->pdwStart| 0xA0000000)+DisplayWinStartAddr;   
+	ipu->Ipu_reg_F2 = ((DWORD) pWin->pdwStart| 0xA0000000)+DisplayWinStartAddr;
+	st_dwDisplayOffset=DisplayWinStartAddr;
 }
 
 static void Local_HW_StopIPW1(void)
