@@ -1180,7 +1180,10 @@ void xpgCb_StopAllSensorWork()
     	Camcorder_RecordStop();
 
     if(RecordTaskStattusGet() == Preview_state)
+    {
     	Camcorder_PreviewStop();
+	    g_bAniFlag &= ~ANI_PREVIEW;
+    }
 }
 
 void xpgCb_EnterSetupPage()

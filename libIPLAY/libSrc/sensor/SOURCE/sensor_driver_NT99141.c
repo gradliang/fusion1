@@ -483,22 +483,22 @@ static void NT99140_NightMode();
 
 int boIsNightMode = 0;              // 0: day, 1: overcast, 2: night
 #if (PRODUCT_UI==UI_WELDING)
-static BYTE st_bhaveSetted[2] = {0};
+//static BYTE st_bhaveSetted[2] = {0};
 #else
-static BYTE st_bhaveSetted=0;
+//static BYTE st_bhaveSetted=0;
 #endif
 static void NT99140_Initial_Setting()
 {
 #if (PRODUCT_UI==UI_WELDING)
 	if (Sensor_CurChannel_Get()>1)
 			return;
-    if (st_bhaveSetted[Sensor_CurChannel_Get()])
-        return;
-    st_bhaveSetted[Sensor_CurChannel_Get()] = TRUE;
+  //  if (st_bhaveSetted[Sensor_CurChannel_Get()])
+  //      return;
+   // st_bhaveSetted[Sensor_CurChannel_Get()] = TRUE;
 #else
-	if (st_bhaveSetted)
-		return;
-	st_bhaveSetted=1;
+//	if (st_bhaveSetted)
+//		return;
+//	st_bhaveSetted=1;
 #endif
     MP_DEBUG("First time call function NT99141_Initial_Setting");
 //nt99141 initial

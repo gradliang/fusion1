@@ -3379,8 +3379,13 @@ void Discharge(WORD wMode,BYTE bStep)
 				case 3://1.750v  2300ms
 					bTxData[2]=1750>>8;
 					bTxData[3]=1750&0xff;
+					#if TEST_PLANE
 					bTxData[4]=st_wMotoStep[MOTO_ADJ_NUM-1]>>8;
 					bTxData[5]=st_wMotoStep[MOTO_ADJ_NUM-1]&0xff;
+					#else
+					bTxData[4]=2300>>8;
+					bTxData[5]=2300&0xff;
+					#endif
 					break;
 
 				case 1:
