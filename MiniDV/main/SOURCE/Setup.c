@@ -452,6 +452,27 @@ void SetupMenuReset(void)
 //>------------Send setup data to mcu
 static DWORD st_dwSetupSendFlag=0,st_dwSetupResendTimes=0;
 
+SWORD  SetupSendSmartBacklight(void)
+{
+	BYTE i,bTxData[8];
+
+	bTxData[0]=0xA9;
+	bTxData[1]=3+2;
+	bTxData[2]=0x07;
+	bTxData[3]=g_psSetupMenu->bSmartBacklight;
+	return TSPI_PacketSend(bTxData,bTxData[1],0);
+}
+
+SWORD  SetupSendCloudOnOff(void)
+{
+	BYTE i,bTxData[8];
+
+	bTxData[0]=0xA9;
+	bTxData[1]=3+2;
+	bTxData[2]=0x02;
+	bTxData[3]=g_psSetupMenu->bCloudMode;
+	return TSPI_PacketSend(bTxData,bTxData[1],0);
+}
 
 SWORD  SetupSendRedPen(void)
 {
@@ -483,6 +504,16 @@ SWORD  SetupSendHot(void)
 	return TSPI_PacketSend(bTxData,bTxData[1],0);
 }
 
+#pragma alignvar(4)
+SWORD(*SetupSendFunctions[]) (void) =
+{
+	SetupSendHot,
+	SetupSendRedPen,
+	SetupSendCloudOnOff,
+	SetupSendSmartBacklight,
+	NULL
+};
+//SETUP_SEND_MAXNUM
 
 void SetupSendFlagSend(void)
 {
@@ -492,20 +523,11 @@ void SetupSendFlagSend(void)
 	{
 		if (!(st_dwSetupSendFlag &(1<<i)))
 			continue;
-		switch (i)
+		if (SetupSendFunctions[i] !=NULL)
 		{
-			case SETUP_SEND_HOT:
-				if (SetupSendHot()==PASS)
-					SetupSendFlagClear(SETUP_SEND_HOT);
-				break;
-
-			case SETUP_SEND_REDPEN:
-				if (SetupSendRedPen()==PASS)
-					SetupSendFlagClear(SETUP_SEND_REDPEN);
-				break;
-
-			default:
-				break;
+			if ((*SetupSendFunctions[i])()==PASS)
+					SetupSendFlagClear(i);
+				
 		}
 	}
 
@@ -547,6 +569,14 @@ void WriteSetupChg(void)
 	else if (dwHashKey == xpgHash("RedLight"))
 	{
 		SetupSendFlagSet(SETUP_SEND_REDPEN);
+	}
+	else if (dwHashKey == xpgHash("SetYun"))
+	{
+		SetupSendFlagSet(SETUP_SEND_CLOUDONOFF);
+	}
+	else if (dwHashKey == xpgHash("SetSleep"))
+	{
+		SetupSendFlagSet(SETUP_SEND_SMARTBACKLIGHT);
 	}
 }
 

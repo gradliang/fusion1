@@ -104,7 +104,12 @@ enum {
 enum{
     SETUP_SEND_HOT,
     SETUP_SEND_REDPEN,
+    SETUP_SEND_CLOUDONOFF,
+    SETUP_SEND_SMARTBACKLIGHT,
+
+    SETUP_SEND_MAXNUM
 };
+
 
 
 typedef struct {
