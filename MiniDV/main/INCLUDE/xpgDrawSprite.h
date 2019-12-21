@@ -9,6 +9,9 @@
 #include "filebrowser.h"
 #include "Setup.h"
 
+#ifndef XPGDRAWSPRITE_H
+#define XPGDRAWSPRITE_H
+
 extern MODEPARAM tempModeParam;
 extern DWORD dwDialogTempValue;
 extern BOOL  boDialogValueIsFloat;
@@ -50,5 +53,34 @@ SWORD xpgDrawSprite_Frame(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BO
 
 int popupDialog(int dialogType, char * backToPage);
 int exitDialog();
+
+
+typedef struct _OPMDATAITEM{
+    char    itemName[64];
+    WORD    year;
+    BYTE    month;
+    BYTE    day;
+    BYTE    hour;
+    BYTE    minute;
+    BYTE    second;
+    DWORD   nm;
+    int     db1;
+    int     db2;
+}OPMDATAITEM;
+
+extern DWORD opmLocalDataCurrentPage;
+extern DWORD opmCloudDataCurrentPage;
+extern DWORD opmLocalDataTotal;
+extern DWORD opmCloudDataTotal;
+extern OPMDATAITEM  localOpmData[];
+extern OPMDATAITEM  cloudOpmData[];
+
+
+
+
+
+
+
+#endif // XPGDRAWSPRITE_H
 
 

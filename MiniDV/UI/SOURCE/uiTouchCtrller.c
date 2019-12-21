@@ -1272,6 +1272,22 @@ SWORD touchSprite_Selector(STXPGSPRITE * sprite, WORD x, WORD y)
             xpgUpdateStage();
         }
     }
+    else if (dwHashKey == xpgHash("opm1"))
+    {
+        if (dwSelectorId == 0)
+        {
+            xpgPreactionAndGotoPage("opmList1");
+            xpgUpdateStage();
+        }
+    }
+    else if (dwHashKey == xpgHash("opm2"))
+    {
+        if (dwSelectorId == 0)
+        {
+            xpgPreactionAndGotoPage("opmList1");
+            xpgUpdateStage();
+        }
+    }
     
     return 0;
 }

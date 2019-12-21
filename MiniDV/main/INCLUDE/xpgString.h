@@ -177,6 +177,9 @@ enum xpgStringId {
 	Str_RemoteOPMCtrlPanel,			//   167
 	Str_BenDiShuJu,					//   168
 	Str_YunDuanShuJu,				//   169
+	Str_BenDiShuJuBiao,				//   170
+	Str_YunDuanShuJuBiao,			//   171
+	
 	
 	Str_MAX_ID,
 };
