@@ -180,6 +180,8 @@ static const BYTE* xpgString_SChinese[] =
 	"云端数据",					//   169
 	"本地数据表",				//   170
 	"云端数据表",				//   171
+	"清空",						//   172
+	
 	
 	
 	
