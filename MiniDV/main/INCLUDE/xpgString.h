@@ -181,6 +181,14 @@ enum xpgStringId {
 	Str_YunDuanShuJuBiao,			//   171
 	Str_QingKong,					//   172
 	Str_ShuaXin,					//   173
+	Str_GongDuoShaoTiaoJiLu,		//   174
+	Str_ShouYe,						//   175
+	Str_PrevPage,					//   176
+	Str_NextPage,					//   177
+	Str_WeiYe,						//   178
+	Str_YeShu,						//   179
+	
+	
 	
 	Str_MAX_ID,
 };

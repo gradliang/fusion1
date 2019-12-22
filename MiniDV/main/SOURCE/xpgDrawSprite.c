@@ -2679,22 +2679,86 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             }
         }
     }
-    else if(dwHashKey == xpgHash("opmList1"))
+    else if(dwHashKey == xpgHash("opmList1") || dwHashKey == xpgHash("opmList2"))
     {
+        /////
+        DWORD * pdwPageId;
+        DWORD * pdwTotal;
+        OPMDATAITEM * pstItems;
+        OPMDATAITEM * curItem;
+        char tempbuf[128];
+        if (dwHashKey == xpgHash("opmList1"))
+        {
+            pdwPageId = &opmLocalDataCurrentPage;
+            pdwTotal = &opmLocalDataTotal;
+            pstItems = localOpmData;
+        }
+        else
+        {
+            pdwPageId = &opmCloudDataCurrentPage;
+            pdwTotal = &opmCloudDataTotal;
+            pstItems = cloudOpmData;
+        }
+        /////////////////////////
         if (dwTextId == 0)
         {
             SetCurrIduFontID(FONT_ID_HeiTi19);
-            text = getstr(Str_BenDiShuJuBiao);
+            if(dwHashKey == xpgHash("opmList1"))
+                text = getstr(Str_BenDiShuJuBiao);
+            else
+                text = getstr(Str_YunDuanShuJuBiao);
             Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
         }
-    }
-    else if(dwHashKey == xpgHash("opmList2"))
-    {
-        if (dwTextId == 0)
+        else if (dwTextId == 1)
         {
-            SetCurrIduFontID(FONT_ID_HeiTi19);
-            text = getstr(Str_YunDuanShuJuBiao);
-            Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
+            DWORD pageNum;
+            char tmpbuf1[128];
+            char tmpbuf2[128];
+            sprintf(tmpbuf1, getstr(Str_GongDuoShaoTiaoJiLu), *pdwTotal);
+            sprintf(tmpbuf2, "[ %s", tmpbuf1);
+            SetCurrIduFontID(FONT_ID_HeiTi16);
+            Idu_PrintString(pWin, tmpbuf2, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
+            pageNum = *pdwTotal / 5;
+            if (*pdwTotal % 5)
+                pageNum++;
+            sprintf(tmpbuf2, "%s %d/%d]", getstr(Str_YeShu), *pdwPageId + 1, pageNum);
+            Idu_PrintString(pWin, tmpbuf2, pstSprite->m_wPx + 430, pstSprite->m_wPy, 0, 0);
+        }
+        else if (dwTextId == 2)
+        {
+            WORD W = 50, H = 30;
+            Idu_PaintWinArea(pWin, pstSprite->m_wPx - 4, pstSprite->m_wPy - 4, W, H, RGB2YUV(55, 157, 255));
+            xpgSpriteSetTouchArea(pstSprite, pstSprite->m_wPx - 4, pstSprite->m_wPy - 4, W, H);
+            SetCurrIduFontID(FONT_ID_HeiTi16);
+            Idu_PrintString(pWin, getstr(Str_ShouYe), pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
+            return PASS;
+        }
+        else if (dwTextId == 3)
+        {
+            WORD W = 62, H = 30;
+            Idu_PaintWinArea(pWin, pstSprite->m_wPx - 4, pstSprite->m_wPy - 4, W, H, RGB2YUV(55, 157, 255));
+            xpgSpriteSetTouchArea(pstSprite, pstSprite->m_wPx - 4, pstSprite->m_wPy - 4, W, H);
+            SetCurrIduFontID(FONT_ID_HeiTi16);
+            Idu_PrintString(pWin, getstr(Str_PrevPage), pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
+            return PASS;
+        }
+        else if (dwTextId == 4)
+        {
+            WORD W = 62, H = 30;
+            Idu_PaintWinArea(pWin, pstSprite->m_wPx - 4, pstSprite->m_wPy - 4, W, H, RGB2YUV(55, 157, 255));
+            xpgSpriteSetTouchArea(pstSprite, pstSprite->m_wPx - 4, pstSprite->m_wPy - 4, W, H);
+            SetCurrIduFontID(FONT_ID_HeiTi16);
+            Idu_PrintString(pWin, getstr(Str_NextPage), pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
+            return PASS;
+        }
+        else if (dwTextId == 5)
+        {
+            WORD W = 50, H = 30;
+            Idu_PaintWinArea(pWin, pstSprite->m_wPx - 4, pstSprite->m_wPy - 4, W, H, RGB2YUV(55, 157, 255));
+            xpgSpriteSetTouchArea(pstSprite, pstSprite->m_wPx - 4, pstSprite->m_wPy - 4, W, H);
+            SetCurrIduFontID(FONT_ID_HeiTi16);
+            Idu_PrintString(pWin, getstr(Str_WeiYe), pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
+            return PASS;
         }
     }
     else if (dwHashKey == xpgHash(DIALOG_PAGE_NAME))

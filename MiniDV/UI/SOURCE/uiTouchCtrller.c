@@ -1216,6 +1216,8 @@ SWORD touchSprite_Text(STXPGSPRITE * sprite, WORD x, WORD y)
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
     int dialogType = xpgGetCurrDialogTypeId();
     DWORD dwSpriteId = sprite->m_dwTypeIndex;
+
+    mpDebugPrint("touchSprite_Text  %d", dwSpriteId);
     
     if (dwHashKey == xpgHash(DIALOG_PAGE_NAME))
     {
@@ -1228,6 +1230,59 @@ SWORD touchSprite_Text(STXPGSPRITE * sprite, WORD x, WORD y)
                 else
                     sprintf(strEditValue, "%d", dwDialogTempValue);
                 popupDialog(Dialog_EditValue, DIALOG_PAGE_NAME);
+                xpgUpdateStage();
+            }
+        }
+    }
+    else if (dwHashKey == xpgHash("opmList1") || dwHashKey == xpgHash("opmList2"))
+    {
+        DWORD * pdwPageId;
+        DWORD * pdwTotal;
+        DWORD   pageNum;
+        OPMDATAITEM * pstItems;
+        OPMDATAITEM * curItem;
+        if (dwHashKey == xpgHash("opmList1"))
+        {
+            pdwPageId = &opmLocalDataCurrentPage;
+            pdwTotal = &opmLocalDataTotal;
+            pstItems = localOpmData;
+        }
+        else
+        {
+            pdwPageId = &opmCloudDataCurrentPage;
+            pdwTotal = &opmCloudDataTotal;
+            pstItems = cloudOpmData;
+        }
+        pageNum = *pdwTotal / 5;
+        if (*pdwTotal % 5)
+            pageNum++;
+        //////////////
+        if (dwSpriteId == 2)
+        {
+            *pdwPageId = 0;
+            xpgUpdateStage();
+        }
+        else if (dwSpriteId == 3)
+        {
+            if (pageNum > 0 && *pdwPageId >= 1)
+            {
+                (*pdwPageId) --;
+                xpgUpdateStage();
+            }
+        }
+        else if (dwSpriteId == 4)
+        {
+            if (pageNum > 0 && *pdwPageId < pageNum - 1)
+            {
+                (*pdwPageId) ++;
+                xpgUpdateStage();
+            }
+        }
+        else if (dwSpriteId == 5)
+        {
+            if (pageNum > 1)
+            {
+                *pdwPageId = pageNum - 1;
                 xpgUpdateStage();
             }
         }
