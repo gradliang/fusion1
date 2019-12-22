@@ -3735,7 +3735,7 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
 }
 
 
-void MakeDialogRole(STXPGROLE * pstRole, WORD width, WORD height)
+void MakeDialogRoleNew(STXPGROLE * pstRole, WORD width, WORD height)
 {
     DWORD dwSize;
     ST_IMGWIN win;
@@ -3767,6 +3767,40 @@ void MakeDialogRole(STXPGROLE * pstRole, WORD width, WORD height)
     
     return;
 }
+
+void MakeDialogRole(STXPGROLE * pstRole, WORD width, WORD height)
+{
+    DWORD dwSize;
+    ST_IMGWIN win;
+    ST_IMGWIN * pWin;
+    
+    xpgRoleInit(pstRole);
+    pstRole->m_bBitDepth = 24;
+    pstRole->m_wIndex = 0;
+    pstRole->m_wWidth = width;
+    if (pstRole->m_wWidth % 2)
+        pstRole->m_wWidth ++;
+    pstRole->m_wHeight = height;
+    if (pstRole->m_wHeight < 41)
+        pstRole->m_wHeight = 41;
+    
+    dwSize = ALIGN_16(pstRole->m_wWidth) * ALIGN_16(pstRole->m_wHeight) * 2 + 256;
+
+    pstRole->m_pRawImage = (BYTE *) ext_mem_malloc(dwSize);
+    pstRole->m_wRawWidth = pstRole->m_wWidth;
+
+	MP_ASSERT(pstRole->m_pRawImage != NULL);
+    MP_DEBUG4("malloc role %d, w%d h%d raw_w%d", pstRole->m_wIndex, pstRole->m_wWidth, pstRole->m_wHeight, pstRole->m_wRawWidth);
+
+    mpWinInit(&win, pstRole->m_pRawImage, pstRole->m_wHeight, pstRole->m_wWidth);
+    pWin = &win;
+
+    Idu_PaintWinArea(pWin, 0, 0, pWin->wWidth, 40, RGB2YVU(0x28, 0x29, 0x2D));
+    Idu_PaintWinArea(pWin, 0, 40, pWin->wWidth, pstRole->m_wHeight - 40, RGB2YVU(0x1C, 0x1D, 0x21));
+    
+    return;
+}
+
 
 void MakeMaskRole(STXPGROLE * pstMaskRole, int maskRoleIndex, WORD width, WORD height)
 {
@@ -3958,7 +3992,7 @@ SWORD xpgDrawSprite_Dialog(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
     }
     else if (dwHashKey == xpgHash("ToolBox"))
     {
-        MakeDialogRole(&stRole, 560, 300);
+        MakeDialogRoleNew(&stRole, 560, 300);
         MakeMaskRole(&stMaskRole, XPG_ROLE_ICON_MASK_0, 560, 300);
         xpgRoleDrawMask(&stRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, &stMaskRole);
 
