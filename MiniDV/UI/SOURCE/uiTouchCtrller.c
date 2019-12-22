@@ -612,6 +612,36 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
             
         }
     }
+    else if (dwHashKey == xpgHash("opmList1"))
+    {
+        if (dwIconId == 0)
+        {
+            isSelectOnlineOPM = 0;
+            xpgPreactionAndGotoPage("opm1");
+            xpgUpdateStage();
+        }
+        else if (dwIconId == 1)
+        {
+            isSelectOnlineOPM = 1;
+            xpgPreactionAndGotoPage("opm2");
+            xpgUpdateStage();
+        }
+    }
+    else if (dwHashKey == xpgHash("opmList2"))
+    {
+        if (dwIconId == 0)
+        {
+            isSelectOnlineOPM = 0;
+            xpgPreactionAndGotoPage("opm1");
+            xpgUpdateStage();
+        }
+        else if (dwIconId == 1)
+        {
+            isSelectOnlineOPM = 1;
+            xpgPreactionAndGotoPage("opm2");
+            xpgUpdateStage();
+        }
+    }
     else if (dwHashKey == xpgHash(DIALOG_PAGE_NAME))
     {
         int dialogType = xpgGetCurrDialogTypeId();
@@ -944,9 +974,8 @@ SWORD touchSprite_BackIcon(STXPGSPRITE * sprite, WORD x, WORD y)
         dwHashKey == xpgHash("Record") || 
         dwHashKey == xpgHash("RedLight") || 
         dwHashKey == xpgHash("opm1") || 
-        dwHashKey == xpgHash("opm2") || 
-        dwHashKey == xpgHash("opm3") || 
-        dwHashKey == xpgHash("opm4") )
+        dwHashKey == xpgHash("opm2") 
+        )
     {
         xpgPreactionAndGotoPage("Main");
         xpgUpdateStage();
@@ -971,6 +1000,16 @@ SWORD touchSprite_BackIcon(STXPGSPRITE * sprite, WORD x, WORD y)
     {
         xpgPreactionAndGotoPage("FusionSet1");
         xpgUpdateStage();
+    }
+    else if (dwHashKey == xpgHash("opmList1"))
+    {
+        xpgPreactionAndGotoPage("opm1");
+	    xpgUpdateStage();
+    }
+    else if (dwHashKey == xpgHash("opmList2"))
+    {
+        xpgPreactionAndGotoPage("opm2");
+	    xpgUpdateStage();
     }
     
     return 0;
@@ -1284,7 +1323,7 @@ SWORD touchSprite_Selector(STXPGSPRITE * sprite, WORD x, WORD y)
     {
         if (dwSelectorId == 0)
         {
-            xpgPreactionAndGotoPage("opmList1");
+            xpgPreactionAndGotoPage("opmList2");
             xpgUpdateStage();
         }
     }
