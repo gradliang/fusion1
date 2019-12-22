@@ -103,10 +103,11 @@ enum {
 #define						SETUP_RESET_TIMES					10
 enum{
     SETUP_SEND_HOT,
-    SETUP_SEND_REDPEN,
     SETUP_SEND_CLOUDONOFF,
     SETUP_SEND_SMARTBACKLIGHT,
     SETUP_SEND_TOUCHVOICE,
+
+    SETUP_SEND_REDPEN, //only send,need not save
 
     SETUP_SEND_MAXNUM
 };
@@ -126,6 +127,17 @@ typedef struct {
     unsigned int    qieGeJiaoDuShangXian;
     unsigned int    fangDianJiaoZhengMuBiaoZhi;
 }MODEPARAM;
+
+typedef struct {
+//红光笔
+    BYTE bRedPenEnable;
+    BYTE bRedPenHZ;
+    BYTE bRedPenTimerEnable;
+    WORD wRedPenTime;
+
+}ST_UNSAVE_PARAM;
+extern ST_UNSAVE_PARAM *g_psUnsaveParam;
+
 
 
 typedef struct ST_SETUP_MENU_SETTING_VALUE
@@ -195,11 +207,6 @@ typedef struct ST_SETUP_MENU_SETTING_VALUE
     char srtOpenPassword[8];            // 开机密码  
     char strHirePassword[8];            // 租借密码  
     WORD wLockedTimes;                  // 锁定熔接次数
-//红光笔
-    BYTE bRedPenEnable;
-    BYTE bRedPenHZ;
-    BYTE bRedPenTimerEnable;
-    WORD wRedPenTime;
     
 #endif
 
@@ -207,7 +214,6 @@ typedef struct ST_SETUP_MENU_SETTING_VALUE
 
 } ST_SETUP_MENU;
 #define						SETUP_STRUCT_CHANGE_TIMES					1  //4     更改了g_psSetupMenu结构体后，把此数值递增1
-
 
 extern ST_SETUP_MENU *g_psSetupMenu;
 

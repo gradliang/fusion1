@@ -26,6 +26,9 @@
 BOOL bSetUpChg = false;
 static ST_SETUP_MENU g_sSetupMenu;
 ST_SETUP_MENU *g_psSetupMenu = &g_sSetupMenu;
+static ST_UNSAVE_PARAM g_sUnsaveParam;
+ST_UNSAVE_PARAM *g_psUnsaveParam = &g_sUnsaveParam;
+
 DWORD gSetupMenuValue[SETTING_NUMBER+8];
 
 
@@ -497,10 +500,10 @@ SWORD  SetupSendRedPen(void)
 
 	bTxData[0]=0x95;
 	bTxData[1]=3+3;
-	bTxData[2]=g_psSetupMenu->bRedPenEnable;
-	bTxData[3]=g_psSetupMenu->bRedPenHZ;
-	if (g_psSetupMenu->bRedPenTimerEnable)
-		bTxData[4]=g_psSetupMenu->wRedPenTime;
+	bTxData[2]=g_psUnsaveParam->bRedPenEnable;
+	bTxData[3]=g_psUnsaveParam->bRedPenHZ;
+	if (g_psUnsaveParam->bRedPenTimerEnable)
+		bTxData[4]=g_psUnsaveParam->wRedPenTime;
 	else
 		bTxData[4]=0;
 	return TSPI_PacketSend(bTxData,bTxData[1],0);
@@ -604,6 +607,16 @@ void WriteSetupChg(void)
 	}
 }
 
+
+void SendUnsaveParam(void)
+{
+    DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
+
+	if (dwHashKey == xpgHash("RedLight"))
+	{
+		SetupSendFlagSet(SETUP_SEND_REDPEN);
+	}
+}
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 

@@ -134,19 +134,25 @@ void uiTouchCtrllerCallback(void)
 void uiTouchMsgReceiver(void)
 {
     ST_TC_DATA stTcData;
+	ST_TC_MSG tcMessage;
 
     while((MessageReceiveWithTO(UI_TC_MSG_ID, &stTcData, 1)) > 0)
     {
-        if (SystemGetElapsedTime(dwLastTouchActionTime) < 500)
+		/*
+        if (SystemGetElapsedTime(dwLastTouchActionTime) < 200)
         {
             //mpDebugPrint("Skip");
             continue;
         }
-        
-        MP_ALERT("s = %d, x1 = %d, y1 = %d, x2 = %d, y2 = %d", stTcData.status, stTcData.x1, stTcData.y1, stTcData.x2, stTcData.y2);
+        */
+        //MP_ALERT("s = %d, x1 = %d, y1 = %d, x2 = %d, y2 = %d", stTcData.status, stTcData.x1, stTcData.y1, stTcData.x2, stTcData.y2);
+        MP_ALERT("( %d, %d)",  stTcData.x1, stTcData.y1);
 #if  (PRODUCT_UI==UI_WELDING)
         uiDispatchTouchSprite(stTcData.x1, stTcData.y1);
 #endif
+		tcMessage.status = TC_INT;
+		MessageDrop(TcGetMsgId(), (BYTE *) &tcMessage, sizeof(ST_TC_MSG));
+
     }
 }
 
@@ -515,8 +521,7 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
     {
         if (dwIconId == 0)
         {
-            g_psSetupMenu->bRedPenEnable = FALSE;
-            g_psSetupMenu->bRedPenHZ = FALSE;
+			SendCmdA4GetStaus(0x09);
             xpgPreactionAndGotoPage("RedLight");
             xpgUpdateStage();
         }
@@ -537,53 +542,53 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
         }
         else if (dwIconId == 2)
         {
-            g_psSetupMenu->bRedPenEnable = !g_psSetupMenu->bRedPenEnable;
-            if (!g_psSetupMenu->bRedPenEnable) 
+            g_psUnsaveParam->bRedPenEnable = !g_psUnsaveParam->bRedPenEnable;
+            if (!g_psUnsaveParam->bRedPenEnable) 
             {
-                g_psSetupMenu->bRedPenHZ = FALSE;
-                g_psSetupMenu->bRedPenTimerEnable = FALSE;
-					WriteSetupChg();
+                g_psUnsaveParam->bRedPenHZ = FALSE;
+                g_psUnsaveParam->bRedPenTimerEnable = FALSE;
+					SendUnsaveParam();
             }
             xpgUpdateStage();
         }
         else if (dwIconId == 3)
         {
-            if (g_psSetupMenu->bRedPenEnable)
+            if (g_psUnsaveParam->bRedPenEnable)
             {
-                g_psSetupMenu->bRedPenHZ = !g_psSetupMenu->bRedPenHZ;
+                g_psUnsaveParam->bRedPenHZ = !g_psUnsaveParam->bRedPenHZ;
                 xpgUpdateStage();
-					WriteSetupChg();
+					SendUnsaveParam();
             }
         }
         else if (dwIconId == 4)
         {
-            if (g_psSetupMenu->bRedPenEnable)
+            if (g_psUnsaveParam->bRedPenEnable)
             {
-                g_psSetupMenu->bRedPenTimerEnable = !g_psSetupMenu->bRedPenTimerEnable;
+                g_psUnsaveParam->bRedPenTimerEnable = !g_psUnsaveParam->bRedPenTimerEnable;
                 xpgUpdateStage();
-					WriteSetupChg();
+					SendUnsaveParam();
             }
         }
         else if (dwIconId == 6)
         {
-            if (g_psSetupMenu->bRedPenEnable && g_psSetupMenu->bRedPenTimerEnable)
+            if (g_psUnsaveParam->bRedPenEnable && g_psUnsaveParam->bRedPenTimerEnable)
             {
-                g_psSetupMenu->wRedPenTime += 10;
-                if (g_psSetupMenu->wRedPenTime > 990)
-                    g_psSetupMenu->wRedPenTime = 990;
+                g_psUnsaveParam->wRedPenTime += 10;
+                if (g_psUnsaveParam->wRedPenTime > 990)
+                    g_psUnsaveParam->wRedPenTime = 990;
                 xpgUpdateStage();
-					WriteSetupChg();
+					SendUnsaveParam();
             }
         }
         else if (dwIconId == 7)
         {
-            if (g_psSetupMenu->bRedPenEnable && g_psSetupMenu->bRedPenTimerEnable)
+            if (g_psUnsaveParam->bRedPenEnable && g_psUnsaveParam->bRedPenTimerEnable)
             {
-                g_psSetupMenu->wRedPenTime -= 10;
-                if (g_psSetupMenu->wRedPenTime < 10)
-                    g_psSetupMenu->wRedPenTime = 0;
+                g_psUnsaveParam->wRedPenTime -= 10;
+                if (g_psUnsaveParam->wRedPenTime < 10)
+                    g_psUnsaveParam->wRedPenTime = 0;
                 xpgUpdateStage();
-					WriteSetupChg();
+					SendUnsaveParam();
             }
         }
     }
@@ -1697,8 +1702,8 @@ void uiDispatchTouchSprite(WORD x1, WORD y1)
                 
             if (pfunc->touchFunc != NULL) 
             {
-                if (!(pfunc->touchFlag& ENABLE_SLIDE))
-                    dwLastTouchActionTime = GetSysTime();
+               // if (!(pfunc->touchFlag& ENABLE_SLIDE))
+               //     dwLastTouchActionTime = GetSysTime();
                 pfunc->touchFunc (pstSprite, x1, y1);
 				#if (PRODUCT_UI==UI_WELDING)
     			AddAutoEnterPreview();

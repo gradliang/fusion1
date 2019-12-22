@@ -287,6 +287,8 @@ SWORD TSPI_Send(BYTE *pbDataBuf,DWORD dwLenth )
 void TSPI_TimerToResend(void)
 {
 
+	if (!st_bTspiTxRetry)
+		return;
 	if (TSPI_Send(st_bTspiTxArry,st_bTspiTxArry[1])!=PASS)
 	{
 		st_bTspiTxRetry++;
@@ -4649,6 +4651,18 @@ void TSPI_DataProc(void)
 			}
 			break;
 
+		//环境亮度
+		case 0xbd:
+			if (g_psSetupMenu->bSmartBacklight)
+			{
+				if (st_bTspiRxArry[2] && st_bTspiRxArry[2]<6)
+				{
+					BYTE bPwmArry[5]={10,30,50,70,90};
+					TimerPwmEnable(2, 240000, bPwmArry[st_bTspiRxArry[2]-1]);
+				}
+			}
+			break;
+
 		//加热数据
 		case 0xbe:
 			g_psSetupMenu->bPreHotEnable=(st_bTspiRxArry[2]&BIT0);
@@ -4656,6 +4670,32 @@ void TSPI_DataProc(void)
 			g_psSetupMenu->bReSuGuanSheZhi=st_bTspiRxArry[2]>>4;
 			g_psSetupMenu->wJiaReWenDu=st_bTspiRxArry[3];
 			g_psSetupMenu->wJiaReShiJian=st_bTspiRxArry[4];
+			break;
+#if 0
+		//指令回复
+		case 0xbf:
+			if (st_bTspiTxRetry && st_bTspiRxArry[2]==0x01)//0x00->接收错误 0x01->接收成功
+			{
+				st_bTspiTxRetry=0;
+				Ui_TimerProcRemove(TSPI_TimerToResend);
+			}
+			break;
+#endif
+
+
+		//红光笔数据
+		case 0xc6:
+			g_psUnsaveParam->bRedPenEnable=st_bTspiRxArry[2];
+			g_psUnsaveParam->bRedPenHZ=st_bTspiRxArry[3];
+			if (st_bTspiRxArry[4])
+			{
+				g_psUnsaveParam->bRedPenTimerEnable=1;
+				g_psUnsaveParam->wRedPenTime=st_bTspiRxArry[4];
+			}
+			else
+				g_psUnsaveParam->bRedPenTimerEnable=0;
+			if (dwHashKey == xpgHash("RedLight"))
+				xpgUpdateStage();
 			break;
 
 		default:

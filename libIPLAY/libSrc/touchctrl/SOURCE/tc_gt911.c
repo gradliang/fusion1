@@ -572,6 +572,12 @@ void TouchIntEnable()
 	Gpio_IntEnable(gpioIntNum);
 }
 
+void TouchIntDisable()
+{
+	//Gpio_IntConfig(gpioIntNum, GPIO_ACTIVE_LOW, TC_TRIGGER_MODE);
+	Gpio_IntDisable(gpioIntNum);
+}
+
 void ResetTouchPanel()
 {
 	mpDebugPrint("ResetTouchPanel");
@@ -628,6 +634,10 @@ static SDWORD GT911_tp_Init(void)
 
 static SDWORD GT911_Sleep(BYTE sleep)
 {
+	if (sleep)
+		TouchIntDisable();
+	else
+		TouchIntEnable();
 }
 
 static SDWORD GT911_Check_Interrupt(void)

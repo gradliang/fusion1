@@ -251,12 +251,17 @@ void TouchCtrllerTask(void)
 				pos_data.x1 = data.x1;
 				pos_data.y1 = data.y1;
 				pos_data.status=TC_DOWN;	
-
+				stTcDriver.TcSleep(1);
 				MessageDrop(UI_TC_MSG_ID, (BYTE*)&pos_data, sizeof(pos_data));
 				EventSet(UI_EVENT, EVENT_TOUCH_COLTROLLER);
                 
             }
         }
+        else if(msg.status == TC_INT)
+        {
+				stTcDriver.TcSleep(0);
+        }
+#if 0
         else if(msg.status == TC_POLLING)
         {
             /* Start TS timer to do next polling */
@@ -295,6 +300,7 @@ void TouchCtrllerTask(void)
             /* 3 points adjustment */
             
         }
+#endif
     }
 }
 

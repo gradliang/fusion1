@@ -1253,6 +1253,7 @@ void Timer_FirstEnterCamPreview()
 #endif //#if (SENSOR_ENABLE == ENABLE)
 
 //>------------TOUCH UI FUNCION-----------------------
+//power
 void SendCmdPowerOff()
 {
 	BYTE bTxData[8];
@@ -1275,6 +1276,17 @@ void xpgCb_AutoPowerOff(BYTE bEnable,DWORD dwTime)
 		Ui_TimerProcRemove(SendCmdPowerOff);
 	}
 }
+//--≤È—Ø÷∏¡Ó
+void SendCmdA4GetStaus(BYTE bCmd)
+{
+	BYTE bTxData[8];
+
+	bTxData[0]=0xa4;
+	bTxData[1]=3+1;
+	bTxData[2]=bCmd;
+	return TSPI_PacketSend(bTxData,bTxData[1],0);
+}
+
 
 //<------------TOUCH UI FUNCION-----------------------
 

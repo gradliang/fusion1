@@ -1402,7 +1402,7 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             char tempstr[32];
             Idu_FontColorSet(0,0,0);
             SetCurrIduFontID(FONT_ID_HeiTi19);
-            sprintf(tempstr, "%dmin", g_psSetupMenu->wRedPenTime);
+            sprintf(tempstr, "%dmin", g_psUnsaveParam->wRedPenTime);
             Idu_PrintStringCenter(pWin, tempstr, pstSprite->m_wPx, pstSprite->m_wPy+4, 0, pstSprite->m_wWidth);
             Idu_FontColorSet(255,255,255);
         }
@@ -1795,7 +1795,7 @@ SWORD xpgDrawSprite_LightIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite
     {
         if (dwSpriteId == 0)
         {
-            if (g_psSetupMenu->bRedPenEnable)
+            if (g_psUnsaveParam->bRedPenEnable)
             {
                 pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 0);
                 if (pstMask)
@@ -1807,7 +1807,7 @@ SWORD xpgDrawSprite_LightIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite
         }
         else if (dwSpriteId == 2)
         {
-            if (g_psSetupMenu->bRedPenEnable)
+            if (g_psUnsaveParam->bRedPenEnable)
             {
                 pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 2);
                 if (pstMask)
@@ -1816,7 +1816,7 @@ SWORD xpgDrawSprite_LightIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite
         }
         else if (dwSpriteId == 3)
         {
-            if (g_psSetupMenu->bRedPenEnable && g_psSetupMenu->bRedPenHZ)
+            if (g_psUnsaveParam->bRedPenEnable && g_psUnsaveParam->bRedPenHZ)
             {
                 pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 2);
                 if (pstMask)
@@ -1825,7 +1825,7 @@ SWORD xpgDrawSprite_LightIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite
         }
         else if (dwSpriteId == 4)
         {
-            if (g_psSetupMenu->bRedPenEnable && g_psSetupMenu->bRedPenTimerEnable)
+            if (g_psUnsaveParam->bRedPenEnable && g_psUnsaveParam->bRedPenTimerEnable)
             {
                 pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 2);
                 if (pstMask)
@@ -1834,7 +1834,7 @@ SWORD xpgDrawSprite_LightIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite
         }
         else if (dwSpriteId == 5)
         {
-            if (g_psSetupMenu->bRedPenEnable && g_psSetupMenu->bRedPenTimerEnable)
+            if (g_psUnsaveParam->bRedPenEnable && g_psUnsaveParam->bRedPenTimerEnable)
             {
                 pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 5);
                 if (pstMask)
