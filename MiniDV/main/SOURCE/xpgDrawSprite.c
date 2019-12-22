@@ -57,7 +57,7 @@ DWORD opmCloudDataCurrentPage = 0;
 DWORD opmLocalDataTotal = 8;
 DWORD opmCloudDataTotal = 3;
 
-OPMDATAITEM  localOpmData[] = {
+OPMDATAITEM  localOpmDataArray[] = {
     {"LocalData #001", 1997, 06, 24, 11, 12, 14, 1310, -70, 0 },
     {"LocalData #002", 1997, 06, 25, 11, 12, 14, 1310, -70, 0 },
     {"LocalData #003", 1997, 06, 26, 11, 12, 14, 1310, -70, 0 },
@@ -67,11 +67,13 @@ OPMDATAITEM  localOpmData[] = {
     {"LocalData #007", 1997, 06, 30, 11, 12, 14, 1310, -70, 0 },
     {"LocalData #008", 1997, 07, 01, 11, 12, 14, 1310, -70, 0 },
 };
-OPMDATAITEM  cloudOpmData[] = {
+OPMDATAITEM  cloudOpmDataArray[] = {
     {"CloudData #001", 1997, 06, 24, 11, 12, 14, 1310, -70, 0 },
     {"CloudData #002", 1997, 06, 25, 11, 12, 14, 1310, -70, 0 },
     {"CloudData #003", 1997, 06, 26, 11, 12, 14, 1310, -70, 0 },
 };
+OPMDATAITEM * localOpmData = localOpmDataArray;
+OPMDATAITEM * cloudOpmData = cloudOpmDataArray;
 
 
 const BYTE * FModeStrList[] = {
@@ -616,7 +618,7 @@ SWORD xpgDrawSprite_Background(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprit
     {
         mpCopyEqualWin(pWin, Idu_GetCacheWin());
     }
-    else if (dwHashKey == xpgHash("opm1") || dwHashKey == xpgHash("opm2") || dwHashKey == xpgHash("opmList1") )
+    else if (dwHashKey == xpgHash("opm1") || dwHashKey == xpgHash("opm2") || dwHashKey == xpgHash("opmList1") || dwHashKey == xpgHash("opmList2"))
     {
         Idu_PaintWin(pWin, RGB2YUV(32, 33, 38));
     }
@@ -1515,7 +1517,7 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             }
         }
     }
-    else if(dwHashKey == xpgHash("opmList1"))
+    else if(dwHashKey == xpgHash("opmList1") || dwHashKey == xpgHash("opmList2") )
     {
         if (dwSpriteId == 0 || dwSpriteId == 1)
         {
@@ -1542,11 +1544,42 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         }
         else if (dwSpriteId >= 3 && dwSpriteId <= 7)
         {
+            /////
+            DWORD dwListId = dwSpriteId - 3;
+            DWORD * pdwPageId;
+            DWORD * pdwTotal;
+            OPMDATAITEM * pstItems;
+            OPMDATAITEM * curItem;
+            if (dwHashKey == xpgHash("opmList1"))
+            {
+                pdwPageId = &opmLocalDataCurrentPage;
+                pdwTotal = &opmLocalDataTotal;
+                pstItems = localOpmData;
+            }
+            else
+            {
+                pdwPageId = &opmCloudDataCurrentPage;
+                pdwTotal = &opmCloudDataTotal;
+                pstItems = cloudOpmData;
+            }
+            if ((*pdwPageId) * 5 + dwListId >= *pdwTotal)
+                return PASS;
+        
             pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 3);
             if (pstMask)
                 xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
             
         }
+        else if (dwSpriteId == 8)
+        {
+            pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 8);
+            if (pstMask)
+                xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+            SetCurrIduFontID(FONT_ID_HeiTi16);
+            text = getstr(Str_ShuaXin);
+            Idu_PrintStringCenter(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy+2, 0, pstSprite->m_wWidth);  
+        }
+        
     }
     
     xpgSpriteEnableTouch(pstSprite);
@@ -1969,7 +2002,7 @@ SWORD xpgDrawSprite_Title(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BO
     }
     else if (dwHashKey == xpgHash("opm1") ||
              dwHashKey == xpgHash("opm2") ||
-             dwHashKey == xpgHash("opmList1"))
+             dwHashKey == xpgHash("opmList1") || dwHashKey == xpgHash("opmList2"))
     {
         Idu_PaintWinArea(pWin, 0, 0, pWin->wWidth, 40, RGB2YUV(0x0B, 0x0C, 0x0E));
         SetCurrIduFontID(FONT_ID_HeiTi19);
@@ -2026,7 +2059,8 @@ SWORD xpgDrawSprite_BackIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite,
         dwHashKey == xpgHash("RedLight") || 
         dwHashKey == xpgHash("opm1") || 
         dwHashKey == xpgHash("opm2") || 
-        dwHashKey == xpgHash("opmList1")
+        dwHashKey == xpgHash("opmList1") ||
+        dwHashKey == xpgHash("opmList2")
         )
     {
         char tmpbuf[64];

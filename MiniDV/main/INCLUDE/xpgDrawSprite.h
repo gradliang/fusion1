@@ -72,8 +72,9 @@ extern DWORD opmLocalDataCurrentPage;
 extern DWORD opmCloudDataCurrentPage;
 extern DWORD opmLocalDataTotal;
 extern DWORD opmCloudDataTotal;
-extern OPMDATAITEM  localOpmData[];
-extern OPMDATAITEM  cloudOpmData[];
+extern OPMDATAITEM * localOpmData;
+extern OPMDATAITEM * cloudOpmData;
+
 
 
 
