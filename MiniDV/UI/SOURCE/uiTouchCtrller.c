@@ -160,6 +160,15 @@ void uiTouchMsgReceiver(void)
 #if  (PRODUCT_UI==UI_WELDING)
 SWORD touchSprite_Background(STXPGSPRITE * sprite, WORD x, WORD y)
 {
+    DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
+    
+    if (dwHashKey == xpgHash("opmWarn"))
+    {
+        Free_CacheWin();
+        isSelectOnlineOPM = 1;
+        xpgPreactionAndGotoPage("opm2");
+        xpgUpdateStage();
+    }
     return 0;
 }
 
@@ -602,6 +611,9 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
             isSelectOnlineOPM = 1;
             xpgPreactionAndGotoPage("opm2");
             xpgUpdateStage();
+            Idu_GetCacheWin_WithInit();
+            xpgPreactionAndGotoPage("opmWarn");
+            xpgUpdateStage();
         }
     }
     else if(dwHashKey == xpgHash("opm2") )
@@ -646,6 +658,13 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
             xpgPreactionAndGotoPage("opm2");
             xpgUpdateStage();
         }
+    }
+    else if (dwHashKey == xpgHash("opmWarn"))
+    {
+        Free_CacheWin();
+        isSelectOnlineOPM = 1;
+        xpgPreactionAndGotoPage("opm2");
+        xpgUpdateStage();
     }
     else if (dwHashKey == xpgHash(DIALOG_PAGE_NAME))
     {

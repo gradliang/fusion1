@@ -622,6 +622,13 @@ SWORD xpgDrawSprite_Background(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprit
     {
         Idu_PaintWin(pWin, RGB2YUV(32, 33, 38));
     }
+    else if (dwHashKey == xpgHash("opmWarn"))
+    {
+        ST_IMGWIN * pCacheWin = xpgGetCurrDialogCacheWin();
+        if (pCacheWin != NULL && pCacheWin->pdwStart != NULL)
+            mpCopyEqualWin(pWin, pCacheWin);
+        xpgSpriteEnableTouch(pstSprite);
+    }
     else if (dwHashKey == xpgHash(DIALOG_PAGE_NAME))
     {
         ST_IMGWIN * pCacheWin = xpgGetCurrDialogCacheWin();
@@ -1580,6 +1587,15 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             Idu_PrintStringCenter(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy+2, 0, pstSprite->m_wWidth);  
         }
         
+    }
+    else if (dwHashKey == xpgHash("opmWarn"))
+    {
+        if (dwSpriteId == 0)
+        {
+            pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 0);
+            if (pstMask)
+                xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+        }
     }
     
     xpgSpriteEnableTouch(pstSprite);
