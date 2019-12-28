@@ -75,9 +75,12 @@ extern DWORD opmCloudDataTotal;
 extern OPMDATAITEM * localOpmData;
 extern OPMDATAITEM * cloudOpmData;
 
-
-
-
+//////////////////////////////////////////////////////
+#define KEYBOARD_BUFFER_SIZE    128
+extern char keyboardBuffer[];
+extern const char * keyboardTitle;
+extern BOOL boCapsLock;
+void (*keyboardGoBack)();
 
 
 

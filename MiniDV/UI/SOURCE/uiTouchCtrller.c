@@ -611,6 +611,7 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
             isSelectOnlineOPM = 1;
             xpgPreactionAndGotoPage("opm2");
             xpgUpdateStage();
+            Free_CacheWin();
             Idu_GetCacheWin_WithInit();
             xpgPreactionAndGotoPage("opmWarn");
             xpgUpdateStage();
@@ -1410,6 +1411,17 @@ SWORD touchSprite_Selector(STXPGSPRITE * sprite, WORD x, WORD y)
     return 0;
 }
 
+void startEditOpmRecordName(const char * oldPageName, OPMDATAITEM * curItem)
+{
+    strncpy(keyboardBuffer, curItem->itemName, KEYBOARD_BUFFER_SIZE);
+    keyboardBuffer[KEYBOARD_BUFFER_SIZE - 1] = 0;
+    Free_CacheWin();
+    Idu_GetCacheWin_WithInit();
+    boCapsLock = FALSE;
+    xpgPreactionAndGotoPage("Keyboard");
+    xpgUpdateStage();
+}
+
 SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
 {
     DWORD dwSpriteId = sprite->m_dwTypeIndex;
@@ -1577,6 +1589,37 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
             popupDialog(Dialog_BatInfo, "SetInfo");
             xpgUpdateStage();
         }
+    }
+    else if (dwHashKey == xpgHash("opmList1") || dwHashKey == xpgHash("opmList2"))
+    {
+        /////
+        DWORD dwListId = dwSpriteId;
+        
+        DWORD * pdwPageId;
+        DWORD * pdwTotal;
+        OPMDATAITEM * pstItems;
+        OPMDATAITEM * curItem;
+        const char * xpgPageName;
+            
+        if (dwHashKey == xpgHash("opmList1"))
+        {
+            pdwPageId = &opmLocalDataCurrentPage;
+            pdwTotal = &opmLocalDataTotal;
+            pstItems = localOpmData;
+            xpgPageName = "opmList1";
+        }
+        else
+        {
+            pdwPageId = &opmCloudDataCurrentPage;
+            pdwTotal = &opmCloudDataTotal;
+            pstItems = cloudOpmData;
+            xpgPageName = "opmList2";
+        }
+        if ((*pdwPageId) * 5 + dwListId >= *pdwTotal)
+            return PASS;
+        curItem = & pstItems[(*pdwPageId) * 5 + dwListId];
+        startEditOpmRecordName(xpgPageName, curItem);
+        
     }
     
     return 0;
