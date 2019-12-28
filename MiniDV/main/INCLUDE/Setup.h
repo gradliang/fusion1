@@ -207,6 +207,8 @@ typedef struct ST_SETUP_MENU_SETTING_VALUE
     char srtOpenPassword[8];            // 开机密码  
     char strHirePassword[8];            // 租借密码  
     WORD wLockedTimes;                  // 锁定熔接次数
+    SDWORD sdwRtcOffset;                  //4 本地时间与云端时间差异
+    BYTE bMADarry[6];            			//MAD 码
     
 #endif
 

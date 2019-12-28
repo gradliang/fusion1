@@ -109,6 +109,8 @@ void GetDefaultSetupMenuValue(void)
     memset(g_psSetupMenu->srtOpenPassword, 0, 8);
     memset(g_psSetupMenu->strHirePassword, 0, 8);
     g_psSetupMenu->wLockedTimes = 200;
+    g_psSetupMenu->sdwRtcOffset = 0;
+    memset(g_psSetupMenu->bMADarry, 0, 6);
     
 #endif	
 }

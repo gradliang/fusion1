@@ -836,10 +836,15 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
             else if (dwIconId == 6)
             {
                 ST_SYSTEM_TIME curTime;
+				  DWORD dwLastRtc;
+					
                 SystemTimeGet(&curTime);
                 curTime.u08Hour = dwDialogTempValue >> 16;
                 curTime.u08Minute = dwDialogTempValue & 0xffff;
+				  dwLastRtc=RTC_ReadCount();
                 SystemTimeSet(&curTime);
+				  g_psSetupMenu->sdwRtcOffset+=dwLastRtc-RTC_ReadCount();
+				  WriteSetupChg();
                 exitDialog();
             }
             else if (dwIconId == 7)
@@ -909,11 +914,16 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
             else if (dwIconId == 6)
             {
                 ST_SYSTEM_TIME curTime;
+				  DWORD dwLastRtc;
+
                 SystemTimeGet(&curTime);
                 curTime.u16Year = dwDialogTempValue >> 16;
                 curTime.u08Month = (dwDialogTempValue >> 8) & 0xff;
                 curTime.u08Day = dwDialogTempValue & 0xff;
+				  dwLastRtc=RTC_ReadCount();
                 SystemTimeSet(&curTime);
+				  g_psSetupMenu->sdwRtcOffset+=dwLastRtc-RTC_ReadCount();
+				  WriteSetupChg();
                 exitDialog();
             }
             else if (dwIconId == 7)

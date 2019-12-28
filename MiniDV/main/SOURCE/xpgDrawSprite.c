@@ -2753,9 +2753,13 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
     {
         if (dwTextId == 1)
         {
+        	  char tmpbuf[16];
+
+            sprintf(tmpbuf, "%02x%02x%02x%02x%02x%02x", g_psSetupMenu->bMADarry[0],g_psSetupMenu->bMADarry[1],g_psSetupMenu->bMADarry[2]\
+							,g_psSetupMenu->bMADarry[3],g_psSetupMenu->bMADarry[4],g_psSetupMenu->bMADarry[5]);
             SetCurrIduFontID(FONT_ID_HeiTi19);
-            text = "13800138000";
-            Idu_PrintStringRight(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0);
+            //text = "13800138000";
+            Idu_PrintStringRight(pWin, tmpbuf, pstSprite->m_wPx, pstSprite->m_wPy, 0);
         }
         else if (dwTextId == 2)
         {

@@ -73,13 +73,13 @@ BYTE g_bDisplayUseIpw2=1; // 0->ipw1  1->ipw2
 #define  RX_HEAD_FLAG1									0x55
 #define  RX_HEAD_FLAG2									0x55
 #define  RX_HEAD_FLAG3									0xee
-#define  RX_BUFFER_LENTH								16
+#define  RX_BUF_NORMAL_LEN						32
+#define  TX_BUF_NORMAL_LEN						32
 
 
 #define SPI_CLK_GPIO                			GPIO_UGPIO_0 //pin80 
 #define SPI_DOUT_GPIO                			GPIO_KGPIO_1 //pin119
 #define SPI_DIN_GPIO                			GPIO_KGPIO_0 //pin118
-#define SPI_RX_LEN                				16
 #define SPI_WAIT_START                		10000
 
 #define TSPI_CLK_Low 		Gpio_Config2GpioFunc(SPI_CLK_GPIO, GPIO_OUTPUT_MODE, GPIO_DATA_LOW, 1)
@@ -89,8 +89,10 @@ BYTE g_bDisplayUseIpw2=1; // 0->ipw1  1->ipw2
 #define TSPI_DIN_Low 		Gpio_Config2GpioFunc(SPI_DIN_GPIO, GPIO_OUTPUT_MODE, GPIO_DATA_LOW, 1)
 #define TSPI_DIN_High 	Gpio_Config2GpioFunc(SPI_DIN_GPIO, GPIO_INPUT_MODE, GPIO_DATA_HIGH, 1)
 
-static BYTE st_bTspiRxIndex=0,st_bTspiRxArry[RX_BUFFER_LENTH]={0},st_bTspiBusy=0,st_bTspiAbnormal=0;
-static BYTE st_bTspiTxArry[RX_BUFFER_LENTH]={0},st_bTspiTxRetry=0;
+static DWORD st_bTspiRxBufLen=0,st_dwTspiRxIndex=0;
+static BYTE *pbTspiRxBuffer=NULL,st_bTspiBusy=0,st_bTspiAbnormal=0;
+static DWORD st_bTspiTxBufLen=0;
+static BYTE *pbTspiTxBuffer=NULL,st_bTspiTxRetry=0;
 
 
 BYTE TSPI_WaitFree(void)
@@ -183,6 +185,18 @@ void TSPI_Init(void)
 	Gpio_ConfiguraionSet(SPI_CLK_GPIO, GPIO_DEFAULT_FUNC, GPIO_INPUT_MODE, GPIO_DATA_HIGH, 1);
 	Gpio_ConfiguraionSet(SPI_DOUT_GPIO, GPIO_DEFAULT_FUNC, GPIO_INPUT_MODE, GPIO_DATA_HIGH, 1);
 	Gpio_ConfiguraionSet(SPI_DIN_GPIO, GPIO_DEFAULT_FUNC, GPIO_INPUT_MODE, GPIO_DATA_HIGH, 1);
+	if (pbTspiTxBuffer!=NULL && st_bTspiTxBufLen)
+		ext_mem_free(pbTspiTxBuffer);
+	if (st_bTspiTxBufLen<TX_BUF_NORMAL_LEN)
+		st_bTspiTxBufLen=TX_BUF_NORMAL_LEN;
+	st_bTspiTxBufLen=ALIGN_32(st_bTspiTxBufLen);
+	pbTspiRxBuffer = (BYTE *)ext_mem_malloc(st_bTspiTxBufLen);
+	if (pbTspiRxBuffer!=NULL && st_bTspiRxBufLen)
+		ext_mem_free(pbTspiRxBuffer);
+	if (st_bTspiRxBufLen<RX_BUF_NORMAL_LEN)
+		st_bTspiRxBufLen=RX_BUF_NORMAL_LEN;
+	st_bTspiRxBufLen=ALIGN_32(st_bTspiRxBufLen);
+	pbTspiRxBuffer = (BYTE *)ext_mem_malloc(st_bTspiRxBufLen);
 	st_bTspiBusy=0;
 }
 
@@ -289,7 +303,7 @@ void TSPI_TimerToResend(void)
 
 	if (!st_bTspiTxRetry)
 		return;
-	if (TSPI_Send(st_bTspiTxArry,st_bTspiTxArry[1])!=PASS)
+	if (TSPI_Send(pbTspiTxBuffer,pbTspiTxBuffer[1])!=PASS)
 	{
 		st_bTspiTxRetry++;
 		if (st_bTspiTxRetry<6)
@@ -308,11 +322,11 @@ SWORD TSPI_SendWithAutoResend(BYTE *pbDataBuf,DWORD dwLenth )
 	SWORD swRet;
 
 	swRet=TSPI_Send(pbDataBuf,pbDataBuf[1]);
-	if (swRet!=PASS)
+	if (swRet!=PASS  && dwLenth<=st_bTspiTxBufLen)
 	{
 		st_bTspiTxRetry=1;
 		for (i=0;i<dwLenth;i++)
-			st_bTspiTxArry[i]=pbDataBuf[i];
+			pbTspiTxBuffer[i]=pbDataBuf[i];
 		TSPI_Reset();
 		Ui_TimerProcAdd(st_bTspiTxRetry*10, TSPI_TimerToResend);
 	}
@@ -340,7 +354,7 @@ SWORD TSPI_PacketSend(BYTE *pbDataBuf,DWORD dwLenth ,BYTE bCheckResend)
 
 BYTE TSPI_Receiver()
 {
-	BYTE i,k;
+	BYTE i,k,bRx[2];
 	SWORD swRet=PASS,swValue;
 
 	if (Gpio_ValueGet(SPI_DIN_GPIO))
@@ -351,9 +365,9 @@ BYTE TSPI_Receiver()
 	//start ack
 	st_bTspiBusy=1;
 	TSPI_DOUT_Low;
-	for (i=0;i<SPI_RX_LEN+1;i++)
+	for (i=0;i<=st_bTspiRxBufLen;i++)
 	{
-		st_bTspiRxArry[i]=0;
+		pbTspiRxBuffer[i]=0;
 		for (k=0;k<8;k++)
 		{
 			if (!TSPI_Wait_ClkHigh())
@@ -378,16 +392,16 @@ BYTE TSPI_Receiver()
 					TSPI_DIN_High;
 					break;
 				}
-				if (i>=SPI_RX_LEN)
+				if (i>=st_bTspiRxBufLen)
 				{
 					MP_DEBUG("TSPI overflow!");
 					swRet=FAIL;
 					break;
 				}
 			}
-			st_bTspiRxArry[i]<<=1;
+			pbTspiRxBuffer[i]<<=1;
 			if (swValue)
-				st_bTspiRxArry[i] |=0x01;
+				pbTspiRxBuffer[i] |=0x01;
 			if (!TSPI_Wait_ClkLow())
 			{
 				MP_DEBUG("FAIL clk=1");
@@ -399,22 +413,46 @@ BYTE TSPI_Receiver()
 
 		if (swRet!=PASS)
 			break;
+		//判断接收BUFFER是否够大
+		if (i==1)
+		{
+			if (pbTspiRxBuffer[1]>st_bTspiRxBufLen&& (pbTspiRxBuffer[0]==0xbc))  //0xbc->jpg 设备信息数据传输
+			{
+				bRx[0]=pbTspiRxBuffer[0];
+				bRx[1]=pbTspiRxBuffer[1];
+				ext_mem_free(pbTspiRxBuffer);
+				st_bTspiRxBufLen=ALIGN_32(pbTspiRxBuffer[1]);
+				pbTspiRxBuffer = (BYTE *)ext_mem_malloc(st_bTspiRxBufLen);
+				pbTspiRxBuffer[0]=bRx[0];
+				pbTspiRxBuffer[1]=bRx[1];
+			}
+		}
+
+
 	}
 
 	if (swRet == 1)
 	{
-		st_bTspiRxIndex=i;
+		st_dwTspiRxIndex=i;
 		//MP_DEBUG("OK!");
 		TSPI_DataProc();
 	}
 	else
 	{
 		if (i || k)
-			st_bTspiRxIndex=0;
+			st_dwTspiRxIndex=0;
 		else
 			st_bTspiAbnormal=1;
 	}
 	TSPI_Reset();
+
+	if (pbTspiRxBuffer!=NULL && st_bTspiRxBufLen>RX_BUF_NORMAL_LEN)
+	{
+		ext_mem_free(pbTspiRxBuffer);
+		st_bTspiRxBufLen=ALIGN_32(RX_BUF_NORMAL_LEN);
+		pbTspiRxBuffer = (BYTE *)ext_mem_malloc(st_bTspiRxBufLen);
+	}
+
 	return i;
 }
 
@@ -4285,34 +4323,34 @@ void Proc_SensorData_State()
 void TSPI_DataProc(void)
 {
 	BYTE i,bChecksum,index;
-	DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
+	DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey,dwTmpData;
 	
-	if (!st_bTspiRxIndex)
+	if (!st_dwTspiRxIndex)
 		return;
-	for (i=0;i<st_bTspiRxIndex;i++)
-		mpDebugPrintN(" %02x ",st_bTspiRxArry[i]);
+	for (i=0;i<st_dwTspiRxIndex;i++)
+		mpDebugPrintN(" %02x ",pbTspiRxBuffer[i]);
 	mpDebugPrint("");
-	if (st_bTspiRxIndex<3)
+	if (st_dwTspiRxIndex<3)
 		return;
-	if (st_bTspiRxArry[1]!=st_bTspiRxIndex)
+	if (pbTspiRxBuffer[1]!=st_dwTspiRxIndex)
 		return;
 	bChecksum=0;
-	for (i=0;i<st_bTspiRxIndex-1;i++)
+	for (i=0;i<st_dwTspiRxIndex-1;i++)
 	{
-		bChecksum+=st_bTspiRxArry[i];
+		bChecksum+=pbTspiRxBuffer[i];
 	}
-	if (bChecksum!=st_bTspiRxArry[st_bTspiRxIndex-1])
+	if (bChecksum!=pbTspiRxBuffer[st_dwTspiRxIndex-1])
 	{
-		mpDebugPrintN(" checksum error really %p data %p ",bChecksum,st_bTspiRxArry[st_bTspiRxIndex-1]);
+		mpDebugPrintN(" checksum error really %p data %p ",bChecksum,pbTspiRxBuffer[st_dwTspiRxIndex-1]);
 		return;
 	}
 
-	switch (st_bTspiRxArry[0])
+	switch (pbTspiRxBuffer[0])
 	{
 		case 0xb1:
-			if (st_bTspiRxArry[3])
+			if (pbTspiRxBuffer[3])
 			{
-				switch (st_bTspiRxArry[2])
+				switch (pbTspiRxBuffer[2])
 				{
 					case 1://refresh
 						#if SHOW_CENTER
@@ -4546,7 +4584,7 @@ void TSPI_DataProc(void)
 			break;
 //马达状态
 		case 0xb2:
-			st_bMotorStaus=st_bTspiRxArry[2];
+			st_bMotorStaus=pbTspiRxBuffer[2];
 			#if TEST_PLANE
 			if (st_bWaitMotoStop && !(st_bMotorStaus&(1<<MOTOR_LEFT_TOP)))
 			{
@@ -4566,10 +4604,10 @@ void TSPI_DataProc(void)
 			break;
 //检测状态
 		case 0xb3:
-			switch (st_bTspiRxArry[2]>>4)
+			switch (pbTspiRxBuffer[2]>>4)
 			{
 				case 1:
-					if (st_bTspiRxArry[2]&BIT0)// 盖子打开
+					if (pbTspiRxBuffer[2]&BIT0)// 盖子打开
 					{
 						// 马达复位
 						//ResetMotor();
@@ -4585,7 +4623,7 @@ void TSPI_DataProc(void)
 				break;
 
 				case 3:
-					if (st_bTspiRxArry[2]&BIT0)
+					if (pbTspiRxBuffer[2]&BIT0)
 					{
 						g_bOPMonline=1;
 					}
@@ -4603,7 +4641,7 @@ void TSPI_DataProc(void)
 			break;
 		//放电状态
 		case 0xb4:
-			if (st_bTspiRxArry[2]==0x01)
+			if (pbTspiRxBuffer[2]==0x01)
 			{
 				if (g_swProcState)
 				{
@@ -4614,7 +4652,7 @@ void TSPI_DataProc(void)
 			break;
 		//复位状态
 		case 0xb5:
-			if (st_bTspiRxArry[2]==0x01)//复位完成
+			if (pbTspiRxBuffer[2]==0x01)//复位完成
 			{
 					//DriveMotor(01,1,200,10);
 					//DriveMotor(02,1,200,10);
@@ -4622,26 +4660,26 @@ void TSPI_DataProc(void)
 			break;
 		//AF镜头
 		case 0xb6:
-			if (st_bTspiRxArry[2]&BIT2) //  1->AFL镜头未超出行程
+			if (pbTspiRxBuffer[2]&BIT2) //  1->AFL镜头未超出行程
 			{
 			}
-			if (st_bTspiRxArry[2]&BIT3)//  1->AFL镜头未超出行程
+			if (pbTspiRxBuffer[2]&BIT3)//  1->AFL镜头未超出行程
 			{
 			}
 			break;
 		//熔接记录查询
 		case 0xb7:
-			if ((st_bTspiRxArry[2]==1||st_bTspiRxArry[2]==2) && st_bTspiRxArry[3]>0)
+			if ((pbTspiRxBuffer[2]==1||pbTspiRxBuffer[2]==2) && pbTspiRxBuffer[3]>0)
 			{
-				STRECORD * pr=GetRecord(st_bTspiRxArry[3]-1);
+				STRECORD * pr=GetRecord(pbTspiRxBuffer[3]-1);
 				if (pr)
 				{
-					if (st_bTspiRxArry[2]==1)//4  查询熔接记录
+					if (pbTspiRxBuffer[2]==1)//4  查询熔接记录
 					{
 						pr->bHead=0xa6;
 						TSPI_PacketSend((BYTE *)pr,3+22,0);
 					}
-					else if (st_bTspiRxArry[2]==2)//4  查询熔接图片  
+					else if (pbTspiRxBuffer[2]==2)//4  查询熔接图片  
 					{
 						pr->bHead=0xae;
 						//TSPI_PacketSend(pr,3+22,0);
@@ -4651,30 +4689,40 @@ void TSPI_DataProc(void)
 			}
 			break;
 
+		//设备信息数据传输
+		case 0xbc:
+			for (i=0;i<6;i++)
+			{
+				g_psSetupMenu->bMADarry[i]=pbTspiRxBuffer[2+i];
+			}
+			WriteSetupChg();
+			break;
+
 		//环境亮度
 		case 0xbd:
 			if (g_psSetupMenu->bSmartBacklight)
 			{
-				if (st_bTspiRxArry[2] && st_bTspiRxArry[2]<6)
+				if (pbTspiRxBuffer[2] && pbTspiRxBuffer[2]<6)
 				{
 					BYTE bPwmArry[5]={10,30,50,70,90};
-					TimerPwmEnable(2, 240000, bPwmArry[st_bTspiRxArry[2]-1]);
+					TimerPwmEnable(2, 240000, bPwmArry[pbTspiRxBuffer[2]-1]);
 				}
 			}
 			break;
 
 		//加热数据
 		case 0xbe:
-			g_psSetupMenu->bPreHotEnable=(st_bTspiRxArry[2]&BIT0);
-			g_psSetupMenu->bHotUpMode=(st_bTspiRxArry[2]&BIT1)>1;
-			g_psSetupMenu->bReSuGuanSheZhi=st_bTspiRxArry[2]>>4;
-			g_psSetupMenu->wJiaReWenDu=st_bTspiRxArry[3];
-			g_psSetupMenu->wJiaReShiJian=st_bTspiRxArry[4];
+			g_psSetupMenu->bPreHotEnable=(pbTspiRxBuffer[2]&BIT0);
+			g_psSetupMenu->bHotUpMode=(pbTspiRxBuffer[2]&BIT1)>1;
+			g_psSetupMenu->bReSuGuanSheZhi=pbTspiRxBuffer[2]>>4;
+			g_psSetupMenu->wJiaReWenDu=pbTspiRxBuffer[3];
+			g_psSetupMenu->wJiaReShiJian=pbTspiRxBuffer[4];
+			WriteSetupChg();
 			break;
 #if 0
 		//指令回复
 		case 0xbf:
-			if (st_bTspiTxRetry && st_bTspiRxArry[2]==0x01)//0x00->接收错误 0x01->接收成功
+			if (st_bTspiTxRetry && pbTspiRxBuffer[2]==0x01)//0x00->接收错误 0x01->接收成功
 			{
 				st_bTspiTxRetry=0;
 				Ui_TimerProcRemove(TSPI_TimerToResend);
@@ -4683,14 +4731,39 @@ void TSPI_DataProc(void)
 #endif
 
 
+		//云端时间
+		case 0xc4:
+			g_psSetupMenu->sdwRtcOffset=0;
+
+			ST_SYSTEM_TIME new_time;
+			new_time.u16Year=2000+pbTspiRxBuffer[2];
+			new_time.u08Month=pbTspiRxBuffer[3];
+			new_time.u08Day=pbTspiRxBuffer[4];
+			new_time.u08Hour=pbTspiRxBuffer[5];
+			new_time.u08Minute=pbTspiRxBuffer[6];
+			new_time.u08Second=pbTspiRxBuffer[7];
+			SystemTimeSet(&new_time);
+			WriteSetupChg();
+			break;
+
+		//开机新密码
+		case 0xc5:
+			dwTmpData=(pbTspiRxBuffer[2]<<8)|pbTspiRxBuffer[3];
+			g_psSetupMenu->srtOpenPassword[0]= '0' + (dwTmpData%10000)/1000;
+			g_psSetupMenu->srtOpenPassword[1]= '0' + (dwTmpData%1000)/100;
+			g_psSetupMenu->srtOpenPassword[2]= '0' + (dwTmpData%100)/10;
+			g_psSetupMenu->srtOpenPassword[3]= '0' + (dwTmpData%10);
+			g_psSetupMenu->srtOpenPassword[4]= 0;
+			break;
+
 		//红光笔数据
 		case 0xc6:
-			g_psUnsaveParam->bRedPenEnable=st_bTspiRxArry[2];
-			g_psUnsaveParam->bRedPenHZ=st_bTspiRxArry[3];
-			if (st_bTspiRxArry[4])
+			g_psUnsaveParam->bRedPenEnable=pbTspiRxBuffer[2];
+			g_psUnsaveParam->bRedPenHZ=pbTspiRxBuffer[3];
+			if (pbTspiRxBuffer[4])
 			{
 				g_psUnsaveParam->bRedPenTimerEnable=1;
-				g_psUnsaveParam->wRedPenTime=st_bTspiRxArry[4];
+				g_psUnsaveParam->wRedPenTime=pbTspiRxBuffer[4];
 			}
 			else
 				g_psUnsaveParam->bRedPenTimerEnable=0;
