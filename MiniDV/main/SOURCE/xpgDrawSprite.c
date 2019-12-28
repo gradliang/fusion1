@@ -79,7 +79,9 @@ OPMDATAITEM * cloudOpmData = cloudOpmDataArray;
 
 char keyboardBuffer[KEYBOARD_BUFFER_SIZE];
 const char * keyboardTitle = "";
-void (*keyboardGoBack)() = NULL;
+void (*keyboardGoBack)(BOOL boEnter) = NULL;
+BOOL boKeyLight = FALSE;
+DWORD dwKeyID = 0;
 BOOL boCapsLock = FALSE;
 
 ////////////////////////////////////////////////////////////////////////
@@ -1937,6 +1939,43 @@ SWORD xpgDrawSprite_LightIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite
             }
         }
     }
+    else if(dwHashKey == xpgHash("Keyboard") )
+    {
+        if (boKeyLight)
+        {
+            if (dwSpriteId != 0)
+                return PASS;
+            
+            DWORD iconX, iconY;
+            STXPGSPRITE * pstIcon, *pstLight = NULL;
+            
+            pstIcon = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_ICON, dwKeyID);
+            iconX = pstIcon->m_wPx;
+            iconY = pstIcon->m_wPy;
+            if (boCapsLock)
+            {
+                if (dwKeyID >= 10 && dwKeyID <= 28 || dwKeyID >= 30 && dwKeyID <= 36)
+                {
+                    DWORD capsId;
+                    if (dwKeyID >= 10 && dwKeyID <= 28)
+                        capsId = dwKeyID - 10 + 43;
+                    else
+                        capsId = dwKeyID - 30 + 19 + 43;
+                    pstLight = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_LIGHT_ICON, capsId);
+                }
+                else
+                {
+                    pstLight = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_LIGHT_ICON, dwKeyID);
+                }
+            }
+            else
+            {
+                pstLight = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_LIGHT_ICON, dwKeyID);
+            }
+            xpgDirectDrawRoleOnWin(pWin, pstLight->m_pstRole, iconX, iconY, pstLight, 0);
+            boKeyLight = FALSE;
+        }
+    }
     
     return PASS;
 }
@@ -2072,6 +2111,10 @@ SWORD xpgDrawSprite_Title(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BO
         pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 0);
         if (pstMask)
         xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+        SetCurrIduFontID(FONT_ID_HeiTi19);
+        Idu_FontColorSet(0,0,0);
+        Idu_PrintStringCenter(pWin, keyboardBuffer, pstSprite->m_wPx + 55, pstSprite->m_wPy + 80, 0, 449);
+        Idu_FontColorSet(0xff,0xff,0xff);
     }
 
     return PASS;
@@ -3896,7 +3939,7 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         sprintf(tempbuf, "%dnm %dBm %ddB", curItem->nm, curItem->db1, curItem->db2);
         Idu_PrintString(pWin, tempbuf, pstSprite->m_wPx + 278, pstSprite->m_wPy + 30, 0, 0);
         Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + 66, 540, 2, RGB2YUV(0x41, 0x41, 0x41));
-        xpgSpriteSetTouchArea(pstSprite, pstSprite->m_wPx, pstSprite->m_wPy, 540, 66);
+        xpgSpriteSetTouchArea(pstSprite, pstSprite->m_wPx, pstSprite->m_wPy, 480, 66);
     }
     
     return PASS;

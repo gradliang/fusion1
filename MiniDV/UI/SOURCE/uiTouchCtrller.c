@@ -35,6 +35,7 @@ static void Dialog_SetPassword_HirePassword_OnInput();              // ¸ü¸Ä¿ª»úÃ
 static void Dialog_SetValue_SuoDingRongJieCiShu();                  // Öµ¸ü¸Ä - Ëø¶¨ÈÛ½Ó´ÎÊý
 static void Dialog_SetValue_RongJieSheZhi();                        // Öµ¸ü¸Ä - ÈÛ½ÓÉèÖÃÀïµÄ¶àÏîÖµ
 
+static void keyboardAddChar(char c);                                // ¼üÅÌÊäÈëÒ»¸ö
 
 /*
 // Structure declarations
@@ -665,6 +666,79 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
         Free_CacheWin();
         isSelectOnlineOPM = 1;
         xpgPreactionAndGotoPage("opm2");
+        xpgUpdateStage();
+    }
+    else if(dwHashKey == xpgHash("Keyboard") )
+    {
+        dwKeyID = dwIconId;
+        boKeyLight = TRUE;
+        xpgUpdateStage();
+        xpgDelay(100);
+        boKeyLight = FALSE;
+        ///===================================
+        if (dwKeyID == 29)                      // capslock
+        {
+            boCapsLock = !boCapsLock;
+        }
+        else if (dwKeyID == 37)                 // backspace
+        {
+            DWORD len = strlen(keyboardBuffer);
+            if (len) 
+                keyboardBuffer[len - 1] = 0;
+        }
+        else if (dwKeyID == 38)                 // exit
+        {
+            keyboardGoBack(FALSE);
+        }
+        else if (dwKeyID == 42)                 // enter
+        {
+            keyboardGoBack(TRUE);
+        }
+        else if (dwKeyID == 39)                 // #
+        {
+            keyboardAddChar('#');
+        }
+        else if (dwKeyID == 40)                 // ' '
+        {
+            keyboardAddChar(' ');
+        }
+        else if (dwKeyID == 41)                 // _
+        {
+            keyboardAddChar('_');
+        }
+        else if (dwKeyID <= 9)                  // 0-9
+        {
+            char arr[] = {'1','2','3','4','5','6','7','8','9','0'};
+            keyboardAddChar(arr[dwKeyID]);
+        }
+        else if (dwKeyID >= 10 && dwKeyID <= 28 ) 
+        {
+            DWORD getId = dwKeyID - 10;
+            if (boCapsLock)
+            {
+                char arr[] = {'Q','W','E','R','T','Y','U','I','O','P','A','S','D','F','G','H','J','K','L'};
+                keyboardAddChar(arr[getId]);
+            }
+            else
+            {
+                char arr[] = {'q','w','e','r','t','y','u','i','o','p','a','s','d','f','g','h','j','k','l'};
+                keyboardAddChar(arr[getId]);
+            }
+        }
+        else if (dwKeyID >= 30 && dwKeyID <= 36 ) 
+        {
+            DWORD getId = dwKeyID - 30;
+            if (boCapsLock)
+            {
+                char arr[] = {'Z','X','C','V','B','N','M'};
+                keyboardAddChar(arr[getId]);
+            }
+            else
+            {
+                char arr[] = {'z','x','c','v','b','n','m'};
+                keyboardAddChar(arr[getId]);
+            }
+        }
         xpgUpdateStage();
     }
     else if (dwHashKey == xpgHash(DIALOG_PAGE_NAME))
@@ -1411,15 +1485,43 @@ SWORD touchSprite_Selector(STXPGSPRITE * sprite, WORD x, WORD y)
     return 0;
 }
 
+static OPMDATAITEM * editingOpmDataItem;
+static const char * opmBackPageName;
+static void opmKeyboardBack(BOOL boEnter)
+{
+    if (boEnter)
+    {
+        strncpy(editingOpmDataItem->itemName, keyboardBuffer, sizeof(editingOpmDataItem->itemName) - 1);
+        editingOpmDataItem->itemName[sizeof(editingOpmDataItem->itemName) - 1] = 0;
+    }
+    Free_CacheWin();
+    xpgPreactionAndGotoPage(opmBackPageName);
+    xpgUpdateStage();
+}
+
 void startEditOpmRecordName(const char * oldPageName, OPMDATAITEM * curItem)
 {
     strncpy(keyboardBuffer, curItem->itemName, KEYBOARD_BUFFER_SIZE);
     keyboardBuffer[KEYBOARD_BUFFER_SIZE - 1] = 0;
+    editingOpmDataItem = curItem;
+    opmBackPageName = oldPageName;
+    keyboardGoBack = opmKeyboardBack;
+    
     Free_CacheWin();
     Idu_GetCacheWin_WithInit();
     boCapsLock = FALSE;
     xpgPreactionAndGotoPage("Keyboard");
     xpgUpdateStage();
+}
+
+static void keyboardAddChar(char c)
+{
+    int len = strlen(keyboardBuffer);
+    if (len < 20)
+    {
+        keyboardBuffer[len] = c;
+        keyboardBuffer[len + 1] = 0;
+    }
 }
 
 SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)

@@ -80,7 +80,9 @@ extern OPMDATAITEM * cloudOpmData;
 extern char keyboardBuffer[];
 extern const char * keyboardTitle;
 extern BOOL boCapsLock;
-void (*keyboardGoBack)();
+extern BOOL boKeyLight;
+extern DWORD dwKeyID;
+void (*keyboardGoBack)(BOOL boEnter);
 
 
 
