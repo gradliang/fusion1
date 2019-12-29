@@ -4348,6 +4348,7 @@ void TSPI_DataProc(void)
 	switch (pbTspiRxBuffer[0])
 	{
 		case 0xb1:
+			xpgCb_AutoPowerOff(g_psSetupMenu->bAutoShutdown,g_psSetupMenu->wShutdownTime);
 			if (pbTspiRxBuffer[3])
 			{
 				switch (pbTspiRxBuffer[2])
@@ -4691,11 +4692,15 @@ void TSPI_DataProc(void)
 
 		//设备信息数据传输
 		case 0xbc:
-			for (i=0;i<6;i++)
+			if (pbTspiRxBuffer[1]>9)
 			{
-				g_psSetupMenu->bMADarry[i]=pbTspiRxBuffer[2+i];
+				for (i=0;i<6;i++)
+				{
+					g_psSetupMenu->bMADarry[i]=pbTspiRxBuffer[2+i];
+				}
+				WriteSetupChg();
+				CheckAndWriteFile( DriveGet(DriveCurIdGet()),QRCODE_FILE_NAME,QRCODE_FILE_EXT,&pbTspiRxBuffer[8],pbTspiRxBuffer[1]-9);//NAND
 			}
-			WriteSetupChg();
 			break;
 
 		//环境亮度

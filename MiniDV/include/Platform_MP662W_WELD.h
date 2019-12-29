@@ -33,7 +33,7 @@
 //---For test machine
 #define		SHOW_CENTER											0  //4 在显示屏中间固定画个十字架及两条水平线，看画面是否居中及水平，用于在装摄像头的夹具上
 #define		TEST_DISPLAY_PANEL							0 //4  显示出几个像素，用于在装摄像头的夹具上
-#define		TEST_PLANE												1 //4  测试光纤安装水平度程序
+#define		TEST_PLANE												0 //4  测试光纤安装水平度程序
 #define		TEST_TWO_LED										0 //4  测试照射光纤的两个LED灯的亮度
 //#define		VAUTO_PLAY_VIDEO									1
 #define		PROC_SENSOR_DATA_MODE					0
@@ -183,6 +183,7 @@
 // Touch controller
 //------------------------------------------------------------------
 #define TOUCH_CONTROLLER_ENABLE         ENABLE
+#define TOUCH_DIRECT_TO_GUI         			ENABLE
 
   #define TOUCH_CONTROLLER            TOUCH_PANEL_DRIVER_GT911
   #define TOUCH_CONTROLLER_TYPE       TOUCH_PANEL_TYPE_CAPACITIVE
@@ -772,6 +773,9 @@
 #define SPRITE_TYPE_TEXT                    20
 #define SPRITE_TYPE_DIALOG                  23
 #define SPRITE_TYPE_SCROLL                  26
+#define SPRITE_TYPE_FRAME                  		27
+#define SPRITE_TYPE_ROLE                 		28
+#define SPRITE_TYPE_REPEATICON          29
 
 //xpg page define
 

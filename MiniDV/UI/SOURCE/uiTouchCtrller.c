@@ -17,7 +17,11 @@
 
 #if (TOUCH_CONTROLLER_ENABLE == ENABLE)
 
+#if TOUCH_DIRECT_TO_GUI
+static ST_TC_DRIVER st_TcDriver;
+#endif
 DWORD dwLastTouchActionTime = 0;
+static BYTE st_bTouchDown=0;// 0->touch release 1->Touch on   
 
 static void uiEnterRecordList();
 DWORD g_dwRecordListCurrPage = 0;
@@ -37,64 +41,44 @@ static void Dialog_SetValue_RongJieSheZhi();                        // 值更改 - 
 
 static void keyboardAddChar(char c);                                // 键盘输入一个
 
-/*
-// Structure declarations
-*/
 
 
-/*
-// Constant declarations
-*/
-
-////////////////////////////////////////////////////////////
-//
-//
-//
-////////////////////////////////////////////////////////////
-
-SDWORD TouchCtrllerCalProcess(WORD cross_width, WORD cross_single_width)
+#if TOUCH_DIRECT_TO_GUI
+void TouchCtrllerInit(void)
 {
-    while(1)
-    {
-        SDWORD val;
-        {
-            xpgPreactionAndGotoPage("touch");
-            xpgUpdateStage();
-        }
+	MP_DEBUG("__%s__", __FUNCTION__);
+	TcDriverInit(&st_TcDriver);
 
-        MP_ALERT("Adjust start");
-        mpx_TcFunctionsAdjust(cross_width, cross_single_width);
-        if ( mpx_TcFunctionsAdjustWait(1000*10) != NO_ERR )
-        {
-            MP_ALERT("Adjust Fail");
-            continue;
-        }
-        MP_ALERT("Adjust 2");
-        if ( mpx_TcFunctionsAdjustWait(1000*10) != NO_ERR )
-        {
-            MP_ALERT("Adjust Fail");
-            continue;
-        }
-        MP_ALERT("Adjust 3");
-        if ((val = mpx_TcFunctionsAdjustWait(1000*10)) != NO_ERR )
-        {
-            MP_ALERT("Adjust Fail");
-            continue;
-        }
-        else
-        {
-            break;
-        }
-    }
-    return 0;
+	if(st_TcDriver.TcInit())
+	{
+		MP_ALERT("Touch controller init fail");
+		return;
+	}
+}
+
+void uiTouchMsgReceiver(void)
+{
+    Tc_point  data;
+
+	if ( st_TcDriver.TcGetData(&data) == NO_ERR )
+	{
+		if (data.reserved==TC_DOWN)
+		{
+			uiDispatchTouchSprite(data.x1, data.y1);
+			st_bTouchDown=1;
+		}
+		else //if (data.reserved==TC_UP)
+		{
+			st_bTouchDown=0;
+		}
+	}
 
 }
 
-
+#else
 
 void TouchCtrllerInit(void)
 {
-
     ST_TC_PARA tcPara;
 
     SDWORD retVal;
@@ -109,54 +93,24 @@ void TouchCtrllerInit(void)
         mpx_TcFunctionsStartup(callBack);
 }
 
-
-
-
-///
-///@ingroup
-///
-///@brief
-///
-///@param
-///
-///@param
-///@retval
-///
-///Remark
-void uiTouchCtrllerCallback(void)
-{
-    MP_DEBUG("__%s__", __FUNCTION__);
-
-    EventSet(UI_EVENT, EVENT_TOUCH_COLTROLLER);
-}
-
-
-
 void uiTouchMsgReceiver(void)
 {
     ST_TC_DATA stTcData;
-	ST_TC_MSG tcMessage;
 
     while((MessageReceiveWithTO(UI_TC_MSG_ID, &stTcData, 1)) > 0)
     {
-		/*
-        if (SystemGetElapsedTime(dwLastTouchActionTime) < 200)
+
+        if (SystemGetElapsedTime(dwLastTouchActionTime) > 200)
         {
-            //mpDebugPrint("Skip");
-            continue;
-        }
-        */
         //MP_ALERT("s = %d, x1 = %d, y1 = %d, x2 = %d, y2 = %d", stTcData.status, stTcData.x1, stTcData.y1, stTcData.x2, stTcData.y2);
-        MP_ALERT("( %d, %d)",  stTcData.x1, stTcData.y1);
+        MP_ALERT("%d, %d",  stTcData.x1, stTcData.y1);
 #if  (PRODUCT_UI==UI_WELDING)
         uiDispatchTouchSprite(stTcData.x1, stTcData.y1);
 #endif
-		tcMessage.status = TC_INT;
-		MessageDrop(TcGetMsgId(), (BYTE *) &tcMessage, sizeof(ST_TC_MSG));
-
+        }
     }
 }
-
+#endif
 
 #if  (PRODUCT_UI==UI_WELDING)
 SWORD touchSprite_Background(STXPGSPRITE * sprite, WORD x, WORD y)
@@ -1042,6 +996,144 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
     return 0;
 }
 
+SWORD touchSprite_RepeatIcon(STXPGSPRITE * sprite, WORD x, WORD y)
+{
+    DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
+    DWORD dwIconId = sprite->m_dwTypeIndex;
+    
+    
+    if (dwHashKey == xpgHash(DIALOG_PAGE_NAME))
+    {
+        int dialogType = xpgGetCurrDialogTypeId();
+       if (dialogType == Dialog_SetTime)
+        {
+            WORD hour2 = dwDialogTempValue >> 16;
+            WORD minute2 = dwDialogTempValue & 0xffff;
+            if (dwIconId == 0)
+            {
+                if (hour2 != 0)
+                {
+                    hour2 --;
+                    dwDialogTempValue = (hour2 << 16) | minute2;
+                    xpgUpdateStage();
+                }
+            }
+            else if (dwIconId == 1)
+            {
+                if (hour2 < 23)
+                {
+                    hour2 ++;
+                    dwDialogTempValue = (hour2 << 16) | minute2;
+                    xpgUpdateStage();
+                }
+            }
+            else if (dwIconId == 2)
+            {
+                if (minute2 != 0)
+                {
+                    minute2 --;
+                    dwDialogTempValue = (hour2 << 16) | minute2;
+                    xpgUpdateStage();
+                }
+            }
+            else if (dwIconId == 3)
+            {
+                if (minute2 < 59)
+                {
+                    minute2 ++;
+                    dwDialogTempValue = (hour2 << 16) | minute2;
+                    xpgUpdateStage();
+                }
+            }
+            else if (dwIconId == 4)
+            {
+                if (hour2 >= 12)
+                {
+                    hour2 -= 12;
+                    dwDialogTempValue = (hour2 << 16) | minute2;
+                    xpgUpdateStage();
+                }
+            }
+            else if (dwIconId == 5)
+            {
+                if (hour2 < 12)
+                {
+                    hour2 += 12;
+                    dwDialogTempValue = (hour2 << 16) | minute2;
+                    xpgUpdateStage();
+                }
+            }
+
+        }
+        else if (dialogType == Dialog_SetDate)
+        {
+            WORD year2 = dwDialogTempValue >> 16;
+            WORD month2 = (dwDialogTempValue >> 8) & 0xff;
+            WORD day2 = dwDialogTempValue & 0xff;
+            if (dwIconId == 0)
+            {
+                if (year2 > 2000)
+                {
+                    year2 --;
+                    dwDialogTempValue = (year2 << 16) | (month2 << 8) | day2;
+                    xpgUpdateStage();
+                }
+            }
+            else if (dwIconId == 1)
+            {
+                if (year2 < 2050)
+                {
+                    year2 ++;
+                    dwDialogTempValue = (year2 << 16) | (month2 << 8) | day2;
+                    xpgUpdateStage();
+                }
+            }
+            else if (dwIconId == 2)
+            {
+                if (month2 > 1)
+                {
+                    month2 --;
+                    dwDialogTempValue = (year2 << 16) | (month2 << 8) | day2;
+                    xpgUpdateStage();
+                }
+            }
+            else if (dwIconId == 3)
+            {
+                if (month2 < 12)
+                {
+                    month2 ++;
+                    dwDialogTempValue = (year2 << 16) | (month2 << 8) | day2;
+                    xpgUpdateStage();
+                }
+            }
+            else if (dwIconId == 4)
+            {
+                if (day2 >= 1)
+                {
+                    day2 --;
+                    dwDialogTempValue = (year2 << 16) | (month2 << 8) | day2;
+                    xpgUpdateStage();
+                }
+            }
+            else if (dwIconId == 5)
+            {
+                if (day2 < 31)
+                {
+                    day2++;
+                    dwDialogTempValue = (year2 << 16) | (month2 << 8) | day2;
+                    xpgUpdateStage();
+                }
+            }
+
+        }
+
+        
+        
+        
+    }
+    
+    return 0;
+}
 
 SWORD touchSprite_LightIcon(STXPGSPRITE * sprite, WORD x, WORD y)
 {
@@ -1856,7 +1948,8 @@ typedef struct  {
     touchFunction   touchFunc;
 }TouchSpriteFunction;
 
-#define ENABLE_SLIDE        0x01
+#define ENABLE_SLIDE        		BIT0
+#define ENABLE_REPEAT        	BIT1
 
 TouchSpriteFunction touchSpriteFunctions[] = {
     {0,             NULL},                          
@@ -1886,6 +1979,9 @@ TouchSpriteFunction touchSpriteFunctions[] = {
     {0,             touchSprite_Status},             // type24
     {0,             touchSprite_Radio},              // type25
     {ENABLE_SLIDE,  touchSprite_Scroll},             // type26
+    {0,             NULL},                           // type27
+    {0,             NULL},                           // type28
+    {ENABLE_REPEAT,             touchSprite_RepeatIcon},                           // type29
 };
 
 
@@ -1897,6 +1993,7 @@ void uiDispatchTouchSprite(WORD x1, WORD y1)
     STXPGTOUCHINFO * pstTouchInfo = NULL;
     BOOL match;
 
+	xpgCb_AutoPowerOff(g_psSetupMenu->bAutoShutdown,g_psSetupMenu->wShutdownTime);
     if (pstMovie->m_dwSpriteCount == 0)
         return;
 
@@ -1931,9 +2028,14 @@ void uiDispatchTouchSprite(WORD x1, WORD y1)
                 
             if (pfunc->touchFunc != NULL) 
             {
-               // if (!(pfunc->touchFlag& ENABLE_SLIDE))
-               //     dwLastTouchActionTime = GetSysTime();
-                pfunc->touchFunc (pstSprite, x1, y1);
+                //if (!(pfunc->touchFlag& ENABLE_SLIDE))
+                //    dwLastTouchActionTime = GetSysTime();
+				if (!st_bTouchDown || ((pfunc->touchFlag& (ENABLE_SLIDE|ENABLE_REPEAT))&& (SystemGetElapsedTime(dwLastTouchActionTime) > 150)))
+				{
+					MP_ALERT("%d, %d",  x1, y1);
+					pfunc->touchFunc (pstSprite, x1, y1);
+					dwLastTouchActionTime = GetSysTime();
+				}
 				#if (PRODUCT_UI==UI_WELDING)
     			AddAutoEnterPreview();
 				#endif

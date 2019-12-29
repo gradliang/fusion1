@@ -470,9 +470,52 @@ SWORD I2CM_GT911_WtRegisters(BYTE *bBufer,BYTE lens)
 
 #define  KEYRELEASEDELAY													5
 static DWORD gpioNum, gpioIntNum;
-static BYTE st_bInReadTouchData=0,st_bKeyPressed=0;
+
+#if TOUCH_DIRECT_TO_GUI
+static BYTE st_bWaitRead=0;
+//长按时两次中断的间隔一般为112(0x70)ms,最短72ms
+void GT911_I2C_ReadTouchData()
+{
+	if (st_bWaitRead)
+		return;
+	st_bWaitRead=1;
+	EventSet(UI_EVENT, EVENT_TOUCH_COLTROLLER);
+
+	//UartOutText("I");
+	//UartOutValue(GetSysTime(),8);
+}
+
+static SDWORD GT911_get_point(Tc_point * data) // fiill data->x,data->y,data->reserved
+{
+	SDWORD swRet=FAIL;
+	BYTE buf[8],end_cmd[3] = {GTP_READ_COOR_ADDR >> 8, GTP_READ_COOR_ADDR & 0xFF, 0};
+
+	if (I2CM_GT911_RdRegisters(GTP_READ_COOR_ADDR,buf,8)==PASS)
+	{
+		data->x1= buf[2] | (buf[3] << 8);
+		data->y1= buf[4] | (buf[5] << 8);
+		if (buf[0]&0x0f)
+		{
+				data->reserved=TC_DOWN;
+				//UartOutText("R");
+		}
+		else
+		{
+				data->reserved=TC_UP;
+		}
+		swRet=PASS;
+		if (I2CM_GT911_WtRegisters(end_cmd, 3) < 0)
+		   mpDebugPrint("I2C write end_cmd error!");
+	}
+	st_bWaitRead=0;
+
+	return swRet;
+}
+
+#else
+
 static WORD st_wTouchX, st_wTouchY;
-#if 1
+static BYTE st_bInReadTouchData=0,st_bKeyPressed=0;
 void TimerToKeyRelease(void)
 {
 	if (st_bKeyPressed)
@@ -483,16 +526,17 @@ void TimerToKeyRelease(void)
 
 void GT911_I2C_ReadTouchData() //from datasheet
 {
+	//UartOutText("I");
 	if (st_bInReadTouchData)
 		return;
 	st_bInReadTouchData=1;
-	//UartOutText("I");
+	UartOutText("I");
 	DWORD i,dwLen,x,y,w;
 	BYTE mult_tp_id,buf[20];
 	BYTE  end_cmd[3] = {GTP_READ_COOR_ADDR >> 8, GTP_READ_COOR_ADDR & 0xFF, 0};
 	ST_TC_MSG tcMessage;
 
-		if (!st_bKeyPressed)
+		//if (!st_bKeyPressed)
 		{
 	//dwLen=I2CM_GT911_RdReg(GTP_READ_COOR_ADDR)&0x0f;
 	//mpDebugPrint(" dwLen=%p",I2CM_GT911_RdReg(GTP_READ_COOR_ADDR));
@@ -525,7 +569,7 @@ void GT911_I2C_ReadTouchData() //from datasheet
 		MessageDrop(TcGetMsgId(), (BYTE *) &tcMessage, sizeof(ST_TC_MSG));
 	}
 		}
-		st_bKeyPressed=KEYRELEASEDELAY;
+		//st_bKeyPressed=KEYRELEASEDELAY;
 
 
 
@@ -533,7 +577,6 @@ void GT911_I2C_ReadTouchData() //from datasheet
 	   mpDebugPrint("I2C write end_cmd error!");
 	st_bInReadTouchData=0;
 }
-#endif
 
 static SDWORD GT911_get_point(Tc_point * data) // fiill data->x,data->y,data->reserved
 {
@@ -545,6 +588,10 @@ data->y1 = st_wTouchY;
 
 return 0;
 }
+
+
+#endif
+
 
 
 void gtp_read_version(void)

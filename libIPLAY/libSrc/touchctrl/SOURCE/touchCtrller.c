@@ -13,7 +13,7 @@
 //#define TC_DEBUG
 
 
-#if (TOUCH_CONTROLLER_ENABLE == ENABLE)
+#if (TOUCH_CONTROLLER_ENABLE == ENABLE&& TOUCH_DIRECT_TO_GUI != ENABLE)
 
 
 #define TC_POLLING_INTERVAL             50
@@ -178,59 +178,15 @@ static SDWORD TcGetRetMsgId(void)
  **                 TC_ADJUST : pen adjustment msg from upper layer(UI layer)
  **
  ****************************************************************************/
-#if 0
-void TouchCtrllerTask(void)
-{
-	ST_TC_MSG msg;
-	Tc_point  data;
-	ST_TC_DATA pos_data;
-
-
-	ST_EXCEPTION_MSG stTouchCtrllerMsg;
-	volatile void (*callbackFunPtr)(DWORD);
-	SDWORD status;
-
-	IntEnable();
-
-	memset(&data, 0, sizeof(Tc_point));
-	memset(&old_data, 0, sizeof(Tc_point));
-
-	old_data.reserved = TC_UP;//init last status
-
-	while(1)
-	{
-		MessageReceive(s32TcMsgId, (BYTE *) &msg);
-		if(msg.status == TC_INT)
-		{
-			if ( stTcDriver.TcGetData(&data) == NO_ERR )
-			{
-				pos_data.x1 = data.x1;
-				pos_data.y1 = data.y1;
-				pos_data.x2 = data.x2;
-				pos_data.y2 = data.y2;
-				pos_data.status=data.reserved;
-
-					
-				
-				EventSet(UI_EVENT, EVENT_TOUCH_COLTROLLER);
-				MessageDrop(UI_TC_MSG_ID, (BYTE*)&pos_data, sizeof(pos_data));
-
-			}
-		}
-	}
-}
-#else
+#if 1
 void TouchCtrllerTask(void)
 {
     ST_TC_MSG msg;
     Tc_point  data;
     ST_TC_DATA pos_data;
-    //ST_LCD_CONTROL *lcd_ctrl;
-    //WORD width, height;
-
-    ST_EXCEPTION_MSG stTouchCtrllerMsg;
-    volatile void (*callbackFunPtr)(DWORD);
-    SDWORD status;
+    //ST_EXCEPTION_MSG stTouchCtrllerMsg;
+    //volatile void (*callbackFunPtr)(DWORD);
+    //SDWORD status;
 
     IntEnable();
 
@@ -244,6 +200,7 @@ void TouchCtrllerTask(void)
         MessageReceive(s32TcMsgId, (BYTE *) &msg);
         if(msg.status == TC_DOWN)
         {
+			UartOutText("J");
             if ( stTcDriver.TcGetData(&data) == NO_ERR )
             {
                 MP_DEBUG("Tc Task : down %d %d %d %d %d", data.x1, data.y1, data.x2, data.y2, data.z);
@@ -251,15 +208,20 @@ void TouchCtrllerTask(void)
 				pos_data.x1 = data.x1;
 				pos_data.y1 = data.y1;
 				pos_data.status=TC_DOWN;	
-				stTcDriver.TcSleep(1);
+				//stTcDriver.TcSleep(1);
 				MessageDrop(UI_TC_MSG_ID, (BYTE*)&pos_data, sizeof(pos_data));
 				EventSet(UI_EVENT, EVENT_TOUCH_COLTROLLER);
                 
             }
         }
-        else if(msg.status == TC_INT)
+        else if(msg.status == TC_UP)
         {
-				stTcDriver.TcSleep(0);
+				//stTcDriver.TcSleep(0);
+				pos_data.x1 = data.x1;
+				pos_data.y1 = data.y1;
+				pos_data.status=TC_UP;	
+				MessageDrop(UI_TC_MSG_ID, (BYTE*)&pos_data, sizeof(pos_data));
+				EventSet(UI_EVENT, EVENT_TOUCH_COLTROLLER);
         }
 #if 0
         else if(msg.status == TC_POLLING)

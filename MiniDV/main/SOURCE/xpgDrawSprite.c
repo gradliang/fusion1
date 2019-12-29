@@ -154,12 +154,12 @@ int popupDialog(int dialogType, char * backToPage)
     {
         xpgAddDialogSprite(SPRITE_TYPE_DIALOG, 0, 0);
         xpgAddDialogSprite(SPRITE_TYPE_CLOSE_ICON, 0, 0);
-        xpgAddDialogSprite(SPRITE_TYPE_ICON, 0, 0);
-        xpgAddDialogSprite(SPRITE_TYPE_ICON, 1, 0);
-        xpgAddDialogSprite(SPRITE_TYPE_ICON, 2, 0);
-        xpgAddDialogSprite(SPRITE_TYPE_ICON, 3, 0);
-        xpgAddDialogSprite(SPRITE_TYPE_ICON, 4, 0);
-        xpgAddDialogSprite(SPRITE_TYPE_ICON, 5, 0);
+        xpgAddDialogSprite(SPRITE_TYPE_REPEATICON, 0, 0);
+        xpgAddDialogSprite(SPRITE_TYPE_REPEATICON, 1, 0);
+        xpgAddDialogSprite(SPRITE_TYPE_REPEATICON, 2, 0);
+        xpgAddDialogSprite(SPRITE_TYPE_REPEATICON, 3, 0);
+        xpgAddDialogSprite(SPRITE_TYPE_REPEATICON, 4, 0);
+        xpgAddDialogSprite(SPRITE_TYPE_REPEATICON, 5, 0);
         xpgAddDialogSprite(SPRITE_TYPE_ICON, 6, 0);
         xpgAddDialogSprite(SPRITE_TYPE_ICON, 7, 0);
         xpgAddDialogSprite(SPRITE_TYPE_TEXT, 0, 0);
@@ -168,12 +168,12 @@ int popupDialog(int dialogType, char * backToPage)
     {
         xpgAddDialogSprite(SPRITE_TYPE_DIALOG, 0, 0);
         xpgAddDialogSprite(SPRITE_TYPE_CLOSE_ICON, 0, 0);
-        xpgAddDialogSprite(SPRITE_TYPE_ICON, 0, 0);
-        xpgAddDialogSprite(SPRITE_TYPE_ICON, 1, 0);
-        xpgAddDialogSprite(SPRITE_TYPE_ICON, 2, 0);
-        xpgAddDialogSprite(SPRITE_TYPE_ICON, 3, 0);
-        xpgAddDialogSprite(SPRITE_TYPE_ICON, 4, 0);
-        xpgAddDialogSprite(SPRITE_TYPE_ICON, 5, 0);
+        xpgAddDialogSprite(SPRITE_TYPE_REPEATICON, 0, 0);
+        xpgAddDialogSprite(SPRITE_TYPE_REPEATICON, 1, 0);
+        xpgAddDialogSprite(SPRITE_TYPE_REPEATICON, 2, 0);
+        xpgAddDialogSprite(SPRITE_TYPE_REPEATICON, 3, 0);
+        xpgAddDialogSprite(SPRITE_TYPE_REPEATICON, 4, 0);
+        xpgAddDialogSprite(SPRITE_TYPE_REPEATICON, 5, 0);
         xpgAddDialogSprite(SPRITE_TYPE_ICON, 6, 0);
         xpgAddDialogSprite(SPRITE_TYPE_ICON, 7, 0);
         xpgAddDialogSprite(SPRITE_TYPE_TEXT, 0, 0);
@@ -321,6 +321,8 @@ SWORD(*drawSpriteFunctions[]) (ST_IMGWIN *, STXPGSPRITE *, BOOL) =
     xpgDrawSprite_Radio,                // type25
     xpgDrawSprite_Scroll,               // type26
     xpgDrawSprite_Frame,                // type27
+	xpgDrawSprite_Null,		        //type28
+	xpgDrawSprite_RepeatIcon,		        //type29
 #endif
 };
 
@@ -1640,6 +1642,123 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         {
             xpgDrawSprite(pWin, pstSprite, boClip);
         }
+    }
+    
+    xpgSpriteEnableTouch(pstSprite);
+}
+
+SWORD xpgDrawSprite_RepeatIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOOL boClip)
+{
+    STXPGSPRITE * pstMask;
+	  STXPGROLE * pstRole = NULL,* pstRoleMask = NULL;
+    WORD wX = pstSprite->m_wPx;
+    WORD wY = pstSprite->m_wPy;
+    WORD wW = pstSprite->m_wWidth;
+    WORD wH = pstSprite->m_wHeight;
+    DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
+    DWORD dwSpriteId = pstSprite->m_dwTypeIndex;
+    char * text = "";
+
+    if (dwHashKey == xpgHash(DIALOG_PAGE_NAME))
+    {
+        int dialogType = xpgGetCurrDialogTypeId();
+        if (dialogType == Dialog_SetTime)
+        {
+            if (g_psSetupMenu->b24HourFormat)
+            {
+                if (dwSpriteId == 0)
+                {
+                    xpgSpriteSetTouchArea(pstSprite, 304, 134, 70, 70);
+                    return PASS;
+                }
+                else if (dwSpriteId == 1)
+                {
+                    xpgSpriteSetTouchArea(pstSprite, 304, 258, 70, 70);
+                    return PASS;
+                }
+                else if (dwSpriteId == 2)
+                {
+                    xpgSpriteSetTouchArea(pstSprite, 426, 134, 70, 70);
+                    return PASS;
+                }
+                else if (dwSpriteId == 3)
+                {
+                    xpgSpriteSetTouchArea(pstSprite, 426, 258, 70, 70);
+                    return PASS;
+                }
+                else if (dwSpriteId == 4 || dwSpriteId == 5)
+                {
+                    return PASS;
+                }
+            }
+            else    // 12 hour
+            {
+                if (dwSpriteId == 0)
+                {
+                    xpgSpriteSetTouchArea(pstSprite, 224, 134, 70, 70);
+                    return PASS;
+                }
+                else if (dwSpriteId == 1)
+                {
+                    xpgSpriteSetTouchArea(pstSprite, 224, 258, 70, 70);
+                    return PASS;
+                }
+                else if (dwSpriteId == 2)
+                {
+                    xpgSpriteSetTouchArea(pstSprite, 366, 134, 70, 70);
+                    return PASS;
+                }
+                else if (dwSpriteId == 3)
+                {
+                    xpgSpriteSetTouchArea(pstSprite, 366, 258, 70, 70);
+                    return PASS;
+                }
+                else if (dwSpriteId == 4)
+                {
+                    xpgSpriteSetTouchArea(pstSprite, 488, 134, 70, 70);
+                    return PASS;
+                }
+                else if (dwSpriteId == 5)
+                {
+                    xpgSpriteSetTouchArea(pstSprite, 488, 258, 70, 70);
+                    return PASS;
+                }
+            }
+        }
+        else if (dialogType == Dialog_SetDate)
+        {
+                if (dwSpriteId == 0)
+                {
+                    xpgSpriteSetTouchArea(pstSprite, 224, 134, 70, 70);
+                    return PASS;
+                }
+                else if (dwSpriteId == 1)
+                {
+                    xpgSpriteSetTouchArea(pstSprite, 224, 258, 70, 70);
+                    return PASS;
+                }
+                else if (dwSpriteId == 2)
+                {
+                    xpgSpriteSetTouchArea(pstSprite, 366, 134, 70, 70);
+                    return PASS;
+                }
+                else if (dwSpriteId == 3)
+                {
+                    xpgSpriteSetTouchArea(pstSprite, 366, 258, 70, 70);
+                    return PASS;
+                }
+                else if (dwSpriteId == 4)
+                {
+                    xpgSpriteSetTouchArea(pstSprite, 488, 134, 70, 70);
+                    return PASS;
+                }
+                else if (dwSpriteId == 5)
+                {
+                    xpgSpriteSetTouchArea(pstSprite, 488, 258, 70, 70);
+                    return PASS;
+                }
+        }
+        
     }
     
     xpgSpriteEnableTouch(pstSprite);

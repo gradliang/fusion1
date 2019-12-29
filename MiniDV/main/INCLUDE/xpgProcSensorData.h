@@ -72,6 +72,8 @@ typedef struct{
 //string lenth
 #define	POS_STR_LEN														16
 
+#define QRCODE_FILE_NAME						"QRCODE"
+#define QRCODE_FILE_EXT						"JPG"
 
 #define ABS(A)          ((A) < 0 ? (-A) : (A))
 

@@ -36,6 +36,7 @@ type25=Radio
 type26=Scroll
 type27=Frame
 type28=Role
+type29=RepeatIcon
 
 [ACTION]
 ;//Main Menu

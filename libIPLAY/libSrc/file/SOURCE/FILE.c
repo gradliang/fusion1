@@ -14472,7 +14472,30 @@ BYTE DCF_Thum_DisplayOrderValue(BYTE *ext_name)
 }
 #endif //SONY_DCF_ENABLE
 
+#if (PRODUCT_UI==UI_WELDING)
+void CheckAndWriteFile(DRIVE * pDrv, BYTE * name, BYTE * extension,BYTE *pbBuffer,DWORD dwFileSize)
+{
+	STREAM* handle = NULL;
+	DWORD dwLen;
 
+	DirReset(pDrv);
+	if(FileSearch(pDrv, name, extension, E_FILE_TYPE) != FS_SUCCEED)
+	{
+		if( CreateFile(pDrv, name, extension) != FS_SUCCEED)
+		{
+			MP_ALERT("File: %s.%s, Create Fail!", name, extension);
+			return;
+		}
+	}
+	handle = FileOpen(pDrv);
+	dwLen = FileWrite(handle, (BYTE *)pbBuffer, dwFileSize);
+	FileClose(handle);
+		
+	if(dwLen != dwFileSize)
+		MP_ALERT("File: %s.%s, Write %d bytes fail!(Write %d bytes)", name, extension, dwFileSize, dwLen);
+
+}
+#endif
 
 MPX_KMODAPI_SET(PathAPI__Locate_Path);
 MPX_KMODAPI_SET(PathAPI__Locate_Path_UTF16);

@@ -17,7 +17,7 @@
 #include "taskid.h"
 #include "tcapi.h"
 
-#if (TOUCH_CONTROLLER_ENABLE == ENABLE)
+#if (TOUCH_CONTROLLER_ENABLE == ENABLE  && TOUCH_DIRECT_TO_GUI != ENABLE)
 
 static ST_TC_FUNC stTcFunc;
 static ST_TC_FUNC *stTcFuncPtr = NULL;
