@@ -3986,9 +3986,13 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         SetCurrIduFontID(FONT_ID_HeiTi16);
         Idu_PrintString(pWin, tmpbuff, pstSprite->m_wPx + 40, pstSprite->m_wPy, 0, 0);
 
+        STXPGSPRITE * pstMask1 = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 4);
+        STXPGSPRITE * pstMask2 = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 5);
+        if (pstMask1 && pstMask2)
+            xpgRoleDrawMask(pstMask1->m_pstRole, pWin->pdwStart, pstSprite->m_wPx + 270, pstSprite->m_wPy + 5, pWin->wWidth, pWin->wHeight, pstMask2->m_pstRole);
         sprintf(tmpbuff, "%s", pr->bRecordName);
         SetCurrIduFontID(FONT_ID_HeiTi16);
-        Idu_PrintString(pWin, tmpbuff, pstSprite->m_wPx + 270, pstSprite->m_wPy, 0, 0);
+        Idu_PrintString(pWin, tmpbuff, pstSprite->m_wPx + 288, pstSprite->m_wPy, 0, 0);
 
         sprintf(tmpbuff, "%d.%ddB", pr->bFiberLoss%100, pr->bFiberLoss /100);
         SetCurrIduFontID(FONT_ID_HeiTi16);
@@ -3999,6 +4003,8 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         Idu_PrintString(pWin, tmpbuff, pstSprite->m_wPx + 638, pstSprite->m_wPy, 0, 0);
 
         Idu_PaintWinArea(pWin, 14, pstSprite->m_wPy + 35, 744, 2, RGB2YUV(0x20, 0x20, 0x20));
+        
+        xpgSpriteSetTouchArea(pstSprite, pstSprite->m_wPx, pstSprite->m_wPy, 600, 35);
     }
     else if (dwHashKey == xpgHash("FusionSet3"))
     {

@@ -1616,6 +1616,35 @@ void startEditOpmRecordName(const char * oldPageName, OPMDATAITEM * curItem)
     xpgUpdateStage();
 }
 
+static STRECORD * editingFusionDataItem;
+
+static void fusionRecordKeyboardBack(BOOL boEnter)
+{
+    if (boEnter)
+    {
+        strncpy(editingFusionDataItem->bRecordName, keyboardBuffer, sizeof(editingFusionDataItem->bRecordName) - 1);
+        editingFusionDataItem->bRecordName[sizeof(editingFusionDataItem->bRecordName) - 1] = 0;
+    }
+    Free_CacheWin();
+    xpgPreactionAndGotoPage("Record");
+    xpgUpdateStage();
+}
+
+void startEditFusionRecordName(STRECORD * pr)
+{
+    strncpy(keyboardBuffer, pr->bRecordName, KEYBOARD_BUFFER_SIZE);
+    keyboardBuffer[KEYBOARD_BUFFER_SIZE - 1] = 0;
+    editingFusionDataItem = pr;
+    keyboardGoBack = fusionRecordKeyboardBack;
+    
+    Free_CacheWin();
+    Idu_GetCacheWin_WithInit();
+    boCapsLock = FALSE;
+    xpgPreactionAndGotoPage("Keyboard");
+    xpgUpdateStage();
+}
+
+
 static void keyboardAddChar(char c)
 {
     int len = strlen(keyboardBuffer);
@@ -1824,6 +1853,33 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
         curItem = & pstItems[(*pdwPageId) * 5 + dwListId];
         startEditOpmRecordName(xpgPageName, curItem);
         
+    }
+    else if (dwHashKey == xpgHash("Record"))
+    {
+        char tmpbuff[128];
+        DWORD dwListId = dwSpriteId;
+        STRECORD * pr;
+        int iCurIndex;
+        DWORD dwCurPageStart = 0;
+        DWORD dwTotal = GetRecordTotal();
+        DWORD dwPageTotal = dwTotal / PAGE_RECORD_SIZE;
+        if (dwTotal % PAGE_RECORD_SIZE)
+            dwPageTotal++;
+        
+        if (g_dwRecordListCurrPage >= dwPageTotal)
+            g_dwRecordListCurrPage = dwPageTotal - 1;
+        
+        dwCurPageStart = PAGE_RECORD_SIZE * g_dwRecordListCurrPage;
+        dwCurPageStart = dwTotal - 1 - dwCurPageStart;                  // Fan Guo Lai
+
+        iCurIndex =  dwCurPageStart - dwListId;
+        if (iCurIndex < 0)
+            return PASS;
+
+        pr = GetRecord((DWORD)iCurIndex);
+        if (pr == NULL)
+            return PASS;
+        startEditFusionRecordName(pr);
     }
     
     return 0;
