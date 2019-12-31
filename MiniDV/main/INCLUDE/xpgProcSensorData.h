@@ -46,6 +46,12 @@ enum {
     SENSER_TOTAL,
 };
 
+enum {
+    RPOC_WIN0,
+    RPOC_WIN1,
+    RPOC_WIN_TOTAL,
+};
+
 typedef struct{
     WORD    wNewData;
     WORD    wCnt;

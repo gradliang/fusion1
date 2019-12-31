@@ -1,7 +1,7 @@
 /*
 // define this module show debug message or not,  0 : disable, 1 : enable
 */
-#define LOCAL_DEBUG_ENABLE  0
+#define LOCAL_DEBUG_ENABLE  1
 /*
 // Include section
 */
@@ -35,10 +35,11 @@
 extern BYTE *pbSensorWinBuffer;
 extern ST_IMGWIN SensorInWin[SENSOR_WIN_NUM];
 
-static BYTE  st_bRetryTimes=0,st_bDiachargeTimes=0;
+static BYTE  st_bRetryTimes=0;
+static WORD st_wDiachargeTime=0;
 SWORD g_swGetCenterState = GET_CENTER_OFF;
 SWORD g_swProcState = SENSOR_IDLE;//SENSOR_FACE_POS1A;//SENSOR_IDLE; //BIT30->PAUSE
-WORD g_wElectrodePos[2]={400,400};  //4 电极棒位置
+WORD g_wElectrodePos[2]={0,0};//{400,400};  //4 电极棒位置
 //SWORD g_swCenterOffset=0;  //4 电极棒位置  76
 
 static SWORD st_swFaceX[MOTOR_NUM]={-1,-1,-1,-1};
@@ -828,6 +829,13 @@ void SetFillProcWinFlag(void)
 
 void TimerToFillProcWin(DWORD dwTime) // ms
 {
+	Ui_TimerProcAdd(dwTime, SetFillProcWinFlag);
+}
+
+void TimerToFillReferWin(BYTE bWinIndex,DWORD dwTime) // ms
+{
+	if (bWinIndex<RPOC_WIN_TOTAL)
+		st_bFillWinFlag=1<<bWinIndex;
 	Ui_TimerProcAdd(dwTime, SetFillProcWinFlag);
 }
 
@@ -2720,33 +2728,35 @@ SWORD SearchWholeFiber(ST_IMGWIN *pWin)
 SWORD SearchFiberLowPoint(ST_IMGWIN *pWin,BYTE bWinIndex)
 {
 	DWORD dwOffset;
-	WORD wCurY,wMaxY,wMinY,wSamePoint,wReverse,wReverseMax;
+	WORD wCurY,wMaxY,wMinY,wSamePoint,wGoDown,wGoUp,wReverse,wDeep,wContinueCnt,wUnContinue;
 	SWORD i,x,y,swXEnd,swStartY,swYEnd,swLowX,swRet=FAIL;
-	BYTE *pbWinBuffer,bContinueCnt,bGetLowPiont,bError=0,bSensorIndex;
+	BYTE *pbWinBuffer,bGetLowPiont,bError=0,bSensorIndex;
 
 	if ((DWORD)pWin==(DWORD)&SensorInWin[1])
 		bSensorIndex=SENSER_BOTTOM;
 	else
 		bSensorIndex=SENSER_TOP;
 	dwOffset=pWin->dwOffset;
-	swXEnd=pWin->dwOffset;//(g_wCenterPos<<1)+(g_wCenterPos>>1);
+	swXEnd=pWin->dwOffset-pWin->wWidth/4;//(g_wCenterPos<<1)+(g_wCenterPos>>1);
 	//mpDebugPrint(" SearchLeftFiberFaceAndTopEdge bMode=%d: bScanEdge=%d",bMode,bScanEdge);
 
 	swStartY=0;
 	swYEnd=pWin->wHeight;
 
-	for (wReverseMax=8;wReverseMax<pWin->wWidth/2;wReverseMax+=4)
+	for (wDeep=8;wDeep<pWin->wWidth/X_STEP;wDeep+=4)
 	{
-		swRet=FAIL; 
 		wMaxY=0;
 		bGetLowPiont=1;
+		wGoDown=0;
+		wGoUp=0;
 		wReverse=0;
 		wSamePoint=0;
-		for (x=X_STEP;x<swXEnd;x+=X_STEP)
+		Idu_OsdErase();
+		for (x=pWin->wWidth/4;x<swXEnd;x+=X_STEP)
 		{
 			y=swStartY;
 			pbWinBuffer = (BYTE *) pWin->pdwStart+x+y*pWin->dwOffset;
-			bContinueCnt=0;
+			wContinueCnt=0;
 			wCurY=0;
 			//mpDebugPrint(" %d: ",x);
 			while (y<swYEnd)
@@ -2754,17 +2764,19 @@ SWORD SearchFiberLowPoint(ST_IMGWIN *pWin,BYTE bWinIndex)
 				//mpDebugPrintN("%02x ",*pbWinBuffer);
 				if (*pbWinBuffer < st_bBackGroundLevel[bSensorIndex] )
 				{
-					bContinueCnt++;
-					if (bContinueCnt>=Y_CONTINUE_VALID_SUM)
+					wContinueCnt++;
+					if (wContinueCnt>=Y_CONTINUE_VALID_SUM)
 					{
-						wCurY=y-bContinueCnt;
+						wCurY=y-wContinueCnt;
 						//Idu_OsdPaintArea(x>>1, pWin->wHeight/2*bWinIndex+wCurY/2, 2, 1, OSD_COLOR_RED);
+						Idu_OsdPaintArea(x>>1, wCurY, 2, 1, OSD_COLOR_RED);
+						//mpDebugPrintN("%d ",wCurY);
 						break;
 					}
 				}
 				else
 				{
-					bContinueCnt=0;
+					wContinueCnt=0;
 				}
 				y++;
 				pbWinBuffer+=dwOffset;
@@ -2776,6 +2788,8 @@ SWORD SearchFiberLowPoint(ST_IMGWIN *pWin,BYTE bWinIndex)
 				mpDebugPrint("fiber error=%d,x=%d ",bError,x>>1);
 				break;
 			}
+			if (wCurY<4 || wCurY>=swYEnd)
+				continue;
 			if (!wMaxY)
 			{
 				wMaxY=wMinY=wCurY;
@@ -2788,11 +2802,14 @@ SWORD SearchFiberLowPoint(ST_IMGWIN *pWin,BYTE bWinIndex)
 					wMinY=wCurY;
 				if (bGetLowPiont)
 				{
-					if (wMaxY<wCurY)
+					if (wCurY>wMaxY)
 					{
+						//往下走
+						wGoDown++;
+						if (wGoUp && wGoDown>wDeep/2)
+							wGoUp=0;
 						wMaxY=wCurY;
 						swLowX=x>>1;
-						wReverse=0;
 						wSamePoint=0;
 						//mpDebugPrint(" (%d,%d)",swLowX,wMaxY);
 					}
@@ -2802,29 +2819,38 @@ SWORD SearchFiberLowPoint(ST_IMGWIN *pWin,BYTE bWinIndex)
 					}
 					else
 					{
-						wReverse++;
-						//已找到低点开始回走
-						if (wReverse>wReverseMax)
+						//往上走
+						wGoUp++;
+						if (wGoUp>wDeep/2)
 						{
-							bGetLowPiont=0;
-							wReverse=0;
+							if (wGoDown>wDeep)
+							{
+								//已找到低点开始回走
+								bGetLowPiont=0;
+								wReverse=0;
+							}
+							else
+							{
+								wGoDown=0;
+							}
 						}
 					}
 				}
 				else
 				{
-					if (wMaxY<wCurY)
+					//又往下走
+					if (wCurY>wMaxY)
 					{
 						wReverse++;
-						wSamePoint++;
+						//wSamePoint++;
 						// 再次找低点，是个错误
-						if (wReverse>wReverseMax) 
+						if (wReverse>wGoDown/2) 
 						{
 							bError=2;
 							//放电熔的幅度不够
 						}
 					}
-					else
+					else if (wReverse && wCurY<wMaxY)
 					{
 						wReverse=0;
 					}
@@ -2834,13 +2860,14 @@ SWORD SearchFiberLowPoint(ST_IMGWIN *pWin,BYTE bWinIndex)
 			TaskYield();
 			//mpDebugPrint(" ");
 		}
-		mpDebugPrint(" --bError=%d swLowX=%d bGetLowPiont=%d wSamePoint=%d wReverseMax=%d",bError,swLowX,bGetLowPiont,wSamePoint,wReverseMax);
+		//mpDebugPrint(" ");
+		mpDebugPrint(" --bError=%d swLowX=%d bGetLowPiont=%d wSamePoint=%d wDeep=%d/%d",bError,swLowX,bGetLowPiont,wSamePoint,wGoDown,wDeep);
 		mpDebugPrint(" ----wMaxY=%d wMinY=%d",wMaxY,wMinY);
 		switch (bError)
 		{
 			case 0:
 				if (bGetLowPiont)
-					swRet=FAIL; 
+					swRet=1; 
 				else
 				{
 					if ((wSamePoint >40) || (wMaxY-wMinY<30))// pWin->dwOffset/100 -st_wFiberWidth/8
@@ -2850,8 +2877,46 @@ SWORD SearchFiberLowPoint(ST_IMGWIN *pWin,BYTE bWinIndex)
 					else
 					{
 						swRet=PASS;
-						swLowX+=wSamePoint/2;
+						swLowX+=wSamePoint*X_STEP/2;
 						//Idu_OsdPaintArea(swLowX, 0, 2, pWin->wHeight, OSD_COLOR_RED);
+						#if 0 //4 计算最底点的光纤厚度
+						x=swLowX<<1;
+						y=wMinY;
+						pbWinBuffer = (BYTE *) pWin->pdwStart+x+y*pWin->dwOffset;
+						wContinueCnt=0;
+						wUnContinue=0;
+						while (y<swYEnd)
+						{
+							if (*pbWinBuffer < st_bBackGroundLevel[bSensorIndex] )
+							{
+								Idu_OsdPaintArea(x>>1, y, 2, 1, OSD_COLOR_RED);
+								wContinueCnt++;
+								wUnContinue=0;
+							}
+							else if (wContinueCnt)
+							{
+								 if (wContinueCnt>5)
+								 {
+									wUnContinue++;
+									if (wUnContinue>3)
+										break;
+								 }
+								 else
+								 {
+									wContinueCnt=0;
+								 }
+							}
+							y++;
+							pbWinBuffer+=dwOffset;
+						}
+						mpDebugPrint(" ----thick %d",wContinueCnt);
+						if (!wContinueCnt || wContinueCnt>20)
+						{
+							if (st_bRetryTimes)
+								swRet=2; //re discharge
+						}
+						#endif
+
 					}
 				}
 				break;
@@ -2870,8 +2935,10 @@ SWORD SearchFiberLowPoint(ST_IMGWIN *pWin,BYTE bWinIndex)
 				else
 				{
 					bGetLowPiont=1;
+					wGoDown=0;
+					wGoUp=0;
 					wReverse=0;
-					wReverseMax+=4;
+					wDeep+=4;
 					swRet=10;
 				}
 				break;
@@ -2884,10 +2951,14 @@ SWORD SearchFiberLowPoint(ST_IMGWIN *pWin,BYTE bWinIndex)
 			break;
 	}
 
+//--swRet:  <0 FAIL  ==0->retry  >0 ->ok
 	if (swRet>0)//(swRet==1 || swRet==10)
 	{
-		st_bDiachargeTimes++;
-		Discharge(1000+st_bDiachargeTimes*300,0);
+		if (st_wDiachargeTime)
+		{
+			st_wDiachargeTime+=10;
+			Discharge(st_wDiachargeTime,0);
+		}
 		swRet=0;
 	}
 	else if (swRet==PASS)
@@ -3444,9 +3515,10 @@ void Discharge(WORD wMode,BYTE bStep)
 		}
 		else
 		{
-			//wMode &= 0x7fff;
-			bTxData[2]=wMode>>8;
-			bTxData[3]=wMode&0xff;
+			bTxData[2]=1750>>8;
+			bTxData[3]=1750&0xff;
+			bTxData[4]=wMode>>8;
+			bTxData[5]=wMode&0xff;
 		}
 #endif
 	}
@@ -3473,11 +3545,17 @@ void TimerToProcWin(void)
 	EventSet(UI_EVENT, EVENT_PROC_DATA);
 }
 
+void TimerToResetGetCenter(void)
+{
+	MP_DEBUG("TimerToResetGetCenter   state=%d",g_swGetCenterState);
+	g_swGetCenterState=GET_CENTER_OFF;
+}
+
 void Proc_GetFiberLowPoint(void)
 {
 	ST_IMGWIN *pWin=(ST_IMGWIN *)&SensorInWin[0];
 	SWORD swRet;
-	BYTE bSetEvent=1;
+	BYTE bSetEvent=0;
 
 	if (!g_swGetCenterState)
 		return;
@@ -3488,22 +3566,45 @@ void Proc_GetFiberLowPoint(void)
 		case GET_CENTER_INIT:
 			g_wElectrodePos[0]=0;
 			g_wElectrodePos[1]=0;
-			st_bRetryTimes=5;
-			st_bDiachargeTimes=0;
+			st_bRetryTimes=1;
+			st_wDiachargeTime=1000;
 			Idu_OsdErase();
+			if (!st_bBackGroundLevel[0] ||!st_bBackGroundLevel[1])
+			{
+				MP_DEBUG("GetFiberLowPoint   BackGroundLevel error !");
+				g_swGetCenterState=GET_CENTER_OFF;
+			}
+			else
+			{
+				if (g_wElectrodePos[0]==0)
+				{
+					g_bDisplayMode=0x80;
+				}
+				else
+				{
+					g_bDisplayMode=0x81;
+				}
 
-			Discharge(200,0);
-			g_swGetCenterState++;
+				Discharge(1,0);
+				//g_swGetCenterState++;
+				Ui_TimerProcAdd(5000, TimerToResetGetCenter);
+			}
 			break;
 
 		case GET_CENTER_WHOLE_FIBER:
-			pWin=(ST_IMGWIN *)&SensorInWin[0];
+			if (g_wElectrodePos[0]==0)
+			{
+				pWin=(ST_IMGWIN *)&SensorInWin[0];
+			}
+			else
+			{
+				pWin=(ST_IMGWIN *)&SensorInWin[1];
+			}
 			if (SearchWholeFiber(pWin)==PASS)
 			{
-				Discharge(1000,0);
+				//Discharge(1000,0);
 				st_bRetryTimes=5;
-				Ui_TimerProcAdd(3000,SetFillProcWinFlag);
-				bSetEvent=0;
+				TimerToFillReferWin(RPOC_WIN0,10);
 				g_swGetCenterState++;
 			}
 			else
@@ -3512,8 +3613,7 @@ void Proc_GetFiberLowPoint(void)
 				if (st_bRetryTimes)
 				{
 					st_bRetryTimes--;
-					TimerToFillProcWin(10);
-					bSetEvent=0;
+					TimerToFillReferWin(RPOC_WIN0,10);
 				}
 				else
 					g_swGetCenterState=GET_CENTER_OFF;
@@ -3531,52 +3631,67 @@ void Proc_GetFiberLowPoint(void)
 				pWin=(ST_IMGWIN *)&SensorInWin[1];
 				swRet=SearchFiberLowPoint(pWin,1);
 			}
-			if (swRet==0)
+			//--swRet:  <0 FAIL  ==0->retry  >0 ->ok
+			if (swRet<=0 && st_bRetryTimes)//retry
 			{
-				Ui_TimerProcAdd(3000,SetFillProcWinFlag);
-				bSetEvent=0;
+					st_bRetryTimes--;
+					/*
+					if (st_wDiachargeTime)
+						TimerToFillProcWin(st_wDiachargeTime+100);
+					else
+						TimerToFillProcWin(1000);
+						*/
+					Ui_TimerProcAdd(5000, TimerToResetGetCenter);
+					MP_DEBUG("GET_CENTER_LOW_POINT   retry=%d  delay[%d]",st_bRetryTimes,st_wDiachargeTime);
 			}
 			else
 			{
-				MP_DEBUG("SearchFiberLowPoint   swRet=%d",swRet);
-				if (swRet<0 && st_bRetryTimes)
+				MP_DEBUG("GET_CENTER_LOW_POINT   swRet=%d  [%d]",swRet,g_wElectrodePos[0]);
+				if (swRet<=0)
+					swRet=pWin->wWidth/2;
+				else
+					Idu_OsdPaintArea(swRet,0,2,pWin->wHeight,OSD_COLOR_RED);
+				if (g_wElectrodePos[0]==0)
 				{
-					st_bRetryTimes--;
-					TimerToFillProcWin(10);
-					bSetEvent=0;
+					g_wElectrodePos[0]=swRet;
+					//OsdLineSet(1<<g_pstXpgMovie->m_wCurPage,18,g_wElectrodePos[0],0,2,pWin->wHeight/2,OSD_COLOR_RED);
+					//g_psSetupMenu->wElectrodePos[0]=g_wElectrodePos[0];
+					//WriteSetupChg();
 				}
 				else
 				{
-					if (swRet<0)
-						swRet=pWin->wWidth/2;
-					if (g_wElectrodePos[0]==0)
-					{
-						g_wElectrodePos[0]=swRet;
-						OsdLineSet(1<<g_pstXpgMovie->m_wCurPage,18,g_wElectrodePos[0],0,2,pWin->wHeight/2,OSD_COLOR_RED);
-						g_psSetupMenu->wElectrodePos[0]=g_wElectrodePos[0];
-						WriteSetupChg();
-					}
-					else
-					{
-						g_wElectrodePos[1]=swRet;
-						OsdLineSet(1<<g_pstXpgMovie->m_wCurPage,19,g_wElectrodePos[1],pWin->wHeight/2,2,pWin->wHeight,OSD_COLOR_RED);
-						g_psSetupMenu->wElectrodePos[1]=g_wElectrodePos[1];
-						WriteSetupChg();
-					}
-					g_swGetCenterState++;
+					g_wElectrodePos[1]=swRet;
+					//OsdLineSet(1<<g_pstXpgMovie->m_wCurPage,19,g_wElectrodePos[1],pWin->wHeight/2,2,pWin->wHeight,OSD_COLOR_RED);
+					//g_psSetupMenu->wElectrodePos[1]=g_wElectrodePos[1];
+					//WriteSetupChg();
 				}
+				g_swGetCenterState++;
+				bSetEvent=1;
 			}
 			break;
 
 		case GET_CENTER_FINISH:
+		#if 1
+				g_swGetCenterState=GET_CENTER_OFF;
+		#else
 			if (g_wElectrodePos[0] && g_wElectrodePos[1])
 				g_swGetCenterState=GET_CENTER_OFF;
 			else
 			{
-				st_bRetryTimes=5;
-				st_bDiachargeTimes=0;
+				st_bRetryTimes=3;
+				st_wDiachargeTime=0;
 				g_swGetCenterState=GET_CENTER_LOW_POINT;
+				bSetEvent=1;
+				if (g_wElectrodePos[0]==0)
+				{
+					g_bDisplayMode=0x80;
+				}
+				else
+				{
+					g_bDisplayMode=0x81;
+				}
 			}
+			#endif
 			break;
 
 		default:
@@ -4569,7 +4684,7 @@ void TSPI_DataProc(void)
 						}
 						xpgForceUpdateOsd();
 
-						#elif 0
+						#elif 1
 						//AutoStartWeld();
 						//TimerToFillProcWin(10);
 						AutoGetFiberLowPoint();
@@ -4648,6 +4763,15 @@ void TSPI_DataProc(void)
 				{
 					Ui_TimerProcRemove(TimerToNextState);
 					g_swProcState++;//=SENSOR_FACE_POS2A;
+				}
+				if (g_swGetCenterState==GET_CENTER_INIT)
+				{
+					g_swGetCenterState++;
+					TimerToFillReferWin(RPOC_WIN0,1000);
+				}
+				else if (g_swGetCenterState==GET_CENTER_LOW_POINT)
+				{
+					TimerToFillReferWin(RPOC_WIN0,1000);
 				}
 			}
 			break;
@@ -5162,6 +5286,7 @@ void CacheSensorData( BYTE bIpw2)
 			//mpDebugPrint("cache end");
 			//ipu->Ipu_reg_F2 = ((DWORD)((ST_IMGWIN *)Idu_GetNextWin()->pdwStart)| 0xA0000000);	
 			//mpCopyWinAreaSameSize((ST_IMGWIN *)&SensorInWin[0],(ST_IMGWIN *)Idu_GetCurrWin(),0, 0, 0, 0,pDstWin->wWidth, pDstWin->wHeight);
+			//xpgDelay(1000);
 			if (st_bBackupChanel<2 && st_bBackupChanel!=Sensor_CurChannel_Get())
 			{
 				Sensor_Channel_Set(st_bBackupChanel);
