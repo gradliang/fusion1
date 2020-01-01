@@ -52,6 +52,7 @@ static BYTE st_bDischargeMode=0; // 0->off
 static BYTE st_bBackGroundLevel[SENSER_TOTAL]={0,0};//FIBER_EDGE_LEVEL
 static BYTE st_bFiberBlackLevel[SENSER_TOTAL]={0xff,0xff};
 
+static STWELDSTATUS st_WeldStatus;
 
 #if TEST_PLANE
 #define MOTO_ADJ_NUM				7
@@ -472,6 +473,93 @@ void TSPI_Receive_Check()
 	if (st_bTspiAbnormal)
 		return;
 	EventSet(UI_EVENT, EVENT_TSPI_START);
+}
+
+#endif
+
+#if (PRODUCT_UI==UI_WELDING)
+#define MIN_FREE_SPACE             1000       // KB
+#define HEAD_EXT             				0x65787520  //ext 
+#define HEAD_INFO             				0x696e666f  //info
+STREAM *GetNewWeldPhotoHandle()
+{
+	STREAM *handle=NULL;
+	SDWORD diskSize;
+
+	diskSize=EarliestFileRemoveToFreeSize(MIN_FREE_SPACE);
+
+	if (diskSize < MIN_FREE_SPACE)
+	{
+		MP_ALERT("--E-- %s: Disk free space small than %dKB, remain %dKB", __FUNCTION__, MIN_FREE_SPACE, diskSize);
+	}
+	else
+	{
+		handle = (STREAM *)CreateFileByRtcCnt("/DCIM/","JPG");
+	}
+
+	return handle;
+}
+
+SWORD xpgCb_CaptureWeldToFile(ST_IMGWIN *pWin)
+{
+	STREAM *handle;
+	SWORD swRet=PASS;
+	BYTE *JpegBuf = NULL,*pbBuf;
+	DWORD JpegBufSize,*pdwBuf;
+	DWORD IMG_size = 0;
+
+	if (DriveCurIdGet()==NULL_DRIVE)
+    {
+        MP_ALERT("%s: NULL drive index!", __FUNCTION__);
+        return FAIL;
+    }
+	if (SystemGetFlagReadOnly(DriveCurIdGet()))
+	{
+        MP_ALERT("Write protected !");
+	      TaskSleep(4000);
+	      return FAIL;
+	}
+
+	handle=(STREAM *)GetNewWeldPhotoHandle();
+	if (handle)
+	{
+		JpegBufSize = pWin->wWidth*pWin->wHeight*2;
+		JpegBuf = (BYTE*)ext_mem_malloc(JpegBufSize+64);
+		//encode jpeg
+		IMG_size = ImageFile_Encode_Img2Jpeg(JpegBuf, pWin);
+		if (JpegBufSize < IMG_size)
+		{
+			mpDebugPrint("--E-- %s: memory overflow", __FUNCTION__);
+			//free memory
+			DeleteFile(handle);
+			swRet= -3;
+		}
+		else
+		{
+			pbBuf=JpegBuf+IMG_size;
+			memset(pbBuf,0,64);
+			pdwBuf=pbBuf;
+			//--flag
+			pdwBuf[0]=HEAD_EXT;
+			pdwBuf[1]=HEAD_INFO;
+			//--status
+			memcpy(&pbBuf[19],(BYTE *)&st_WeldStatus,sizeof (st_WeldStatus));
+			FileWrite(handle, (BYTE *) JpegBuf, IMG_size+64);
+			FileClose(handle);
+			mpDebugPrint("-- %s:ok!", __FUNCTION__);
+		}
+
+		//free memory
+		if(JpegBuf != NULL)
+		{
+			ext_mem_free(JpegBuf);
+			JpegBuf = NULL;
+		}
+
+		return swRet;
+	}
+
+    return FAIL;
 }
 
 #endif
@@ -4489,7 +4577,7 @@ void TSPI_DataProc(void)
 						else
 						DriveMotor(st_bToolMotoIndex,0,st_wMotoStep[st_bToolMotoIndex-1],8);
 						#else
-
+						xpgCb_CaptureWeldToFile((ST_IMGWIN *)&SensorInWin[0]);
 						#endif
 						break;
 					case 2: // start/pause
@@ -4773,6 +4861,14 @@ void TSPI_DataProc(void)
 				{
 					TimerToFillReferWin(RPOC_WIN0,1000);
 				}
+			}
+			else if (pbTspiRxBuffer[2]==0x02) 
+			{
+				//¶Ïµç
+				xpgStopAllAction();
+				g_swProcState=0;
+				g_swGetCenterState=0;
+				TurnOffBackLight();
 			}
 			break;
 		//¸´Î»×´Ì¬

@@ -627,7 +627,7 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
         dwKeyID = dwIconId;
         boKeyLight = TRUE;
         xpgUpdateStage();
-        xpgDelay(100);
+        //xpgDelay(100);
         boKeyLight = FALSE;
         ///===================================
         if (dwKeyID == 29)                      // capslock
@@ -1648,7 +1648,7 @@ void startEditFusionRecordName(STRECORD * pr)
 static void keyboardAddChar(char c)
 {
     int len = strlen(keyboardBuffer);
-    if (len < 20)
+    if (len < KEYBOARD_INPUT_CHAR_LENTH)
     {
         keyboardBuffer[len] = c;
         keyboardBuffer[len + 1] = 0;
@@ -1879,6 +1879,7 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
         pr = GetRecord((DWORD)iCurIndex);
         if (pr == NULL)
             return PASS;
+        // if (PAGE_RECORD_SIZE * g_dwRecordListCurrPage+dwSpriteId <FileBrowserGetTotalFile())
         startEditFusionRecordName(pr);
     }
     

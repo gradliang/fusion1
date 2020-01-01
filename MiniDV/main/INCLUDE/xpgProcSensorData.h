@@ -52,10 +52,14 @@ enum {
     RPOC_WIN_TOTAL,
 };
 
-typedef struct{
-    WORD    wNewData;
-    WORD    wCnt;
-} ST_NEWDATACNT;
+
+typedef struct {
+    BYTE        bFiberMode;
+    BYTE        wFiberL;
+    BYTE        wFiberR;
+    BYTE        bFiberLoss;
+    BYTE        bResult;
+}STWELDSTATUS;
 
 
  // 0->左上  1->右上 2->左下 3->右下
