@@ -42,7 +42,7 @@
 #define memcpy                      mmcp_memcpy
 #define memset                      mmcp_memset
 
-#define  MaxPathStrLen				32
+#define  MaxPathStrLen				16
 
 DWORD GetMaxDigitName(void)
 {
@@ -161,6 +161,67 @@ STREAM * CreateFileByTime(WORD *folderPath, BYTE *extendFileName)
     return fileHandle;
 }
 
+
+STREAM * CreateFileByRtcCnt(WORD *folderPath, BYTE *extendFileName)
+{
+	STREAM *fileHandle = (STREAM *) NULL;
+	BYTE bPathStr[MaxPathStrLen];
+	WORD wPathStr[MaxPathStrLen];
+	DWORD dwRtcCnt,i,k;
+	DWORD ret;
+	ST_SYSTEM_TIME stSystemTime;
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    if (folderPath)
+    {
+        if (PathAPI__Cd_Path_UTF16(folderPath) != FS_SUCCEED)
+        {
+            if (PathAPI__MakeDir_UTF16(folderPath) != FS_SUCCEED)
+            {
+                MP_ALERT("%s %d", __FILE__,__LINE__);
+                MP_ALERT("--E-- %s: Create folder fail !!!", __FUNCTION__);
+                return (STREAM *) NULL;
+            }
+        }
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //SystemTimeGet(&stSystemTime);
+	dwRtcCnt=RTC_ReadCount();
+	for (i=0;i<FILE_LIST_SIZE;i++)
+	{
+		for (k=0;k<8;k++)
+		{
+			bPathStr[7-i]=((dwRtcCnt>>(k<<2))&0x0000000f)+0x41;// 0x41->A
+		}
+		bPathStr[8]=0;
+		//MP_ALERT("--E-- %s: Create file:%s", __FUNCTION__,bPathStr);
+		mpx_UtilAsc2Uni(wPathStr, bPathStr, MaxPathStrLen-1);
+		ret = FileSearchLN(DriveGet(DriveCurIdGet()), wPathStr, StringLength16(wPathStr), E_BOTH_FILE_AND_DIR_TYPE);
+		if (ret == END_OF_DIR)
+			break;
+		dwRtcCnt++;
+	}
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    if (CreateFile_UTF16(DriveGet(DriveCurIdGet()), wPathStr) != FS_SUCCEED)
+        MP_ALERT("--E-- %s: Create fle error !!!", __FUNCTION__);
+    else
+    {
+        fileHandle = FileOpen(DriveGet(DriveCurIdGet()));
+        if (fileHandle == (STREAM *) NULL)
+            MP_ALERT("--E-- %s: Open file fail after created !!!", __FUNCTION__);
+    }
+
+    return fileHandle;
+}
+
 STREAM *UI_FileSystem_AutoNameFileCreate(WORD *folderPath, WORD *fileNamePreFix, BYTE *extendFileName)
 {
 	return CreateFileByTime(folderPath,extendFileName);
@@ -177,6 +238,30 @@ SDWORD UI_FileSystem_EarliestFileRemove(WORD *folderPath, WORD *fileNamePreFix, 
 	FileListSetCurIndex(FileBrowserGetTotalFile()-1);
 	FileBrowserDeleteFile();
 	return PASS;
+}
+
+SDWORD EarliestFileRemoveToFreeSize(DWORD dwFreesize) //K BYTES
+{
+	DWORD diskSize,retry=FILE_LIST_SIZE;
+
+    diskSize = DriveFreeSizeGet(DriveGet(DriveCurIdGet())) >>10;  // Sector
+    diskSize = diskSize * DriveSetcorSizeGet(DriveGet(DriveCurIdGet()));
+
+	while (retry && diskSize < dwFreesize)
+	{
+			FileBrowserResetFileList(); /* reset old file list first */
+			FileBrowserScanFileList(SEARCH_TYPE);
+			if (!FileBrowserGetTotalFile())
+				return FAIL;
+			FileListSetCurIndex(FileBrowserGetTotalFile()-1);
+			FileBrowserDeleteFile();
+
+	    diskSize = DriveFreeSizeGet(DriveGet(DriveCurIdGet())) >>10;  // Sector
+	    diskSize = diskSize * DriveSetcorSizeGet(DriveGet(DriveCurIdGet()));
+		retry--;
+	}
+
+	return diskSize;
 }
 
 

@@ -2092,7 +2092,7 @@ SWORD xpgDrawSprite_LightIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite
                 pstLight = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_LIGHT_ICON, dwKeyID);
             }
             xpgDirectDrawRoleOnWin(pWin, pstLight->m_pstRole, iconX, iconY, pstLight, 0);
-            boKeyLight = FALSE;
+         //   boKeyLight = FALSE;
         }
     }
     
@@ -3958,7 +3958,7 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         STRECORD * pr;
         int iCurIndex;
         DWORD dwCurPageStart = 0;
-        DWORD dwTotal = GetRecordTotal();
+        DWORD dwTotal = FileBrowserGetTotalFile();
         DWORD dwPageTotal = dwTotal / PAGE_RECORD_SIZE;
         if (dwTotal % PAGE_RECORD_SIZE)
             dwPageTotal++;
