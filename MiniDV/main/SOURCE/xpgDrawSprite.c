@@ -1098,9 +1098,37 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
     }
     else if (dwHashKey == xpgHash("Record") )
     {
-        pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, dwSpriteId);
-        if (pstMask)
-            xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+        if (dwSpriteId < 4)
+        {
+            pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, dwSpriteId);
+            if (pstMask)
+                xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+            if (dwSpriteId == 0)
+            {
+                text = getstr(Str_QingKong);
+                SetCurrIduFontID(FONT_ID_HeiTi16);
+                Idu_PrintStringCenter(pWin, text, wX, wY + 2, 0, 80);
+            }
+            else if (dwSpriteId == 1)
+            {
+                text = getstr(Str_Near3Days);
+                SetCurrIduFontID(FONT_ID_HeiTi16);
+                Idu_PrintStringCenter(pWin, text, wX, wY, 0, 62);
+            }
+            else if (dwSpriteId == 2)
+            {
+                text = getstr(Str_NearOneWeak);
+                SetCurrIduFontID(FONT_ID_HeiTi16);
+                Idu_PrintStringCenter(pWin, text, wX, wY, 0, 62);
+            }
+            else if (dwSpriteId == 3)
+            {
+                text = getstr(Str_AllRecord);
+                SetCurrIduFontID(FONT_ID_HeiTi16);
+                Idu_PrintStringCenter(pWin, text, wX, wY, 0, 74);
+            }
+        }
+        
     }
     else if (dwHashKey == xpgHash("Manual_work"))
     {
@@ -2208,7 +2236,13 @@ SWORD xpgDrawSprite_Title(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BO
         }
         else if (dwSpriteId == 1)
         {
-            Idu_PaintWinArea(pWin, 14, 100, 770, 30, RGB2YUV(0x36, 0x36, 0x36));
+            WORD XX = 14, YY = 100;
+            Idu_PaintWinArea(pWin, XX, YY, 770, 30, RGB2YUV(0x36, 0x36, 0x36));
+            SetCurrIduFontID(FONT_ID_HeiTi16);
+            Idu_PrintString(pWin, getstr(Str_XuHao), XX + 24, YY + 5, 0, 0);
+            Idu_PrintString(pWin, getstr(Str_BiaoTi), XX + 294, YY + 5, 0, 0);
+            Idu_PrintString(pWin, getstr(Str_SunHao), XX + 534, YY + 5, 0, 0);
+            Idu_PrintString(pWin, getstr(Str_GengDuoXinXi), XX + 664, YY + 5, 0, 0);
         }
     }
     else if(dwHashKey == xpgHash("RedLight"))
@@ -2983,6 +3017,66 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             return PASS;
         }
         else if (dwTextId == 5)
+        {
+            WORD W = 50, H = 30;
+            Idu_PaintWinArea(pWin, pstSprite->m_wPx - 4, pstSprite->m_wPy - 4, W, H, RGB2YUV(55, 157, 255));
+            xpgSpriteSetTouchArea(pstSprite, pstSprite->m_wPx - 4, pstSprite->m_wPy - 4, W, H);
+            SetCurrIduFontID(FONT_ID_HeiTi16);
+            Idu_PrintString(pWin, getstr(Str_WeiYe), pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
+            return PASS;
+        }
+    }
+    else if (dwHashKey == xpgHash("Record") )
+    {
+        if (dwTextId < 5)
+            ;
+        else if (dwTextId == 5)
+        {
+            WORD W = 126, H = 30;
+            //Idu_PaintWinArea(pWin, pstSprite->m_wPx - 4, pstSprite->m_wPy - 4, W, H, RGB2YUV(55, 157, 255));
+            SetCurrIduFontID(FONT_ID_HeiTi16);
+            Idu_PrintStringCenter(pWin, getstr(Str_XuanZeKaiShiShiJian), pstSprite->m_wPx - 4, pstSprite->m_wPy, 0, W);
+            Idu_PrintString(pWin, "-", pstSprite->m_wPx + 130, pstSprite->m_wPy, 0, 0);
+            xpgSpriteSetTouchArea(pstSprite, pstSprite->m_wPx - 4, pstSprite->m_wPy - 4, W, H);
+            return PASS;
+        }
+        else if (dwTextId == 6)
+        {
+            WORD W = 126, H = 30;
+            //Idu_PaintWinArea(pWin, pstSprite->m_wPx - 4, pstSprite->m_wPy - 4, W, H, RGB2YUV(55, 157, 255));
+            SetCurrIduFontID(FONT_ID_HeiTi16);
+            Idu_PrintStringCenter(pWin, getstr(Str_XuanZeJieShuShiJian), pstSprite->m_wPx - 4, pstSprite->m_wPy, 0, W);
+            xpgSpriteSetTouchArea(pstSprite, pstSprite->m_wPx - 4, pstSprite->m_wPy - 4, W, H);
+            return PASS;
+        }
+        else if (dwTextId == 8)
+        {
+            WORD W = 50, H = 30;
+            Idu_PaintWinArea(pWin, pstSprite->m_wPx - 4, pstSprite->m_wPy - 4, W, H, RGB2YUV(55, 157, 255));
+            xpgSpriteSetTouchArea(pstSprite, pstSprite->m_wPx - 4, pstSprite->m_wPy - 4, W, H);
+            SetCurrIduFontID(FONT_ID_HeiTi16);
+            Idu_PrintString(pWin, getstr(Str_ShouYe), pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
+            return PASS;
+        }
+        else if (dwTextId == 9)
+        {
+            WORD W = 62, H = 30;
+            Idu_PaintWinArea(pWin, pstSprite->m_wPx - 4, pstSprite->m_wPy - 4, W, H, RGB2YUV(55, 157, 255));
+            xpgSpriteSetTouchArea(pstSprite, pstSprite->m_wPx - 4, pstSprite->m_wPy - 4, W, H);
+            SetCurrIduFontID(FONT_ID_HeiTi16);
+            Idu_PrintString(pWin, getstr(Str_PrevPage), pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
+            return PASS;
+        }
+        else if (dwTextId == 10)
+        {
+            WORD W = 62, H = 30;
+            Idu_PaintWinArea(pWin, pstSprite->m_wPx - 4, pstSprite->m_wPy - 4, W, H, RGB2YUV(55, 157, 255));
+            xpgSpriteSetTouchArea(pstSprite, pstSprite->m_wPx - 4, pstSprite->m_wPy - 4, W, H);
+            SetCurrIduFontID(FONT_ID_HeiTi16);
+            Idu_PrintString(pWin, getstr(Str_NextPage), pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
+            return PASS;
+        }
+        else if (dwTextId == 11)
         {
             WORD W = 50, H = 30;
             Idu_PaintWinArea(pWin, pstSprite->m_wPx - 4, pstSprite->m_wPy - 4, W, H, RGB2YUV(55, 157, 255));
@@ -3998,9 +4092,16 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         SetCurrIduFontID(FONT_ID_HeiTi16);
         Idu_PrintString(pWin, tmpbuff, pstSprite->m_wPx + 510, pstSprite->m_wPy, 0, 0);
 
-        sprintf(tmpbuff, "ChaKan" );
+        sprintf(tmpbuff, getstr(Str_ChaKan));
+        WORD  chaKanTextW = 60;
+        WORD  chaKanTextH = 30;
+        //Idu_PaintWinArea(pWin, pstSprite->m_wPx + 638 - 10, pstSprite->m_wPy - 4, chaKanTextW, chaKanTextH, RGB2YUV(55, 157, 255));
         SetCurrIduFontID(FONT_ID_HeiTi16);
-        Idu_PrintString(pWin, tmpbuff, pstSprite->m_wPx + 638, pstSprite->m_wPy, 0, 0);
+        Idu_PrintStringCenter(pWin, tmpbuff, pstSprite->m_wPx + 638, pstSprite->m_wPy, 0, chaKanTextW);
+        STXPGSPRITE * pstText1 = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_TEXT, dwListId);
+        if (pstText1)
+            xpgSpriteSetTouchArea(pstText1, pstSprite->m_wPx + 638 - 10, pstSprite->m_wPy - 4, chaKanTextW, chaKanTextH);
+        
 
         Idu_PaintWinArea(pWin, 14, pstSprite->m_wPy + 35, 744, 2, RGB2YUV(0x20, 0x20, 0x20));
         

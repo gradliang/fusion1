@@ -187,6 +187,16 @@ enum xpgStringId {
 	Str_NextPage,					//   177
 	Str_WeiYe,						//   178
 	Str_YeShu,						//   179
+	Str_Near3Days,					//   180
+	Str_NearOneWeak,				//   181
+	Str_AllRecord,					//   182
+	Str_XuHao,						//   183
+	Str_BiaoTi,						//   184
+	Str_SunHao,						//   185
+	Str_GengDuoXinXi,				//   186
+	Str_XuanZeKaiShiShiJian,		//   187
+	Str_XuanZeJieShuShiJian,		//   188
+	Str_ChaKan,						//   189
 	
 	
 	
