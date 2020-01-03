@@ -122,6 +122,12 @@ void Update_gSetupMenuValue(void)
 	*(gSetupMenuValue + 7) = 0x00000001;                  //SETUP_INIT_BIT;
 
 #if 1
+	if (sizeof(g_sSetupMenu)>(SETTING_NUMBER<<2))
+	{
+		mpDebugPrint("Update_gSetupMenuValue  %d/%d",sizeof(g_sSetupMenu),SETTING_NUMBER<<2);
+		mpDebugPrint("!!!!!please add   SETTING_NUMBER");
+		while (1);
+	}
 	*(gSetupMenuValue + 8)  = SETUP_STRUCT_CHANGE_TIMES;
 	//*(gSetupMenuValue + )  =  ;  reserver
     memcpy(&gSetupMenuValue[12], &g_sSetupMenu, sizeof(g_sSetupMenu));
@@ -582,30 +588,33 @@ void SetupSendFlagClear(DWORD dwFlag)
 //------------sub function
 void WriteSetupChg(void)
 {
-    DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
-
 	bSetUpChg = 1;
 	PutSetupMenuValueWait();
 
-	if (dwHashKey == xpgHash("FusionSet3"))
+	if (!SystemGetStatus(SYS_STATUS_INIT))
 	{
-		SetupSendFlagSet(SETUP_SEND_HOT);
-	}
-	else if (dwHashKey == xpgHash("RedLight"))
-	{
-		SetupSendFlagSet(SETUP_SEND_REDPEN);
-	}
-	else if (dwHashKey == xpgHash("SetYun"))
-	{
-		SetupSendFlagSet(SETUP_SEND_CLOUDONOFF);
-	}
-	else if (dwHashKey == xpgHash("SetSleep"))
-	{
-		SetupSendFlagSet(SETUP_SEND_SMARTBACKLIGHT);
-	}
-	else if (dwHashKey == xpgHash("SetSound"))
-	{
-		SetupSendFlagSet(SETUP_SEND_TOUCHVOICE);
+	    DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
+
+		if (dwHashKey == xpgHash("FusionSet3"))
+		{
+			SetupSendFlagSet(SETUP_SEND_HOT);
+		}
+		else if (dwHashKey == xpgHash("RedLight"))
+		{
+			SetupSendFlagSet(SETUP_SEND_REDPEN);
+		}
+		else if (dwHashKey == xpgHash("SetYun"))
+		{
+			SetupSendFlagSet(SETUP_SEND_CLOUDONOFF);
+		}
+		else if (dwHashKey == xpgHash("SetSleep"))
+		{
+			SetupSendFlagSet(SETUP_SEND_SMARTBACKLIGHT);
+		}
+		else if (dwHashKey == xpgHash("SetSound"))
+		{
+			SetupSendFlagSet(SETUP_SEND_TOUCHVOICE);
+		}
 	}
 }
 

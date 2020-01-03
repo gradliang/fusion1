@@ -35,7 +35,7 @@
 extern BYTE *pbSensorWinBuffer;
 extern ST_IMGWIN SensorInWin[SENSOR_WIN_NUM];
 
-static BYTE  st_bRetryTimes=0;
+static BYTE  st_bRetryTimes=0,st_bAutoDischarge=0;
 static WORD st_wDiachargeTime=0;
 SWORD g_swGetCenterState = GET_CENTER_OFF;
 SWORD g_swProcState = SENSOR_IDLE;//SENSOR_FACE_POS1A;//SENSOR_IDLE; //BIT30->PAUSE
@@ -975,22 +975,6 @@ void Weld_StartPause()
 	}
 
 }
-
-
-void AutoGetFiberLowPoint()
-{
-	BYTE i;
-	
-	if (g_swGetCenterState==GET_CENTER_OFF)
-	{
-		g_swGetCenterState=GET_CENTER_INIT;//GET_CENTER_INIT;GET_CENTER_LOW_POINT
-		TimerToFillProcWin(10);
-	}
-	else
-		g_swGetCenterState=GET_CENTER_OFF;
-
-}
-
 
 void GetBackgroundLevel(void)
 {
@@ -2719,344 +2703,6 @@ SWORD SearchRightFiberFaceAndTopEdge(ST_IMGWIN *pWin,BYTE bMode,BYTE bScanFace)
 }
 
 
-SWORD SearchWholeFiber(ST_IMGWIN *pWin)
-{
-	DWORD dwOffset;
-	//WORD wValidPixelCnt,wInvalidPixelCnt,wValidLineCnt,wYValidStartArry[X_VALID_SUM],wYStartIndex,wYvalidCnt;
-	WORD wLastY,wCurY;
-	SWORD i,x,y,swXEnd,swStartY,swYEnd;
-	BYTE *pbWinBuffer,bContinueCnt,bSensorIndex;
-
-	if ((DWORD)pWin==(DWORD)&SensorInWin[1])
-		bSensorIndex=SENSER_BOTTOM;
-	else
-		bSensorIndex=SENSER_TOP;
-	dwOffset=pWin->dwOffset;
-	swXEnd=pWin->dwOffset;//(g_wCenterPos<<1)+(g_wCenterPos>>1);
-	mpDebugPrint(" _SearchWholeFiber_");
-
-	/* 查找整个面是否为一条完整的纤*/
-	swStartY=0;
-	swYEnd=pWin->wHeight;
-	wLastY=0;
-	for (x=X_STEP;x<swXEnd;x+=X_STEP)
-	{
-		y=swStartY;
-		pbWinBuffer = (BYTE *) pWin->pdwStart+x+y*pWin->dwOffset;
-		bContinueCnt=0;
-		wCurY=0;
-		//mpDebugPrint(" %d: ",x>>1);
-		while (y<swYEnd)
-		{
-			//mpDebugPrintN("%02x ",*pbWinBuffer);
-			if (*pbWinBuffer < st_bBackGroundLevel[bSensorIndex]  )
-			{
-				bContinueCnt++;
-				if (bContinueCnt>=Y_CONTINUE_VALID_SUM)
-				{
-					wCurY=y-bContinueCnt;
-					//Idu_OsdPaintArea(x>>1, wCurY, 2, 1, OSD_COLOR_RED);
-					break;
-				}
-			}
-			else
-			{
-				bContinueCnt=0;
-			}
-			y++;
-			pbWinBuffer+=dwOffset;
-		}
-		if (y>=swYEnd)
-		{
-			mpDebugPrint("No whole fiber in %d ",x>>1);
-			break;
-		}
-#if 0
-		if (wLastY)
-		{
-			if (wLastY+5<wCurY || wLastY>wCurY+5)
-			{
-				mpDebugPrint("whole fiber error  x=%d wCurY=%d wLastY=%d",x>>1,wCurY,wLastY);
-				break;
-			}
-			else
-			{
-				wLastY=(wLastY+wCurY)>>1;
-			}
-		}
-		else
-		{
-			wLastY=wCurY;
-		}
-#endif
-		TaskYield();
-		//mpDebugPrint(" ");
-	}
-#if 0
-	if (x>=swXEnd)
-	{
-		if (!st_wFiberWidth)
-		{
-			SearchLeftFiberFaceAndTopEdge(pWin,MOTOR_LEFT_TOP,1);
-			SearchLeftFiberBottomEdge(pWin,MOTOR_LEFT_TOP);
-			if (st_swFaceY1[MOTOR_LEFT_TOP]>0&&st_swFaceY3[MOTOR_LEFT_TOP]>0&&st_swFaceY3[MOTOR_LEFT_TOP]>st_swFaceY1[MOTOR_LEFT_TOP])
-			{
-				st_wFiberWidth=st_swFaceY3[MOTOR_LEFT_TOP]-st_swFaceY1[MOTOR_LEFT_TOP];
-				return PASS;
-			}
-		}
-	}
-#endif
-	if (x<swXEnd)
-		return FAIL;
-	else
-		return PASS;
-}
-
-SWORD SearchFiberLowPoint(ST_IMGWIN *pWin,BYTE bWinIndex)
-{
-	DWORD dwOffset;
-	WORD wCurY,wMaxY,wMinY,wSamePoint,wGoDown,wGoUp,wReverse,wDeep,wContinueCnt,wUnContinue;
-	SWORD i,x,y,swXEnd,swStartY,swYEnd,swLowX,swRet=FAIL;
-	BYTE *pbWinBuffer,bGetLowPiont,bError=0,bSensorIndex;
-
-	if ((DWORD)pWin==(DWORD)&SensorInWin[1])
-		bSensorIndex=SENSER_BOTTOM;
-	else
-		bSensorIndex=SENSER_TOP;
-	dwOffset=pWin->dwOffset;
-	swXEnd=pWin->dwOffset-pWin->wWidth/4;//(g_wCenterPos<<1)+(g_wCenterPos>>1);
-	//mpDebugPrint(" SearchLeftFiberFaceAndTopEdge bMode=%d: bScanEdge=%d",bMode,bScanEdge);
-
-	swStartY=0;
-	swYEnd=pWin->wHeight;
-
-	for (wDeep=8;wDeep<pWin->wWidth/X_STEP;wDeep+=4)
-	{
-		wMaxY=0;
-		bGetLowPiont=1;
-		wGoDown=0;
-		wGoUp=0;
-		wReverse=0;
-		wSamePoint=0;
-		Idu_OsdErase();
-		for (x=pWin->wWidth/4;x<swXEnd;x+=X_STEP)
-		{
-			y=swStartY;
-			pbWinBuffer = (BYTE *) pWin->pdwStart+x+y*pWin->dwOffset;
-			wContinueCnt=0;
-			wCurY=0;
-			//mpDebugPrint(" %d: ",x);
-			while (y<swYEnd)
-			{
-				//mpDebugPrintN("%02x ",*pbWinBuffer);
-				if (*pbWinBuffer < st_bBackGroundLevel[bSensorIndex] )
-				{
-					wContinueCnt++;
-					if (wContinueCnt>=Y_CONTINUE_VALID_SUM)
-					{
-						wCurY=y-wContinueCnt;
-						//Idu_OsdPaintArea(x>>1, pWin->wHeight/2*bWinIndex+wCurY/2, 2, 1, OSD_COLOR_RED);
-						Idu_OsdPaintArea(x>>1, wCurY, 2, 1, OSD_COLOR_RED);
-						//mpDebugPrintN("%d ",wCurY);
-						break;
-					}
-				}
-				else
-				{
-					wContinueCnt=0;
-				}
-				y++;
-				pbWinBuffer+=dwOffset;
-			}
-			if (y>=swYEnd)
-			{
-				//光纤断
-				bError=1;
-				mpDebugPrint("fiber error=%d,x=%d ",bError,x>>1);
-				break;
-			}
-			if (wCurY<4 || wCurY>=swYEnd)
-				continue;
-			if (!wMaxY)
-			{
-				wMaxY=wMinY=wCurY;
-				swLowX=x>>1;
-			}
-			else
-			{
-				//mpDebugPrintN("%d ",wCurY);
-				if (wMinY>wCurY)
-					wMinY=wCurY;
-				if (bGetLowPiont)
-				{
-					if (wCurY>wMaxY)
-					{
-						//往下走
-						wGoDown++;
-						if (wGoUp && wGoDown>wDeep/2)
-							wGoUp=0;
-						wMaxY=wCurY;
-						swLowX=x>>1;
-						wSamePoint=0;
-						//mpDebugPrint(" (%d,%d)",swLowX,wMaxY);
-					}
-					else if (wMaxY==wCurY)
-					{
-						wSamePoint++;
-					}
-					else
-					{
-						//往上走
-						wGoUp++;
-						if (wGoUp>wDeep/2)
-						{
-							if (wGoDown>wDeep)
-							{
-								//已找到低点开始回走
-								bGetLowPiont=0;
-								wReverse=0;
-							}
-							else
-							{
-								wGoDown=0;
-							}
-						}
-					}
-				}
-				else
-				{
-					//又往下走
-					if (wCurY>wMaxY)
-					{
-						wReverse++;
-						//wSamePoint++;
-						// 再次找低点，是个错误
-						if (wReverse>wGoDown/2) 
-						{
-							bError=2;
-							//放电熔的幅度不够
-						}
-					}
-					else if (wReverse && wCurY<wMaxY)
-					{
-						wReverse=0;
-					}
-				}
-				
-			}
-			TaskYield();
-			//mpDebugPrint(" ");
-		}
-		//mpDebugPrint(" ");
-		mpDebugPrint(" --bError=%d swLowX=%d bGetLowPiont=%d wSamePoint=%d wDeep=%d/%d",bError,swLowX,bGetLowPiont,wSamePoint,wGoDown,wDeep);
-		mpDebugPrint(" ----wMaxY=%d wMinY=%d",wMaxY,wMinY);
-		switch (bError)
-		{
-			case 0:
-				if (bGetLowPiont)
-					swRet=1; 
-				else
-				{
-					if ((wSamePoint >40) || (wMaxY-wMinY<30))// pWin->dwOffset/100 -st_wFiberWidth/8
-					{
-						swRet=1; //re discharge
-					}
-					else
-					{
-						swRet=PASS;
-						swLowX+=wSamePoint*X_STEP/2;
-						//Idu_OsdPaintArea(swLowX, 0, 2, pWin->wHeight, OSD_COLOR_RED);
-						#if 0 //4 计算最底点的光纤厚度
-						x=swLowX<<1;
-						y=wMinY;
-						pbWinBuffer = (BYTE *) pWin->pdwStart+x+y*pWin->dwOffset;
-						wContinueCnt=0;
-						wUnContinue=0;
-						while (y<swYEnd)
-						{
-							if (*pbWinBuffer < st_bBackGroundLevel[bSensorIndex] )
-							{
-								Idu_OsdPaintArea(x>>1, y, 2, 1, OSD_COLOR_RED);
-								wContinueCnt++;
-								wUnContinue=0;
-							}
-							else if (wContinueCnt)
-							{
-								 if (wContinueCnt>5)
-								 {
-									wUnContinue++;
-									if (wUnContinue>3)
-										break;
-								 }
-								 else
-								 {
-									wContinueCnt=0;
-								 }
-							}
-							y++;
-							pbWinBuffer+=dwOffset;
-						}
-						mpDebugPrint(" ----thick %d",wContinueCnt);
-						if (!wContinueCnt || wContinueCnt>20)
-						{
-							if (st_bRetryTimes)
-								swRet=2; //re discharge
-						}
-						#endif
-
-					}
-				}
-				break;
-
-			//光纤断
-			case 1:
-				swRet=FAIL; 
-				break;
-
-			// 再次找低点
-			case 2:
-				if ((wSamePoint >40) || (wMaxY-wMinY<30)) //st_wFiberWidth
-				{
-					swRet=1; //re discharge
-				}
-				else
-				{
-					bGetLowPiont=1;
-					wGoDown=0;
-					wGoUp=0;
-					wReverse=0;
-					wDeep+=4;
-					swRet=10;
-				}
-				break;
-
-			default:
-				swRet=FAIL; 
-				break;
-		}
-		if (swRet<10)
-			break;
-	}
-
-//--swRet:  <0 FAIL  ==0->retry  >0 ->ok
-	if (swRet>0)//(swRet==1 || swRet==10)
-	{
-		if (st_wDiachargeTime)
-		{
-			st_wDiachargeTime+=10;
-			Discharge(st_wDiachargeTime,0);
-		}
-		swRet=0;
-	}
-	else if (swRet==PASS)
-	{
-		swRet=swLowX;
-	}
-
-	return swRet;
-}
-
 
 #define		MOTO_BASE_RETRY_TIMES					10
 #define		MOTO_BASE_STEPS									8 // pixel
@@ -3639,6 +3285,365 @@ void TimerToResetGetCenter(void)
 	g_swGetCenterState=GET_CENTER_OFF;
 }
 
+void AutoDischarge(void)
+{
+		Discharge(600,0);
+}
+
+void AutoGetFiberLowPoint()
+{
+	BYTE i;
+	
+	if (g_swGetCenterState==GET_CENTER_OFF)
+	{
+		g_swGetCenterState=GET_CENTER_INIT;//GET_CENTER_INIT;GET_CENTER_LOW_POINT
+		TimerToFillProcWin(10);
+	}
+	else
+		g_swGetCenterState=GET_CENTER_OFF;
+
+}
+
+SWORD SearchWholeFiber(ST_IMGWIN *pWin)
+{
+	DWORD dwOffset;
+	//WORD wValidPixelCnt,wInvalidPixelCnt,wValidLineCnt,wYValidStartArry[X_VALID_SUM],wYStartIndex,wYvalidCnt;
+	WORD wLastY,wCurY;
+	SWORD i,x,y,swXEnd,swStartY,swYEnd;
+	BYTE *pbWinBuffer,bContinueCnt,bSensorIndex;
+
+	if ((DWORD)pWin==(DWORD)&SensorInWin[1])
+		bSensorIndex=SENSER_BOTTOM;
+	else
+		bSensorIndex=SENSER_TOP;
+	dwOffset=pWin->dwOffset;
+	swXEnd=pWin->dwOffset;//(g_wCenterPos<<1)+(g_wCenterPos>>1);
+	mpDebugPrint(" _SearchWholeFiber_");
+
+	/* 查找整个面是否为一条完整的纤*/
+	swStartY=0;
+	swYEnd=pWin->wHeight;
+	wLastY=0;
+	for (x=X_STEP;x<swXEnd;x+=X_STEP)
+	{
+		y=swStartY;
+		pbWinBuffer = (BYTE *) pWin->pdwStart+x+y*pWin->dwOffset;
+		bContinueCnt=0;
+		wCurY=0;
+		//mpDebugPrint(" %d: ",x>>1);
+		while (y<swYEnd)
+		{
+			//mpDebugPrintN("%02x ",*pbWinBuffer);
+			if (*pbWinBuffer < st_bBackGroundLevel[bSensorIndex]  )
+			{
+				bContinueCnt++;
+				if (bContinueCnt>=Y_CONTINUE_VALID_SUM)
+				{
+					wCurY=y-bContinueCnt;
+					//Idu_OsdPaintArea(x>>1, wCurY, 2, 1, OSD_COLOR_RED);
+					break;
+				}
+			}
+			else
+			{
+				bContinueCnt=0;
+			}
+			y++;
+			pbWinBuffer+=dwOffset;
+		}
+		if (y>=swYEnd)
+		{
+			mpDebugPrint("No whole fiber in %d ",x>>1);
+			break;
+		}
+#if 0
+		if (wLastY)
+		{
+			if (wLastY+5<wCurY || wLastY>wCurY+5)
+			{
+				mpDebugPrint("whole fiber error  x=%d wCurY=%d wLastY=%d",x>>1,wCurY,wLastY);
+				break;
+			}
+			else
+			{
+				wLastY=(wLastY+wCurY)>>1;
+			}
+		}
+		else
+		{
+			wLastY=wCurY;
+		}
+#endif
+		TaskYield();
+		//mpDebugPrint(" ");
+	}
+#if 0
+	if (x>=swXEnd)
+	{
+		if (!st_wFiberWidth)
+		{
+			SearchLeftFiberFaceAndTopEdge(pWin,MOTOR_LEFT_TOP,1);
+			SearchLeftFiberBottomEdge(pWin,MOTOR_LEFT_TOP);
+			if (st_swFaceY1[MOTOR_LEFT_TOP]>0&&st_swFaceY3[MOTOR_LEFT_TOP]>0&&st_swFaceY3[MOTOR_LEFT_TOP]>st_swFaceY1[MOTOR_LEFT_TOP])
+			{
+				st_wFiberWidth=st_swFaceY3[MOTOR_LEFT_TOP]-st_swFaceY1[MOTOR_LEFT_TOP];
+				return PASS;
+			}
+		}
+	}
+#endif
+	if (x<swXEnd)
+		return FAIL;
+	else
+		return PASS;
+}
+
+#define		X_GETLOW_STEP											4       //4 快速横向查找步长，必须为4的倍数，一个单位为半个像素
+
+SWORD SearchFiberLowPoint(ST_IMGWIN *pWin,BYTE bWinIndex)
+{
+	DWORD dwOffset;
+	WORD wCurY,wMaxY,wMinY,wSamePoint,wGoDown,wGoUp,wReverse,wDeep,wContinueCnt,wUnContinue;
+	SWORD i,x,y,swXEnd,swStartY,swYEnd,swLowX,swRet=FAIL;
+	BYTE *pbWinBuffer,bGetLowPiont,bError=0,bSensorIndex;
+
+	if ((DWORD)pWin==(DWORD)&SensorInWin[1])
+		bSensorIndex=SENSER_BOTTOM;
+	else
+		bSensorIndex=SENSER_TOP;
+	dwOffset=pWin->dwOffset;
+	swXEnd=pWin->dwOffset-pWin->wWidth/4;//(g_wCenterPos<<1)+(g_wCenterPos>>1);
+	//mpDebugPrint(" SearchLeftFiberFaceAndTopEdge bMode=%d: bScanEdge=%d",bMode,bScanEdge);
+
+	swStartY=0;
+	swYEnd=pWin->wHeight;
+
+	for (wDeep=8;wDeep<pWin->wWidth/X_STEP;wDeep+=4)
+	{
+		wMaxY=0;
+		bGetLowPiont=1;
+		wGoDown=0;
+		wGoUp=0;
+		wReverse=0;
+		wSamePoint=0;
+		Idu_OsdErase();
+		for (x=pWin->wWidth/4;x<swXEnd;x+=X_GETLOW_STEP)
+		{
+			y=swStartY;
+			pbWinBuffer = (BYTE *) pWin->pdwStart+x+y*pWin->dwOffset;
+			wContinueCnt=0;
+			wCurY=0;
+			//mpDebugPrint(" %d: ",x);
+			while (y<swYEnd)
+			{
+				//mpDebugPrintN("%02x ",*pbWinBuffer);
+				if (*pbWinBuffer < st_bBackGroundLevel[bSensorIndex] )
+				{
+					wContinueCnt++;
+					if (wContinueCnt>=Y_CONTINUE_VALID_SUM)
+					{
+						wCurY=y-wContinueCnt;
+						//Idu_OsdPaintArea(x>>1, pWin->wHeight/2*bWinIndex+wCurY/2, 2, 1, OSD_COLOR_RED);
+						Idu_OsdPaintArea(x>>1, wCurY, 2, 1, OSD_COLOR_RED);
+						mpDebugPrintN("%d ",wCurY);
+						break;
+					}
+				}
+				else
+				{
+					wContinueCnt=0;
+				}
+				y++;
+				pbWinBuffer+=dwOffset;
+			}
+			if (y>=swYEnd)
+			{
+				//光纤断
+				bError=1;
+				mpDebugPrint("fiber error=%d,x=%d ",bError,x>>1);
+				break;
+			}
+			if (wCurY<4 || wCurY>=swYEnd)
+				continue;
+			if (!wMaxY)
+			{
+				wMaxY=wMinY=wCurY;
+				swLowX=x>>1;
+			}
+			else
+			{
+				//mpDebugPrintN("%d ",wCurY);
+				if (wMinY>wCurY)
+					wMinY=wCurY;
+				if (bGetLowPiont)
+				{
+					if (wCurY>wMaxY)
+					{
+						//往下走
+						wGoDown++;
+						if (wGoUp && wGoDown>wDeep/2)
+							wGoUp=0;
+						wMaxY=wCurY;
+						swLowX=x>>1;
+						wSamePoint=0;
+						//mpDebugPrint(" (%d,%d)",swLowX,wMaxY);
+					}
+					else if (wMaxY==wCurY)
+					{
+						wSamePoint++;
+					}
+					else
+					{
+						//往上走
+						wGoUp++;
+						if (wGoUp>wDeep/2)
+						{
+							if (wGoDown>wDeep)
+							{
+								//已找到低点开始回走
+								bGetLowPiont=0;
+								wReverse=0;
+							}
+							else
+							{
+								wGoDown=0;
+							}
+						}
+					}
+				}
+				else
+				{
+					//又往下走
+					if (wCurY>wMaxY)
+					{
+						wReverse++;
+						//wSamePoint++;
+						// 再次找低点，是个错误
+						if (wReverse>wGoDown/2) 
+						{
+							bError=2;
+							//放电熔的幅度不够
+						}
+					}
+					else if (wReverse && wCurY<wMaxY)
+					{
+						wReverse=0;
+					}
+				}
+				
+			}
+			TaskYield();
+			//mpDebugPrint(" ");
+		}
+		//mpDebugPrint(" ");
+		mpDebugPrint(" --bError=%d swLowX=%d bGetLowPiont=%d wSamePoint=%d wDeep=%d/%d",bError,swLowX,bGetLowPiont,wSamePoint,wGoDown,wDeep);
+		mpDebugPrint(" ----wMaxY=%d wMinY=%d",wMaxY,wMinY);
+		switch (bError)
+		{
+			case 0:
+				if (bGetLowPiont)
+					swRet=1; 
+				else
+				{
+					if ((wSamePoint >40) || (wMaxY-wMinY<40))// pWin->dwOffset/100 -st_wFiberWidth/8
+					{
+						swRet=1; //re discharge
+					}
+					else
+					{
+						swRet=PASS;
+						swLowX+=(wSamePoint*X_GETLOW_STEP>>2);
+						//Idu_OsdPaintArea(swLowX, 0, 2, pWin->wHeight, OSD_COLOR_RED);
+						#if 0 //4 计算最底点的光纤厚度
+						x=swLowX<<1;
+						y=wMinY;
+						pbWinBuffer = (BYTE *) pWin->pdwStart+x+y*pWin->dwOffset;
+						wContinueCnt=0;
+						wUnContinue=0;
+						while (y<swYEnd)
+						{
+							if (*pbWinBuffer < st_bBackGroundLevel[bSensorIndex] )
+							{
+								Idu_OsdPaintArea(x>>1, y, 2, 1, OSD_COLOR_RED);
+								wContinueCnt++;
+								wUnContinue=0;
+							}
+							else if (wContinueCnt)
+							{
+								 if (wContinueCnt>5)
+								 {
+									wUnContinue++;
+									if (wUnContinue>3)
+										break;
+								 }
+								 else
+								 {
+									wContinueCnt=0;
+								 }
+							}
+							y++;
+							pbWinBuffer+=dwOffset;
+						}
+						mpDebugPrint(" ----thick %d",wContinueCnt);
+						if (!wContinueCnt || wContinueCnt>20)
+						{
+							if (st_bRetryTimes)
+								swRet=2; //re discharge
+						}
+						#endif
+
+					}
+				}
+				break;
+
+			//光纤断
+			case 1:
+				swRet=FAIL; 
+				break;
+
+			// 再次找低点
+			case 2:
+				if ((wSamePoint >40) || (wMaxY-wMinY<40)) //st_wFiberWidth
+				{
+					swRet=1; //re discharge
+				}
+				else
+				{
+					bGetLowPiont=1;
+					wGoDown=0;
+					wGoUp=0;
+					wReverse=0;
+					wDeep+=4;
+					swRet=10;
+				}
+				break;
+
+			default:
+				swRet=FAIL; 
+				break;
+		}
+		if (swRet<10)
+			break;
+	}
+
+//--swRet:  <0 FAIL  ==0->retry  >0 ->ok
+	if (swRet>0)//(swRet==1 || swRet==10)
+	{
+		if (st_wDiachargeTime)
+		{
+			//st_wDiachargeTime+=200;
+			Discharge(st_wDiachargeTime,0);
+		}
+		swRet=0;
+	}
+	else if (swRet==PASS)
+	{
+		swRet=swLowX;
+	}
+
+	return swRet;
+}
+
 void Proc_GetFiberLowPoint(void)
 {
 	ST_IMGWIN *pWin=(ST_IMGWIN *)&SensorInWin[0];
@@ -3655,7 +3660,7 @@ void Proc_GetFiberLowPoint(void)
 			g_wElectrodePos[0]=0;
 			g_wElectrodePos[1]=0;
 			st_bRetryTimes=1;
-			st_wDiachargeTime=1000;
+			st_wDiachargeTime=500;
 			Idu_OsdErase();
 			if (!st_bBackGroundLevel[0] ||!st_bBackGroundLevel[1])
 			{
@@ -3736,9 +3741,19 @@ void Proc_GetFiberLowPoint(void)
 			{
 				MP_DEBUG("GET_CENTER_LOW_POINT   swRet=%d  [%d]",swRet,g_wElectrodePos[0]);
 				if (swRet<=0)
+				{
 					swRet=pWin->wWidth/2;
+				}
 				else
+				{
+					ST_OSDWIN * psWin=Idu_GetOsdWin();
+					BYTE bstring[16];
+					
 					Idu_OsdPaintArea(swRet,0,2,pWin->wHeight,OSD_COLOR_RED);
+					Idu_OsdPaintArea(pWin->wWidth/2,0,2,pWin->wHeight,OSD_COLOR_GREEN);
+					sprintf(bstring, " %d ", swRet);
+					Idu_OSDPrint(psWin,bstring, 16, 16, OSD_COLOR_RED);
+				}
 				if (g_wElectrodePos[0]==0)
 				{
 					g_wElectrodePos[0]=swRet;
@@ -4747,7 +4762,17 @@ void TSPI_DataProc(void)
 						ipu->Ipu_reg_F2 = ((DWORD) pDstWin->pdwStart| 0xA0000000)+(SensorWindow_Width<<1);	
 						mpClearWin(Idu_GetCurrWin());
 						#else
-
+						//Discharge(1000,0);
+						if (st_bAutoDischarge)
+						{
+							st_bAutoDischarge=0;
+							Ui_TimerProcRemove(AutoDischarge);
+						}
+						else
+						{
+							st_bAutoDischarge=20;
+							AutoDischarge();
+						}
 						#endif
 						break;
 					case 6:
@@ -4775,7 +4800,10 @@ void TSPI_DataProc(void)
 						#elif 1
 						//AutoStartWeld();
 						//TimerToFillProcWin(10);
-						AutoGetFiberLowPoint();
+						if (g_swGetCenterState)
+							g_swGetCenterState=0;
+						else
+							AutoGetFiberLowPoint();
 						#endif
 						break;
 
@@ -4852,14 +4880,22 @@ void TSPI_DataProc(void)
 					Ui_TimerProcRemove(TimerToNextState);
 					g_swProcState++;//=SENSOR_FACE_POS2A;
 				}
-				if (g_swGetCenterState==GET_CENTER_INIT)
+				if (st_bAutoDischarge)
 				{
-					g_swGetCenterState++;
-					TimerToFillReferWin(RPOC_WIN0,1000);
+					st_bAutoDischarge--;
+					Ui_TimerProcAdd(1000, AutoDischarge);
 				}
-				else if (g_swGetCenterState==GET_CENTER_LOW_POINT)
+				else
 				{
-					TimerToFillReferWin(RPOC_WIN0,1000);
+					if (g_swGetCenterState==GET_CENTER_INIT)
+					{
+						g_swGetCenterState++;
+						TimerToFillReferWin(RPOC_WIN0,1000);
+					}
+					else if (g_swGetCenterState==GET_CENTER_LOW_POINT)
+					{
+						TimerToFillReferWin(RPOC_WIN0,1000);
+					}
 				}
 			}
 			else if (pbTspiRxBuffer[2]==0x02) 
