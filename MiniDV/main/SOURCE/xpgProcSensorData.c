@@ -26,8 +26,8 @@
 
 #include "peripheral.h"
 
-#define DEBUG_POS(...)                   DONOTHING
-//#define DEBUG_POS                   		mpDebugPrint
+//#define DEBUG_POS(...)                   DONOTHING
+#define DEBUG_POS                   		mpDebugPrint
 
 
 #if (SENSOR_ENABLE == ENABLE)
@@ -35,12 +35,12 @@
 extern BYTE *pbSensorWinBuffer;
 extern ST_IMGWIN SensorInWin[SENSOR_WIN_NUM];
 
-static BYTE  st_bRetryTimes=0,st_bAutoDischarge=0;
+static BYTE  st_bRetryTimes=0,st_bAutoDischarge=0,st_bProcWinIndex=0;
 static WORD st_wDiachargeTime=0;
-SWORD g_swGetCenterState = GET_CENTER_OFF;
-SWORD g_swProcState = SENSOR_IDLE;//SENSOR_FACE_POS1A;//SENSOR_IDLE; //BIT30->PAUSE
+static DWORD st_dwGetCenterState = GET_CENTER_OFF;
+static DWORD st_dwProcState = SENSOR_IDLE;//SENSOR_FACE_POS1A;//SENSOR_IDLE; //BIT30->PAUSE
 DWORD g_dwProcWinFlag = 0;  // 用于拍照等WIN0_CAPTURE_FLAG
-WORD g_wElectrodePos[2]={0,0};//{400,400};  //4 电极棒位置
+WORD g_wElectrodePos[2]={400,400};  //4 电极棒位置
 //SWORD g_swCenterOffset=0;  //4 电极棒位置  76
 
 static SWORD st_swFaceX[MOTOR_NUM]={-1,-1,-1,-1};
@@ -294,10 +294,12 @@ SWORD TSPI_Send(BYTE *pbDataBuf,DWORD dwLenth )
 
 
 		TSPI_Reset();
+		/*
 		if (swRet==PASS)
 			mpDebugPrintN("-O-");
 		else
 			mpDebugPrintN("-N-");
+			*/
 		return swRet;
 }
 
@@ -955,9 +957,10 @@ void SetFillProcWinFlag(void)
 {
 	IPU *ipu = (IPU *) IPU_BASE;
 
-	if (!(st_bFillWinFlag |(FILL_WIN_UP|FILL_WIN_DOWN)))
-		st_bFillWinFlag=FILL_WIN_UP|FILL_WIN_DOWN;
-	st_bNeedFillProcWin=FILL_WIN_INIT|st_bFillWinFlag; // bit0->up win  bit1->down win   bit7->init mode
+	if (st_bFillWinFlag |(FILL_WIN_UP|FILL_WIN_DOWN))
+		st_bNeedFillProcWin=FILL_WIN_INIT|st_bFillWinFlag; // bit0->up win  bit1->down win   bit7->init mode
+	else
+		st_bNeedFillProcWin=FILL_WIN_INIT|FILL_WIN_UP|FILL_WIN_DOWN; // bit0->up win  bit1->down win   bit7->init mode
 		//st_bNeedFillProcWin=0xe1; // bit0->up win  bit1->down win   bit7->init mode
 	#if (USE_IPW1_DISPLAY_MOTHOD == ENABLE) 
 			ipu->Ipu_reg_F0 &= ~BIT7;//open IPW2
@@ -971,7 +974,7 @@ void TimerToFillProcWin(DWORD dwTime) // ms
 	Ui_TimerProcAdd(dwTime, SetFillProcWinFlag);
 }
 
-void TimerToFillReferWin(BYTE bWinIndex,DWORD dwTime) // ms
+void TimerToFillReferWin(DWORD dwTime,BYTE bWinIndex) // ms
 {
 	if (bWinIndex<RPOC_WIN_TOTAL)
 		st_bFillWinFlag=1<<bWinIndex;
@@ -982,9 +985,9 @@ void AutoStartWeld()
 {
 	BYTE i;
 	
-	if (g_swProcState==SENSOR_IDLE)
+	if (st_dwProcState==SENSOR_IDLE)
 	{
-		g_swProcState=SENSOR_FACE_POS1A;
+		st_dwProcState=SENSOR_FACE_POS1A;
 		st_bDischargeMode=0;
 		for (i=0;i<MOTOR_NUM;i++)
 		{
@@ -994,7 +997,7 @@ void AutoStartWeld()
 		TimerToFillProcWin(10);
 	}
 	else
-		g_swProcState=SENSOR_IDLE;
+		st_dwProcState=SENSOR_IDLE;
 
 }
 
@@ -1002,13 +1005,15 @@ void Weld_StartPause()
 {
 	BYTE i;
 
-	if (g_swProcState & BIT30)
+mpDebugPrint("Weld_StartPause- %p",st_dwProcState);
+	if (st_dwProcState & BIT30)
 	{
-		g_swProcState &=~BIT30;
+		st_dwProcState &=~BIT30;
+		EventSet(UI_EVENT, EVENT_PROC_DATA);
 	}
-	else if (g_swProcState==SENSOR_IDLE)
+	else if (st_dwProcState==SENSOR_IDLE)
 	{
-		g_swProcState=SENSOR_FACE_POS1A;
+		st_dwProcState=SENSOR_FACE_POS1A;
 		st_bDischargeMode=0;
 		for (i=0;i<MOTOR_NUM;i++)
 		{
@@ -1020,10 +1025,12 @@ void Weld_StartPause()
 	}
 	else
 	{
-		g_swProcState |= BIT30;
+		EventClear(UI_EVENT, EVENT_PROC_DATA);
+		st_dwProcState |= BIT30;
 		for (i=0;i<MOTOR_NUM;i++)
 			MotorSetStatus(i+1,MOTOR_STOP);
 	}
+mpDebugPrint("Weld_StartPause %p",st_dwProcState);
 
 }
 
@@ -1046,15 +1053,13 @@ void GetBackgroundLevel(void)
 		bSensorIndex=SENSER_BOTTOM;
 	else if (!st_bBackGroundLevel[0])
 	{
-		st_bFillWinFlag=FILL_WIN_UP;
-		TimerToFillProcWin(10);
+		TimerToFillReferWin(10,FILL_WIN_UP);
 		Ui_TimerProcAdd(500, GetBackgroundLevel);
 		return;
 	}
 	else if (!st_bBackGroundLevel[1])
 	{
-		st_bFillWinFlag=FILL_WIN_DOWN;
-		TimerToFillProcWin(10);
+		TimerToFillReferWin(10,FILL_WIN_DOWN);
 		Ui_TimerProcAdd(500, GetBackgroundLevel);
 		return;
 	}
@@ -1102,10 +1107,10 @@ void GetBackgroundLevel(void)
 				wValidCnt=0;
 		}
 
-		if (wValidCnt>pWin->wHeight/16 &&  bValidLevel>0x20) // /8
+		if (wValidCnt>pWin->wHeight/16 &&  bValidLevel>8) // /8
 		{
 			//st_bBackGroundLevel[bSensorIndex]=(DWORD)bValidLevel*7/10; // ok1
-			st_bBackGroundLevel[bSensorIndex]=(DWORD)bValidLevel*7/10; // 8
+			st_bBackGroundLevel[bSensorIndex]=(DWORD)bValidLevel/2; //7/10
 			break;
 		}
 	}
@@ -1945,7 +1950,7 @@ SWORD SearchLeftFiberFaceAndTopEdge(ST_IMGWIN *pWin,BYTE bMode,BYTE bScanEdge)
 		bSensorIndex=SENSER_TOP;
 	dwOffset=pWin->dwOffset;
 	swXEnd=pWin->dwOffset;//(g_wCenterPos<<1)+(g_wCenterPos>>1);
-	//mpDebugPrint(" SearchLeftFiberFaceAndTopEdge bMode=%d: bScanEdge=%d",bMode,bScanEdge);
+	//mpDebugPrint(" SearchLeftFiberFaceAndTopEdge bMode=%d: bSensorIndex=%d",bMode,bSensorIndex);
 
 	/* 找端面  */
 	// --快速向右找有效端及之后第一个无效端面
@@ -1984,14 +1989,14 @@ SWORD SearchLeftFiberFaceAndTopEdge(ST_IMGWIN *pWin,BYTE bMode,BYTE bScanEdge)
 			//mpDebugPrintN("%02x ",*pbWinBuffer);
 			if (wValidPixelCnt)
 			{
-				if (*pbWinBuffer < st_bBackGroundLevel[bSensorIndex] )
+				if (*pbWinBuffer < st_bBackGroundLevel[bSensorIndex]*2/3 )
 					wValidPixelCnt++;
 				else
 					wInvalidPixelCnt++;
 			}
 			else
 			{
-				if (*pbWinBuffer < st_bBackGroundLevel[bSensorIndex] *2/3 )
+				if (*pbWinBuffer < st_bBackGroundLevel[bSensorIndex] /2 )
 				{
 					bContinueCnt++;
 					if (bContinueCnt>Y_CONTINUE_VALID_SUM)
@@ -3039,9 +3044,9 @@ void MoveVMotorToSpecPosition(BYTE bFiberIndex,SWORD swTx)
 		bMotorInex=04; // 左马达0x01 右马达0x02   Y上马达0x03  Y下马达0x04
 		if (st_bVmotorMoveTimes[0]<0xff)
 		{
-			if (st_bLastProcStep[0]!=g_swProcState)
+			if (st_bLastProcStep[0]!=st_dwProcState)
 			{
-				st_bLastProcStep[0]=g_swProcState;
+				st_bLastProcStep[0]=st_dwProcState;
 				st_bVmotorMoveTimes[0]=0;
 			}
 			else
@@ -3072,9 +3077,9 @@ void MoveVMotorToSpecPosition(BYTE bFiberIndex,SWORD swTx)
 
 		if (st_bVmotorMoveTimes[1]<0xff)
 		{
-			if (st_bLastProcStep[1]!=g_swProcState)
+			if (st_bLastProcStep[1]!=st_dwProcState)
 			{
-				st_bLastProcStep[1]=g_swProcState;
+				st_bLastProcStep[1]=st_dwProcState;
 				st_bVmotorMoveTimes[1]=0;
 			}
 			else
@@ -3143,9 +3148,9 @@ void MoveVMotorByPosition(BYTE bFiberIndex,SWORD swSx,SWORD swTx)
 		bMotorInex=04; // 左马达0x01 右马达0x02   Y上马达0x03  Y下马达0x04
 		if (st_bVmotorMoveTimes[0]<0xff)
 		{
-			if (st_bLastProcStep[0]!=g_swProcState)
+			if (st_bLastProcStep[0]!=st_dwProcState)
 			{
-				st_bLastProcStep[0]=g_swProcState;
+				st_bLastProcStep[0]=st_dwProcState;
 				st_bVmotorMoveTimes[0]=0;
 			}
 			else
@@ -3176,9 +3181,9 @@ void MoveVMotorByPosition(BYTE bFiberIndex,SWORD swSx,SWORD swTx)
 
 		if (st_bVmotorMoveTimes[1]<0xff)
 		{
-			if (st_bLastProcStep[1]!=g_swProcState)
+			if (st_bLastProcStep[1]!=st_dwProcState)
 			{
-				st_bLastProcStep[1]=g_swProcState;
+				st_bLastProcStep[1]=st_dwProcState;
 				st_bVmotorMoveTimes[1]=0;
 			}
 			else
@@ -3332,8 +3337,8 @@ void TimerToProcWin(void)
 
 void TimerToResetGetCenter(void)
 {
-	MP_DEBUG("TimerToResetGetCenter   state=%d",g_swGetCenterState);
-	g_swGetCenterState=GET_CENTER_OFF;
+	MP_DEBUG("TimerToResetGetCenter   state=%d",st_dwGetCenterState);
+	st_dwGetCenterState=GET_CENTER_OFF;
 }
 
 void AutoDischarge(void)
@@ -3345,13 +3350,13 @@ void AutoGetFiberLowPoint()
 {
 	BYTE i;
 	
-	if (g_swGetCenterState==GET_CENTER_OFF)
+	if (st_dwGetCenterState==GET_CENTER_OFF)
 	{
-		g_swGetCenterState=GET_CENTER_INIT;//GET_CENTER_INIT;GET_CENTER_LOW_POINT
+		st_dwGetCenterState=GET_CENTER_INIT;//GET_CENTER_INIT;GET_CENTER_LOW_POINT
 		TimerToFillProcWin(10);
 	}
 	else
-		g_swGetCenterState=GET_CENTER_OFF;
+		st_dwGetCenterState=GET_CENTER_OFF;
 
 }
 
@@ -3701,11 +3706,11 @@ void Proc_GetFiberLowPoint(void)
 	SWORD swRet;
 	BYTE bSetEvent=0;
 
-	if (!g_swGetCenterState)
+	if (!st_dwGetCenterState)
 		return;
-	MP_DEBUG("Proc_GetFiberLowPoint   %d ",g_swGetCenterState);
+	MP_DEBUG("Proc_GetFiberLowPoint   %d ",st_dwGetCenterState);
 
-	switch (g_swGetCenterState)
+	switch (st_dwGetCenterState)
 	{
 		case GET_CENTER_INIT:
 			g_wElectrodePos[0]=0;
@@ -3716,7 +3721,7 @@ void Proc_GetFiberLowPoint(void)
 			if (!st_bBackGroundLevel[0] ||!st_bBackGroundLevel[1])
 			{
 				MP_DEBUG("GetFiberLowPoint   BackGroundLevel error !");
-				g_swGetCenterState=GET_CENTER_OFF;
+				st_dwGetCenterState=GET_CENTER_OFF;
 			}
 			else
 			{
@@ -3730,7 +3735,7 @@ void Proc_GetFiberLowPoint(void)
 				}
 
 				Discharge(1,0);
-				//g_swGetCenterState++;
+				//st_dwGetCenterState++;
 				Ui_TimerProcAdd(5000, TimerToResetGetCenter);
 			}
 			break;
@@ -3748,8 +3753,8 @@ void Proc_GetFiberLowPoint(void)
 			{
 				//Discharge(1000,0);
 				st_bRetryTimes=5;
-				TimerToFillReferWin(RPOC_WIN0,10);
-				g_swGetCenterState++;
+				TimerToFillReferWin(10,RPOC_WIN0);
+				st_dwGetCenterState++;
 			}
 			else
 			{
@@ -3757,10 +3762,10 @@ void Proc_GetFiberLowPoint(void)
 				if (st_bRetryTimes)
 				{
 					st_bRetryTimes--;
-					TimerToFillReferWin(RPOC_WIN0,10);
+					TimerToFillReferWin(10,RPOC_WIN0);
 				}
 				else
-					g_swGetCenterState=GET_CENTER_OFF;
+					st_dwGetCenterState=GET_CENTER_OFF;
 			}
 			break;
 
@@ -3819,22 +3824,22 @@ void Proc_GetFiberLowPoint(void)
 					//g_psSetupMenu->wElectrodePos[1]=g_wElectrodePos[1];
 					//WriteSetupChg();
 				}
-				g_swGetCenterState++;
+				st_dwGetCenterState++;
 				bSetEvent=1;
 			}
 			break;
 
 		case GET_CENTER_FINISH:
 		#if 1
-				g_swGetCenterState=GET_CENTER_OFF;
+				st_dwGetCenterState=GET_CENTER_OFF;
 		#else
 			if (g_wElectrodePos[0] && g_wElectrodePos[1])
-				g_swGetCenterState=GET_CENTER_OFF;
+				st_dwGetCenterState=GET_CENTER_OFF;
 			else
 			{
 				st_bRetryTimes=3;
 				st_wDiachargeTime=0;
-				g_swGetCenterState=GET_CENTER_LOW_POINT;
+				st_dwGetCenterState=GET_CENTER_LOW_POINT;
 				bSetEvent=1;
 				if (g_wElectrodePos[0]==0)
 				{
@@ -3852,7 +3857,7 @@ void Proc_GetFiberLowPoint(void)
 			break;
 	}
 
-	if (g_swGetCenterState && bSetEvent)
+	if (st_dwGetCenterState && bSetEvent)
 	{
 		EventSet(UI_EVENT, EVENT_PROC_DATA);
 	}
@@ -4153,7 +4158,8 @@ void ResetMotor(void)
 
 void TimerToNextState(void)
 {
-	g_swProcState++;
+	st_dwProcState++;
+	EventSet(UI_EVENT, EVENT_PROC_DATA);
 }
 
 
@@ -4173,9 +4179,9 @@ void Proc_Weld_State()
 #if SENSOR_WIN_NUM
 	if (pbSensorWinBuffer==NULL)
 		return;
-	//MP_DEBUG("g_swProcState   %d ",g_swProcState);
+	//MP_DEBUG("st_dwProcState   %d ",st_dwProcState);
 
-	switch (g_swProcState)
+	switch (st_dwProcState)
 	{
 		case SENSOR_FACE_POS1A:
 			bMode=MOTOR_LEFT_TOP;
@@ -4186,15 +4192,18 @@ void Proc_Weld_State()
 				if (swRet==FAIL)
 					st_swFaceX[bMode]=-1;
 				MoveHMotorToSpecPosition(bMode,swPos1);
-				//if (st_swFacexCurPos[bMode]==swPos1)
-				//	SearchLeftFiberFaceAndTopEdge(pWin,bMode,1);
-				TimerToFillProcWin(10);
+				if (st_swFacexCurPos[bMode]==swPos1)
+					SearchLeftFiberFaceAndTopEdge(pWin,bMode,1);
+				TimerToFillReferWin(10,RPOC_WIN0);
 			}
 			else
 			{
-				//g_swProcState=SENSOR_IDLE;
+				//st_dwProcState=SENSOR_IDLE;
+				TimerToFillReferWin(10,RPOC_WIN1);
+				g_bDisplayMode=0x81;
+				st_dwProcState++;
 			}
-			//break;
+			break;
 
 		case SENSOR_FACE_POS1B:
 			pWin=(ST_IMGWIN *)&SensorInWin[1];
@@ -4208,12 +4217,14 @@ void Proc_Weld_State()
 				MoveHMotorToSpecPosition(bMode,swPos2);
 				//if (st_swFacexCurPos[bMode]==swPos2)
 				//	SearchLeftFiberFaceAndTopEdge(pWin,bMode,1);
-				TimerToFillProcWin(10);
+				TimerToFillReferWin(10,RPOC_WIN1);
 			}
 			else
 			{
-				//g_swProcState++;
+				st_dwProcState++;
+				EventSet(UI_EVENT, EVENT_PROC_DATA);
 			}
+			#if 0
 			if ((st_swFacexCurPos[MOTOR_LEFT_TOP]==swPos1)&&(st_swFacexCurPos[MOTOR_LEFT_BOTTOM]==swPos2))
 			{
 				mpDebugPrint("SENSOR_FACE_POS1B OK");
@@ -4225,8 +4236,9 @@ void Proc_Weld_State()
 				pWin=(ST_IMGWIN *)&SensorInWin[1];
 				SearchLeftFiberBottomEdge(pWin,MOTOR_LEFT_BOTTOM);
 				SearchLeftFiberCenter(pWin,MOTOR_LEFT_BOTTOM);
-				g_swProcState=SENSOR_FACE_POS1B+1;
+				st_dwProcState=SENSOR_FACE_POS1B+1;
 			}
+			#endif
 			break;
 #if 0
 		case SENSOR_ALIGN_H1A:
@@ -4245,7 +4257,7 @@ void Proc_Weld_State()
 			else
 			{
 				mpDebugPrint("SENSOR_ALIGN_H1A OK");
-				g_swProcState++;
+				st_dwProcState++;
 			}
 			break;
 
@@ -4265,13 +4277,13 @@ void Proc_Weld_State()
 			else
 			{
 				mpDebugPrint("SENSOR_ALIGN_H1B OK");
-				g_swProcState++;
+				st_dwProcState++;
 			}
 			/*
 			if ((st_swFacexCurPos[bMode]==st_swFaceY1[bMode-1])&&(st_swFacexCurPos[MOTOR_RIGHT_TOP]==st_swFaceY1[MOTOR_RIGHT_TOP-1]))
 			{
 				mpDebugPrint("SENSOR_ALIGN_H2 OK");
-				g_swProcState=SENSOR_ALIGN_H2+1;
+				st_dwProcState=SENSOR_ALIGN_H2+1;
 			}
 			*/
 			break;
@@ -4283,11 +4295,18 @@ void Proc_Weld_State()
 				Discharge(st_bDischargeMode,0);
 				Ui_TimerProcAdd(3000, TimerToNextState);
 			}
+			else
+			{
+				st_dwProcState++;
+				EventSet(UI_EVENT, EVENT_PROC_DATA);
+			}
 			break;
 
 		case SENSOR_AUTO_FOCUS:
 #if 1
-			g_swProcState++;
+			//st_bFillWinFlag=FILL_WIN_UP|FILL_WIN_DOWN;
+			st_dwProcState++;
+			EventSet(UI_EVENT, EVENT_PROC_DATA);
 #else
 			if (g_swAutoFocusState==AF_OFF)
 			{
@@ -4297,15 +4316,17 @@ void Proc_Weld_State()
 			else if (g_swAutoFocusState==AF_FINISH)
 			{
 					g_swAutoFocusState=AF_OFF;
-					g_swProcState++;
-					g_swProcState=SENSOR_IDLE;
+					st_dwProcState++;
+					st_dwProcState=SENSOR_IDLE;
 			}
 #endif
 			break;
 
 		case SENSOR_GET_ANGLE:
-			g_swProcState++;
-			//g_swProcState=SENSOR_IDLE;
+			st_dwProcState++;
+			g_bDisplayMode=0x80;
+			TimerToFillReferWin(10,RPOC_WIN0);
+			//st_dwProcState=SENSOR_IDLE;
 			break;
 
 		case SENSOR_FACE_POS2A:
@@ -4320,14 +4341,17 @@ void Proc_Weld_State()
 					//if (st_swFacexCurPos[bMode]==swPos1)
 					//	SearchLeftFiberFaceAndTopEdge(pWin,bMode,1);
 				}
-				TimerToFillProcWin(10);
+				//TimerToFillProcWin(10);
+				TimerToFillReferWin(10,RPOC_WIN0);
 			}
 			else
 			{
 				//MotorSetStatus(GetMotoIdxByFiberIdx(bMode),MOTOR_NO_HOLD);
-				//g_swProcState++;
+				st_dwProcState++;
+				g_bDisplayMode=0x81;
+				TimerToFillReferWin(10,RPOC_WIN1);
 			}
-			//break;
+			break;
 
 		case SENSOR_FACE_POS2B:
 			pWin=(ST_IMGWIN *)&SensorInWin[1];
@@ -4342,19 +4366,24 @@ void Proc_Weld_State()
 					//if (st_swFacexCurPos[bMode]==swPos2)
 					//	SearchLeftFiberFaceAndTopEdge(pWin,bMode,1);
 				}
-				TimerToFillProcWin(10);
+				//TimerToFillProcWin(10);
+				TimerToFillReferWin(10,RPOC_WIN1);
 			}
 			else
 			{
 				//MotorSetStatus(GetMotoIdxByFiberIdx(bMode),MOTOR_NO_HOLD);
-				//g_swProcState++;
+				st_dwProcState++;
+				g_bDisplayMode=0x80;
+				TimerToFillReferWin(10,RPOC_WIN0);
 			}
+			#if 0
 			if ((st_swFacexCurPos[MOTOR_LEFT_TOP]==swPos1)&&(st_swFacexCurPos[MOTOR_LEFT_BOTTOM]==swPos2))
 			{
 				mpDebugPrint("SENSOR_FACE_POS2B OK");
-				g_swProcState=SENSOR_FACE_POS2B+1;
+				st_dwProcState=SENSOR_FACE_POS2B+1;
 				MotorSetStatus(GetMotoIdxByFiberIdx(MOTOR_RIGHT_TOP),MOTOR_HOLD);
 			}
+			#endif
 			break;
 
 		case SENSOR_ALIGN_H2A:
@@ -4368,14 +4397,16 @@ void Proc_Weld_State()
 				{
 						MoveVMotorToSpecPosition(bMode,st_swFaceY2[bMode-1]);
 				}
-				TimerToFillProcWin(10);
+				TimerToFillReferWin(10,RPOC_WIN0);
 			}
 			else
 			{
 				//MotorSetStatus(GetMotoIdxByFiberIdx(bMode),MOTOR_NO_HOLD);
 				mpDebugPrint("SENSOR_ALIGN_H2A OK");
-				g_swProcState++;
+				g_bDisplayMode=0x81;
+				st_dwProcState++;
 				MotorSetStatus(GetMotoIdxByFiberIdx(MOTOR_RIGHT_BOTTOM),MOTOR_HOLD);
+				TimerToFillReferWin(10,RPOC_WIN1);
 			}
 			break;
 
@@ -4391,13 +4422,15 @@ void Proc_Weld_State()
 				{
 					MoveVMotorToSpecPosition(bMode,st_swFaceY2[bMode-1]);
 				}
-				TimerToFillProcWin(10);
+				TimerToFillReferWin(10,RPOC_WIN1);
 			}
 			else
 			{
 				//MotorSetStatus(GetMotoIdxByFiberIdx(bMode),MOTOR_NO_HOLD);
 				mpDebugPrint("SENSOR_ALIGN_H2B OK");
-				g_swProcState++;
+				st_dwProcState++;
+				g_bDisplayMode=0x80;
+				TimerToFillReferWin(10,RPOC_WIN0);
 			}
 			break;
 
@@ -4411,12 +4444,14 @@ void Proc_Weld_State()
 				{
 						MoveVMotorByPosition(bMode,st_swFaceY20[bMode]>>1,st_swFaceY20[MOTOR_LEFT_TOP]>>1);
 				}
-				TimerToFillProcWin(10);
+				TimerToFillReferWin(10,RPOC_WIN0);
 			}
 			else
 			{
 				mpDebugPrint("SENSOR_ALIGN_H3A OK");
-				g_swProcState++;
+				st_dwProcState++;
+				g_bDisplayMode=0x81;
+				TimerToFillReferWin(10,RPOC_WIN1);
 			}
 			break;
 
@@ -4430,14 +4465,18 @@ void Proc_Weld_State()
 				{
 						MoveVMotorByPosition(bMode,st_swFaceY20[bMode]>>1,st_swFaceY20[MOTOR_LEFT_BOTTOM]>>1);
 				}
-				TimerToFillProcWin(10);
+				TimerToFillReferWin(10,RPOC_WIN1);
 			}
 			else
 			{
 				//MotorSetStatus(GetMotoIdxByFiberIdx(bMode),MOTOR_NO_HOLD);
 				mpDebugPrint("SENSOR_ALIGN_H3B OK");
-				g_swProcState++;
-				//g_swProcState=SENSOR_IDLE;
+				st_dwProcState++;
+				EventSet(UI_EVENT, EVENT_PROC_DATA);
+				//st_dwProcState=SENSOR_IDLE;
+				//if (g_psSetupMenu->bPingXianFangShi<4)
+				//	g_bDisplayMode=0x80|g_psSetupMenu->bPingXianFangShi;
+				#if 0
 				OsdLineInit();
 				pWin=(ST_IMGWIN *)&SensorInWin[0];
 				bMode=MOTOR_LEFT_TOP;
@@ -4450,7 +4489,8 @@ void Proc_Weld_State()
 				SearchLeftFiberCore(pWin,bMode);
 				bMode=MOTOR_RIGHT_BOTTOM;
 				SearchRightFiberCore(pWin,bMode);
-				xpgDelay(1000);
+				#endif
+				//xpgDelay(1000);
 			}
 			break;
 
@@ -4462,23 +4502,33 @@ void Proc_Weld_State()
 				Discharge(st_bDischargeMode,0);
 				Ui_TimerProcAdd(3000, TimerToNextState);
 			}
+			else
+			{
+				st_dwProcState++;
+				EventSet(UI_EVENT, EVENT_PROC_DATA);
+			}
 			break;
 
 		case SENSOR_DISCHARGE3:
 			if (st_bDischargeMode!=3)
 			{
+				DriveMotor(01,1,1600,8); // 27 
 				st_bDischargeMode=3;
 				Discharge(st_bDischargeMode,0);
 				//xpgDelay(10);
 				//DriveMotor(01,1,10,10);
-				DriveMotor(01,1,1600,8); // 27 
 				Ui_TimerProcAdd(6000, TimerToNextState);
+			}
+			else
+			{
+				st_dwProcState++;
+				EventSet(UI_EVENT, EVENT_PROC_DATA);
 			}
 			break;
 
 		case SENSOR_GET_LOSS:
 			SendWeldStaus(1);
-			g_swProcState=SENSOR_IDLE;
+			st_dwProcState=SENSOR_IDLE;
 			Ui_TimerProcAdd(2000, TimerToReleaseAllHold);
 			/*
 			bMode=MOTOR_LEFT_TOP;
@@ -4559,9 +4609,9 @@ void Proc_Weld_State()
 	xpgUpdatePageOsd();
 #endif
 
-	if (g_swProcState)
+	//if (st_dwProcState)
 	{
-		EventSet(UI_EVENT, EVENT_PROC_DATA);
+		//EventSet(UI_EVENT, EVENT_PROC_DATA);
 	}
 
 }
@@ -4658,9 +4708,18 @@ void TSPI_DataProc(void)
 						else
 						DriveMotor(st_bToolMotoIndex,0,st_wMotoStep[st_bToolMotoIndex-1],8);
 						#else
-						st_bFillWinFlag=FILL_WIN_UP;
-						TimerToFillProcWin(10);
-						g_dwProcWinFlag|=WIN0_CAPTURE_FLAG;
+						//st_bFillWinFlag=FILL_WIN_UP;
+						//TimerToFillProcWin(10);
+						//g_dwProcWinFlag|=WIN0_CAPTURE_FLAG;
+						if (dwHashKey == xpgHash("Auto_work") || dwHashKey == xpgHash("Manual_work"))
+						{
+							if (g_bDisplayMode<3)
+								g_bDisplayMode++;
+							else
+								g_bDisplayMode=0;
+							g_bDisplayMode |= 0x80;
+						}
+						ResetMotor();
 						#endif
 						break;
 					case 2: // start/pause
@@ -4849,7 +4908,7 @@ void TSPI_DataProc(void)
 						DriveMotor(02,1,2000,8);//RIGHT_UP_FIBER UP
 						//g_bDisplayMode=(g_bDisplayMode+1)|0x80;
 						#elif SHOW_CENTER||TEST_PLANE
-						//g_swProcState=SENSOR_IDLE;
+						//st_dwProcState=SENSOR_IDLE;
 						//ResetMotor();
 						//st_bDischargeMode=1;
 						//Discharge(st_bDischargeMode,0);
@@ -4868,8 +4927,8 @@ void TSPI_DataProc(void)
 						#elif 1
 						//AutoStartWeld();
 						//TimerToFillProcWin(10);
-						if (g_swGetCenterState)
-							g_swGetCenterState=0;
+						if (st_dwGetCenterState)
+							st_dwGetCenterState=0;
 						else
 							AutoGetFiberLowPoint();
 						#endif
@@ -4943,10 +5002,11 @@ void TSPI_DataProc(void)
 		case 0xb4:
 			if (pbTspiRxBuffer[2]==0x01)
 			{
-				if (g_swProcState)
+				if (st_dwProcState==SENSOR_DISCHARGE1 || st_dwProcState==SENSOR_DISCHARGE2 ||st_dwProcState==SENSOR_DISCHARGE3)
 				{
 					Ui_TimerProcRemove(TimerToNextState);
-					g_swProcState++;//=SENSOR_FACE_POS2A;
+					st_dwProcState++;//=SENSOR_FACE_POS2A;
+					EventSet(UI_EVENT, EVENT_PROC_DATA);
 				}
 				if (st_bAutoDischarge)
 				{
@@ -4955,14 +5015,14 @@ void TSPI_DataProc(void)
 				}
 				else
 				{
-					if (g_swGetCenterState==GET_CENTER_INIT)
+					if (st_dwGetCenterState==GET_CENTER_INIT)
 					{
-						g_swGetCenterState++;
-						TimerToFillReferWin(RPOC_WIN0,1000);
+						st_dwGetCenterState++;
+						TimerToFillReferWin(1000,RPOC_WIN0);
 					}
-					else if (g_swGetCenterState==GET_CENTER_LOW_POINT)
+					else if (st_dwGetCenterState==GET_CENTER_LOW_POINT)
 					{
-						TimerToFillReferWin(RPOC_WIN0,1000);
+						TimerToFillReferWin(1000,RPOC_WIN0);
 					}
 				}
 			}
@@ -4970,8 +5030,8 @@ void TSPI_DataProc(void)
 			{
 				//断电
 				xpgStopAllAction();
-				g_swProcState=0;
-				g_swGetCenterState=0;
+				st_dwProcState=0;
+				st_dwGetCenterState=0;
 				TurnOffBackLight();
 			}
 			break;
@@ -5743,10 +5803,10 @@ void WeldDataInit(void)
 
 #if SHOW_CENTER
 	g_bDisplayMode=0x82;
-	g_swProcState = SENSOR_IDLE;
+	st_dwProcState = SENSOR_IDLE;
 #elif TEST_PLANE
 	g_bDisplayMode=0x80;
-	g_swProcState = SENSOR_IDLE;
+	st_dwProcState = SENSOR_IDLE;
 #else
 	if (g_psSetupMenu->bPingXianFangShi<4)
 		g_bDisplayMode=0x80|g_psSetupMenu->bPingXianFangShi;
@@ -5784,13 +5844,13 @@ void WeldDataInit(void)
 	//WriteSetupChg();
 	xpgCb_AutoPowerOff(g_psSetupMenu->bAutoShutdown,g_psSetupMenu->wShutdownTime);
 
-	//ResetMotor();
+	ResetMotor();
 	if ((g_bDisplayMode&0x0f)==0)
 		st_bFillWinFlag=FILL_WIN_UP;
 	else if ((g_bDisplayMode&0x0f)==1)
 		st_bFillWinFlag=FILL_WIN_DOWN;
-	Ui_TimerProcAdd(5000, SetFillProcWinFlag);
-	Ui_TimerProcAdd(5100, GetBackgroundLevel);
+	Ui_TimerProcAdd(3000, SetFillProcWinFlag);
+	Ui_TimerProcAdd(3100, GetBackgroundLevel);
 }
 
 #endif

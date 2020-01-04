@@ -22,6 +22,7 @@ enum {
     SENSOR_DISCHARGE2,
     SENSOR_DISCHARGE3,
     SENSOR_GET_LOSS,
+    SENSOR_WELD_TOTAL,
 };
 
 //g_swAutoFocusState
