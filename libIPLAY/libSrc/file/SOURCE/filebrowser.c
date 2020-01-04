@@ -385,10 +385,10 @@ SWORD DoSearch(DRIVE * pCurDrive, BYTE bSearchType)
     dwMaxElement = FILE_LIST_SIZE - oldFilesCount;
     MP_DEBUG("%s: oldFilesCount = %u, left entries count (dwMaxElement) = %u", __FUNCTION__, oldFilesCount, dwMaxElement);
 
-#if (SONY_DCF_ENABLE)
-    if ((dwOpMode == OP_IMAGE_MODE) && (dwMaxElement < FILE_LIST_SONY_DCF_ENTRIES_THRESHOLD))
-    {
-        MP_ALERT("%s: oldFilesCount = %u, left entries (%u) < threshold (%u) => Reset whole list first ...", __FUNCTION__, oldFilesCount, dwMaxElement, FILE_LIST_SONY_DCF_ENTRIES_THRESHOLD);
+#if 0//(SONY_DCF_ENABLE)
+   // if ((dwOpMode == OP_IMAGE_MODE) && (dwMaxElement < FILE_LIST_SONY_DCF_ENTRIES_THRESHOLD))
+   // {
+    //    MP_ALERT("%s: oldFilesCount = %u, left entries (%u) < threshold (%u) => Reset whole list first ...", __FUNCTION__, oldFilesCount, dwMaxElement, FILE_LIST_SONY_DCF_ENTRIES_THRESHOLD);
 #else
     if (dwMaxElement < FILE_LIST_ENTRIES_THRESHOLD)
     {

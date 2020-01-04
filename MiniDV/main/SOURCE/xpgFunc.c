@@ -1012,7 +1012,8 @@ STREAM *GetNewCaptureHandle()
 			#if (PRODUCT_UI==UI_SURFACE)
 			handle = (STREAM *)CreatePhotoFileByIndex();
 			#else
-			handle = (STREAM *)CreateFileByTime("/DCIM/","JPG");
+			//handle = (STREAM *)CreateFileByTime("/DCIM/","JPG");
+			handle=(STREAM *)GetNewWeldPhotoHandle();
 			#endif
 		}
       return handle;

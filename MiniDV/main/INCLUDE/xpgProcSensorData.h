@@ -62,6 +62,17 @@ typedef struct {
 }STWELDSTATUS;
 
 
+//--g_dwProcWinFlag  用于拍照等标志位
+#define	WIN0_CAPTURE_FLAG										BIT0
+
+//--st_bFillWinFlag st_bNeedFillProcWin
+#define	FILL_WIN_UP														BIT0
+#define	FILL_WIN_DOWN													BIT1
+#define	FILL_WIN_UP_WAIT											BIT2
+#define	FILL_WIN_DOWN_WAIT										BIT3
+
+#define	FILL_WIN_INIT													BIT7
+
  // 0->左上  1->右上 2->左下 3->右下
 #define	MOTOR_LEFT_TOP												0
 #define	MOTOR_RIGHT_TOP												1
@@ -97,6 +108,7 @@ void MotoHoldTimeoutSet(BYTE bMotorInex,BYTE bMode);
 void Discharge(WORD wMode,BYTE bStep);
 void ShowOSDstring(void);
 
+SWORD Weld_ReadFileWeldInfo(STREAM* handle,BYTE *pbTitle,STWELDSTATUS *pWeldStatus);
 
 #endif
 

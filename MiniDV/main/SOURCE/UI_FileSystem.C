@@ -162,23 +162,22 @@ STREAM * CreateFileByTime(WORD *folderPath, BYTE *extendFileName)
 }
 
 
-STREAM * CreateFileByRtcCnt(WORD *folderPath, BYTE *extendFileName)
+STREAM * CreateFileByRtcCnt(BYTE *folderPath, BYTE *extendFileName)
 {
 	STREAM *fileHandle = (STREAM *) NULL;
 	BYTE bPathStr[MaxPathStrLen];
 	WORD wPathStr[MaxPathStrLen];
 	DWORD dwRtcCnt,i,k;
-	DWORD ret;
-	ST_SYSTEM_TIME stSystemTime;
+	int ret;
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
     if (folderPath)
     {
-        if (PathAPI__Cd_Path_UTF16(folderPath) != FS_SUCCEED)
+        if (PathAPI__Cd_Path(folderPath) != FS_SUCCEED)
         {
-            if (PathAPI__MakeDir_UTF16(folderPath) != FS_SUCCEED)
+            if (PathAPI__MakeDir(folderPath) != FS_SUCCEED)
             {
                 MP_ALERT("%s %d", __FILE__,__LINE__);
                 MP_ALERT("--E-- %s: Create folder fail !!!", __FUNCTION__);
@@ -196,9 +195,10 @@ STREAM * CreateFileByRtcCnt(WORD *folderPath, BYTE *extendFileName)
 	{
 		for (k=0;k<8;k++)
 		{
-			bPathStr[7-i]=((dwRtcCnt>>(k<<2))&0x0000000f)+0x41;// 0x41->A
+			bPathStr[7-k]=((dwRtcCnt>>(k<<2))&0x0000000f)+0x41;// 0x41->A
 		}
 		bPathStr[8]=0;
+		mp_sprintf(&bPathStr[8],".%s",extendFileName);
 		//MP_ALERT("--E-- %s: Create file:%s", __FUNCTION__,bPathStr);
 		mpx_UtilAsc2Uni(wPathStr, bPathStr, MaxPathStrLen-1);
 		ret = FileSearchLN(DriveGet(DriveCurIdGet()), wPathStr, StringLength16(wPathStr), E_BOTH_FILE_AND_DIR_TYPE);

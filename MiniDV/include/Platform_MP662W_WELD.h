@@ -236,7 +236,7 @@
 #define USB_OTG_BUF_SIZE            (200 * 1024)
 // xpg file size + 100k,  20070517 - xpg thumb dynamic allocate with mem_malloc
 #if MAKE_XPG_PLAYER
-#define XPG_BUF_SIZE                (800 * 1024)
+#define XPG_BUF_SIZE                (1024 * 1024)
 #else
 #define XPG_BUF_SIZE                0
 #endif

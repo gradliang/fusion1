@@ -39,6 +39,7 @@ static BYTE  st_bRetryTimes=0,st_bAutoDischarge=0;
 static WORD st_wDiachargeTime=0;
 SWORD g_swGetCenterState = GET_CENTER_OFF;
 SWORD g_swProcState = SENSOR_IDLE;//SENSOR_FACE_POS1A;//SENSOR_IDLE; //BIT30->PAUSE
+DWORD g_dwProcWinFlag = 0;  // 用于拍照等WIN0_CAPTURE_FLAG
 WORD g_wElectrodePos[2]={0,0};//{400,400};  //4 电极棒位置
 //SWORD g_swCenterOffset=0;  //4 电极棒位置  76
 
@@ -478,9 +479,10 @@ void TSPI_Receive_Check()
 #endif
 
 #if (PRODUCT_UI==UI_WELDING)
-#define MIN_FREE_SPACE             1000       // KB
-#define HEAD_EXT             				0x65787520  //ext 
-#define HEAD_INFO             				0x696e666f  //info
+#define MIN_FREE_SPACE             									1000       // KB
+#define WELD_FILE_INFO_LENTH             							64  //BYTE
+#define HEAD_EXT             												0x65787520  //ext 
+#define HEAD_INFO             												0x696e666f  //info
 STREAM *GetNewWeldPhotoHandle()
 {
 	STREAM *handle=NULL;
@@ -500,13 +502,13 @@ STREAM *GetNewWeldPhotoHandle()
 	return handle;
 }
 
-SWORD xpgCb_CaptureWeldToFile(ST_IMGWIN *pWin)
+SWORD Weld_CaptureFile(ST_IMGWIN *pWin)
 {
 	STREAM *handle;
 	SWORD swRet=PASS;
 	BYTE *JpegBuf = NULL,*pbBuf;
 	DWORD JpegBufSize,*pdwBuf;
-	DWORD IMG_size = 0;
+	DWORD IMG_size = 0,i;
 
 	if (DriveCurIdGet()==NULL_DRIVE)
     {
@@ -524,7 +526,7 @@ SWORD xpgCb_CaptureWeldToFile(ST_IMGWIN *pWin)
 	if (handle)
 	{
 		JpegBufSize = pWin->wWidth*pWin->wHeight*2;
-		JpegBuf = (BYTE*)ext_mem_malloc(JpegBufSize+64);
+		JpegBuf = (BYTE*)ext_mem_malloc(JpegBufSize+WELD_FILE_INFO_LENTH);
 		//encode jpeg
 		IMG_size = ImageFile_Encode_Img2Jpeg(JpegBuf, pWin);
 		if (JpegBufSize < IMG_size)
@@ -537,16 +539,24 @@ SWORD xpgCb_CaptureWeldToFile(ST_IMGWIN *pWin)
 		else
 		{
 			pbBuf=JpegBuf+IMG_size;
-			memset(pbBuf,0,64);
+			memset(pbBuf,0,WELD_FILE_INFO_LENTH);
 			pdwBuf=pbBuf;
-			//--flag
-			pdwBuf[0]=HEAD_EXT;
-			pdwBuf[1]=HEAD_INFO;
-			//--status
+			//--flag (4bytes):BYTE 0-7
+			for (i=0;i<4;i++)
+			{
+				pbBuf[i]=(HEAD_EXT>>((3-i)<<3))&0xff;
+			}
+			for (i=0;i<4;i++)
+			{
+				pbBuf[4+i]=(HEAD_INFO>>((3-i)<<3))&0xff;
+			}
+			//--标题 (11bytes):BYTE 8-17   BYTE18=0
+
+			//--status (5bytes): BYTE19-23
 			memcpy(&pbBuf[19],(BYTE *)&st_WeldStatus,sizeof (st_WeldStatus));
-			FileWrite(handle, (BYTE *) JpegBuf, IMG_size+64);
+			FileWrite(handle, (BYTE *) JpegBuf, IMG_size+WELD_FILE_INFO_LENTH);
 			FileClose(handle);
-			mpDebugPrint("-- %s:ok!", __FUNCTION__);
+			mpDebugPrint("----- %s:ok! %d/%d", __FUNCTION__,IMG_size,IMG_size+WELD_FILE_INFO_LENTH);
 		}
 
 		//free memory
@@ -561,6 +571,51 @@ SWORD xpgCb_CaptureWeldToFile(ST_IMGWIN *pWin)
 
     return FAIL;
 }
+
+SWORD Weld_ReadFileWeldInfo(STREAM* handle,BYTE *pbTitle,STWELDSTATUS *pWeldStatus)
+{
+	ST_SEARCH_INFO *pSearchInfo;
+	DRIVE *pCurDrive;
+	DWORD dwFileSize,dwLen,dwFlag0,dwFlag1;
+	BYTE *pbBuf=NULL,bHandleNull=0;
+
+	if (handle==NULL)
+	{
+		bHandleNull=1;
+		if (DriveCurIdGet()==NULL_DRIVE)
+			xpgChangeDrive(NAND);
+		pCurDrive = FileBrowserGetCurDrive();
+		pSearchInfo = (ST_SEARCH_INFO *) FileGetCurSearchInfo();
+        handle = FileListOpen(pCurDrive, pSearchInfo);
+	}
+    if (handle == NULL)
+        return FILE_NOT_FOUND;
+
+	dwFileSize = FileSizeGet(handle);
+	if (dwFileSize<WELD_FILE_INFO_LENTH)
+	{
+		FileClose(handle);
+		return FAIL;
+	}
+	pbBuf = (WORD *) ext_mem_malloc(WELD_FILE_INFO_LENTH);
+	if (pbBuf==NULL)
+	{
+		FileClose(handle);
+		return FAIL;
+	}
+	Fseek(handle, dwFileSize-WELD_FILE_INFO_LENTH, SEEK_SET);
+	dwLen = FileRead(handle, (BYTE *)pbBuf, WELD_FILE_INFO_LENTH);
+	memcpy(&dwFlag0,&pbBuf[0],4);
+	memcpy(&dwFlag1,&pbBuf[4],4);
+	mpDebugPrint("read tag %x %x filesize %d",dwFlag0,dwFlag1,dwFileSize);
+	memcpy(pbTitle,&pbBuf[8],11);
+	memcpy(pWeldStatus,&pbBuf[19],sizeof (STWELDSTATUS));
+	if (pbBuf)
+		ext_mem_free(pbBuf);
+	if (bHandleNull)
+		FileClose(handle);
+}
+
 
 #endif
 
@@ -585,9 +640,9 @@ extern BYTE g_bDisplayMode;
 #define		LEVEL_OFFSET								8         //4 亮度偏差
 
 static BYTE st_bInProcWin=0,st_bBackupChanel=0xff,st_bBackupDisplayMode=0xff;
-static BYTE st_bCacheWinNum=2,st_bFillWinFlag=0;
+static BYTE st_bCacheWinNum=2;
  // BIT7->new fill wait init IPW  BIT6->first get data BIT5->get data end        BIT3->in fill down   BIT2->in FILL UP      BIT1->need fill down   BIT0->need FILL UP  0->not need fill
-static BYTE st_bNeedFillProcWin=0; 
+static BYTE st_bNeedFillProcWin=0,st_bFillWinFlag=0; 
 static WORD st_wFiberWidth=0;
 
 BYTE g_bOPMonline=0;
@@ -900,19 +955,15 @@ void SetFillProcWinFlag(void)
 {
 	IPU *ipu = (IPU *) IPU_BASE;
 
-#if  1//PROC_SENSOR_DATA_MODE
-	if (!st_bFillWinFlag || st_bFillWinFlag>0x03)
-		st_bFillWinFlag=0x03;
-	st_bNeedFillProcWin=0x60|st_bFillWinFlag; // bit0->up win  bit1->down win   bit7->init mode
+	if (!(st_bFillWinFlag |(FILL_WIN_UP|FILL_WIN_DOWN)))
+		st_bFillWinFlag=FILL_WIN_UP|FILL_WIN_DOWN;
+	st_bNeedFillProcWin=FILL_WIN_INIT|st_bFillWinFlag; // bit0->up win  bit1->down win   bit7->init mode
 		//st_bNeedFillProcWin=0xe1; // bit0->up win  bit1->down win   bit7->init mode
 	#if (USE_IPW1_DISPLAY_MOTHOD == ENABLE) 
 			ipu->Ipu_reg_F0 &= ~BIT7;//open IPW2
 	#else
 			ipu->Ipu_reg_F0 &= ~BIT6; //open IPW1
 	#endif //--------------------------
-#else
-		st_bNeedFillProcWin=1;
-#endif
 }
 
 void TimerToFillProcWin(DWORD dwTime) // ms
@@ -989,20 +1040,20 @@ void GetBackgroundLevel(void)
 		Ui_TimerProcAdd(500, GetBackgroundLevel);
 		return;
 	}
-	if ((st_bFillWinFlag&BIT0) && !st_bBackGroundLevel[0])
+	if ((st_bFillWinFlag&FILL_WIN_UP) && !st_bBackGroundLevel[0])
 		bSensorIndex=SENSER_TOP;
-	else if ((st_bFillWinFlag&BIT1) && !st_bBackGroundLevel[1])
+	else if ((st_bFillWinFlag&FILL_WIN_DOWN) && !st_bBackGroundLevel[1])
 		bSensorIndex=SENSER_BOTTOM;
 	else if (!st_bBackGroundLevel[0])
 	{
-		st_bFillWinFlag=BIT0;
+		st_bFillWinFlag=FILL_WIN_UP;
 		TimerToFillProcWin(10);
 		Ui_TimerProcAdd(500, GetBackgroundLevel);
 		return;
 	}
 	else if (!st_bBackGroundLevel[1])
 	{
-		st_bFillWinFlag=BIT1;
+		st_bFillWinFlag=FILL_WIN_DOWN;
 		TimerToFillProcWin(10);
 		Ui_TimerProcAdd(500, GetBackgroundLevel);
 		return;
@@ -1085,17 +1136,17 @@ void GetBackgroundLevel(void)
 
 	if (!st_bBackGroundLevel[0])
 	{
-		st_bFillWinFlag=BIT0;
+		st_bFillWinFlag=FILL_WIN_UP;
 		Ui_TimerProcAdd(500, GetBackgroundLevel);
 	}
 	else if (!st_bBackGroundLevel[1])
 	{
-		st_bFillWinFlag=BIT1;
+		st_bFillWinFlag=FILL_WIN_DOWN;
 		Ui_TimerProcAdd(500, GetBackgroundLevel);
 	}
 	else
 	{
-		st_bFillWinFlag=0x03;
+		st_bFillWinFlag=FILL_WIN_UP|FILL_WIN_DOWN;
 		//Ui_TimerProcAdd(2000, AutoStartWeld);
 	}
 	TimerToFillProcWin(10);
@@ -4476,9 +4527,9 @@ void Proc_Weld_State()
 #endif
 #if 1
 	if (g_bDisplayMode==0)
-		st_bFillWinFlag=BIT0;
+		st_bFillWinFlag=FILL_WIN_UP;
 	else if (g_bDisplayMode==1)
-		st_bFillWinFlag=BIT1;
+		st_bFillWinFlag=FILL_WIN_DOWN;
 #endif
 	TimerToFillProcWin(10);
 
@@ -4530,6 +4581,21 @@ void Proc_SensorData_State()
 		return;
 	}
 	st_bInProcWin=1;
+
+	if (g_dwProcWinFlag&WIN0_CAPTURE_FLAG)
+	{
+		memset((BYTE *)&st_WeldStatus,0,sizeof (st_WeldStatus));
+		Weld_CaptureFile((ST_IMGWIN *)&SensorInWin[0]);
+		g_dwProcWinFlag&=~WIN0_CAPTURE_FLAG;
+
+		//--test code
+		BYTE pbTitle[12];
+		STWELDSTATUS WeldStatus;
+		FileBrowserResetFileList(); /* reset old file list first */
+		FileBrowserScanFileList(SEARCH_TYPE);
+		FileListSetCurIndex(FileBrowserGetTotalFile()-1);
+		Weld_ReadFileWeldInfo(NULL,pbTitle,&WeldStatus);
+	}
 
 	Proc_Weld_State();
 	Proc_GetFiberLowPoint();
@@ -4592,7 +4658,9 @@ void TSPI_DataProc(void)
 						else
 						DriveMotor(st_bToolMotoIndex,0,st_wMotoStep[st_bToolMotoIndex-1],8);
 						#else
-						xpgCb_CaptureWeldToFile((ST_IMGWIN *)&SensorInWin[0]);
+						st_bFillWinFlag=FILL_WIN_UP;
+						TimerToFillProcWin(10);
+						g_dwProcWinFlag|=WIN0_CAPTURE_FLAG;
 						#endif
 						break;
 					case 2: // start/pause
@@ -5370,30 +5438,30 @@ void CacheSensorData( BYTE bIpw2)
 		else
 			pIpwAddr=(DWORD *)&ipu->Ipu_reg_A3;
 
-		if (st_bNeedFillProcWin&0x40)
+		if (st_bNeedFillProcWin&FILL_WIN_INIT)
 		{
 			//mpDebugPrint("cache in g_bDisplayMode=%p st_bNeedFillProcWin=%p",g_bDisplayMode,st_bNeedFillProcWin);
 			st_bBackupChanel=Sensor_CurChannel_Get();
-			st_bNeedFillProcWin &=0x3f;
+			st_bNeedFillProcWin &=~FILL_WIN_INIT;
 			//st_bNeedFillProcWin |=0x20;//for stop
 		}
 
-		if (st_bNeedFillProcWin&BIT2)
+		if (st_bNeedFillProcWin&FILL_WIN_UP_WAIT)
 		{
 			if ((ipu->Ipu_reg_10A>>16)==pDstWin->wHeight)
-				st_bNeedFillProcWin &=~BIT2;
+				st_bNeedFillProcWin &=~FILL_WIN_UP_WAIT;
 			else
-				st_bNeedFillProcWin |=BIT0;
+				st_bNeedFillProcWin |=FILL_WIN_UP;
 		}
-		else if (st_bNeedFillProcWin&BIT3)
+		else if (st_bNeedFillProcWin&FILL_WIN_DOWN_WAIT)
 		{
 			if ((ipu->Ipu_reg_10A>>16)==pDstWin->wHeight)
-				st_bNeedFillProcWin &=~BIT3;
+				st_bNeedFillProcWin &=~FILL_WIN_DOWN_WAIT;
 			else
-				st_bNeedFillProcWin |=BIT1;
+				st_bNeedFillProcWin |=FILL_WIN_DOWN;
 		}
 		
-		if ((st_bNeedFillProcWin&0x03)==0x03)
+		if ((st_bNeedFillProcWin&(FILL_WIN_UP|FILL_WIN_DOWN))==(FILL_WIN_UP|FILL_WIN_DOWN))
 		{
 			//one sensor online
 				if (Sensor_CurChannel_Get())
@@ -5405,11 +5473,11 @@ void CacheSensorData( BYTE bIpw2)
 					bCacheWinIndex=1;
 				}
 		}
-		else if (st_bNeedFillProcWin&BIT1)
+		else if (st_bNeedFillProcWin&FILL_WIN_DOWN)
 		{
 				bCacheWinIndex=2;
 		}
-		else if (st_bNeedFillProcWin&BIT0)
+		else if (st_bNeedFillProcWin&FILL_WIN_UP)
 		{
 				bCacheWinIndex=1;
 		}
@@ -5444,16 +5512,16 @@ void CacheSensorData( BYTE bIpw2)
 		{
 			if (Sensor_CurChannel_Get() !=0)
 				Sensor_Channel_Set(0);
-			st_bNeedFillProcWin &=0xfe;
-			st_bNeedFillProcWin |=BIT2;
+			st_bNeedFillProcWin &=~FILL_WIN_UP;
+			st_bNeedFillProcWin |=FILL_WIN_UP_WAIT;
 			*pIpwAddr = ((DWORD) pDstWin->pdwStart| 0xA0000000);	
 		}
 		else if (bCacheWinIndex==2) // down win
 		{
 			if (Sensor_CurChannel_Get() !=1)
 				Sensor_Channel_Set(1);
-			st_bNeedFillProcWin &=0xfD;
-			st_bNeedFillProcWin |=BIT3;
+			st_bNeedFillProcWin &=~FILL_WIN_DOWN;
+			st_bNeedFillProcWin |=FILL_WIN_DOWN_WAIT;
 
 			if (st_bCacheWinNum==2)
 			{
@@ -5718,9 +5786,9 @@ void WeldDataInit(void)
 
 	//ResetMotor();
 	if ((g_bDisplayMode&0x0f)==0)
-		st_bFillWinFlag=BIT0;
+		st_bFillWinFlag=FILL_WIN_UP;
 	else if ((g_bDisplayMode&0x0f)==1)
-		st_bFillWinFlag=BIT1;
+		st_bFillWinFlag=FILL_WIN_DOWN;
 	Ui_TimerProcAdd(5000, SetFillProcWinFlag);
 	Ui_TimerProcAdd(5100, GetBackgroundLevel);
 }
