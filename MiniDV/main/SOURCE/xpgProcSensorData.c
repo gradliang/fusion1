@@ -94,7 +94,7 @@ BYTE g_bDisplayUseIpw2=1; // 0->ipw1  1->ipw2
 
 static DWORD st_dwTspiRxBufLen=0,st_dwTspiRxIndex=0;
 static BYTE *pbTspiRxBuffer=NULL,st_bTspiBusy=0,st_bTspiAbnormal=0;
-static DWORD st_bTspiTxBufLen=0;
+static DWORD st_dwTspiTxBufLen=0,st_dwTspiTxMaxLen;  //4      st_dwTspiTxMaxLen:未收到MCU回复确认长度前BIT31为1
 static BYTE *pbTspiTxBuffer=NULL,st_bTspiTxRetry=0;
 
 
@@ -188,12 +188,14 @@ void TSPI_Init(void)
 	Gpio_ConfiguraionSet(SPI_CLK_GPIO, GPIO_DEFAULT_FUNC, GPIO_INPUT_MODE, GPIO_DATA_HIGH, 1);
 	Gpio_ConfiguraionSet(SPI_DOUT_GPIO, GPIO_DEFAULT_FUNC, GPIO_INPUT_MODE, GPIO_DATA_HIGH, 1);
 	Gpio_ConfiguraionSet(SPI_DIN_GPIO, GPIO_DEFAULT_FUNC, GPIO_INPUT_MODE, GPIO_DATA_HIGH, 1);
-	if (pbTspiTxBuffer!=NULL && st_bTspiTxBufLen)
+	if (pbTspiTxBuffer!=NULL && st_dwTspiTxBufLen)
 		ext_mem_free(pbTspiTxBuffer);
-	if (st_bTspiTxBufLen<TX_BUF_NORMAL_LEN)
-		st_bTspiTxBufLen=TX_BUF_NORMAL_LEN;
-	st_bTspiTxBufLen=ALIGN_32(st_bTspiTxBufLen);
-	pbTspiRxBuffer = (BYTE *)ext_mem_malloc(st_bTspiTxBufLen);
+	if (st_dwTspiTxBufLen<TX_BUF_NORMAL_LEN)
+		st_dwTspiTxBufLen=TX_BUF_NORMAL_LEN;
+	st_dwTspiTxBufLen=ALIGN_32(st_dwTspiTxBufLen);
+	pbTspiTxBuffer = (BYTE *)ext_mem_malloc(st_dwTspiTxBufLen);
+	st_dwTspiTxMaxLen=st_dwTspiTxBufLen|BIT31;
+
 	if (pbTspiRxBuffer!=NULL && st_dwTspiRxBufLen)
 		ext_mem_free(pbTspiRxBuffer);
 	if (st_dwTspiRxBufLen<RX_BUF_NORMAL_LEN)
@@ -332,7 +334,7 @@ SWORD TSPI_SendWithAutoResend(BYTE *pbDataBuf,DWORD dwLenth )
 	SWORD swRet;
 
 	swRet=TSPI_Send(pbDataBuf,dwLenth);
-	if (swRet!=PASS  && dwLenth<=st_bTspiTxBufLen)
+	if (swRet!=PASS  && dwLenth<=st_dwTspiTxBufLen)
 	{
 		st_bTspiTxRetry=1;
 		for (i=0;i<dwLenth;i++)
@@ -606,7 +608,8 @@ SWORD Weld_ReadFileWeldInfo(STREAM* handle,BYTE *pbTitle,STWELDSTATUS *pWeldStat
 	pbBuf = (WORD *) ext_mem_malloc(WELD_FILE_INFO_LENTH);
 	if (pbBuf==NULL)
 	{
-		FileClose(handle);
+		if (bHandleNull)
+			FileClose(handle);
 		return FAIL;
 	}
 	Fseek(handle, dwFileSize-WELD_FILE_INFO_LENTH, SEEK_SET);
@@ -621,6 +624,82 @@ SWORD Weld_ReadFileWeldInfo(STREAM* handle,BYTE *pbTitle,STWELDSTATUS *pWeldStat
 	if (bHandleNull)
 		FileClose(handle);
 }
+
+static BYTE *st_pbBuf=NULL;
+static DWORD st_dwSendFileLen=0,st_dwSendFileIndex=0;
+
+void WeldSendFileTimer(void)
+{
+	DWORD dwTspiTxMaxLenth=(st_dwTspiTxMaxLen&0x7fffffff)-8,dwSendLen;
+
+	if (st_dwSendFileIndex*dwTspiTxMaxLenth>=st_dwSendFileLen)
+	{
+		ext_mem_free(st_pbBuf);
+		st_pbBuf=NULL;
+		st_dwSendFileLen=0;
+		return;
+	}
+	if (st_bTspiTxRetry)
+	{
+		if (CheckTimerAction(TSPI_TimerToResend))
+			Ui_TimerProcAdd(st_bTspiTxRetry*10, TSPI_TimerToResend);
+		return;
+	}
+	if (st_dwSendFileLen>(st_dwSendFileIndex+1)*dwTspiTxMaxLenth)
+		dwSendLen=dwTspiTxMaxLenth;
+	else
+		dwSendLen=st_dwSendFileLen-st_dwSendFileIndex*dwTspiTxMaxLenth;
+	pbTspiTxBuffer[0]=0xae;
+	pbTspiTxBuffer[1]=0;
+	pbTspiTxBuffer[2]=dwSendLen>>24;
+	pbTspiTxBuffer[3]=dwSendLen>>16;
+	pbTspiTxBuffer[4]=dwSendLen>>8;
+	pbTspiTxBuffer[5]=dwSendLen;
+	pbTspiTxBuffer[6]=1;
+	memcpy(&pbTspiTxBuffer[7],&st_pbBuf[st_dwSendFileIndex*dwTspiTxMaxLenth],dwSendLen-8);
+	TSPI_Send(pbTspiTxBuffer,dwSendLen);
+	st_dwSendFileIndex++;
+	if (st_dwSendFileIndex*dwTspiTxMaxLenth<st_dwSendFileLen)
+		Ui_TimerProcAdd(100, WeldSendFileTimer);
+	else
+	{
+		ext_mem_free(st_pbBuf);
+		st_pbBuf=NULL;
+		st_dwSendFileLen=0;
+	}
+
+}
+
+SWORD Weld_SendFileInit(DWORD dwFileIndex)
+{
+	STREAM* handle;
+	ST_SEARCH_INFO *pSearchInfo;
+	DRIVE *pCurDrive;
+	DWORD dwFileSize,dwFlag0,dwFlag1;
+
+	if (DriveCurIdGet()==NULL_DRIVE)
+	xpgChangeDrive(NAND);
+	pCurDrive = FileBrowserGetCurDrive();
+	pSearchInfo = (ST_SEARCH_INFO *) FileGetCurSearchInfo();
+	handle = FileListOpen(pCurDrive, pSearchInfo);
+    if (handle == NULL)
+        return FILE_NOT_FOUND;
+
+	dwFileSize = FileSizeGet(handle);
+	if (st_pbBuf)
+		ext_mem_free(st_pbBuf);
+	st_pbBuf = (WORD *) ext_mem_malloc(ALIGN_32(dwFileSize));
+	if (st_pbBuf==NULL)
+	{
+		FileClose(handle);
+		return FAIL;
+	}
+	st_dwSendFileLen = FileRead(handle, st_pbBuf, dwFileSize);
+	st_dwSendFileIndex=0;
+	FileClose(handle);
+	Ui_TimerProcAdd(10, WeldSendFileTimer);
+}
+
 
 SWORD Weld_FileNameToTime(DWORD dwFileIndex,DWORD *pdwRtcCnt)
 {
@@ -5074,13 +5153,29 @@ void TSPI_DataProc(void)
 				st_dwGetCenterState=0;
 				TurnOffBackLight();
 			}
-			break;
-		//复位状态
-		case 0xb5:
-			if (pbTspiRxBuffer[2]==0x01)//复位完成
+			else if (pbTspiRxBuffer[2]==0x03) 
 			{
-					//DriveMotor(01,1,200,10);
-					//DriveMotor(02,1,200,10);
+				//马达复位错误
+			}
+			else if (pbTspiRxBuffer[2]==0x04) 
+			{
+				//马达复位完成
+			}
+			break;
+		//数据回复
+		case 0xb5:
+			//复位完成
+			/*
+			if (pbTspiRxBuffer[2]==0x01)
+			{
+			}
+			*/
+			if (pbTspiRxBuffer[1]!=8)
+				break;
+			if (pbTspiRxBuffer[2]==0x02)
+			{
+				//MCU可接收的最长指令长度
+				st_dwTspiTxMaxLen=((DWORD)pbTspiRxBuffer[3]<<24)|((DWORD)pbTspiRxBuffer[4]<<16)|((DWORD)pbTspiRxBuffer[5]<<8)|((DWORD)pbTspiRxBuffer[6]);
 			}
 			break;
 		//AF镜头
@@ -5104,12 +5199,10 @@ void TSPI_DataProc(void)
 					STWELDSTATUS WeldStatus;
 					ST_SYSTEM_TIME time;
 
-					FileBrowserResetFileList(); /* reset old file list first */
-					FileBrowserScanFileList(SEARCH_TYPE);
 					if (wIndex<FileBrowserGetTotalFile())
 					{
 						FileListSetCurIndex(wIndex);
-						Weld_ReadFileWeldInfo(NULL,&pbData[9],&WeldStatus);
+						Weld_ReadFileWeldInfo(NULL,&pbData[9],&pbData[20]);
 						//--head
 						pbData[0]=0xa6;
 						pbData[1]=3+23;
@@ -5124,13 +5217,15 @@ void TSPI_DataProc(void)
 						pbData[6]=time.u08Hour;
 						pbData[7]=time.u08Minute;
 						pbData[8]=time.u08Second;
-						//--9-19
+						//--titel 9-19
 						pbData[19]=0;
+						//--WeldStatus 20-24
 						TSPI_PacketSend(pbData,0);
 					}
 				}
 				else if (pbTspiRxBuffer[2]==2)//4  查询熔接图片  
 				{
+					Weld_SendFileInit(((WORD)pbTspiRxBuffer[3]<<8)|pbTspiRxBuffer[4]);
 				}
 			}
 			break;
@@ -5910,6 +6005,10 @@ void WeldDataInit(void)
 	sprintf(st_bStrInfo, "Moto:%d", st_bToolMotoIndex);
 #endif
 
+//--查询MCU可接收的最长指令长度
+	SendCmdA4GetStaus(0x0a);
+
+//--读取电极棒位置
 	if (g_psSetupMenu->wElectrodePos[0]>0  && g_psSetupMenu->wElectrodePos[0]<pWin->wWidth)
 	{
 		g_wElectrodePos[0]=g_psSetupMenu->wElectrodePos[0];
