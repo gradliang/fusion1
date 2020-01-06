@@ -195,7 +195,7 @@ STREAM * CreateFileByRtcCnt(BYTE *folderPath, BYTE *extendFileName)
 	{
 		for (k=0;k<8;k++)
 		{
-			bPathStr[7-k]=((dwRtcCnt>>(k<<2))&0x0000000f)+0x41;// 0x41->A
+			bPathStr[k]=((dwRtcCnt>>(k<<2))&0x0000000f)+0x41;// 0x41->A
 		}
 		bPathStr[8]=0;
 		mp_sprintf(&bPathStr[8],".%s",extendFileName);

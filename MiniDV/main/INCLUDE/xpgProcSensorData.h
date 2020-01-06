@@ -101,7 +101,7 @@ typedef struct {
 
 
 void TSPI_DataProc();
-SWORD TSPI_PacketSend(BYTE *pbDataBuf,DWORD dwLenth ,BYTE bCheckResend);
+SWORD TSPI_PacketSend(BYTE *pbDataBuf,BYTE bCheckResend);
 //void DriveMotor(BYTE bMotorInex,BYTE bSpeed,BYTE bDiv,BYTE bDirector,WORD wStep);
 void DriveMotor(BYTE bMotorInex,BYTE bDirection,WORD wStep,BYTE bSpeed);
 void MotorSetStatus(BYTE bMotorInex,BYTE bMode);
@@ -109,6 +109,7 @@ void MotoHoldTimeoutSet(BYTE bMotorInex,BYTE bMode);
 void Discharge(WORD wMode,BYTE bStep);
 void ShowOSDstring(void);
 
+SWORD Weld_CaptureFile(ST_IMGWIN *pWin);
 SWORD Weld_ReadFileWeldInfo(STREAM* handle,BYTE *pbTitle,STWELDSTATUS *pWeldStatus);
 
 #endif

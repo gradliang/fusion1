@@ -477,7 +477,7 @@ SWORD  SetupSendTouchVoice(void)
 		bTxData[2]=g_psSetupMenu->bVolume;
 	else
 		bTxData[2]=0;
-	return TSPI_PacketSend(bTxData,bTxData[1],0);
+	return TSPI_PacketSend(bTxData,0);
 }
 
 SWORD  SetupSendSmartBacklight(void)
@@ -488,7 +488,7 @@ SWORD  SetupSendSmartBacklight(void)
 	bTxData[1]=3+2;
 	bTxData[2]=0x07;
 	bTxData[3]=g_psSetupMenu->bSmartBacklight;
-	return TSPI_PacketSend(bTxData,bTxData[1],0);
+	return TSPI_PacketSend(bTxData,0);
 }
 
 SWORD  SetupSendCloudOnOff(void)
@@ -499,7 +499,7 @@ SWORD  SetupSendCloudOnOff(void)
 	bTxData[1]=3+2;
 	bTxData[2]=0x02;
 	bTxData[3]=g_psSetupMenu->bCloudMode;
-	return TSPI_PacketSend(bTxData,bTxData[1],0);
+	return TSPI_PacketSend(bTxData,0);
 }
 
 SWORD  SetupSendRedPen(void)
@@ -514,7 +514,7 @@ SWORD  SetupSendRedPen(void)
 		bTxData[4]=g_psUnsaveParam->wRedPenTime;
 	else
 		bTxData[4]=0;
-	return TSPI_PacketSend(bTxData,bTxData[1],0);
+	return TSPI_PacketSend(bTxData,0);
 }
 
 SWORD  SetupSendHot(void)
@@ -529,7 +529,7 @@ SWORD  SetupSendHot(void)
 	bTxData[2] |=g_psSetupMenu->bReSuGuanSheZhi<<4;
 	bTxData[3]=g_psSetupMenu->wJiaReWenDu;
 	bTxData[4]=g_psSetupMenu->wJiaReShiJian;
-	return TSPI_PacketSend(bTxData,bTxData[1],0);
+	return TSPI_PacketSend(bTxData,0);
 }
 
 #pragma alignvar(4)
