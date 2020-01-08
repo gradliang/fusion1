@@ -50,7 +50,6 @@ static BYTE st_bTopVMotorUpValue=0,st_bBottomVMotorUpValue=0,st_bVmotorMoveTimes
 static SWORD st_swLastProcStep[2]={0,0},st_swVmotorMoveValue[2][VMOTOR_CNT]; // 0->up motor  1->down motor
 //--st_wDiachargeRunTime 前一次放电时间  st_wDischargeTimeSet:设置需要放电的时间或模式
 static WORD st_wDiachargeRunTime=0,st_wDischargeTimeSet=0; // st_wDischargeTimeSet:0->off 
-static BYTE st_bBackGroundLevel[SENSER_TOTAL]={0,0};//FIBER_EDGE_LEVEL
 static BYTE st_bFiberBlackLevel[SENSER_TOTAL]={0xff,0xff};
 
 static STWELDSTATUS st_WeldStatus;
@@ -973,7 +972,7 @@ SDWORD GetFiberBlackLevel(ST_IMGWIN *pWin,BYTE bMode)
 				//mpDebugPrintN("%02x ",*pbWinBuffer);
 				if (wValidPixelCnt)
 				{
-					if (*pbWinBuffer < st_bBackGroundLevel[bSensorIndex] )
+					if (*pbWinBuffer < g_psSetupMenu->bBackGroundLevel[bSensorIndex] )
 					{
 						wValidPixelCnt++;
 						dwValidlevelcnt+=*pbWinBuffer;
@@ -987,7 +986,7 @@ SDWORD GetFiberBlackLevel(ST_IMGWIN *pWin,BYTE bMode)
 				}
 				else
 				{
-					if (*pbWinBuffer < st_bBackGroundLevel[bSensorIndex]  )
+					if (*pbWinBuffer < g_psSetupMenu->bBackGroundLevel[bSensorIndex]  )
 					{
 						bContinueCnt++;
 						dwValidlevelcnt+=*pbWinBuffer;
@@ -1155,17 +1154,17 @@ void GetBackgroundLevel(void)
 		Ui_TimerProcAdd(500, GetBackgroundLevel);
 		return;
 	}
-	if ((st_bFillWinFlag&FILL_WIN_UP) && !st_bBackGroundLevel[0])
+	if ((st_bFillWinFlag&FILL_WIN_UP) && !g_psSetupMenu->bBackGroundLevel[0])
 		bSensorIndex=SENSER_TOP;
-	else if ((st_bFillWinFlag&FILL_WIN_DOWN) && !st_bBackGroundLevel[1])
+	else if ((st_bFillWinFlag&FILL_WIN_DOWN) && !g_psSetupMenu->bBackGroundLevel[1])
 		bSensorIndex=SENSER_BOTTOM;
-	else if (!st_bBackGroundLevel[0])
+	else if (!g_psSetupMenu->bBackGroundLevel[0])
 	{
 		TimerToFillReferWin(10,FILL_WIN_UP);
 		Ui_TimerProcAdd(500, GetBackgroundLevel);
 		return;
 	}
-	else if (!st_bBackGroundLevel[1])
+	else if (!g_psSetupMenu->bBackGroundLevel[1])
 	{
 		TimerToFillReferWin(10,FILL_WIN_DOWN);
 		Ui_TimerProcAdd(500, GetBackgroundLevel);
@@ -1217,15 +1216,16 @@ void GetBackgroundLevel(void)
 
 		if (wValidCnt>pWin->wHeight/16 &&  bValidLevel>8) // /8
 		{
-			st_bBackGroundLevel[bSensorIndex]=(DWORD)bValidLevel*7/10; // ok1
-			//st_bBackGroundLevel[bSensorIndex]=(DWORD)bValidLevel/4; //7/10
+			g_psSetupMenu->bBackGroundLevel[bSensorIndex]=(DWORD)bValidLevel*7/10; // ok1
+			//g_psSetupMenu->bBackGroundLevel[bSensorIndex]=(DWORD)bValidLevel/4; //7/10
+			WriteSetupChg();
 			break;
 		}
 	}
 
-	if (st_bBackGroundLevel[bSensorIndex])
+	if (g_psSetupMenu->bBackGroundLevel[bSensorIndex])
 	{
-		mpDebugPrint("---GetBackgroundLevel:%d %p->%p",bSensorIndex,bValidLevel,st_bBackGroundLevel[bSensorIndex]);
+		mpDebugPrint("---GetBackgroundLevel:%d %p->%p",bSensorIndex,bValidLevel,g_psSetupMenu->bBackGroundLevel[bSensorIndex]);
 		//DriveMotor(03,0,300,8);//RIGHT_DOWN_FIBER  DOWN
 	}
 	else
@@ -1242,17 +1242,17 @@ void GetBackgroundLevel(void)
 		}
 		else
 		{
-			st_bBackGroundLevel[bSensorIndex]=FIBER_EDGE_LEVEL;
-			mpDebugPrint("----st_bBackGroundLevel[%d] FAIL !!!reset to %p ",bSensorIndex,st_bBackGroundLevel[bSensorIndex]);
+			g_psSetupMenu->bBackGroundLevel[bSensorIndex]=FIBER_EDGE_LEVEL;
+			mpDebugPrint("----g_psSetupMenu->bBackGroundLevel[%d] FAIL !!!reset to %p ",bSensorIndex,g_psSetupMenu->bBackGroundLevel[bSensorIndex]);
 		}
 	}
 
-	if (!st_bBackGroundLevel[0])
+	if (!g_psSetupMenu->bBackGroundLevel[0])
 	{
 		st_bFillWinFlag=FILL_WIN_UP;
 		Ui_TimerProcAdd(500, GetBackgroundLevel);
 	}
-	else if (!st_bBackGroundLevel[1])
+	else if (!g_psSetupMenu->bBackGroundLevel[1])
 	{
 		st_bFillWinFlag=FILL_WIN_DOWN;
 		Ui_TimerProcAdd(500, GetBackgroundLevel);
@@ -1269,8 +1269,8 @@ void GetBackgroundLevel(void)
 BYTE GetBackgrounValue(BYTE bSensorIndex,BYTE bMode) //bMode:0>enter level  1->work level
 {
 	if (bMode)
-		return st_bBackGroundLevel[bSensorIndex]/2;
-	return st_bBackGroundLevel[bSensorIndex]/3;
+		return g_psSetupMenu->bBackGroundLevel[bSensorIndex]/2;
+	return g_psSetupMenu->bBackGroundLevel[bSensorIndex]/3;
 }
 
 SWORD SearchLeftFiberBottomEdge(ST_IMGWIN *pWin,BYTE bMode)
@@ -1317,7 +1317,7 @@ SWORD SearchLeftFiberBottomEdge(ST_IMGWIN *pWin,BYTE bMode)
 			//mpDebugPrintN("%02x ",*pbWinBuffer);
 			if (wValidPixelCnt)
 			{
-				if (*pbWinBuffer < st_bBackGroundLevel[bSensorIndex]*2/3 )
+				if (*pbWinBuffer < g_psSetupMenu->bBackGroundLevel[bSensorIndex]*2/3 )
 				{
 					//Idu_OsdPaintArea(x>>1, y, 2, 1, OSD_COLOR_BLUE);
 					//mpDebugPrintN("%02x ",*pbWinBuffer);
@@ -1328,7 +1328,7 @@ SWORD SearchLeftFiberBottomEdge(ST_IMGWIN *pWin,BYTE bMode)
 			}
 			else
 			{
-				if (*pbWinBuffer < st_bBackGroundLevel[bSensorIndex]*2/3)
+				if (*pbWinBuffer < g_psSetupMenu->bBackGroundLevel[bSensorIndex]*2/3)
 				{
 					//Idu_OsdPaintArea(x>>1, y, 2, 1, OSD_COLOR_BLUE);
 					//mpDebugPrintN("%02x ",*pbWinBuffer);
@@ -1466,7 +1466,7 @@ SWORD SearchLeftFiberCenter(ST_IMGWIN *pWin,BYTE bMode)
 		else
 			return FAIL;
 	}
-	bBlackBG=st_bFiberBlackLevel[bSensorIndex]; // st_bBackGroundLevel[bSensorIndex]
+	bBlackBG=st_bFiberBlackLevel[bSensorIndex]; // g_psSetupMenu->bBackGroundLevel[bSensorIndex]
 	bBlackBG++;
 
 	for (i=0;i<X_VALID_SUM;i++)
@@ -1988,14 +1988,14 @@ SDWORD SearchTopEdge(ST_IMGWIN *pWin,SWORD swStartX,SWORD swXEnd,SWORD swStartY,
 			//mpDebugPrintN("%02x ",*pbWinBuffer);
 			if (wValidPixelCnt)
 			{
-				if (*pbWinBuffer < st_bBackGroundLevel[bSensorIndex]/2)
+				if (*pbWinBuffer < g_psSetupMenu->bBackGroundLevel[bSensorIndex]/2)
 					wValidPixelCnt++;
 				else
 					wInvalidPixelCnt++;
 			}
 			else
 			{
-				if (*pbWinBuffer < st_bBackGroundLevel[bSensorIndex]/2)
+				if (*pbWinBuffer < g_psSetupMenu->bBackGroundLevel[bSensorIndex]/2)
 				{
 					bContinueCnt++;
 					if (bContinueCnt>Y_CONTINUE_VALID_SUM)
@@ -2113,14 +2113,14 @@ SWORD SearchLeftFiberFaceAndTopEdge(ST_IMGWIN *pWin,BYTE bMode,BYTE bScanEdge)
 			//mpDebugPrintN("%02x ",*pbWinBuffer);
 			if (wValidPixelCnt)
 			{
-				if (*pbWinBuffer < st_bBackGroundLevel[bSensorIndex]*2/3 )
+				if (*pbWinBuffer < g_psSetupMenu->bBackGroundLevel[bSensorIndex]*2/3 )
 					wValidPixelCnt++;
 				else
 					wInvalidPixelCnt++;
 			}
 			else
 			{
-				if (*pbWinBuffer < st_bBackGroundLevel[bSensorIndex] *2/3 )
+				if (*pbWinBuffer < g_psSetupMenu->bBackGroundLevel[bSensorIndex] *2/3 )
 				{
 					bContinueCnt++;
 					if (bContinueCnt>Y_CONTINUE_VALID_SUM)
@@ -2206,7 +2206,7 @@ SWORD SearchLeftFiberFaceAndTopEdge(ST_IMGWIN *pWin,BYTE bMode,BYTE bScanEdge)
 			y=swStartY;
 		pbWinBuffer = (BYTE *) pWin->pdwStart+x+y*pWin->dwOffset;
 
-		mpDebugPrint("x=%d y=%d valid=%d/%d  level=%02x",x>>1,y,wValidPixelCnt,wInvalidPixelCnt,st_bBackGroundLevel[bSensorIndex] );
+		mpDebugPrint("x=%d y=%d valid=%d/%d  level=%02x",x>>1,y,wValidPixelCnt,wInvalidPixelCnt,g_psSetupMenu->bBackGroundLevel[bSensorIndex] );
 		while (y<swYEnd)
 		{
 			mpDebugPrintN("%08x ",*(pbWinBuffer));
@@ -2245,14 +2245,14 @@ SWORD SearchLeftFiberFaceAndTopEdge(ST_IMGWIN *pWin,BYTE bMode,BYTE bScanEdge)
 				//mpDebugPrintN("%02x ",*pbWinBuffer);
 				if (wValidPixelCnt)
 				{
-					if (*pbWinBuffer < st_bBackGroundLevel[bSensorIndex]/2)
+					if (*pbWinBuffer < g_psSetupMenu->bBackGroundLevel[bSensorIndex]/2)
 						wValidPixelCnt++;
 					else
 						wInvalidPixelCnt++;
 				}
 				else
 				{
-					if (*pbWinBuffer < st_bBackGroundLevel[bSensorIndex] /2)
+					if (*pbWinBuffer < g_psSetupMenu->bBackGroundLevel[bSensorIndex] /2)
 					{
 						bContinueCnt++;
 						if (bContinueCnt>Y_CONTINUE_VALID_SUM)
@@ -2377,14 +2377,14 @@ SWORD SearchRightFiberBottomEdge(ST_IMGWIN *pWin,BYTE bMode)
 			//mpDebugPrintN("%02x ",*pbWinBuffer);
 			if (wValidPixelCnt)
 			{
-				if (*pbWinBuffer < st_bBackGroundLevel[bSensorIndex]/2)
+				if (*pbWinBuffer < g_psSetupMenu->bBackGroundLevel[bSensorIndex]/2)
 					wValidPixelCnt++;
 				else
 					wInvalidPixelCnt++;
 			}
 			else
 			{
-				if (*pbWinBuffer < st_bBackGroundLevel[bSensorIndex] /2)
+				if (*pbWinBuffer < g_psSetupMenu->bBackGroundLevel[bSensorIndex] /2)
 				{
 					bContinueCnt++;
 					if (bContinueCnt>Y_CONTINUE_VALID_SUM)
@@ -2519,7 +2519,7 @@ SWORD SearchRightFiberCenter(ST_IMGWIN *pWin,BYTE bMode)
 		else
 			return FAIL;
 	}
-	bBlackBG=st_bFiberBlackLevel[bSensorIndex]; // st_bBackGroundLevel[bSensorIndex]
+	bBlackBG=st_bFiberBlackLevel[bSensorIndex]; // g_psSetupMenu->bBackGroundLevel[bSensorIndex]
 	bBlackBG++;
 
 	for (i=0;i<X_VALID_SUM;i++)
@@ -2678,14 +2678,14 @@ SWORD SearchRightFiberFaceAndTopEdge(ST_IMGWIN *pWin,BYTE bMode,BYTE bScanFace)
 			//mpDebugPrintN("%02x ",*pbWinBuffer);
 			if (wValidPixelCnt)
 			{
-				if (*pbWinBuffer < st_bBackGroundLevel[bSensorIndex]/2)
+				if (*pbWinBuffer < g_psSetupMenu->bBackGroundLevel[bSensorIndex]/2)
 					wValidPixelCnt++;
 				else
 					wInvalidPixelCnt++;
 			}
 			else
 			{
-				if (*pbWinBuffer < st_bBackGroundLevel[bSensorIndex]/2)
+				if (*pbWinBuffer < g_psSetupMenu->bBackGroundLevel[bSensorIndex]/2)
 				{
 					bContinueCnt++;
 					if (bContinueCnt>Y_CONTINUE_VALID_SUM)
@@ -2798,14 +2798,14 @@ SWORD SearchRightFiberFaceAndTopEdge(ST_IMGWIN *pWin,BYTE bMode,BYTE bScanFace)
 				//mpDebugPrintN("%02x ",*pbWinBuffer);
 				if (wValidPixelCnt)
 				{
-					if (*pbWinBuffer < st_bBackGroundLevel[bSensorIndex]/2)
+					if (*pbWinBuffer < g_psSetupMenu->bBackGroundLevel[bSensorIndex]/2)
 						wValidPixelCnt++;
 					else
 						wInvalidPixelCnt++;
 				}
 				else
 				{
-					if (*pbWinBuffer < st_bBackGroundLevel[bSensorIndex]/2)
+					if (*pbWinBuffer < g_psSetupMenu->bBackGroundLevel[bSensorIndex]/2)
 					{
 						bContinueCnt++;
 						if (bContinueCnt>Y_CONTINUE_VALID_SUM)
@@ -3416,7 +3416,7 @@ SWORD SearchWholeFiber(ST_IMGWIN *pWin)
 		while (y<swYEnd)
 		{
 			//mpDebugPrintN("%02x ",*pbWinBuffer);
-			if (*pbWinBuffer < st_bBackGroundLevel[bSensorIndex]  )
+			if (*pbWinBuffer < g_psSetupMenu->bBackGroundLevel[bSensorIndex]  )
 			{
 				bContinueCnt++;
 				if (bContinueCnt>=Y_CONTINUE_VALID_SUM)
@@ -3519,7 +3519,7 @@ SWORD SearchFiberLowPoint(ST_IMGWIN *pWin,BYTE bWinIndex)
 			while (y<swYEnd)
 			{
 				//mpDebugPrintN("%02x ",*pbWinBuffer);
-				if (*pbWinBuffer < st_bBackGroundLevel[bSensorIndex] )
+				if (*pbWinBuffer < g_psSetupMenu->bBackGroundLevel[bSensorIndex] )
 				{
 					wContinueCnt++;
 					if (wContinueCnt>=Y_CONTINUE_VALID_SUM)
@@ -3644,7 +3644,7 @@ SWORD SearchFiberLowPoint(ST_IMGWIN *pWin,BYTE bWinIndex)
 						wUnContinue=0;
 						while (y<swYEnd)
 						{
-							if (*pbWinBuffer < st_bBackGroundLevel[bSensorIndex] )
+							if (*pbWinBuffer < g_psSetupMenu->bBackGroundLevel[bSensorIndex] )
 							{
 								Idu_OsdPaintArea(x>>1, y, 2, 1, OSD_COLOR_RED);
 								wContinueCnt++;
@@ -3752,7 +3752,7 @@ void Proc_GetFiberLowPoint(void)
 			st_bRetryTimes=1;
 			st_wDischargeTimeSet=500;
 			Idu_OsdErase();
-			if (!st_bBackGroundLevel[0] ||!st_bBackGroundLevel[1])
+			if (!g_psSetupMenu->bBackGroundLevel[0] ||!g_psSetupMenu->bBackGroundLevel[1])
 			{
 				MP_DEBUG("GetFiberLowPoint   BackGroundLevel error !");
 				st_dwGetCenterState=GET_CENTER_OFF;
@@ -3927,7 +3927,7 @@ void ProcAFData()
 	bCnt=0;
 	for (;y<swEndY;y++)
 	{
-		if (*pbWinBuffer>st_bBackGroundLevel[0])
+		if (*pbWinBuffer>g_psSetupMenu->bBackGroundLevel[0])
 		{
 			bCnt++;
 			if (bCnt==4)
@@ -4046,7 +4046,7 @@ void Proc_AutoFocus()
 				bCnt=0;
 				for (;y<swEndY;y++)
 				{
-					if (*pbWinBuffer<st_bBackGroundLevel[0])
+					if (*pbWinBuffer<g_psSetupMenu->bBackGroundLevel[0])
 					{
 						bCnt++;
 						if (bCnt==4)
@@ -4065,7 +4065,7 @@ void Proc_AutoFocus()
 					bCnt=0;
 					for (;y<swEndY;y++)
 					{
-						if (*pbWinBuffer>st_bBackGroundLevel[0])
+						if (*pbWinBuffer>g_psSetupMenu->bBackGroundLevel[0])
 						{
 							bCnt++;
 							if (bCnt==4)
@@ -4745,8 +4745,8 @@ void Proc_SensorData_State()
 	SWORD swRet,swPos1,swPos2;
 	BYTE bMode=0; //4 0->左上  1->右上 2->左下 3->右下
 
-	//mpDebugPrint("P %p %d %p",st_bBackGroundLevel[1],st_bInProcWin,st_bNeedFillProcWin);
-	if (!st_bBackGroundLevel[1])
+	//mpDebugPrint("P %p %d %p",g_psSetupMenu->bBackGroundLevel[1],st_bInProcWin,st_bNeedFillProcWin);
+	if (!g_psSetupMenu->bBackGroundLevel[1])
 		return ;
 	if (st_bInProcWin || st_bNeedFillProcWin)
 	{
@@ -4954,7 +4954,7 @@ void TSPI_DataProc(void)
 							mpDebugPrint(" motor %d hold on",index);
 						}
 						*/
-						//st_bBackGroundLevel[bSensorIndex] =0;
+						//g_psSetupMenu->bBackGroundLevel[bSensorIndex] =0;
 						//Ui_TimerProcAdd(100, GetBackgroundLevel);
 						#else
 						if (dwHashKey == xpgHash("Auto_work") || dwHashKey == xpgHash("Manual_work"))
@@ -6028,8 +6028,11 @@ void WeldDataInit(void)
 		st_bFillWinFlag=FILL_WIN_UP;
 	else if ((g_bDisplayMode&0x0f)==1)
 		st_bFillWinFlag=FILL_WIN_DOWN;
-	Ui_TimerProcAdd(3000, SetFillProcWinFlag);
-	Ui_TimerProcAdd(3100, GetBackgroundLevel);
+	if (!g_psSetupMenu->bBackGroundLevel[0]||!g_psSetupMenu->bBackGroundLevel[1])
+	{
+		Ui_TimerProcAdd(3000, SetFillProcWinFlag);
+		Ui_TimerProcAdd(3100, GetBackgroundLevel);
+	}
 }
 
 #endif

@@ -29,7 +29,7 @@ ST_SETUP_MENU *g_psSetupMenu = &g_sSetupMenu;
 static ST_UNSAVE_PARAM g_sUnsaveParam;
 ST_UNSAVE_PARAM *g_psUnsaveParam = &g_sUnsaveParam;
 
-DWORD gSetupMenuValue[SETTING_NUMBER+8];
+//DWORD gSetupMenuValue[SETTING_NUMBER+8];
 
 
 //--下面三个函数要对应增加或改动
@@ -40,6 +40,7 @@ void GetDefaultSetupMenuValue(void)
 	memset(&g_sSetupMenu,0, sizeof(g_sSetupMenu));
 
 	g_psSetupMenu->dwSetupFlag=USER_SET_TAG;
+	g_psSetupMenu->dwSetupVersion=SETUP_STRUCT_CHANGE_TIMES;
 	g_psSetupMenu->dwSetupLenth=sizeof(ST_SETUP_MENU);
 
     // system data **************************************************************
@@ -111,6 +112,7 @@ void GetDefaultSetupMenuValue(void)
     g_psSetupMenu->wLockedTimes = 200;
     g_psSetupMenu->sdwRtcOffset = 0;
     memset(g_psSetupMenu->bMADarry, 0, 6);
+    memset(g_psSetupMenu->bBackGroundLevel, 0, 2);
     
 #endif	
 }
@@ -118,96 +120,40 @@ void GetDefaultSetupMenuValue(void)
 #if 1
 void Update_gSetupMenuValue(void)
 {
+	DWORD i;
+	BYTE *pbdata=(BYTE *)&g_sSetupMenu;
 
-	*(gSetupMenuValue + 7) = 0x00000001;                  //SETUP_INIT_BIT;
+	g_psSetupMenu->dwSetupChecksum=0;
+	for (i=4;i<sizeof(ST_SETUP_MENU);i++)
+		g_psSetupMenu->dwSetupChecksum+=pbdata[i];
+    MP_DEBUG("Update checksum %p",g_psSetupMenu->dwSetupChecksum);
 
-#if 1
-	if (sizeof(g_sSetupMenu)>(SETTING_NUMBER<<2))
-	{
-		mpDebugPrint("Update_gSetupMenuValue  %d/%d",sizeof(g_sSetupMenu),SETTING_NUMBER<<2);
-		mpDebugPrint("!!!!!please add   SETTING_NUMBER");
-		while (1);
-	}
-	*(gSetupMenuValue + 8)  = SETUP_STRUCT_CHANGE_TIMES;
-	//*(gSetupMenuValue + )  =  ;  reserver
-    memcpy(&gSetupMenuValue[12], &g_sSetupMenu, sizeof(g_sSetupMenu));
-
-#else
-//	*(gSetupMenuValue + 8)  = (DWORD) g_psSetupMenu->bUsbdMode;
-#if  (PRODUCT_UI==UI_WELDING)
-	*(gSetupMenuValue + 9)  =  g_psSetupMenu->wElectrodePos[0];
-	*(gSetupMenuValue + 10)  =  g_psSetupMenu->wElectrodePos[1];
-#if 0
-    *(gSetupMenuValue + 11)  =  g_psSetupMenu->bEnableIcon_LaLiCeShi;
-    *(gSetupMenuValue + 12)  =  g_psSetupMenu->bEnableIcon_DuanMianJianCe;
-    *(gSetupMenuValue + 13)  =  g_psSetupMenu->bEnableIcon_ZiDongDuiJiao;
-    *(gSetupMenuValue + 14)  =  g_psSetupMenu->bEnableIcon_JiaoDuJianCe;
-    *(gSetupMenuValue + 15)  =  g_psSetupMenu->bEnableIcon_BaoCunTuXiang;
-    *(gSetupMenuValue + 16)  =  g_psSetupMenu->bEnableIcon_HuiChenJianCe;
-    *(gSetupMenuValue + 17)  =  g_psSetupMenu->bEnableIcon_RongJieZanTing;
-    *(gSetupMenuValue + 18)  =  g_psSetupMenu->bEnableIcon_YunDuanCeLiang;
-#endif
-    *(gSetupMenuValue + 19)  =  (int)(g_psSetupMenu->bCustomizeIcon[0]);
-    *(gSetupMenuValue + 20)  =  (int)(g_psSetupMenu->bCustomizeIcon[1]);
-    *(gSetupMenuValue + 21)  =  (int)(g_psSetupMenu->bCustomizeIcon[2]);
-    *(gSetupMenuValue + 22)  =  (int)(g_psSetupMenu->bCustomizeIcon[3]);
-    *(gSetupMenuValue + 23)  =  (int)(g_psSetupMenu->bCustomizeIcon[4]);
-    *(gSetupMenuValue + 24)  =  (int)(g_psSetupMenu->bCustomizeIcon[5]);
-    *(gSetupMenuValue + 25)  =  g_psSetupMenu->bCustomizeIconEnable[0];
-    *(gSetupMenuValue + 26)  =  g_psSetupMenu->bCustomizeIconEnable[1];
-    *(gSetupMenuValue + 27)  =  g_psSetupMenu->bCustomizeIconEnable[2];
-    *(gSetupMenuValue + 28)  =  g_psSetupMenu->bCustomizeIconEnable[3];
-    *(gSetupMenuValue + 29)  =  g_psSetupMenu->bCustomizeIconEnable[4];
-    *(gSetupMenuValue + 30)  =  g_psSetupMenu->bCustomizeIconEnable[5];
-    *(gSetupMenuValue + 31)  =  g_psSetupMenu->bPreHotEnable;
-    *(gSetupMenuValue + 32)  =  g_psSetupMenu->bHotUpMode;
-    *(gSetupMenuValue + 33)  =  g_psSetupMenu->bRongJieZhiLiang ;
-    *(gSetupMenuValue + 34)  =  g_psSetupMenu->bDuiXianFangShi ;
-    *(gSetupMenuValue + 35)  =  g_psSetupMenu->bPingXianFangShi ;
-    *(gSetupMenuValue + 36)  =  g_psSetupMenu->bCurrFusionMode;
-    memcpy(&gSetupMenuValue[37], &(g_psSetupMenu->SM), 11 * 4);
-    memcpy(&gSetupMenuValue[48], &(g_psSetupMenu->MM), 11 * 4);
-    memcpy(&gSetupMenuValue[59], &(g_psSetupMenu->DS), 11 * 4);
-    memcpy(&gSetupMenuValue[70], &(g_psSetupMenu->NZ), 11 * 4);
-    memcpy(&gSetupMenuValue[81], &(g_psSetupMenu->BIF), 11 * 4);
-    memcpy(&gSetupMenuValue[92], &(g_psSetupMenu->CZ1), 11 * 4);
-    memcpy(&gSetupMenuValue[103], &(g_psSetupMenu->CZ2), 11 * 4);
-    memcpy(&gSetupMenuValue[114], &(g_psSetupMenu->AUTO), 11 * 4);
-    *(gSetupMenuValue + 125) = g_psSetupMenu->bReSuGuanSheZhi;
-    *(gSetupMenuValue + 126) = g_psSetupMenu->wJiaReWenDu;
-    *(gSetupMenuValue + 127) = g_psSetupMenu->wJiaReShiJian;
-    *(gSetupMenuValue + 128) = g_psSetupMenu->wShutdownTime;
-    *(gSetupMenuValue + 129) = g_psSetupMenu->b24HourFormat;
-    *(gSetupMenuValue + 130) = g_psSetupMenu->bDataFormatMMDDYYYY;
-    *(gSetupMenuValue + 131) = g_psSetupMenu->bSmartBacklight;
-    *(gSetupMenuValue + 132) = g_psSetupMenu->bAutoShutdown;
-    *(gSetupMenuValue + 133) = g_psSetupMenu->bToundSoundEnable;
-    *(gSetupMenuValue + 134) = g_psSetupMenu->bLanguage;
-    *(gSetupMenuValue + 135) = g_psSetupMenu->bEnableOpenPassword;
-    *(gSetupMenuValue + 136) = g_psSetupMenu->bEnableHirePassword;
-    memcpy(gSetupMenuValue + 137, g_psSetupMenu->srtOpenPassword, 8);
-    memcpy(gSetupMenuValue + 139, g_psSetupMenu->strHirePassword, 8);
-    *(gSetupMenuValue + 141) = g_psSetupMenu->wLockedTimes;
-    
-	MP_DEBUG("--Write setup value  g_psSetupMenu->wElectrodePos[1]=%d",g_psSetupMenu->wElectrodePos[1] );
-#endif
-#endif
 }
 
 void Recover_g_psSetupMenu(void)
 {
+	DWORD i,dwCheckSum;
+	BYTE *pbdata=(BYTE *)&g_sSetupMenu;
+
     MP_DEBUG("%s() ", __FUNCTION__);
 
-    if (gSetupMenuValue[7]!=0x00000001)
+    if (g_psSetupMenu->dwSetupFlag!=USER_SET_TAG||g_psSetupMenu->dwSetupVersion!=SETUP_STRUCT_CHANGE_TIMES)
     {
-        mpDebugPrint("Recover_g_psSetupMenu error! %p",gSetupMenuValue[7]);
-        return; //Jasmine 4/26 CH: if init bit not equal to 1, then use default value only
+        mpDebugPrint("Recover_g_psSetupMenu error! falg:%p version %d/%d",g_psSetupMenu->dwSetupFlag,g_psSetupMenu->dwSetupVersion,SETUP_STRUCT_CHANGE_TIMES);
+        GetDefaultSetupMenuValue();
     }
+	else
+	{
+		dwCheckSum=0;
+		for (i=4;i<sizeof(ST_SETUP_MENU);i++)
+			dwCheckSum+=pbdata[i];
+		if (dwCheckSum!=g_psSetupMenu->dwSetupChecksum)
+		{
+	        mpDebugPrint("Recover_g_psSetupMenu Checksum error! %p/%p",dwCheckSum,g_psSetupMenu->dwSetupChecksum);
+	        GetDefaultSetupMenuValue();
+		}
+	}
 
-#if 1
-	*(gSetupMenuValue + 8)  = SETUP_STRUCT_CHANGE_TIMES;
-	//*(gSetupMenuValue + )  =  ;  reserver
-    memcpy(&g_sSetupMenu, &gSetupMenuValue[12], sizeof(g_sSetupMenu));
 
     if (g_psSetupMenu->wElectrodePos[0]  > 0x0fff)
         g_psSetupMenu->wElectrodePos[0] =  0;
@@ -216,69 +162,6 @@ void Recover_g_psSetupMenu(void)
 	if (g_psSetupMenu->bVolume>15)
 		g_psSetupMenu->bVolume=15;
 
-#else
- //   if (gSetupMenuValue[8] <= SETUP_MENU_USBD_MODE_UAVC)
- //       g_psSetupMenu->bUsbdMode = (BYTE) gSetupMenuValue[8];
-#if  (PRODUCT_UI==UI_WELDING)
-    if (gSetupMenuValue[9] <= 0x0fff)
-        g_psSetupMenu->wElectrodePos[0] =  gSetupMenuValue[9];
-    if (gSetupMenuValue[10] <= 0x0fff)
-        g_psSetupMenu->wElectrodePos[1] =  gSetupMenuValue[10];
-#if 0
-    g_psSetupMenu->bEnableIcon_LaLiCeShi = gSetupMenuValue[11];
-    g_psSetupMenu->bEnableIcon_DuanMianJianCe = gSetupMenuValue[12];
-    g_psSetupMenu->bEnableIcon_ZiDongDuiJiao = gSetupMenuValue[13];
-    g_psSetupMenu->bEnableIcon_JiaoDuJianCe = gSetupMenuValue[14];
-    g_psSetupMenu->bEnableIcon_BaoCunTuXiang = gSetupMenuValue[15];
-    g_psSetupMenu->bEnableIcon_HuiChenJianCe = gSetupMenuValue[16];
-    g_psSetupMenu->bEnableIcon_RongJieZanTing = gSetupMenuValue[17];
-    g_psSetupMenu->bEnableIcon_YunDuanCeLiang = gSetupMenuValue[18];
-#endif
-    g_psSetupMenu->bCustomizeIcon[0] = (int)(gSetupMenuValue[19]);
-    g_psSetupMenu->bCustomizeIcon[1] = (int)(gSetupMenuValue[20]);
-    g_psSetupMenu->bCustomizeIcon[2] = (int)(gSetupMenuValue[21]);
-    g_psSetupMenu->bCustomizeIcon[3] = (int)(gSetupMenuValue[22]);
-    g_psSetupMenu->bCustomizeIcon[4] = (int)(gSetupMenuValue[23]);
-    g_psSetupMenu->bCustomizeIcon[5] = (int)(gSetupMenuValue[24]);
-    g_psSetupMenu->bCustomizeIconEnable[0] = gSetupMenuValue[25];
-    g_psSetupMenu->bCustomizeIconEnable[1] = gSetupMenuValue[26];
-    g_psSetupMenu->bCustomizeIconEnable[2] = gSetupMenuValue[27];
-    g_psSetupMenu->bCustomizeIconEnable[3] = gSetupMenuValue[28];
-    g_psSetupMenu->bCustomizeIconEnable[4] = gSetupMenuValue[29];
-    g_psSetupMenu->bCustomizeIconEnable[5] = gSetupMenuValue[30];
-    g_psSetupMenu->bPreHotEnable = gSetupMenuValue[31];
-    g_psSetupMenu->bHotUpMode = gSetupMenuValue[32];
-    g_psSetupMenu->bRongJieZhiLiang = gSetupMenuValue[33];
-    g_psSetupMenu->bDuiXianFangShi = gSetupMenuValue[34];
-    g_psSetupMenu->bPingXianFangShi = gSetupMenuValue[35];
-    g_psSetupMenu->bCurrFusionMode = gSetupMenuValue[36];
-    memcpy(&(g_psSetupMenu->SM), &gSetupMenuValue[37], 11 * 4);
-    memcpy(&(g_psSetupMenu->MM), &gSetupMenuValue[48], 11 * 4);
-    memcpy(&(g_psSetupMenu->DS), &gSetupMenuValue[59], 11 * 4);
-    memcpy(&(g_psSetupMenu->NZ), &gSetupMenuValue[70], 11 * 4);
-    memcpy(&(g_psSetupMenu->BIF), &gSetupMenuValue[81], 11 * 4);
-    memcpy(&(g_psSetupMenu->CZ1), &gSetupMenuValue[92], 11 * 4);
-    memcpy(&(g_psSetupMenu->CZ2), &gSetupMenuValue[103], 11 * 4);
-    memcpy(&(g_psSetupMenu->AUTO), &gSetupMenuValue[114], 11 * 4);
-    g_psSetupMenu->bReSuGuanSheZhi = gSetupMenuValue[125];
-    g_psSetupMenu->wJiaReWenDu = gSetupMenuValue[126];
-    g_psSetupMenu->wJiaReShiJian = gSetupMenuValue[127];
-    g_psSetupMenu->wShutdownTime = gSetupMenuValue[128];
-    g_psSetupMenu->b24HourFormat = gSetupMenuValue[129];
-    g_psSetupMenu->bDataFormatMMDDYYYY = gSetupMenuValue[130];
-    g_psSetupMenu->bSmartBacklight = gSetupMenuValue[131];
-    g_psSetupMenu->bAutoShutdown = gSetupMenuValue[132];
-    g_psSetupMenu->bToundSoundEnable = gSetupMenuValue[133];
-    g_psSetupMenu->bLanguage = gSetupMenuValue[134];
-    g_psSetupMenu->bEnableOpenPassword = gSetupMenuValue[135];
-    g_psSetupMenu->bEnableHirePassword = gSetupMenuValue[136];
-    memcpy(g_psSetupMenu->srtOpenPassword, &gSetupMenuValue[137], 8);
-    memcpy(g_psSetupMenu->strHirePassword, &gSetupMenuValue[139], 8);
-    g_psSetupMenu->wLockedTimes = gSetupMenuValue[141];
-    
-	MP_DEBUG("--Read setup value  g_psSetupMenu->wElectrodePos[1]=%d",g_psSetupMenu->wElectrodePos[1] );
-#endif
-#endif
 }
 
 
@@ -294,7 +177,7 @@ int PutDefaultSetupMenuValue(void)
         return FAIL;
     }
 
-    Sys_SettingTablePut("MPST", gSetupMenuValue, sizeof(gSetupMenuValue));
+    Sys_SettingTablePut("MPST", &g_sSetupMenu, sizeof(ST_SETUP_MENU));
     MP_DEBUG("setting.sys put succeed");
 
     if(retVal = Sys_SettingTableClose() == FAIL)                                // save setting table to system drive
@@ -320,10 +203,10 @@ SDWORD GetSetupMenuValue(void)
 
     MP_DEBUG("setting.sys open succeed");
 
-    if ((retVal = Sys_SettingTableGet("MPST", gSetupMenuValue, sizeof(gSetupMenuValue))) == 0)   // No setting.sys exist, build it
+    if ((retVal = Sys_SettingTableGet("MPST", &g_sSetupMenu, sizeof(ST_SETUP_MENU))) == 0)   // No setting.sys exist, build it
     {
         GetDefaultSetupMenuValue();
-        Sys_SettingTablePut("MPST", gSetupMenuValue, sizeof(gSetupMenuValue));
+        Sys_SettingTablePut("MPST", &g_sSetupMenu, sizeof(ST_SETUP_MENU));
         MP_DEBUG("setting.sys put succeed");
 
     }
@@ -356,7 +239,7 @@ SDWORD PutSetupMenuValue(void)
         return FAIL;
     }
 
-    Sys_SettingTablePut("MPST", gSetupMenuValue, sizeof(gSetupMenuValue));
+    Sys_SettingTablePut("MPST", &g_sSetupMenu, sizeof(ST_SETUP_MENU));
     MP_DEBUG("setting.sys put succeed");
 
     if(retVal = Sys_SettingTableClose() == FAIL)                                // save setting table to system drive

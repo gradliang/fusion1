@@ -142,9 +142,10 @@ extern ST_UNSAVE_PARAM *g_psUnsaveParam;
 
 typedef struct ST_SETUP_MENU_SETTING_VALUE
 {
-	DWORD dwSetupFlag; //Must be 1st
-	DWORD dwSetupLenth; //Must be 2nd
-	DWORD dwSetupChecksum; //Must be 3nd
+	DWORD dwSetupChecksum; //Must be 1nd
+	DWORD dwSetupFlag; 
+	DWORD dwSetupLenth; 
+	DWORD dwSetupVersion;
 
     // USBD mode
     BYTE bUsbdMode;
@@ -209,6 +210,7 @@ typedef struct ST_SETUP_MENU_SETTING_VALUE
     WORD wLockedTimes;                  // 锁定熔接次数
     SDWORD sdwRtcOffset;                  //4 本地时间与云端时间差异
     BYTE bMADarry[6];            			//MAD 码
+    BYTE bBackGroundLevel[2];            			//4  两个摄像头的背景亮度值
     
 #endif
 
