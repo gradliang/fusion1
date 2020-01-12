@@ -8,17 +8,18 @@ enum {
     SENSOR_IDLE,
     SENSOR_FACE_POS1A,
     SENSOR_FACE_POS1B,
-    //SENSOR_ALIGN_H1A,
-    //SENSOR_ALIGN_H1B,
     SENSOR_DISCHARGE1,
     SENSOR_AUTO_FOCUS,
     SENSOR_GET_ANGLE,
-    SENSOR_FACE_POS2A,
-    SENSOR_FACE_POS2B,
+    SENSOR_FACE_POS2A,	//TOP SENSOR
+    SENSOR_FACE_POS2B,  // BOTTOM  SENSOR
+    SENSOR_ALIGN_H1A,
+    SENSOR_ALIGN_H1B,
     SENSOR_ALIGN_H2A,
     SENSOR_ALIGN_H2B,
     SENSOR_ALIGN_H3A,
     SENSOR_ALIGN_H3B,
+    SENSOR_PAUSE,
     SENSOR_DISCHARGE2,
     SENSOR_DISCHARGE3,
     SENSOR_GET_LOSS,
@@ -91,6 +92,12 @@ typedef struct {
 #define	VMOTOR_CNT														3 
 //  累计多少个黑边有效点
 #define	PIXEL_BLACK_CNT												10
+//端面最大对齐次数
+#define   POS_RETRY_TIMES											10
+#define   ALIGN_HORIZONTAL_REDO_TIMES				2
+
+#define   ALIGN_DEMO_MODE											1
+
 //string lenth
 #define	POS_STR_LEN														16
 
