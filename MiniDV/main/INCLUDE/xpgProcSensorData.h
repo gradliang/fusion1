@@ -114,6 +114,9 @@ void DriveMotor(BYTE bMotorInex,BYTE bDirection,WORD wStep,BYTE bSpeed);
 void MotorSetStatus(BYTE bMotorInex,BYTE bMode);
 void MotoHoldTimeoutSet(BYTE bMotorInex,BYTE bMode);
 void Discharge(WORD wMode,BYTE bStep);
+#if TEST_PLANE||ALIGN_DEMO_MODE
+void  PutAdjOsdString();
+#endif
 void ShowOSDstring(void);
 
 SWORD Weld_CaptureFile(ST_IMGWIN *pWin);
