@@ -1262,7 +1262,7 @@ void SendCmdPowerOff()
 	bTxData[0]=0x98;
 	bTxData[1]=3+1;
 	bTxData[2]=0;
-	return TSPI_PacketSend(bTxData,0);
+	TSPI_PacketSend(bTxData,0);
 }
 
 void xpgCb_AutoPowerOff(BYTE bEnable,DWORD dwTime)
@@ -1278,7 +1278,7 @@ void xpgCb_AutoPowerOff(BYTE bEnable,DWORD dwTime)
 	}
 }
 //--≤È—Ø÷∏¡Ó
-void SendCmdA4GetStaus(BYTE bCmd)
+SWORD SendCmdA4GetStaus(BYTE bCmd)
 {
 	BYTE bTxData[8];
 

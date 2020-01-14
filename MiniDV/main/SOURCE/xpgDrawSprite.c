@@ -3828,6 +3828,7 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
     char * text = "";
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
     DWORD dwListId = pstSprite->m_dwTypeIndex;
+	register STXPGBROWSER *pstBrowser = g_pstBrowser;
     
     if (dwHashKey == xpgHash("SetYun"))
     {
@@ -4158,10 +4159,10 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             pstItems = cloudOpmData;
         }
 
-        if ((*pdwPageId) * 5 + dwListId >= *pdwTotal)
+        if ((*pdwPageId) * pstBrowser->wListCount + dwListId >= *pdwTotal)
             return PASS;
         
-        curItem = & pstItems[(*pdwPageId) * 5 + dwListId];
+        curItem = & pstItems[(*pdwPageId) * pstBrowser->wListCount + dwListId];
         SetCurrIduFontID(FONT_ID_HeiTi16);
         Idu_PrintString(pWin, curItem->itemName, pstSprite->m_wPx, pstSprite->m_wPy + 20, 0, 0);
         sprintf(tempbuf, "[%04d/%d/%d %02d:%02d:%02d]", curItem->year, curItem->month, curItem->day, curItem->hour, curItem->minute, curItem->second);

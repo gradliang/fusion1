@@ -203,7 +203,7 @@ SWORD xpgGotoPage(DWORD dwPage)  //Mason 20060619  //From Athena
         MP_ALERT("-E- xpg goto page 0");
         return FAIL;
     }
-    BYTE bPrevPageMode = pstMovie->m_pstCurPage->m_bPageMode;
+    //BYTE bPrevPageMode = pstMovie->m_pstCurPage->m_bPageMode;
     pstMovie->m_wPrevPage = pstMovie->m_wCurPage;
    // Idu_OsdErase();
    xpgGotoNewPageInit(pstMovie->m_wCurPage,dwPage);

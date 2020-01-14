@@ -1490,6 +1490,7 @@ SWORD touchSprite_Selector(STXPGSPRITE * sprite, WORD x, WORD y)
 {
     DWORD dwSelectorId = sprite->m_dwTypeIndex;
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
+	register STXPGBROWSER *pstBrowser = g_pstBrowser;
     mpDebugPrint("touchSprite_Selector  %d", sprite->m_dwTypeIndex);
     
     if (dwHashKey == xpgHash("FuncSet"))
@@ -1571,16 +1572,24 @@ SWORD touchSprite_Selector(STXPGSPRITE * sprite, WORD x, WORD y)
     {
         if (dwSelectorId == 0)
         {
-            xpgPreactionAndGotoPage("opmList1");
-            xpgUpdateStage();
+			xpgPreactionAndGotoPage("opmList1");
+			pstBrowser->wListCount = 5;
+			pstBrowser->wListIndex= 0;
+			pstBrowser->wIndex= 0;
+			pstBrowser->wCount= OpmGetTotalNumber(0x02);
+			xpgUpdateStage();
         }
     }
     else if (dwHashKey == xpgHash("opm2"))
     {
         if (dwSelectorId == 0)
         {
-            xpgPreactionAndGotoPage("opmList2");
-            xpgUpdateStage();
+			xpgPreactionAndGotoPage("opmList2");
+			pstBrowser->wListCount = 5;
+			pstBrowser->wListIndex= 0;
+			pstBrowser->wIndex= 0;
+			pstBrowser->wCount= OpmGetTotalNumber(0x04);
+			xpgUpdateStage();
         }
     }
     

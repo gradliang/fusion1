@@ -30,7 +30,10 @@ static ST_UNSAVE_PARAM g_sUnsaveParam;
 ST_UNSAVE_PARAM *g_psUnsaveParam = &g_sUnsaveParam;
 
 //DWORD gSetupMenuValue[SETTING_NUMBER+8];
-
+void ResetUnsaveparam(void)
+{
+	memset(&g_sUnsaveParam,0, sizeof(g_sUnsaveParam));
+}
 
 //--下面三个函数要对应增加或改动
 void GetDefaultSetupMenuValue(void)
@@ -109,7 +112,7 @@ void GetDefaultSetupMenuValue(void)
     g_psSetupMenu->bEnableHirePassword = 0;
     memset(g_psSetupMenu->srtOpenPassword, 0, 8);
     memset(g_psSetupMenu->strHirePassword, 0, 8);
-    g_psSetupMenu->wLockedTimes = 200;
+    g_psSetupMenu->wLockedTimes = 0;
     g_psSetupMenu->sdwRtcOffset = 0;
     memset(g_psSetupMenu->bMADarry, 0, 6);
     memset(g_psSetupMenu->bBackGroundLevel, 0, 2);
@@ -126,7 +129,7 @@ void Update_gSetupMenuValue(void)
 	g_psSetupMenu->dwSetupChecksum=0;
 	for (i=4;i<sizeof(ST_SETUP_MENU);i++)
 		g_psSetupMenu->dwSetupChecksum+=pbdata[i];
-    MP_DEBUG("Update checksum %p",g_psSetupMenu->dwSetupChecksum);
+    MP_DEBUG("Update checksum %p  size=%d",g_psSetupMenu->dwSetupChecksum,sizeof(g_sSetupMenu));
 
 }
 
@@ -330,9 +333,8 @@ void SetupMenuInit(void)
     MP_DEBUG("-%s() -", __FUNCTION__);
 	GetDefaultSetupMenuValue();
 	GetSetupMenuValue();
+	ResetUnsaveparam();
 	SetupFunctionEffect();
-
-
 }
 
 

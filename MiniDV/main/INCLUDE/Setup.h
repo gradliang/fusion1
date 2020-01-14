@@ -134,6 +134,12 @@ typedef struct {
     BYTE bRedPenHZ;
     BYTE bRedPenTimerEnable;
     WORD wRedPenTime;
+//温度压力电量环境亮度
+    BYTE bTemperatureInhome[2];
+    BYTE bTemperatureOuthome[2];
+    BYTE bHumidity;
+    BYTE bPressure[2];
+    BYTE bBattery;
 
 }ST_UNSAVE_PARAM;
 extern ST_UNSAVE_PARAM *g_psUnsaveParam;
@@ -208,9 +214,13 @@ typedef struct ST_SETUP_MENU_SETTING_VALUE
     char srtOpenPassword[8];            // 开机密码  
     char strHirePassword[8];            // 租借密码  
     WORD wLockedTimes;                  // 锁定熔接次数
+    WORD wUsedTimes;                  // 熔接次数
+    BYTE bHireTime[3];           			//4 租借时间
+    BYTE bLocked;                     		//4 远程锁定
     SDWORD sdwRtcOffset;                  //4 本地时间与云端时间差异
     BYTE bMADarry[6];            			//MAD 码
     BYTE bBackGroundLevel[2];            			//4  两个摄像头的背景亮度值
+    BYTE bElectrodeInfo[15];            			//4  电击棒信息
     
 #endif
 

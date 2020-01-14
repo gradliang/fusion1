@@ -43,7 +43,6 @@ WORD g_wElectrodePos[2]={356,356};  //4 电极棒位置
 //SWORD g_swCenterOffset=0;  //4 电极棒位置  76
 
 static SWORD st_swFaceX[MOTOR_NUM]={-1,-1,-1,-1};
-static SWORD st_swFacexCurPos[MOTOR_NUM]={-1,-1,-1,-1},st_swLastPos[MOTOR_NUM]={-1,-1,-1,-1};
 static SWORD st_swFaceY1[MOTOR_NUM]={-1,-1,-1,-1},st_swFaceY2[MOTOR_NUM]={-1,-1,-1,-1},st_swFaceY20[MOTOR_NUM]={-1,-1,-1,-1},st_swFaceY3[MOTOR_NUM]={-1,-1,-1,-1}; //4  上中下  
 static BYTE st_bDirectionArry[MOTOR_NUM],st_bMotorBaseStep[4]={15,15,30,30},st_bBaseRetryArry[MOTOR_NUM],st_bMotorHold=0,st_bMotorStaus=0;// 0->STOP 1->RUN BIT0
 static BYTE st_bTopVMotorUpValue=0,st_bBottomVMotorUpValue=0,st_bVmotorMoveTimes[2]={0};
@@ -69,6 +68,56 @@ BYTE g_bDisplayUseIpw2=1; // 0->ipw1  1->ipw2
 
 #endif
 
+#if 1 //OPM
+//实时申请,前一个SEG为HEAD，HEAD内每个DWORD为有效SEG数
+static BYTE* st_pOpmLocalBuf=NULL,* st_pOpmCloudBuf=NULL;
+
+/**
+ *
+ * @param   bMode:  0x01 本地实时数据 0x02本地存储数据 0x03 云端实时数据 0x04 云端历史数据
+ *
+ * @return   : success for resource data else return AK_NULL
+ *
+ */
+void OpmBufferRelease(void)
+{
+	if (st_pOpmLocalBuf)
+		ext_mem_free(st_pOpmLocalBuf);
+	if (st_pOpmCloudBuf)
+		ext_mem_free(st_pOpmCloudBuf);
+}
+
+BYTE *OpmGetbuffer(BYTE bMode) //bMode
+{
+	if (bMode==0x02)
+	{
+		if (st_pOpmLocalBuf==NULL)
+			st_pOpmLocalBuf = (BYTE *)ext_mem_malloc((OPM_SEGMEN_NUM+1)*OPM_SEGMEN_LEN);
+		return st_pOpmLocalBuf;
+	}
+	else if (bMode==0x04)
+	{
+		if (st_pOpmCloudBuf==NULL)
+			st_pOpmCloudBuf = (BYTE *)ext_mem_malloc((OPM_SEGMEN_NUM+1)*OPM_SEGMEN_LEN);
+		return st_pOpmCloudBuf;
+	}
+
+	return NULL;
+
+}
+
+DWORD OpmGetTotalNumber(BYTE bMode)
+{
+	DWORD *pdwHead;
+	
+	if (pdwHead=OpmGetbuffer(bMode))
+	{
+		return *pdwHead;
+	}
+
+	return 0;
+}
+#endif
 
 #if TSPI_ENBALE
 #define  TX_BUFFER_LENTH								16
@@ -720,6 +769,168 @@ SWORD Weld_FileNameToTime(DWORD dwFileIndex,DWORD *pdwRtcCnt)
 	return PASS;
 }
 
+#if 0
+#define OPM_LOCAL_FILE_NAME     "opmlocal"
+#define OPM_LOCAL_FILE_EXT        "dat"
+#define OPM_LOCAL_FLAG             0x6f706d31 // opm1
+
+int OpmLocalRead()
+{
+    DRIVE *sysDrv;
+    BYTE  sysDrvId = SYS_DRV_ID;
+    DWORD confirm_1, confirm_2;
+    DWORD value_1, value_2, updateValue;
+    DWORD *ptr32;
+    SDWORD retVal = PASS;
+    DRIVE_PHY_DEV_ID phyDevID = DriveIndex2PhyDevID(sysDrvId);
+	STREAM* sHandle = NULL;
+	DWORD fileSize;
+	DWORD dwFlag;
+	BOOL checkTimes = 1,bNewfile=0;
+	STRECORD  record;
+
+    if (sysDrvId == NULL_DRIVE)
+    {
+        MP_ALERT("--E-- %s: Invalid System Drive ID (= %d) defined ! => use current drive instead ...", __FUNCTION__, SYS_DRV_ID);
+        sysDrvId = DriveCurIdGet(); /* use current drive */
+        if (sysDrvId == NULL_DRIVE)
+        {
+            MP_ALERT("%s: --E-- Current drive is NULL !!! Abort !!!", __FUNCTION__);
+            return FALSE;
+        }
+        MP_DEBUG("Using current drive-%s !!!", DriveIndex2DrvName(sysDrvId));
+    }
+	sysDrv = DriveGet(sysDrvId);
+	DirReset(sysDrv);
+
+	if (FileSearch(sysDrv, OPM_LOCAL_FILE_NAME, OPM_LOCAL_FILE_EXT, E_FILE_TYPE) != FS_SUCCEED)
+	{
+		MP_DEBUG("record1.sys is not found in drive-%s !! Create it now.", DriveIndex2DrvName(sysDrvId));
+		if (CreateFile(sysDrv, OPM_LOCAL_FILE_NAME, OPM_LOCAL_FILE_EXT) != FS_SUCCEED)
+		{
+			MP_ALERT("-E- record1.sys in drive-%s can't be created!!!", DriveIndex2DrvName(sysDrvId));
+			retVal = FAIL;
+			goto _OPEN_END;
+		}
+		else
+			bNewfile=1;
+	}
+
+      sHandle = FileOpen(sysDrv);
+      fileSize = FileSizeGet(sHandle);
+      if (fileSize < 4)
+      {
+			swRet = DeleteFile(sHandle);
+          goto _OPEN_END;
+      }
+      
+
+      Fseek(sHandle, 0, SEEK_SET);
+      if (FileRead(sHandle, (BYTE *) &dwFlag, 4) != 4)
+      {
+          retVal = FAIL;
+          goto _OPEN_END;
+      }
+
+      if (dwFlag != OPM_LOCAL_FLAG)
+      {
+          MP_ALERT("-E- record1.sys flag error.");
+          goto _OPEN_END;
+      }
+
+      ClearAllRecord();
+      
+      while (FileRead(sHandle, (BYTE *) &record, sizeof(record)) == sizeof(record))
+      {
+          AddRecord(&record);
+      }
+      
+_OPEN_END:
+      if (sHandle != NULL)
+          FileClose(sHandle);
+
+    return retVal;
+}
+
+int SaveRecordToFile()
+{
+    DRIVE *sysDrv;
+    BYTE  sysDrvId = SYS_DRV_ID;
+    DWORD confirm_1, confirm_2;
+    DWORD value_1, value_2, updateValue;
+    DWORD *ptr32;
+    SDWORD retVal = PASS;
+    DRIVE_PHY_DEV_ID phyDevID = DriveIndex2PhyDevID(sysDrvId);
+
+    //if ((phyDevID != DEV_NAND) && (phyDevID != DEV_SPI_FLASH))
+    if (sysDrvId == NULL_DRIVE)
+    {
+        MP_ALERT("--E-- %s: Invalid System Drive ID (= %d) defined ! => use current drive instead ...", __FUNCTION__, SYS_DRV_ID);
+        sysDrvId = DriveCurIdGet(); /* use current drive */
+
+        if (sysDrvId == NULL_DRIVE)
+        {
+            MP_ALERT("%s: --E-- Current drive is NULL !!! Abort !!!", __FUNCTION__);
+            return FALSE;
+        }
+
+        MP_ALERT("Using current drive-%s !!!", DriveIndex2DrvName(sysDrvId));
+    }
+
+
+    {
+        DWORD i;
+        STREAM* sHandle = NULL;
+        DWORD fileSize;
+        DWORD dwFlag = RECORD_FLAG;
+        BOOL checkTimes = 1;
+
+STTAB_OPEN_START:
+        sysDrv = DriveGet(sysDrvId);
+		DirReset(sysDrv);
+
+        // record1.sys
+        if (FileSearch(sysDrv, RECORD_TABLE_PATH_1, RECORD_TABLE_EXT, E_FILE_TYPE) != FS_SUCCEED)
+        {
+            MP_DEBUG("record1.sys is not found in drive-%s !! Create it now.", DriveIndex2DrvName(sysDrvId));
+            if (CreateFile(sysDrv, RECORD_TABLE_PATH_1, RECORD_TABLE_EXT) != FS_SUCCEED)
+            {
+                MP_ALERT("-E- record1.sys in drive-%s can't be created!!!", DriveIndex2DrvName(sysDrvId));
+                retVal = FAIL;
+                goto _OPEN_END;
+            }
+        }
+
+        sHandle = FileOpen(sysDrv);
+        
+        fileSize = FileSizeGet(sHandle);
+        if (fileSize < 4)
+        {
+            goto _OPEN_END;
+        }
+
+        if (FileWrite(sHandle, &dwFlag, 4) != 4)
+        {
+            MP_ALERT("write record1.sys error.");
+            goto _OPEN_END;
+        }
+
+        for (i = 0; i < GetRecordTotal(); i++)
+        {
+            STRECORD* pstRecord = GetRecord(i);
+            FileWrite(sHandle, pstRecord, sizeof(STRECORD));
+        }
+        
+_OPEN_END:
+        if (sHandle != NULL)
+            FileClose(sHandle);
+    }
+
+    return retVal;
+}
+#endif
+
+
 #endif
 
 
@@ -776,8 +987,6 @@ void ResetFiberPara(void)
 	for (i=0;i<MOTOR_NUM;i++)
 	{
 		//st_swFaceX[i]=-1;
-		st_swFacexCurPos[i]=-1;
-		st_swLastPos[i]=-1;
 		//st_swFaceY1[i]=-1;
 		//st_swFaceY2[i]=-1;
 		//st_swFaceY20[i]=-1;
@@ -1075,11 +1284,6 @@ void AutoStartWeld()
 		st_dwProcState=SENSOR_FACE_POS1A;
 		g_bDisplayMode=0x80;
 		st_wDischargeTimeSet=0;
-		for (i=0;i<MOTOR_NUM;i++)
-		{
-			st_swFacexCurPos[i]=-1;
-			st_swLastPos[i]=-1;
-		}
 		TimerToFillProcWin(10);
 	}
 	else
@@ -1105,8 +1309,6 @@ mpDebugPrint("Weld_StartPause- %p",st_dwProcState);
 		st_wDischargeTimeSet=0;
 		for (i=0;i<MOTOR_NUM;i++)
 		{
-			st_swFacexCurPos[i]=-1;
-			st_swLastPos[i]=-1;
 			st_swFaceX[i]=-1;
 			st_swFaceY1[i]=-1;
 			st_swFaceY2[i]=-1;
@@ -2293,7 +2495,7 @@ SWORD SearchRightFiberBottomEdge(ST_IMGWIN *pWin,BYTE bMode)
 {
 	DWORD dwOffset;
 	WORD wValidPixelCnt,wInvalidPixelCnt,wXValidArry[X_SCAN_MAX_SUM],wYValidStartArry[X_SCAN_MAX_SUM],wYStartIndex;
-	SWORD i,x,y,swXstart,swStartY,swYEnd,swYValidStartAver;
+	SWORD i,x,y,swXstart,swXEnd,swStartY,swYEnd,swYValidStartAver;
 	BYTE *pbWinBuffer,*pbWinTmpBuf,bContinueCnt,bSensorIndex;
 
 	if ((DWORD)pWin==(DWORD)&SensorInWin[1])
@@ -2324,7 +2526,11 @@ SWORD SearchRightFiberBottomEdge(ST_IMGWIN *pWin,BYTE bMode)
 	wYStartIndex=0;
 
 	swXstart=dwOffset-4;
-	for (x=swXstart;x>0;x-=X_STEP)
+	if (st_swFaceX[bMode]>0)
+		swXEnd=st_swFaceX[bMode]<<1;
+	else
+		swXEnd=0;
+	for (x=swXstart;x>swXEnd;x-=X_STEP)
 	{
 		wValidPixelCnt=0;
 		wInvalidPixelCnt=0;
@@ -3065,7 +3271,6 @@ SWORD MoveHMotorToSpecPosition(BYTE bSensorIndex,SWORD swSx,SWORD swTx)
 	swDiffX=swTx-swSx;
 	if (ABS(swDiffX)<=X_SHAKE)
 	{
-		st_swFacexCurPos[bSensorIndex]=swTx;
 		//MotorSetStatus(bMotorInex,MOTOR_NO_HOLD);
 		return PASS;
 	}
@@ -3180,7 +3385,6 @@ SWORD MoveVMotorToSpecPosition(BYTE bFiberIndex,SWORD swSx,SWORD swTx)
 		return FAIL;
 	if (ABS(swDiffX)<1)
 	{
-		st_swFacexCurPos[bFiberIndex]=swTx;
 		//MotorSetStatus(bMotorInex,MOTOR_NO_HOLD);
 		return PASS;
 	}
@@ -4707,10 +4911,66 @@ void Proc_SensorData_State()
 
 }
 
+//------TSPI通讯回复
+
+//--锁定信息
+void TspiSendLockInfo(void)
+{
+	BYTE bTxData[8];
+
+	bTxData[0]=0xaa;
+	bTxData[1]=3+4;
+	if ( g_psSetupMenu->wLockedTimes)
+	{
+		bTxData[2]=2;
+		bTxData[3]=g_psSetupMenu->wLockedTimes>>8;
+		bTxData[4]=g_psSetupMenu->wLockedTimes&0x00ff;
+		bTxData[5]=0;
+	}
+	else
+	{
+		bTxData[2]=1;
+		bTxData[3]=g_psSetupMenu->bHireTime[0];
+		bTxData[4]=g_psSetupMenu->bHireTime[1];
+		bTxData[5]=g_psSetupMenu->bHireTime[2];
+	}
+	TSPI_PacketSend(bTxData,1);
+}
+//--电击棒信息
+void TspiSendElectrodeInfo(void)
+{
+	BYTE bTxData[18];
+
+	bTxData[0]=0xa8;
+	bTxData[1]=3+15;
+	memcpy(&bTxData[2],&g_psSetupMenu->bElectrodeInfo[0],15);
+	TSPI_PacketSend(bTxData,1);
+}
+//--RTC
+void TspiSendRTC(void)
+{
+	BYTE bTxData[10];
+	ST_SYSTEM_TIME curTime;
+
+	bTxData[0]=0x99;
+	bTxData[1]=3+6;
+	SystemTimeGet(&curTime);
+	bTxData[2]=curTime.u16Year-2000;
+	bTxData[3]=curTime.u08Month;
+	bTxData[4]=curTime.u08Day;
+	bTxData[5]=curTime.u08Hour;
+	bTxData[6]=curTime.u08Minute;
+	bTxData[7]=curTime.u08Second;
+
+	TSPI_PacketSend(bTxData,1);
+}
+
+
+//------TSPI通讯接收处理
 void TSPI_DataProc(void)
 {
-	BYTE i,bChecksum,index;
-	DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey,dwTmpData,dwLen;
+	BYTE i,bChecksum,index,*pbBuffer;
+	DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey,dwTmpData,dwLen,*pdwBuffer;
 	
 	if (!st_dwTspiRxIndex)
 		return;
@@ -5201,6 +5461,60 @@ void TSPI_DataProc(void)
 			}
 			break;
 
+		//温度压力电量环境亮度
+		case 0xb8:
+			if (dwLen>=11)
+				memcpy(&g_psUnsaveParam->bTemperatureInhome[0],&pbTspiRxBuffer[2],8);
+			break;
+
+		//查询命令
+		case 0xb9:
+			switch (pbTspiRxBuffer[2])
+			{
+				case 0x01:
+					TspiSendLockInfo();
+					break;
+				case 0x02:
+					SetupSendTouchVoice();
+					break;
+				case 0x03:
+					TspiSendElectrodeInfo();
+					break;
+				case 0x04:
+					TspiSendRTC();
+					break;
+			}
+			break;
+
+		//远程锁定
+		case 0xba:
+			switch (pbTspiRxBuffer[2])
+			{
+				case 0x00:
+				case 0x01:
+					g_psSetupMenu->bLocked=pbTspiRxBuffer[2];
+					break;
+				case 0x02:
+					g_psSetupMenu->bHireTime[0]=pbTspiRxBuffer[3];
+					g_psSetupMenu->bHireTime[1]=pbTspiRxBuffer[4];
+					g_psSetupMenu->bHireTime[2]=pbTspiRxBuffer[5];
+					break;
+				case 0x03:
+					g_psSetupMenu->wLockedTimes=((WORD)pbTspiRxBuffer[3]<<8)|pbTspiRxBuffer[4];
+					break;
+
+				default:
+					return;
+			}
+			WriteSetupChg();
+			break;
+
+		//激活电击棒信息
+		case 0xbb:
+			if (dwLen>=18)
+				memcpy(&g_psSetupMenu->bElectrodeInfo[0],&pbTspiRxBuffer[2],15);
+			break;
+
 		//设备信息数据传输
 		case 0xbc:
 			if (dwLen>9)
@@ -5246,6 +5560,22 @@ void TSPI_DataProc(void)
 			break;
 #endif
 
+		//云端/本地OPM数据
+		case 0xc2:
+			if (dwLen<18)
+				break;
+			pbBuffer=OpmGetbuffer(pbTspiRxBuffer[2]);
+			if (pbBuffer)
+			{
+				pdwBuffer=(DWORD *)pbBuffer;
+				if (*pdwBuffer<OPM_SEGMEN_NUM)
+				{
+					*pdwBuffer=*pdwBuffer+1;
+					pbBuffer+=*pdwBuffer*OPM_SEGMEN_LEN;
+					memcpy(pbBuffer,&pbTspiRxBuffer[3],14);
+				}
+			}
+			break;
 
 		//云端时间
 		case 0xc4:

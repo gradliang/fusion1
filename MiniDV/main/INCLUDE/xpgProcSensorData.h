@@ -101,6 +101,11 @@ typedef struct {
 //string lenth
 #define	POS_STR_LEN														16
 
+//OPM lenth
+#define	OPM_SEGMEN_NUM												200
+#define	OPM_SEGMEN_LEN												16
+
+
 #define QRCODE_FILE_NAME						"QRCODE"
 #define QRCODE_FILE_EXT						"JPG"
 
