@@ -96,8 +96,6 @@ typedef struct {
 #define   POS_RETRY_TIMES											10
 #define   ALIGN_HORIZONTAL_REDO_TIMES				2
 
-#define   ALIGN_DEMO_MODE											1
-
 //string lenth
 #define	POS_STR_LEN														16
 
@@ -110,6 +108,12 @@ typedef struct {
 #define QRCODE_FILE_EXT						"JPG"
 
 #define ABS(A)          ((A) < 0 ? (-A) : (A))
+
+
+//----debug switch
+#define   ALIGN_DEMO_MODE											1
+#define   DEBUG_POS_DATA												0
+
 
 
 void TSPI_DataProc();
