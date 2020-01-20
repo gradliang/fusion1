@@ -95,6 +95,9 @@ typedef struct {
 //端面最大对齐次数
 #define   POS_RETRY_TIMES											10
 #define   ALIGN_HORIZONTAL_REDO_TIMES				2
+//最大水平偏差
+#define   HORI_OFFSET														3
+
 
 //string lenth
 #define	POS_STR_LEN														16
@@ -122,7 +125,10 @@ SWORD TSPI_PacketSend(BYTE *pbDataBuf,BYTE bCheckResend);
 void DriveMotor(BYTE bMotorInex,BYTE bDirection,WORD wStep,BYTE bSpeed);
 void MotorSetStatus(BYTE bMotorInex,BYTE bMode);
 void MotoHoldTimeoutSet(BYTE bMotorInex,BYTE bMode);
+void StopAllMoto(void);
 void Discharge(WORD wMode,BYTE bStep);
+SWORD ScanFiberUptoDown(ST_IMGWIN *pWin, SWORD x,SWORD y,SWORD swYEnd,BYTE bLowLevel);
+
 #if TEST_PLANE||ALIGN_DEMO_MODE
 void  PutAdjOsdString();
 #endif
