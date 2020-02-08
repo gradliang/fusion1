@@ -4053,7 +4053,7 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         STRECORD * pr;
         int iCurIndex;
         DWORD dwCurPageStart = 0;
-        DWORD dwTotal = FileBrowserGetTotalFile();
+        DWORD dwTotal = GetRecordTotal();
         DWORD dwPageTotal = dwTotal / PAGE_RECORD_SIZE;
         if (dwTotal % PAGE_RECORD_SIZE)
             dwPageTotal++;

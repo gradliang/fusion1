@@ -14,6 +14,7 @@
 #include "xpgDrawSprite.h"
 #include "uiTouchCtrller.h"
 #include "xpgString.h"
+#include "xpgProcSensorData.h"
 
 #if (TOUCH_CONTROLLER_ENABLE == ENABLE)
 
@@ -2002,7 +2003,57 @@ SWORD touchSprite_Scroll(STXPGSPRITE * sprite, WORD x, WORD y)
 
 static void uiEnterRecordList()
 {
-    g_dwRecordListCurrPage = 0;
+    DWORD i = 0;
+    DWORD total, dwRtcTime;
+    
+    BYTE pbTitle[12];
+    STWELDSTATUS WeldStatus;
+    FileBrowserResetFileList(); /* reset old file list first */
+    FileBrowserScanFileList(SEARCH_TYPE);
+    total = FileBrowserGetTotalFile();
+
+    ClearAllRecord();
+    for (i = 0; i < total; i++)
+    {
+        FileListSetCurIndex(i);
+        memset(pbTitle, 0, sizeof(pbTitle));
+        memset(&WeldStatus, 0, sizeof(WeldStatus));
+        Weld_ReadFileWeldInfo(NULL, pbTitle, &WeldStatus);
+
+        dwRtcTime = 0;
+        Weld_FileNameToTime(i, &dwRtcTime);                         // 获取时间 
+
+        ST_SYSTEM_TIME sysTime;
+        SystemTimeSecToDateConv(dwRtcTime, &sysTime);
+
+        ///////////////
+        STRECORD recordData;
+        memset(&recordData, 0, sizeof(recordData));
+
+        recordData.bHead = 0;
+        recordData.bLenth = 0;
+        recordData.bIndex = 0;
+        recordData.bYear = sysTime.u16Year;
+        recordData.bMonth = sysTime.u08Month;
+        recordData.bDay = sysTime.u08Day;
+        recordData.bHour = sysTime.u08Hour;
+        recordData.bMinute = sysTime.u08Minute;
+        recordData.bSecond = sysTime.u08Second;
+        strncpy(recordData.bRecordName, pbTitle, sizeof(recordData.bRecordName) - 1);
+        recordData.bRecordName[sizeof(recordData.bRecordName) - 1] = 0;
+        recordData.bFiberMode = WeldStatus.bFiberMode;
+        recordData.bFiberL = WeldStatus.wFiberL;
+        recordData.bFiberR = WeldStatus.wFiberR;
+        recordData.bFiberLoss = WeldStatus.bFiberLoss;
+        recordData.bResult = WeldStatus.bResult;
+        recordData.wFileIndex = i;                              // 保存文件索引号
+        recordData.bChecksum = 0;
+
+        AddRecord(&recordData);
+    }
+    	
+
+    g_dwRecordListCurrPage = 0;                     // 设置当前为第0页
     xpgPreactionAndGotoPage("Record");
     xpgUpdateStage();
 }

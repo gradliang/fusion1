@@ -764,8 +764,6 @@ void InitRecord(STRECORD* pstRecord, WORD year, BYTE month, BYTE day, BYTE hour,
     pstRecord->bFiberLoss = bLoss;
     strncpy(pstRecord->bRecordName, recordName, sizeof(pstRecord->bRecordName)-1);
     pstRecord->bRecordName[sizeof(pstRecord->bRecordName)-1] = 0;
-    strncpy(pstRecord->bRecordFileName, fileName, sizeof(pstRecord->bRecordFileName)-1);
-    pstRecord->bRecordFileName[sizeof(pstRecord->bRecordFileName)-1] = 0;
 }
 
 int initRecordDummyData()

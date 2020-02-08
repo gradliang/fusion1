@@ -247,14 +247,14 @@ typedef struct Record1 {
     BYTE        bHour;
     BYTE        bMinute;
     BYTE        bSecond;
-    BYTE        bRecordName[10];
+    BYTE        bRecordName[12];
     BYTE        bFiberMode;
     BYTE        bFiberL;
     BYTE        bFiberR;
     BYTE        bFiberLoss;
     BYTE        bResult;
+    WORD        wFileIndex;
     BYTE        bChecksum; // 25
-    BYTE        bRecordFileName[11];
 }STRECORD;
 
 
