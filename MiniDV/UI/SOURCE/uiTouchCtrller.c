@@ -1539,14 +1539,15 @@ SWORD touchSprite_Selector(STXPGSPRITE * sprite, WORD x, WORD y)
         }
         else if (dwSelectorId == 5)
         {
-            xpgPreactionAndGotoPage("SetUi");
-            xpgUpdateStage();
-        }
-        else if (dwSelectorId == 6)
-        {
+            //xpgPreactionAndGotoPage("SetUi");
             xpgPreactionAndGotoPage("SetInfo");
             xpgUpdateStage();
         }
+        //else if (dwSelectorId == 6)
+        //{
+        //    xpgPreactionAndGotoPage("SetInfo");
+        //    xpgUpdateStage();
+        //}
         
     }
     else if (dwHashKey == xpgHash("FusionSet1") ||

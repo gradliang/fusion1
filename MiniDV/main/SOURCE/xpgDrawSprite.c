@@ -2473,6 +2473,7 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
     }
     else if (dwHashKey == xpgHash("FuncSet"))
     {
+        Idu_FontColorSet(0x00, 0x00, 0x00);
         if (dwTextId == 0)
             text = getstr(Str_LaLiCeShi);
         else if (dwTextId == 1)
@@ -2491,9 +2492,11 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             text = getstr(Str_YunDuanCeLiang);
         SetCurrIduFontID(FONT_ID_HeiTi16);
         Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
+        Idu_FontColorSet(0xff, 0xff, 0xff);
     }
     else if (dwHashKey == xpgHash("FuncSet2"))
     {
+        Idu_FontColorSet(0x00, 0x00, 0x00);
         if (dwTextId <= 5)
         {
             BYTE value = g_psSetupMenu->bCustomizeIcon[dwTextId];
@@ -2563,6 +2566,7 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         else 
             SetCurrIduFontID(FONT_ID_HeiTi19);
         Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
+        Idu_FontColorSet(0xff, 0xff, 0xff);
     }
     else if (dwHashKey == xpgHash("ToolBox"))
     {
@@ -2701,7 +2705,9 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         else
             return PASS;
         SetCurrIduFontID(FONT_ID_HeiTi16);
+        Idu_FontColorSet(0x00, 0x00, 0x00);
         Idu_PrintStringRight(pWin, tmpbuf, pstSprite->m_wPx, pstSprite->m_wPy, 0);
+        Idu_FontColorSet(0xff, 0xff, 0xff);
     }
     else if (dwHashKey == xpgHash("FusionSet2"))
     {
@@ -2714,7 +2720,9 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         else
             return PASS;
         SetCurrIduFontID(FONT_ID_HeiTi19);
+        Idu_FontColorSet(0x00, 0x00, 0x00);
         Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
+        Idu_FontColorSet(0xff, 0xff, 0xff);
     }
     else if (dwHashKey == xpgHash("FusionSet1"))
     {
@@ -2896,6 +2904,7 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
     else if (dwHashKey == xpgHash("SetTime"))
     {
         char tmpbuf[256];
+        Idu_FontColorSet(0x00, 0x00, 0x00);
         if (dwTextId == 1)
         {
             ST_SYSTEM_TIME curTime;
@@ -2936,9 +2945,11 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
                 sprintf(tmpbuf, "%s >", "YYYY/MM/DD");
             Idu_PrintStringRight(pWin, tmpbuf, pstSprite->m_wPx, pstSprite->m_wPy, 0);
         }
+        Idu_FontColorSet(0xff, 0xff, 0xff);
     }
     else if (dwHashKey == xpgHash("SetYun"))
     {
+        Idu_FontColorSet(0x00, 0x00, 0x00);
         if (dwTextId == 1)
         {
         	  char tmpbuf[16];
@@ -2965,10 +2976,12 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             text = getstr(Str_SaoMiaoErWeiMa);
             Idu_PrintStringCenter(pWin, text, 288, pstSprite->m_wPy, 0, 470);
         }
+        Idu_FontColorSet(0xff, 0xff, 0xff);
     }
     else if (dwHashKey == xpgHash("SetSleep"))
     {
         char tmpbuf[64];
+        Idu_FontColorSet(0x00, 0x00, 0x00);
         if (dwTextId == 3)
         {
             sprintf(tmpbuf, "%dmin >", g_psSetupMenu->wShutdownTime);
@@ -2978,6 +2991,7 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
                 Idu_PrintStringRight(pWin, tmpbuf, pstSprite->m_wPx, pstSprite->m_wPy, 0);
             }
         }
+        Idu_FontColorSet(0xff, 0xff, 0xff);
     }
     else if(dwHashKey == xpgHash("opmList1") || dwHashKey == xpgHash("opmList2"))
     {
@@ -3726,6 +3740,9 @@ SWORD xpgDrawSprite_Selector(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite,
             dwHashKey == xpgHash("SetUi") ||
             dwHashKey == xpgHash("SetInfo"))
     {
+        if (dwSelectorId >= 6)
+            return PASS;
+        
         DWORD curPageType;
         if(dwSelectorId == 0)
             text = getstr(Str_YunDuanSheZhi);
@@ -3737,8 +3754,8 @@ SWORD xpgDrawSprite_Selector(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite,
             text = getstr(Str_ShiJianYuYuYan);
         else if (dwSelectorId == 4)
             text = getstr(Str_MiMaSheZhi);
-        else if (dwSelectorId == 5)
-            text = getstr(Str_JieMianFengGe);
+        //else if (dwSelectorId == 5)
+        //    text = getstr(Str_JieMianFengGe);
         else //if (dwSelectorId == 6)
             text = getstr(Str_XiTongXinXi);
 
@@ -3752,15 +3769,16 @@ SWORD xpgDrawSprite_Selector(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite,
             curPageType = 3;
         else if (dwHashKey == xpgHash("SetPassword"))
             curPageType = 4;
-        else if (dwHashKey == xpgHash("SetUi"))
-            curPageType = 5;
+        //else if (dwHashKey == xpgHash("SetUi"))
+        //    curPageType = 5;
         else //if (dwHashKey == xpgHash("SetInfo"))
-            curPageType = 6;
+            curPageType = 5; // 6;
         
         if (dwSelectorId == curPageType)
         {
             xpgDrawSprite(pWin, pstSprite, boClip);
             SetCurrIduFontID(FONT_ID_HeiTi19);
+            Idu_FontColorSet(0xff, 0xff, 0xff);
             Idu_PrintString(pWin, text, pstSprite->m_wPx + 20, pstSprite->m_wPy + 12, 0, 0);
             Idu_PrintString(pWin, ">", pstSprite->m_wPx + 220, pstSprite->m_wPy + 12, 0, 0);
         }
@@ -3770,6 +3788,7 @@ SWORD xpgDrawSprite_Selector(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite,
             Idu_PaintWinArea(pWin, pstSprite->m_wPx + pstSprite->m_wWidth - 2, pstSprite->m_wPy, 2, pstSprite->m_wHeight, RGB2YUV(0x2E, 0x2E, 0x2E));
             Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy, pstSprite->m_wWidth, 1, RGB2YUV(0x2E, 0x2E, 0x2E));
             Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + pstSprite->m_wHeight - 2, pstSprite->m_wWidth, 1, RGB2YUV(0x2E, 0x2E, 0x2E));
+            Idu_FontColorSet(0xff, 0xff, 0xff);
             SetCurrIduFontID(FONT_ID_HeiTi19);
             Idu_PrintString(pWin, text, pstSprite->m_wPx + 20, pstSprite->m_wPy + 12, 0, 0);
             Idu_PrintString(pWin, ">", pstSprite->m_wPx + 220, pstSprite->m_wPy + 12, 0, 0);
@@ -3946,7 +3965,7 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
     else if (dwHashKey == xpgHash("SetPassword"))
     {
         WORD lineWidth = 470; 
-        Idu_FontColorSet(0xff,0xff,0xff);
+        Idu_FontColorSet(0x00,0x00,0x00);
         if (dwListId == 0)
             text = getstr(Str_KaiJiMiMa);
         else if (dwListId == 1)
@@ -4178,7 +4197,9 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         }
         
         SetCurrIduFontID(FONT_ID_HeiTi19);
+        Idu_FontColorSet(0x00, 0x00, 0x00);
         Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
+        Idu_FontColorSet(0xff, 0xff, 0xff);
         Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + 42, 472, 2, RGB2YUV(0x37, 0x37, 0x37));
     }
     else if (dwHashKey == xpgHash("opmList1") || dwHashKey == xpgHash("opmList2") )
