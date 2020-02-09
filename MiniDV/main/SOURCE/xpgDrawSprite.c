@@ -2324,19 +2324,27 @@ SWORD xpgDrawSprite_BackIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite,
         dwHashKey == xpgHash("opmList2")
         )
     {
-        char tmpbuf[64];
-        SetCurrIduFontID(FONT_ID_HeiTi19);
-        sprintf(tmpbuf, " < %s", getstr(Str_FanHui));
-        Idu_PrintString(pWin, tmpbuf, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
-        xpgSpriteSetTouchArea(pstSprite, 0, 0, 120, 40);
+        STXPGROLE * pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_BACK_ICON];
+        STXPGROLE * pstMask = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_BACK_ICON_MASK];
+        xpgRoleDrawMask(pstRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, pstMask);
+        xpgSpriteSetTouchArea(pstSprite, 0, 0, 80, 40);
+        //char tmpbuf[64];
+        //SetCurrIduFontID(FONT_ID_HeiTi19);
+        //sprintf(tmpbuf, " < %s", getstr(Str_FanHui));
+        //Idu_PrintString(pWin, tmpbuf, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
+        //xpgSpriteSetTouchArea(pstSprite, 0, 0, 120, 40);
     }
     else if (dwHashKey == xpgHash("FusionModeSet"))
     {
-        char tmpbuf[64];
-        SetCurrIduFontID(FONT_ID_HeiTi19);
-        sprintf(tmpbuf, " < %s", getstr(Str_RongJieSheZhi));
-        Idu_PrintString(pWin, tmpbuf, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
-        xpgSpriteSetTouchArea(pstSprite, 0, 0, 200, 40);
+        STXPGROLE * pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_BACK_ICON];
+        STXPGROLE * pstMask = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_BACK_ICON_MASK];
+        xpgRoleDrawMask(pstRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, pstMask);
+        xpgSpriteSetTouchArea(pstSprite, 0, 0, 80, 40);
+        //char tmpbuf[64];
+        //SetCurrIduFontID(FONT_ID_HeiTi19);
+        //sprintf(tmpbuf, " < %s", getstr(Str_RongJieSheZhi));
+        //Idu_PrintString(pWin, tmpbuf, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
+        //xpgSpriteSetTouchArea(pstSprite, 0, 0, 200, 40);
     }
     
     return PASS;

@@ -758,10 +758,14 @@
 #define XPG_ROLE_BUTTON_CANCEL_ICON         36
 #define XPG_ROLE_BUTTON_MASK                37
 
-#define XPG_ROLE_ICON_YJR_OFF                		38
-#define XPG_ROLE_ICON_OPM_OFF                		49
-#define XPG_ROLE_ICON_YJR_ON                			50
-#define XPG_ROLE_ICON_OPM_ON                		61
+#define XPG_ROLE_ICON_YJR_OFF               38
+#define XPG_ROLE_ICON_OPM_OFF               49
+#define XPG_ROLE_ICON_YJR_ON                50
+#define XPG_ROLE_ICON_OPM_ON                61
+
+#define XPG_ROLE_BACK_ICON                  62
+#define XPG_ROLE_BACK_ICON_MASK             63
+
 
 
 #define SPRITE_TYPE_HILIGHTFRAME            5
