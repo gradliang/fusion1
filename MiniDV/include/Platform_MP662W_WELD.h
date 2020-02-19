@@ -765,7 +765,7 @@
 
 #define XPG_ROLE_BACK_ICON                  62
 #define XPG_ROLE_BACK_ICON_MASK             63
-
+#define XPG_ROLE_CLOSE_ICON                 64
 
 
 #define SPRITE_TYPE_HILIGHTFRAME            5
