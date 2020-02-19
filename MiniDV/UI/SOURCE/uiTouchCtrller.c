@@ -1815,6 +1815,10 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
     {
         if (dwSpriteId == 0)
         {
+            Free_CacheWin();
+            Idu_GetCacheWin_WithInit();
+            DrakWin(Idu_GetCacheWin(), 2, 1);
+            mpCopyEqualWin(Idu_GetCurrWin(), Idu_GetCacheWin());
             popupDialog(Dialog_About, "SetInfo");
             xpgUpdateStage();
         }
