@@ -3513,29 +3513,29 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             {
                 sprintf(text1, "%s:", getstr(Str_XingHao));
                 sprintf(text2, "%s", "K5");
-                Idu_PrintString(pWin, text1, 228, 208, 0, 0);
-                Idu_PrintStringRight(pWin, text2, 572, 208, 0);
+                Idu_PrintString(pWin, text1, 210, 198, 0, 0);
+                Idu_PrintStringRight(pWin, text2, 590, 198, 0);
             }
             else if (dwTextId == 1)
             {
                 sprintf(text1, "%s:", getstr(Str_ZhiZaoShang));
                 sprintf(text2, "%s", getstr(Str_GongSiMing));
-                Idu_PrintString(pWin, text1, 228, 236, 0, 0);
-                Idu_PrintStringRight(pWin, text2, 572, 236, 0);
+                Idu_PrintString(pWin, text1, 210, 234, 0, 0);
+                Idu_PrintStringRight(pWin, text2, 590, 234, 0);
             }
             else if (dwTextId == 2)
             {
                 sprintf(text1, "%s:", getstr(Str_BanBen));
                 sprintf(text2, "%s", "11.0.01");
-                Idu_PrintString(pWin, text1, 228, 264, 0, 0);
-                Idu_PrintStringRight(pWin, text2, 572, 264, 0);
+                Idu_PrintString(pWin, text1, 210, 270, 0, 0);
+                Idu_PrintStringRight(pWin, text2, 590, 270, 0);
             }
             else if (dwTextId == 3)
             {
                 sprintf(text1, "%s:", getstr(Str_XuLieHao));
                 sprintf(text2, "%s", "matengfx2018");
-                Idu_PrintString(pWin, text1, 228, 292, 0, 0);
-                Idu_PrintStringRight(pWin, text2, 572, 292, 0);
+                Idu_PrintString(pWin, text1, 210, 306, 0, 0);
+                Idu_PrintStringRight(pWin, text2, 590, 306, 0);
             }
             Idu_FontColorSet(0xff, 0xff, 0xff);
         }
