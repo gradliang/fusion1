@@ -85,7 +85,12 @@ DWORD dwKeyID = 0;
 BOOL boCapsLock = FALSE;
 
 ////////////////////////////////////////////////////////////////////////
+static WORD curDialogWidth = 800;
+static WORD curDialogHeight = 480;
+static WORD curDialogLeft = 0;
+static WORD curDialogTop = 0;
 
+////////////////////////////////////////////////////////////////////////
 
 const BYTE * FModeStrList[] = {
     "SM",
@@ -2435,8 +2440,8 @@ SWORD xpgDrawSprite_CloseIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite
         }
         else if (dialogType == Dialog_About)
         {
-            pstSprite->m_wPx = 548;
-            pstSprite->m_wPy = 138;
+            pstSprite->m_wPx = curDialogLeft + curDialogWidth - 40 - 8;
+            pstSprite->m_wPy = curDialogTop + 5;
             xpgDirectDrawRoleOnWin(pWin, g_pstXpgMovie->m_pstObjRole[XPG_ROLE_CLOSE_ICON], pstSprite->m_wPx, pstSprite->m_wPy, pstSprite, boClip);
         }
         else
@@ -3503,6 +3508,7 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         else if (dialogType == Dialog_About)
         {
             char text1[128], text2[128];
+            Idu_FontColorSet(0x00, 0x00, 0x00);
             if (dwTextId == 0)
             {
                 sprintf(text1, "%s:", getstr(Str_XingHao));
@@ -3531,6 +3537,7 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
                 Idu_PrintString(pWin, text1, 228, 292, 0, 0);
                 Idu_PrintStringRight(pWin, text2, 572, 292, 0);
             }
+            Idu_FontColorSet(0xff, 0xff, 0xff);
         }
         else if (dialogType == Dialog_Times)
         {
@@ -4497,10 +4504,10 @@ SWORD xpgDrawSprite_Dialog(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
         }
         else if (dialogId == Dialog_About)
         {
-            dialogW = 560;
-            dialogH = 300;
-            dailogX = (pWin->wWidth - dialogW) / 2;
-            dialogY = (pWin->wHeight - dialogH) / 2;
+            curDialogWidth = dialogW = 560;
+            curDialogHeight = dialogH = 300;
+            curDialogLeft = dailogX = (pWin->wWidth - dialogW) / 2;
+            curDialogTop = dialogY = (pWin->wHeight - dialogH) / 2;
             MakeDialogRoleNew(&stRole, dialogW, dialogH);
             MakeMaskRole(&stMaskRole, XPG_ROLE_ICON_MASK_0, dialogW, dialogH);
             xpgRoleDrawMask(&stRole, pWin->pdwStart, dailogX, dialogY, pWin->wWidth, pWin->wHeight, &stMaskRole);
