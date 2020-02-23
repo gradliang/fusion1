@@ -1250,13 +1250,24 @@ SWORD touchSprite_CloseIcon(STXPGSPRITE * sprite, WORD x, WORD y)
                 dialogOnClose();
             }
         }
+        else if (dialogType == Dialog_SetBrightness)
+        {
+            if (g_psSetupMenu->bBrightness!= dwDialogTempValue)
+            {
+                g_psSetupMenu->bBrightness = dwDialogTempValue;
+                boNeedWriteSetup = TRUE;
+            }
+            exitDialog();
+            if (boNeedWriteSetup)
+                WriteSetupChg();
+        }
         else if (dialogType == Dialog_ShutdownTime)
         {
             if (g_psSetupMenu->wShutdownTime != dwDialogTempValue)
             {
                 g_psSetupMenu->wShutdownTime = dwDialogTempValue;
                 boNeedWriteSetup = TRUE;
-					xpgCb_AutoPowerOff(g_psSetupMenu->bAutoShutdown,g_psSetupMenu->wShutdownTime);
+                xpgCb_AutoPowerOff(g_psSetupMenu->bAutoShutdown,g_psSetupMenu->wShutdownTime);
             }
             exitDialog();
             if (boNeedWriteSetup)
@@ -1699,8 +1710,22 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
     }
     else if (dwHashKey == xpgHash("SetSleep"))
     {
-        if (dwSpriteId == 3)
+        if (dwSpriteId == 1)
         {
+            Free_CacheWin();
+            Idu_GetCacheWin_WithInit();
+            DrakWin(Idu_GetCacheWin(), 2, 1);
+            mpCopyEqualWin(Idu_GetCurrWin(), Idu_GetCacheWin());
+            dwDialogTempValue = g_psSetupMenu->bBrightness;
+            popupDialog(Dialog_SetBrightness, "SetSleep");
+            xpgUpdateStage();
+        }
+        else if (dwSpriteId == 3)
+        {
+            Free_CacheWin();
+            Idu_GetCacheWin_WithInit();
+            DrakWin(Idu_GetCacheWin(), 2, 1);
+            mpCopyEqualWin(Idu_GetCurrWin(), Idu_GetCacheWin());
             dwDialogTempValue = g_psSetupMenu->wShutdownTime;
             popupDialog(Dialog_ShutdownTime, "SetSleep");
             xpgUpdateStage();
@@ -2159,7 +2184,7 @@ void uiDispatchTouchSprite(WORD x1, WORD y1)
 					dwLastTouchActionTime = GetSysTime();
 				}
 				#if (PRODUCT_UI==UI_WELDING)
-    			AddAutoEnterPreview();
+    			// AddAutoEnterPreview();
 				#endif
             }
         }
