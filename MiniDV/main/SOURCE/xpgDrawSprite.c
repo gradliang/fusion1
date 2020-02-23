@@ -161,7 +161,9 @@ int popupDialog(int dialogType, char * backToPage)
         xpgAddDialogSprite(SPRITE_TYPE_ICON, 0, 0);
         xpgAddDialogSprite(SPRITE_TYPE_ICON, 1, 0);
         xpgAddDialogSprite(SPRITE_TYPE_TEXT, 0, 0);
-        xpgAddDialogSprite(SPRITE_TYPE_CLOSE_ICON, 0, 0);
+        //xpgAddDialogSprite(SPRITE_TYPE_CLOSE_ICON, 0, 0);
+        xpgAddDialogSprite(SPRITE_TYPE_ICON, 2, 0);
+        xpgAddDialogSprite(SPRITE_TYPE_ICON, 3, 0);
     }
     else if (dialogType == Dialog_SetTime)
     {
@@ -802,24 +804,44 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         }
         else if (dialogType == Dialog_ShutdownTime)
         {
-            pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_ADD_MINUS];
             if (dwSpriteId == 0)
             {
-                wX = pstSprite->m_wPx = 300;
-                wY = pstSprite->m_wPy = 238;
-                pstRoleMask = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_ADD_MASK];
+                wX = pstSprite->m_wPx = 180;
+                wY = pstSprite->m_wPy = 180;
+                wW = pstSprite->m_wWidth = 100;
+                wW = pstSprite->m_wHeight = 100;
+                xpgDirectDrawRoleOnWin(pWin, g_pstXpgMovie->m_pstObjRole[XPG_ROLE_ADD], pstSprite->m_wPx, pstSprite->m_wPy, pstSprite, boClip);
             }
             else if (dwSpriteId == 1)
             {
-                wX = pstSprite->m_wPx = 460;
-                wY = pstSprite->m_wPy = 238;
-                pstRoleMask = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_MINUS_MASK];
+                wX = pstSprite->m_wPx = 520;
+                wY = pstSprite->m_wPy = 180;
+                wW = pstSprite->m_wWidth = 100;
+                wW = pstSprite->m_wHeight = 100;
+                xpgDirectDrawRoleOnWin(pWin, g_pstXpgMovie->m_pstObjRole[XPG_ROLE_MINUS], pstSprite->m_wPx, pstSprite->m_wPy, pstSprite, boClip);
+            }
+            else if (dwSpriteId == 2)
+            {
+                wX = pstSprite->m_wPx = 120;
+                wY = pstSprite->m_wPy = 330;
+                wW = pstSprite->m_wWidth = 280;
+                wW = pstSprite->m_wHeight = 70;
+                pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_OK_BUTTON];
+                pstRoleMask = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_OK_BUTTON_MASK];
+                xpgRoleDrawMask(pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstRoleMask);
+            }
+            else if (dwSpriteId == 3)
+            {
+                wX = pstSprite->m_wPx = 400;
+                wY = pstSprite->m_wPy = 330;
+                wW = pstSprite->m_wWidth = 280;
+                wW = pstSprite->m_wHeight = 70;
+                pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_CANCEL_BUTTON];
+                pstRoleMask = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_CANCEL_BUTTON_MASK];
+                xpgRoleDrawMask(pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstRoleMask);
             }
             else 
                 return PASS;
-            wW = pstSprite->m_wWidth = 40;
-            wH = pstSprite->m_wHeight = 40;
-            xpgRoleDrawMask(pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstRoleMask);
         }
         else if (dialogType == Dialog_SetTime)
         {
@@ -3235,15 +3257,15 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         {
             WORD width, height;
             char tmpbuf[64];
-            pstSprite->m_wPx = 350;
-            pstSprite->m_wPy = 238;
-            width = 100;
-            height = 40;
-            Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy, width, height, 0xffff8080);
-            Idu_FontColorSet(0,0,0);
+            pstSprite->m_wPx = 290;
+            pstSprite->m_wPy = 180;
+            width = 220;
+            height = 100;
+            Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy, width, height, RGB2YUV(0, 0, 0));
+            Idu_FontColorSet(0xff,0xff,0xff);
             sprintf(tmpbuf, "%dmin", dwDialogTempValue);
-            SetCurrIduFontID(FONT_ID_HeiTi19);
-            Idu_PrintStringCenter(pWin, tmpbuf, pstSprite->m_wPx, pstSprite->m_wPy + 6, 0, 100);
+            SetCurrIduFontID(FONT_ID_ARIAL_36);
+            Idu_PrintStringCenter(pWin, tmpbuf, pstSprite->m_wPx, pstSprite->m_wPy + 20, 0, 220);
             Idu_FontColorSet(0xff,0xff,0xff);
         }
         else if (dialogType == Dialog_SetTime)
@@ -4501,15 +4523,17 @@ SWORD xpgDrawSprite_Dialog(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
         }
         else if (dialogId == Dialog_ShutdownTime)
         {
-            dialogW = 350;
-            dialogH = 150;
-            dailogX = (pWin->wWidth - dialogW) / 2;
-            dialogY = (pWin->wHeight - dialogH) / 2;
-            MakeDialogRole(&stRole, dialogW, dialogH);
+            curDialogWidth = dialogW = 560;
+            curDialogHeight = dialogH = 320;
+            curDialogLeft = dailogX = (pWin->wWidth - dialogW) / 2;
+            curDialogTop = dialogY = (pWin->wHeight - dialogH) / 2;
+            MakeDialogRoleNew(&stRole, dialogW, dialogH);
             MakeMaskRole(&stMaskRole, XPG_ROLE_ICON_MASK_0, dialogW, dialogH);
             xpgRoleDrawMask(&stRole, pWin->pdwStart, dailogX, dialogY, pWin->wWidth, pWin->wHeight, &stMaskRole);
             SetCurrIduFontID(FONT_ID_HeiTi19);
-            Idu_PrintStringCenter(pWin, getstr(Str_GuanJiShiJian), dailogX, dialogY + 5, 0, dialogW);
+            Idu_FontColorSet(0, 0, 0);
+            Idu_PrintStringCenter(pWin, getstr(Str_GuanJiShiJian), dailogX, dialogY + 10, 0, dialogW);
+            Idu_FontColorSet(0xff, 0xff, 0xff);
         }
         else if (dialogId == Dialog_SetTime || dialogId == Dialog_SetDate)
         {

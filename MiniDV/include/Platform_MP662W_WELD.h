@@ -768,6 +768,10 @@
 #define XPG_ROLE_CLOSE_ICON                 64
 #define XPG_ROLE_ADD                        65
 #define XPG_ROLE_MINUS                      66
+#define XPG_ROLE_OK_BUTTON                  67
+#define XPG_ROLE_OK_BUTTON_MASK             68
+#define XPG_ROLE_CANCEL_BUTTON              69  
+#define XPG_ROLE_CANCEL_BUTTON_MASK         70
 
 
 #define SPRITE_TYPE_HILIGHTFRAME            5

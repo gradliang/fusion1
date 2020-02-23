@@ -131,6 +131,7 @@ SWORD touchSprite_Background(STXPGSPRITE * sprite, WORD x, WORD y)
 extern BYTE g_bDisplayMode;
 SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
 {
+    BOOL boNeedWriteSetup = FALSE;
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
     DWORD dwIconId = sprite->m_dwTypeIndex;
     mpDebugPrint("touchSprite_Icon  %d", dwIconId);
@@ -739,6 +740,23 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
             {
                 if (dwDialogTempValue >= 20)
                     dwDialogTempValue -= 10;
+            }
+            else if (dwIconId == 2)
+            {
+                boNeedWriteSetup = FALSE;
+                if (g_psSetupMenu->wShutdownTime != dwDialogTempValue)
+                {
+                    g_psSetupMenu->wShutdownTime = dwDialogTempValue;
+                    boNeedWriteSetup = TRUE;
+                    xpgCb_AutoPowerOff(g_psSetupMenu->bAutoShutdown,g_psSetupMenu->wShutdownTime);
+                }
+                exitDialog();
+                if (boNeedWriteSetup)
+                    WriteSetupChg();
+            }
+            else if (dwIconId == 3)
+            {
+                exitDialog();
             }
             else
                 return 0;
