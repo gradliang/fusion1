@@ -3216,6 +3216,21 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             Idu_PrintStringCenter(pWin, tmpbuf, pstSprite->m_wPx, pstSprite->m_wPy + 6, 0, 100);
             Idu_FontColorSet(0xff,0xff,0xff);
         }
+        else if (dialogType == Dialog_SetBrightness)
+        {
+            WORD width, height;
+            char tmpbuf[64];
+            pstSprite->m_wPx = 290;
+            pstSprite->m_wPy = 210;
+            width = 220;
+            height = 100;
+            Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy, width, height, RGB2YUV(0, 0, 0));
+            Idu_FontColorSet(0xff,0xff,0xff);
+            sprintf(tmpbuf, "%d", dwDialogTempValue);
+            SetCurrIduFontID(FONT_ID_ARIAL_36);
+            Idu_PrintStringCenter(pWin, tmpbuf, pstSprite->m_wPx, pstSprite->m_wPy + 20, 0, width);
+            Idu_FontColorSet(0xff,0xff,0xff);
+        }
         else if (dialogType == Dialog_ShutdownTime)
         {
             WORD width, height;

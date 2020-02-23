@@ -217,7 +217,7 @@
 #define FONT_ID_DotumChe18      4
 #define FONT_ID_HeiTi19         5
 #define FONT_ID_HeiTi16         6
-
+#define FONT_ID_ARIAL_36        7
 #endif
 
 #if EXT_FONT_FORMAT_ENABLE

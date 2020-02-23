@@ -717,6 +717,20 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
                 return 0;
             xpgUpdateStage();
         }
+        else if (dialogType == Dialog_SetBrightness)
+        {
+            if (dwIconId == 0)
+                dwDialogTempValue++;
+            else if (dwIconId == 1)
+            {
+                if (dwDialogTempValue) dwDialogTempValue--;
+            }
+            else
+                return 0;
+            if (dwDialogTempValue > 100)
+                dwDialogTempValue = 100;
+            xpgUpdateStage();
+        }
         else if (dialogType == Dialog_ShutdownTime)
         {
             if (dwIconId == 0)

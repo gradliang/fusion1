@@ -43,7 +43,10 @@
 #include "HeiTi19Data.h"
 #include "HeiTi19Tab.h"
 #endif
-
+#ifdef FONT_ID_ARIAL_36
+#include "Arial36Data.h"
+#include "Arial36Tab.h"
+#endif
 
 #if BMP_FONT_ENABLE
 
@@ -138,6 +141,14 @@ static BOOL SetFontDataInfo(FontInfo_t * pstInfo, DWORD wFontID)
             pstInfo->pData = HeiTi19_fontdata;
             pstInfo->largeTab = HeiTi19_FontTab;
             pstInfo->fastIdxTab = HeiTi19_FastIndexTab;
+            pstInfo->bFlag = 1;
+            break;
+#endif
+#ifdef FONT_ID_ARIAL_36
+        case FONT_ID_ARIAL_36:
+            pstInfo->pData = Arial36Data;
+            pstInfo->largeTab = Arial36Tab;
+            pstInfo->fastIdxTab = Arial36FastIdxTab;
             pstInfo->bFlag = 1;
             break;
 #endif
