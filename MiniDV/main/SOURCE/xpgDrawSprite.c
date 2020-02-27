@@ -165,6 +165,14 @@ int popupDialog(int dialogType, char * backToPage)
         xpgAddDialogSprite(SPRITE_TYPE_ICON, 2, 0);
         xpgAddDialogSprite(SPRITE_TYPE_ICON, 3, 0);
     }
+    else if (dialogType == Dialog_SetSound)
+    {
+        xpgAddDialogSprite(SPRITE_TYPE_DIALOG, 0, 0);
+        xpgAddDialogSprite(SPRITE_TYPE_ICON, 0, 0);
+        xpgAddDialogSprite(SPRITE_TYPE_ICON, 1, 0);
+        xpgAddDialogSprite(SPRITE_TYPE_TEXT, 0, 0);
+        xpgAddDialogSprite(SPRITE_TYPE_CLOSE_ICON, 0, 0);
+    }
     else if (dialogType == Dialog_SetTime)
     {
         xpgAddDialogSprite(SPRITE_TYPE_DIALOG, 0, 0);
@@ -782,6 +790,27 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             xpgRoleDrawMask(pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstRoleMask);
         }
         else if (dialogType == Dialog_SetBrightness)
+        {
+            if (dwSpriteId == 0)
+            {
+                wX = pstSprite->m_wPx = 180;
+                wY = pstSprite->m_wPy = 210;
+                wW = pstSprite->m_wWidth = 100;
+                wW = pstSprite->m_wHeight = 100;
+                xpgDirectDrawRoleOnWin(pWin, g_pstXpgMovie->m_pstObjRole[XPG_ROLE_ADD], pstSprite->m_wPx, pstSprite->m_wPy, pstSprite, boClip);
+            }
+            else if (dwSpriteId == 1)
+            {
+                wX = pstSprite->m_wPx = 520;
+                wY = pstSprite->m_wPy = 210;
+                wW = pstSprite->m_wWidth = 100;
+                wW = pstSprite->m_wHeight = 100;
+                xpgDirectDrawRoleOnWin(pWin, g_pstXpgMovie->m_pstObjRole[XPG_ROLE_MINUS], pstSprite->m_wPx, pstSprite->m_wPy, pstSprite, boClip);
+            }
+            else 
+                return PASS;
+        }
+        else if (dialogType == Dialog_SetSound)
         {
             if (dwSpriteId == 0)
             {
@@ -2465,6 +2494,12 @@ SWORD xpgDrawSprite_CloseIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite
             pstSprite->m_wPy = 166;
             xpgRoleDrawMask(pstRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, pstMask);
         }
+        else if (dialogType == Dialog_SetSound)
+        {
+            pstSprite->m_wPx = curDialogLeft + curDialogWidth - 40 - 8;
+            pstSprite->m_wPy = curDialogTop + 5;
+            xpgDirectDrawRoleOnWin(pWin, g_pstXpgMovie->m_pstObjRole[XPG_ROLE_CLOSE_ICON], pstSprite->m_wPx, pstSprite->m_wPy, pstSprite, boClip);
+        }
         else if (dialogType == Dialog_SetTime || dialogType == Dialog_SetDate)
         {
             pstSprite->m_wPx = 548;
@@ -3078,6 +3113,28 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         }
         Idu_FontColorSet(0xff, 0xff, 0xff);
     }
+    else if (dwHashKey == xpgHash("SetSound"))
+    {
+        char tmpbuf[64];
+        Idu_FontColorSet(0x00, 0x00, 0x00);
+        if (dwTextId == 1)
+        {
+            if (!g_psSetupMenu->bToundSoundEnable)
+                strcpy(tmpbuf, "-- >");
+            else 
+            {
+                int volume;
+                if (g_psSetupMenu->bVolume <= 15)
+                    volume = g_psSetupMenu->bVolume;
+                else
+                    volume = 15;
+                sprintf(tmpbuf, "%d >", volume);
+            }
+            SetCurrIduFontID(FONT_ID_HeiTi19);
+            Idu_PrintStringRight(pWin, tmpbuf, pstSprite->m_wPx, pstSprite->m_wPy, 0);
+        }
+        Idu_FontColorSet(0xff, 0xff, 0xff);
+    }
     else if(dwHashKey == xpgHash("opmList1") || dwHashKey == xpgHash("opmList2"))
     {
         /////
@@ -3266,6 +3323,21 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             sprintf(tmpbuf, "%dmin", dwDialogTempValue);
             SetCurrIduFontID(FONT_ID_ARIAL_36);
             Idu_PrintStringCenter(pWin, tmpbuf, pstSprite->m_wPx, pstSprite->m_wPy + 20, 0, 220);
+            Idu_FontColorSet(0xff,0xff,0xff);
+        }
+        else if (dialogType == Dialog_SetSound)
+        {
+            WORD width, height;
+            char tmpbuf[64];
+            pstSprite->m_wPx = 290;
+            pstSprite->m_wPy = 210;
+            width = 220;
+            height = 100;
+            Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy, width, height, RGB2YUV(0, 0, 0));
+            Idu_FontColorSet(0xff,0xff,0xff);
+            sprintf(tmpbuf, "%d", dwDialogTempValue);
+            SetCurrIduFontID(FONT_ID_ARIAL_36);
+            Idu_PrintStringCenter(pWin, tmpbuf, pstSprite->m_wPx, pstSprite->m_wPy + 20, 0, width);
             Idu_FontColorSet(0xff,0xff,0xff);
         }
         else if (dialogType == Dialog_SetTime)
@@ -4036,6 +4108,11 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
         Idu_FontColorSet(0xff, 0xff, 0xff);
         Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + 38, 470, 2, RGB2YUV(0x2F, 0x2F, 0x2F));
+        if (dwListId == 1)
+        {
+            //Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy - 20, 470, 56, RGB2YUV(0xff, 0xff, 0x37));
+            xpgSpriteSetTouchArea(pstSprite, pstSprite->m_wPx, pstSprite->m_wPy - 20, 470, 56);
+        }
     }
     else if (dwHashKey == xpgHash("SetTime"))
     {
@@ -4535,6 +4612,20 @@ SWORD xpgDrawSprite_Dialog(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
             Idu_PrintStringCenter(pWin, getstr(Str_GuanJiShiJian), dailogX, dialogY + 10, 0, dialogW);
             Idu_FontColorSet(0xff, 0xff, 0xff);
         }
+        else if (dialogId == Dialog_SetSound)
+        {
+            curDialogWidth = dialogW = 560;
+            curDialogHeight = dialogH = 300;
+            curDialogLeft = dailogX = (pWin->wWidth - dialogW) / 2;
+            curDialogTop = dialogY = (pWin->wHeight - dialogH) / 2;
+            MakeDialogRoleNew(&stRole, dialogW, dialogH);
+            MakeMaskRole(&stMaskRole, XPG_ROLE_ICON_MASK_0, dialogW, dialogH);
+            xpgRoleDrawMask(&stRole, pWin->pdwStart, dailogX, dialogY, pWin->wWidth, pWin->wHeight, &stMaskRole);
+            SetCurrIduFontID(FONT_ID_HeiTi19);
+            Idu_FontColorSet(0, 0, 0);
+            Idu_PrintStringCenter(pWin, getstr(Str_YinLiangTiaoJie), dailogX, dialogY + 10, 0, dialogW);
+            Idu_FontColorSet(0xff, 0xff, 0xff);
+        }
         else if (dialogId == Dialog_SetTime || dialogId == Dialog_SetDate)
         {
             dialogW = 390;
@@ -4764,6 +4855,7 @@ SWORD xpgDrawSprite_Scroll(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
     }
     else if (dwHashKey == xpgHash("SetSound"))
     {
+        /*
         if (dwSpriteId == 0)
         {
             STXPGSPRITE *pstRound;
@@ -4784,6 +4876,7 @@ SWORD xpgDrawSprite_Scroll(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
             
             xpgSpriteSetTouchArea(pstSprite, pstSprite->m_wPx-20, pstSprite->m_wPy-20, pstSprite->m_wWidth+40, pstSprite->m_wHeight+40);
         }
+        */
     }
     return PASS;
 }

@@ -762,6 +762,20 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
                 return 0;
             xpgUpdateStage();
         }
+        else if (dialogType == Dialog_SetSound)
+        {
+            if (dwIconId == 0)
+                dwDialogTempValue++;
+            else if (dwIconId == 1)
+            {
+                if (dwDialogTempValue) dwDialogTempValue--;
+            }
+            else
+                return 0;
+            if (dwDialogTempValue > 15)
+                dwDialogTempValue = 15;
+            xpgUpdateStage();
+        }
         else if (dialogType == Dialog_SetTime)
         {
             WORD hour2 = dwDialogTempValue >> 16;
@@ -1305,6 +1319,17 @@ SWORD touchSprite_CloseIcon(STXPGSPRITE * sprite, WORD x, WORD y)
             if (boNeedWriteSetup)
                 WriteSetupChg();
         }
+        else if (dialogType == Dialog_SetSound)
+        {
+            if (g_psSetupMenu->bVolume!= dwDialogTempValue)
+            {
+                g_psSetupMenu->bVolume = dwDialogTempValue;
+                boNeedWriteSetup = TRUE;
+            }
+            exitDialog();
+            if (boNeedWriteSetup)
+                WriteSetupChg();
+        }
         else if (dialogType == Dialog_SetTime || dialogType == Dialog_SetDate)
         {
             exitDialog();
@@ -1760,6 +1785,19 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
             mpCopyEqualWin(Idu_GetCurrWin(), Idu_GetCacheWin());
             dwDialogTempValue = g_psSetupMenu->wShutdownTime;
             popupDialog(Dialog_ShutdownTime, "SetSleep");
+            xpgUpdateStage();
+        }
+    }
+    else if (dwHashKey == xpgHash("SetSound"))
+    {
+        if (dwSpriteId == 1)
+        {
+            Free_CacheWin();
+            Idu_GetCacheWin_WithInit();
+            DrakWin(Idu_GetCacheWin(), 2, 1);
+            mpCopyEqualWin(Idu_GetCurrWin(), Idu_GetCacheWin());
+            dwDialogTempValue = g_psSetupMenu->bVolume;
+            popupDialog(Dialog_SetSound, "SetSound");
             xpgUpdateStage();
         }
     }
