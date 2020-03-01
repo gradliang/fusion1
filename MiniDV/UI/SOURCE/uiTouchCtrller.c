@@ -947,6 +947,12 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
                 WriteSetupChg();
             }
         }
+        else if (dialogType == Dialog_SetLang)
+        {
+            g_psSetupMenu->bLanguage = dwIconId;
+            xpgUpdateStage();
+            WriteSetupChg();
+        }
         else if (dialogType == Dialog_SetPassword1 || dialogType == Dialog_SetPassword2 || dialogType == Dialog_CheckPassword)
         {
             static char password1[8] = {0};
@@ -1335,6 +1341,10 @@ SWORD touchSprite_CloseIcon(STXPGSPRITE * sprite, WORD x, WORD y)
             exitDialog();
         }
         else if (dialogType == Dialog_SetDateFormat)
+        {
+            exitDialog();
+        }
+        else if (dialogType == Dialog_SetLang)
         {
             exitDialog();
         }
@@ -1830,6 +1840,12 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
         }
         else if (dwSpriteId == 4)
         {
+            Free_CacheWin();
+            Idu_GetCacheWin_WithInit();
+            DrakWin(Idu_GetCacheWin(), 2, 1);
+            mpCopyEqualWin(Idu_GetCurrWin(), Idu_GetCacheWin());
+            popupDialog(Dialog_SetLang, "SetTime");
+            xpgUpdateStage();
         }
     }
     else if (dwHashKey == xpgHash("SetPassword"))

@@ -775,6 +775,9 @@
 #define XPG_ROLE_LONG2_LIST_DARK            71
 #define XPG_ROLE_LONG2_LIST_LIGHT           72
 #define XPG_ROLE_LONG2_LIST_MASK            73
+#define XPG_ROLE_MID2_LIST_DARK             74
+#define XPG_ROLE_MID2_LIST_LIGHT            75
+#define XPG_ROLE_MID2_LIST_MASK             76
 
 
 #define SPRITE_TYPE_HILIGHTFRAME            5
@@ -805,15 +808,16 @@
 #define Dialog_SetTime                      7           // 设置时间对话框
 #define Dialog_SetDate                      8           // 设置日期对话框
 #define Dialog_SetDateFormat                9           // 设置日期格式对话框
-#define Dialog_SetPassword1                 10           // 设置密码对话框
-#define Dialog_SetPassword2                 11           // 设置密码对话框2
-#define Dialog_CheckPassword                12          // 检查密码对话框
-#define Dialog_EditValue                    13          // 输入
-#define Dialog_Value                        14          // 值显示
-#define Dialog_About                        15          // 关于本机
-#define Dialog_Times                        16          // 电极棒信息
-#define Dialog_TempInfo                     17          // 温度信息
-#define Dialog_BatInfo                      18          // 电池信息
+#define Dialog_SetLang                      10          // 
+#define Dialog_SetPassword1                 11          // 设置密码对话框
+#define Dialog_SetPassword2                 12          // 设置密码对话框2
+#define Dialog_CheckPassword                13          // 检查密码对话框
+#define Dialog_EditValue                    14          // 输入
+#define Dialog_Value                        15          // 值显示
+#define Dialog_About                        16          // 关于本机
+#define Dialog_Times                        17          // 电极棒信息
+#define Dialog_TempInfo                     18          // 温度信息
+#define Dialog_BatInfo                      19          // 电池信息
 
 
 
