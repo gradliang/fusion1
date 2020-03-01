@@ -3048,6 +3048,27 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
                 sprintf(tmpbuf, "%s >", "YYYY/MM/DD");
             Idu_PrintStringRight(pWin, tmpbuf, pstSprite->m_wPx, pstSprite->m_wPy, 0);
         }
+        else if (dwTextId == 4)
+        {
+            if (g_psSetupMenu->bLanguage == 1)
+                text = getstr(Str_YingWen);
+            else if (g_psSetupMenu->bLanguage == 2)
+                text = getstr(Str_PuTaoYaWen);
+            else if (g_psSetupMenu->bLanguage == 3)
+                text = getstr(Str_XiBanYaWen);
+            else if (g_psSetupMenu->bLanguage == 4)
+                text = getstr(Str_EWen);
+            else if (g_psSetupMenu->bLanguage == 5)
+                text = getstr(Str_FaWen);
+            else if (g_psSetupMenu->bLanguage == 6)
+                text = getstr(Str_TaiWen);
+            else if (g_psSetupMenu->bLanguage == 7)
+                text = getstr(Str_ALaBoWen);
+            else
+                text = getstr(Str_JianTiZhongWen);
+            sprintf(tmpbuf, "%s >", text);
+            Idu_PrintStringRight(pWin, tmpbuf, pstSprite->m_wPx, pstSprite->m_wPy, 0);
+        }
         Idu_FontColorSet(0xff, 0xff, 0xff);
     }
     else if (dwHashKey == xpgHash("SetYun"))
@@ -4116,7 +4137,6 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
     }
     else if (dwHashKey == xpgHash("SetTime"))
     {
-        
         if (dwListId == 0)
             text = getstr(Str_24XiaoShiZhi);
         else if (dwListId == 1)
@@ -4132,10 +4152,10 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         Idu_FontColorSet(0x00, 0x00, 0x00);
         Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
         Idu_FontColorSet(0xff, 0xff, 0xff);
-        if (dwListId < 4)
+        if (dwListId < 5)
             Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + 38, 470, 2, RGB2YUV(0x2F, 0x2F, 0x2F));
 
-        if (dwListId >= 1 && dwListId <= 3)
+        if (dwListId >= 1 && dwListId <= 4)
         {
             //Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy - 20, 470, 56, RGB2YUV(0xff, 0xff, 0x37));
             xpgSpriteSetTouchArea(pstSprite, pstSprite->m_wPx, pstSprite->m_wPy - 20, 470, 56);
