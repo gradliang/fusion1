@@ -1815,6 +1815,11 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
     {
         if (dwSpriteId == 1)
         {
+            Free_CacheWin();
+            Idu_GetCacheWin_WithInit();
+            DrakWin(Idu_GetCacheWin(), 2, 1);
+            mpCopyEqualWin(Idu_GetCurrWin(), Idu_GetCacheWin());
+            //////////////////////////
             ST_SYSTEM_TIME curTime;
             SystemTimeGet(&curTime);
             dwDialogTempValue = (curTime.u08Hour<<16) | curTime.u08Minute;
@@ -1823,6 +1828,11 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
         }
         else if (dwSpriteId == 2)
         {
+            Free_CacheWin();
+            Idu_GetCacheWin_WithInit();
+            DrakWin(Idu_GetCacheWin(), 2, 1);
+            mpCopyEqualWin(Idu_GetCurrWin(), Idu_GetCacheWin());
+            //////////////////////////
             ST_SYSTEM_TIME curTime;
             SystemTimeGet(&curTime);
             dwDialogTempValue = (curTime.u16Year<<16) | (curTime.u08Month<< 8) | curTime.u08Day;
