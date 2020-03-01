@@ -1045,27 +1045,27 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         }
         else if (dialogType == Dialog_SetDateFormat)
         {
-            pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_LONG_LIST_DARK];
-            pstRoleMask = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_LONG_LIST_MASK];
+            pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_LONG2_LIST_DARK];
+            pstRoleMask = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_LONG2_LIST_MASK];
             if (dwSpriteId == 0)
             {
-                wX = pstSprite->m_wPx = 250;
-                wY = pstSprite->m_wPy = 208;
+                wX = pstSprite->m_wPx = 224;
+                wY = pstSprite->m_wPy = 200;
                 text = "YYYY/MM/DD";
             }
             else if (dwSpriteId == 1)
             {
-                wX = pstSprite->m_wPx = 250;
-                wY = pstSprite->m_wPy = 260;
+                wX = pstSprite->m_wPx = 224;
+                wY = pstSprite->m_wPy = 262;
                 text = "MM/DD/YYYY";
             }
             else 
                 return PASS;
-            wW = pstSprite->m_wWidth = 300;
-            wH = pstSprite->m_wHeight = 40;
+            wW = pstSprite->m_wWidth = 350;
+            wH = pstSprite->m_wHeight = 50;
             xpgRoleDrawMask(pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstRoleMask);
             SetCurrIduFontID(FONT_ID_HeiTi19);
-            Idu_PrintStringCenter(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy + 6, 0, pstSprite->m_wWidth);
+            Idu_PrintStringCenter(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy + 10, 0, pstSprite->m_wWidth);
         }
         else if (dialogType == Dialog_SetPassword1 || dialogType == Dialog_SetPassword2 || dialogType == Dialog_CheckPassword || dialogType == Dialog_EditValue)
         {
@@ -1965,32 +1965,32 @@ SWORD xpgDrawSprite_LightIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite
         }
         else if (dialogType == Dialog_SetDateFormat)
         {
-            pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_LONG_LIST_LIGHT];
-            pstMask = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_LONG_LIST_MASK];
+            pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_LONG2_LIST_LIGHT];
+            pstMask = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_LONG2_LIST_MASK];
             
             if (dwSpriteId == 0)
             {
                 if (g_psSetupMenu->bDataFormatMMDDYYYY)
                     return PASS;
-                wX = pstSprite->m_wPx = 250;
-                wY = pstSprite->m_wPy = 208;
+                wX = pstSprite->m_wPx = 224;
+                wY = pstSprite->m_wPy = 200;
                 text = "YYYY/MM/DD";
             }
             else if (dwSpriteId == 1)
             {
                 if (!g_psSetupMenu->bDataFormatMMDDYYYY)
                     return PASS;
-                wX = pstSprite->m_wPx = 250;
-                wY = pstSprite->m_wPy = 260;
+                wX = pstSprite->m_wPx = 224;
+                wY = pstSprite->m_wPy = 262;
                 text = "MM/DD/YYYY";
             }
             else 
                 return PASS;
-            wW = pstSprite->m_wWidth = 300;
-            wH = pstSprite->m_wHeight = 40;
+            wW = pstSprite->m_wWidth = 350;
+            wH = pstSprite->m_wHeight = 50;
             xpgRoleDrawMask(pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask);
             SetCurrIduFontID(FONT_ID_HeiTi19);
-            Idu_PrintStringCenter(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy + 6, 0, pstSprite->m_wWidth);
+            Idu_PrintStringCenter(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy + 10, 0, pstSprite->m_wWidth);
         }
     }
     else if (dwHashKey == xpgHash("FusionSet3"))
@@ -2508,9 +2508,9 @@ SWORD xpgDrawSprite_CloseIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite
         }
         else if (dialogType == Dialog_SetDateFormat)
         {
-            pstSprite->m_wPx = 548;
-            pstSprite->m_wPy = 142;
-            xpgRoleDrawMask(pstRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, pstMask);
+            pstSprite->m_wPx = curDialogLeft + curDialogWidth - 40 - 8;
+            pstSprite->m_wPy = curDialogTop + 5;
+            xpgDirectDrawRoleOnWin(pWin, g_pstXpgMovie->m_pstObjRole[XPG_ROLE_CLOSE_ICON], pstSprite->m_wPx, pstSprite->m_wPy, pstSprite, boClip);
         }
         else if (/*dialogType == Dialog_About || */ dialogType == Dialog_Times || dialogType == Dialog_TempInfo || dialogType == Dialog_BatInfo)
         {
@@ -4664,15 +4664,17 @@ SWORD xpgDrawSprite_Dialog(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
         }
         else if (dialogId == Dialog_SetDateFormat)
         {
-            dialogW = 400;
-            dialogH = 200;
-            dailogX = (pWin->wWidth - dialogW) / 2;
-            dialogY = (pWin->wHeight - dialogH) / 2;
-            MakeDialogRole(&stRole, dialogW, dialogH);
+            curDialogWidth = dialogW = 560;
+            curDialogHeight = dialogH = 300;
+            curDialogLeft = dailogX = (pWin->wWidth - dialogW) / 2;
+            curDialogTop = dialogY = (pWin->wHeight - dialogH) / 2;
+            MakeDialogRoleNew(&stRole, dialogW, dialogH);
             MakeMaskRole(&stMaskRole, XPG_ROLE_ICON_MASK_0, dialogW, dialogH);
             xpgRoleDrawMask(&stRole, pWin->pdwStart, dailogX, dialogY, pWin->wWidth, pWin->wHeight, &stMaskRole);
             SetCurrIduFontID(FONT_ID_HeiTi19);
-            Idu_PrintStringCenter(pWin, getstr(Str_RiQiGeShi), dailogX, dialogY + 5, 0, dialogW);
+            Idu_FontColorSet(0, 0, 0);
+            Idu_PrintStringCenter(pWin, getstr(Str_RiQiGeShi), dailogX, dialogY + 10, 0, dialogW);
+            Idu_FontColorSet(0xff, 0xff, 0xff);
         }
         else if (dialogId == Dialog_Times || dialogId == Dialog_TempInfo || dialogId == Dialog_BatInfo)
         {

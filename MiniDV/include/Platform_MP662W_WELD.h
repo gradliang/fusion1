@@ -772,6 +772,9 @@
 #define XPG_ROLE_OK_BUTTON_MASK             68
 #define XPG_ROLE_CANCEL_BUTTON              69  
 #define XPG_ROLE_CANCEL_BUTTON_MASK         70
+#define XPG_ROLE_LONG2_LIST_DARK            71
+#define XPG_ROLE_LONG2_LIST_LIGHT           72
+#define XPG_ROLE_LONG2_LIST_MASK            73
 
 
 #define SPRITE_TYPE_HILIGHTFRAME            5

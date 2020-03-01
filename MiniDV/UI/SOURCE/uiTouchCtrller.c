@@ -1821,8 +1821,15 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
         }
         else if (dwSpriteId == 3)
         {
+            Free_CacheWin();
+            Idu_GetCacheWin_WithInit();
+            DrakWin(Idu_GetCacheWin(), 2, 1);
+            mpCopyEqualWin(Idu_GetCurrWin(), Idu_GetCacheWin());
             popupDialog(Dialog_SetDateFormat, "SetTime");
             xpgUpdateStage();
+        }
+        else if (dwSpriteId == 4)
+        {
         }
     }
     else if (dwHashKey == xpgHash("SetPassword"))
