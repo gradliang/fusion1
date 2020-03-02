@@ -213,6 +213,7 @@ typedef struct ST_SETUP_MENU_SETTING_VALUE
     BYTE bEnableHirePassword;           // 开启租借密码
     char srtOpenPassword[8];            // 开机密码  
     char strHirePassword[8];            // 租借密码  
+    BYTE bLockTimeMode;                 // 使用锁定日期的模式(为0时表示使用锁定次数的模式)
     WORD wLockedTimes;                  // 锁定熔接次数
     WORD wUsedTimes;                  // 熔接次数
     BYTE bHireTime[3];           			//4 租借时间
@@ -227,7 +228,7 @@ typedef struct ST_SETUP_MENU_SETTING_VALUE
     //BYTE bReserved[1];
 
 } ST_SETUP_MENU;
-#define						SETUP_STRUCT_CHANGE_TIMES					1  //4     更改了g_psSetupMenu结构体后，把此数值递增1
+#define						SETUP_STRUCT_CHANGE_TIMES					3  //4     更改了g_psSetupMenu结构体后，把此数值递增1
 
 extern ST_SETUP_MENU *g_psSetupMenu;
 

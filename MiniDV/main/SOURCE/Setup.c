@@ -112,6 +112,7 @@ void GetDefaultSetupMenuValue(void)
     g_psSetupMenu->bEnableHirePassword = 0;
     memset(g_psSetupMenu->srtOpenPassword, 0, 8);
     memset(g_psSetupMenu->strHirePassword, 0, 8);
+    g_psSetupMenu->bLockTimeMode = 0;
     g_psSetupMenu->wLockedTimes = 0;
     g_psSetupMenu->sdwRtcOffset = 0;
     memset(g_psSetupMenu->bMADarry, 0, 6);

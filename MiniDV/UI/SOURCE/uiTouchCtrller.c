@@ -1862,6 +1862,7 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
     {
         if (dwSpriteId == 1)
         {
+            /*
             if (g_psSetupMenu->bEnableOpenPassword)
             {
                 memset(strEditPassword, 0, sizeof(strEditPassword));
@@ -1877,10 +1878,11 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
                 dialogOnClose = Dialog_SetPassword_BootPassword_OnInput;
                 popupDialog(Dialog_SetPassword1, "SetPassword");
                 xpgUpdateStage();
-            }
+            }*/
         }
         else if (dwSpriteId == 3)
         {
+            /*
             if (g_psSetupMenu->bEnableHirePassword)
             {
                 memset(strEditPassword, 0, sizeof(strEditPassword));
@@ -1897,15 +1899,24 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
                 popupDialog(Dialog_SetPassword1, "SetPassword");
                 xpgUpdateStage();
             }
+            */
         }
         else if (dwSpriteId == 4)
         {
+            /*
             if (!g_psSetupMenu->bEnableHirePassword)
             {
-            }
+            }*/
         }
         else if (dwSpriteId == 5)
         {
+            if (!g_psSetupMenu->bEnableHirePassword)
+            {
+                g_psSetupMenu->bLockTimeMode = 1;
+                xpgUpdateStage();
+                WriteSetupChg();
+            }
+            /*
             if (!g_psSetupMenu->bEnableHirePassword)
             {
                 strDialogTitle = getstr(Str_SuoDingRongJieCiShu);
@@ -1914,10 +1925,19 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
                 boDialogValueIsFloat = 0;
                 popupDialog(Dialog_Value, "SetPassword");
                 xpgUpdateStage();
-            }
+            }*/
+            
         }
         else if (dwSpriteId == 6)
         {
+            if (!g_psSetupMenu->bEnableHirePassword)
+            {
+                g_psSetupMenu->bLockTimeMode = 0;
+                xpgUpdateStage();
+                WriteSetupChg();
+            }
+            
+            /*
             if (g_psSetupMenu->bEnableOpenPassword)
             {
                 memset(strEditPassword, 0, sizeof(strEditPassword));
@@ -1925,10 +1945,11 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
                 dialogOnClose = Dialog_CheckPassword_ChangeBootPassword_OnInput;
                 popupDialog(Dialog_CheckPassword, "SetPassword");
                 xpgUpdateStage();
-            }
+            }*/
         }
         else if (dwSpriteId == 7)
         {
+            /*
             if (g_psSetupMenu->bEnableHirePassword)
             {
                 memset(strEditPassword, 0, sizeof(strEditPassword));
@@ -1937,6 +1958,7 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
                 popupDialog(Dialog_CheckPassword, "SetPassword");
                 xpgUpdateStage();
             }
+            */
         }
     }
     else if (dwHashKey == xpgHash("SetInfo"))
