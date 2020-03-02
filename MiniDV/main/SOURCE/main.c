@@ -192,6 +192,7 @@ static int ProcessAfterIsp(BYTE driveId)
 		
 	}
 	//---------- copy file to sys_drv ----------
+	#if 0
 	DWORD *dwBuffer;
 	BYTE bFileType;
 	DWORD i, dwTotal;
@@ -233,7 +234,7 @@ static int ProcessAfterIsp(BYTE driveId)
 		FileClose(pSrcHandle);
 	}
 	ext_mem_free(dwBuffer);
-
+#endif
 	//if ( driveId == NAND )
 	{
 		if (ret = Fat32_Format(DriveGet(NAND), USER_DRV_LABEL) != PASS)

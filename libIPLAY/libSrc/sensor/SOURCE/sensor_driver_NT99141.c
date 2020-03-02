@@ -481,12 +481,13 @@ extern BYTE sensor_IMGSIZE_ID;
 
 static void NT99140_NightMode();
 
-int boIsNightMode = 0;              // 0: day, 1: overcast, 2: night
+//int boIsNightMode = 0;              // 0: day, 1: overcast, 2: night
 #if (PRODUCT_UI==UI_WELDING)
 //static BYTE st_bhaveSetted[2] = {0};
 #else
 //static BYTE st_bhaveSetted=0;
 #endif
+
 static void NT99140_Initial_Setting()
 {
 #if (PRODUCT_UI==UI_WELDING)
@@ -766,18 +767,13 @@ static void NT99140_setVGA_640x480_30FPS(void)
 	NT99140_setVGA_640x480();
 	return;                
 }                              
-                               
-static void NT99140_setSVGA_800x480(void)
+
+void NT99141_ScalerTo_800x480(void)
 {
     /*for capture preview (Initial setting)*/
     MP_DEBUG1("---## %s ##---", __FUNCTION__);
-	NT99140_Initial_Setting();
-
-#if 1//!SHOW_CENTER
-	sensor_nt99140_setRegister(0x32F1, 0x01);//BW 
-#endif
 	             
-#if 1
+#if 0
 //[YUYV_800x480_10.00_10.01_Fps_PCLK48Mhz]
 sensor_nt99140_setRegister(0x32BF, 0x60); 
 sensor_nt99140_setRegister(0x32C0, 0x74); 
@@ -838,7 +834,7 @@ sensor_nt99140_setRegister(0x3021, 0x06);
 sensor_nt99140_setRegister(0x3060, 0x01); 
 #endif
 
-#if 0
+#if 1
 
 //[YUYV_800x480_20.00_20.01_FpsPCLK48Mhz]
 sensor_nt99140_setRegister(0x32BF, 0x60); 
@@ -955,7 +951,15 @@ sensor_nt99140_setRegister(0x3021, 0x06);
 sensor_nt99140_setRegister(0x3060, 0x01); 
 
 #endif                                           
-#if 0
+}
+
+void NT99141_Center_800x480(void)
+{
+    /*for capture preview (Initial setting)*/
+    MP_DEBUG1("---## %s ##---", __FUNCTION__);
+
+//--以下三组数据为按1:1取sensor中间的800*480数据出来，不做缩放
+#if 1
 //[YUYV_800x480_40.00_40.04_Fps]
  
 sensor_nt99140_setRegister(0x32BF, 0x60); 
@@ -1102,6 +1106,22 @@ sensor_nt99140_setRegister(0x3021, 0x06);
 sensor_nt99140_setRegister(0x3060, 0x01); 
 #endif
 
+}
+
+static void NT99140_setSVGA_800x480(void)
+{
+    /*for capture preview (Initial setting)*/
+    MP_DEBUG1("---## %s ##---", __FUNCTION__);
+	NT99140_Initial_Setting();
+
+#if 1//!SHOW_CENTER
+	sensor_nt99140_setRegister(0x32F1, 0x01);//BW 
+#endif
+
+	if (Sensor_GetPicMode())
+		NT99141_Center_800x480();
+	else
+		NT99141_ScalerTo_800x480();
 
 }                                          
                                            

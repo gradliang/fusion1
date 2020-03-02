@@ -57,7 +57,7 @@ static STWELDSTATUS st_WeldStatus;
 #define MAX_ADJ_NUM					9
 #define MOTO_ADJ_NUM				6
 static BYTE st_bStrFace[MOTOR_NUM][POS_STR_LEN], st_bStrCenter[MOTOR_NUM][POS_STR_LEN], st_bStrCore[MOTOR_NUM][POS_STR_LEN],st_bStrHLevel[MOTOR_NUM][POS_STR_LEN], st_bStrInfo[POS_STR_LEN],st_bAdjustMotoStep=0;
-static WORD st_wMotoStep[MAX_ADJ_NUM]={100,100,100,100,10,10,38,1500,2300};
+static WORD st_wMotoStep[MAX_ADJ_NUM]={500,500,100,100,10,10,38,1500,2300};
 static BYTE *st_pbAdjStr[MAX_ADJ_NUM]={"Moto","Moto","Moto","Moto","Moto","Moto","JianJu","TuiJing","FangDian"};
 static BYTE st_bWaitMotoStop=0;
 #endif
@@ -67,6 +67,12 @@ static DWORD st_dwBrightness[2]={0};
 BYTE g_bDisplayUseIpw2=1; // 0->ipw1  1->ipw2
 
 #endif
+
+static BYTE st_bSensorMode=0; // 0->scaler mode  1-> 1:1 get center data
+BYTE Sensor_GetPicMode(void)
+{
+	return st_bSensorMode;
+}
 
 #if 1 //OPM
 //实时申请,前一个SEG为HEAD，HEAD内每个DWORD为有效SEG数
@@ -4949,10 +4955,32 @@ void TSPI_DataProc(void)
 						{
 							if (st_bAdjustMotoStep)
 							{
+								#if 0
 								if (st_dwGetCenterState)
 									st_dwGetCenterState=0;
 								else
 									AutoGetFiberLowPoint();
+								#else
+								if (st_bSensorMode)
+									st_bSensorMode=0;
+								else
+									st_bSensorMode=1;
+								#if 0
+								IPU *ipu = (IPU *) IPU_BASE;
+								DWORD dwIpudata=ipu->Ipu_reg_F0;
+
+								ipu->Ipu_reg_F0 |= (BIT6|BIT7);
+								Drive_Sensor_NT99140();
+								mpCopyEqualWin(Idu_GetNextWin(), Idu_GetCurrWin());
+								Idu_ChgWin(Idu_GetNextWin());
+								ipu->Ipu_reg_F0 =dwIpudata;
+								#else
+								xpgCb_StopAllSensorWork();
+								mpCopyEqualWin(Idu_GetNextWin(), Idu_GetCurrWin());
+								Idu_ChgWin(Idu_GetNextWin());
+    							Camcorder_PreviewStart(CAMCORDER_RESOLUTION_800x480);
+    							#endif
+								#endif
 							}
 							else
 							{
