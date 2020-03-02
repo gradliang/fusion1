@@ -2432,6 +2432,12 @@ SWORD xpgDrawSprite_DarkIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite,
         if (pstMask)
             xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
     }
+    else if (dwHashKey == xpgHash("SetPassword"))
+    {
+        pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 0);
+        if (pstMask)
+            xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+    }
     
     return PASS;
 }
@@ -4344,61 +4350,68 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
     }
     else if (dwHashKey == xpgHash("SetPassword"))
     {
+        STXPGSPRITE * pstMask1;
+        STXPGSPRITE * pstMask2;
         WORD lineWidth = 470; 
+        DWORD lineColor = RGB2YUV(0x00, 0x00, 0x00);
+        DWORD textX = pstSprite->m_wPx;
         Idu_FontColorSet(0x00,0x00,0x00);
         if (dwListId == 0)
             text = getstr(Str_KaiJiMiMa);
         else if (dwListId == 1)
         {
-            if (g_psSetupMenu->bEnableOpenPassword)
-                text = getstr(Str_GuanBiKaiJiMiMa);
-            else
-                text = getstr(Str_SheZhiKaiJiMiMa);
-            lineWidth = 210;
+            text = getstr(Str_GengGaiKaiJiMiMa);
+            Idu_PrintStringRight(pWin, ">", pstSprite->m_wPx + lineWidth, pstSprite->m_wPy, 0);
         }
         else if (dwListId == 2)
-            text = getstr(Str_ZuJieMiMa);
+            return PASS;
         else if (dwListId == 3)
-        {
-            if (g_psSetupMenu->bEnableHirePassword)
-                text = getstr(Str_GuanBiZuJieMiMa);
-            else
-                text = getstr(Str_SheZhiZuJieMiMa);
-            lineWidth = 210;
-        }
+            text = getstr(Str_SuoDingMiMa);
         else if (dwListId == 4)
         {
-            text = getstr(Str_ZuJieRiQi);
-            if (g_psSetupMenu->bEnableHirePassword)
-                Idu_FontColorSet(130,130,130);
+            text = getstr(Str_GengGaiSuoDingMiMa);
+            Idu_PrintStringRight(pWin, ">", pstSprite->m_wPx + lineWidth, pstSprite->m_wPy, 0);
         }
         else if (dwListId == 5)
         {
-            text = getstr(Str_SuoDingRongJieCiShu);
+            textX += 30;
+            text = getstr(Str_SuoDingRiQi);
             if (g_psSetupMenu->bEnableHirePassword)
+            {
                 Idu_FontColorSet(130,130,130);
+                lineColor = RGB2YUV(130, 130, 130);
+            }
+            DWORD radioX = pstSprite->m_wPx;
+            DWORD radioY = pstSprite->m_wPy + 4;
+            pstMask1 = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, g_psSetupMenu->bEnableHirePassword ? 5 : 1);
+            pstMask2 = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 2);
+            if (pstMask1 && pstMask2)
+                xpgRoleDrawMask(pstMask1->m_pstRole, pWin->pdwStart, radioX, radioY, pWin->wWidth, pWin->wHeight, pstMask2->m_pstRole);
+            
         }
         else if (dwListId == 6)
         {
-            if (g_psSetupMenu->bEnableOpenPassword == 0)
-                return PASS;
-            lineWidth = 210;
-            text = getstr(Str_GengGaiKaiJiMiMa);
-        }
-        else if (dwListId == 7)
-        {
-            if (g_psSetupMenu->bEnableHirePassword == 0)
-                return PASS;
-            lineWidth = 210;
-            text = getstr(Str_GengGaiZuJieMiMa);
+            textX += 30;
+            text = getstr(Str_SuoDingRongJieCiShu);
+            if (g_psSetupMenu->bEnableHirePassword)
+            {
+                Idu_FontColorSet(130,130,130);
+                lineColor = RGB2YUV(130, 130, 130);
+            }
+            DWORD radioX = pstSprite->m_wPx;
+            DWORD radioY = pstSprite->m_wPy + 4;
+            pstMask1 = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, g_psSetupMenu->bEnableHirePassword ? 5 : 1);
+            pstMask2 = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 2);
+            if (pstMask1 && pstMask2)
+                xpgRoleDrawMask(pstMask1->m_pstRole, pWin->pdwStart, radioX, radioY, pWin->wWidth, pWin->wHeight, pstMask2->m_pstRole);
         }
 
         //Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy - 14, lineWidth, 50, RGB2YUV(0x4F, 0x4F, 0x00));
         xpgSpriteSetTouchArea(pstSprite, pstSprite->m_wPx, pstSprite->m_wPy - 14, lineWidth, 50);
         
         SetCurrIduFontID(FONT_ID_HeiTi19);
-        Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
-        Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + 38, lineWidth, 2, RGB2YUV(0x2F, 0x2F, 0x2F));
+        Idu_PrintString(pWin, text, textX, pstSprite->m_wPy, 0, 0);
+        Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + 38, lineWidth, 2, lineColor);
         Idu_FontColorSet(0xff,0xff,0xff);
 
     }
@@ -5037,6 +5050,19 @@ SWORD xpgDrawSprite_Radio(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BO
             xpgSpriteEnableTouch(pstSprite);
         }
     }
+    else if (dwHashKey == xpgHash("SetPassword"))
+    {
+        pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 0);
+        if (pstMask)
+        {
+            if (dwSpriteId == 0 && g_psSetupMenu->bEnableOpenPassword)
+                xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+            if (dwSpriteId == 1 && g_psSetupMenu->bEnableHirePassword)
+                xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+        }
+        xpgSpriteEnableTouch(pstSprite);
+    }
+    
     
     return PASS;
 }

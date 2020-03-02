@@ -197,7 +197,9 @@ enum xpgStringId {
 	Str_XuanZeKaiShiShiJian,		//   187
 	Str_XuanZeJieShuShiJian,		//   188
 	Str_ChaKan,						//   189
-	
+	Str_SuoDingMiMa,				//   190
+	Str_GengGaiSuoDingMiMa,			//   191
+	Str_SuoDingRiQi,				//   192
 	
 	
 	Str_MAX_ID,

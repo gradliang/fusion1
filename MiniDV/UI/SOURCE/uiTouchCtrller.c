@@ -2087,7 +2087,21 @@ SWORD touchSprite_Radio(STXPGSPRITE * sprite, WORD x, WORD y)
             WriteSetupChg();
         }
     }
-    
+    else if (dwHashKey == xpgHash("SetPassword"))
+    {
+        if (dwSpriteId == 0)
+        {
+            g_psSetupMenu->bEnableOpenPassword = ! g_psSetupMenu->bEnableOpenPassword;
+            xpgUpdateStage();
+            WriteSetupChg();
+        }
+        else if (dwSpriteId == 1)
+        {
+            g_psSetupMenu->bEnableHirePassword = ! g_psSetupMenu->bEnableHirePassword;
+            xpgUpdateStage();
+            WriteSetupChg();
+        }
+    }
     return 0;
 }
 
