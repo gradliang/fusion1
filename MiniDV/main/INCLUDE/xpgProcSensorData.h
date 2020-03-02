@@ -114,7 +114,7 @@ typedef struct {
 
 
 //----debug switch
-#define   ALIGN_DEMO_MODE											1
+#define   ALIGN_DEMO_MODE											0
 #define   DEBUG_POS_DATA												0
 
 
