@@ -1150,10 +1150,10 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         }
         else if (dialogType == Dialog_SetPassword1 || dialogType == Dialog_SetPassword2 || dialogType == Dialog_CheckPassword || dialogType == Dialog_EditValue)
         {
-            const WORD x0 = 252, x1 = 352, x2 = 452;
-            const WORD y0 = 210, y1 = 260, y2 = 310, y3 = 360;
-            pstSprite->m_wWidth = 100;
-            pstSprite->m_wHeight = 50;
+            const WORD x0 = 220, x1 = 340, x2 = 460;
+            const WORD y0 = 190, y1 = 255, y2 = 320, y3 = 385;
+            pstSprite->m_wWidth = 120;
+            pstSprite->m_wHeight = 65;
             if (dwSpriteId == 0)
             {
                 wX = pstSprite->m_wPx = x1;
@@ -1221,6 +1221,13 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
                 pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_KEYBOARD_NULL];
                 pstRoleMask = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_KEYBOARD_LEFT_MASK];
                 xpgRoleDrawMask(pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstRoleMask);
+                if (dialogType == Dialog_CheckPassword)
+                {
+                    Idu_FontColorSet(0x00, 0x00, 0x00);
+                    SetCurrIduFontID(FONT_ID_HeiTi16);
+                    Idu_PrintStringCenter(pWin, getstr(Str_WangJiMiMa), wX, wY + 18, 0, pstSprite->m_wWidth);
+                    Idu_FontColorSet(0xff, 0xff, 0xff);
+                }
             }
             else if (dwSpriteId == 11)
             {
@@ -2676,7 +2683,13 @@ SWORD xpgDrawSprite_CloseIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite
             pstSprite->m_wPy = 138;
             xpgRoleDrawMask(pstRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, pstMask);
         }
-        else if (dialogType == Dialog_SetPassword1 || dialogType == Dialog_SetPassword2 || dialogType == Dialog_CheckPassword || dialogType == Dialog_EditValue)
+        else if (dialogType == Dialog_SetPassword1 || dialogType == Dialog_SetPassword2 || dialogType == Dialog_CheckPassword)
+        {
+            pstSprite->m_wPx = curDialogLeft + curDialogWidth - 40 - 8;
+            pstSprite->m_wPy = curDialogTop + 5;
+            xpgDirectDrawRoleOnWin(pWin, g_pstXpgMovie->m_pstObjRole[XPG_ROLE_CLOSE_ICON], pstSprite->m_wPx, pstSprite->m_wPy, pstSprite, boClip);
+        }
+        else if (dialogType == Dialog_EditValue)
         {
             pstSprite->m_wPx = 502;
             pstSprite->m_wPy = 72;
@@ -3999,34 +4012,38 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         }
         else if (dialogType == Dialog_SetPassword1 || dialogType == Dialog_SetPassword2 || dialogType == Dialog_CheckPassword)
         {
-            WORD x = 0, y = 138, w = 40, h = 40;
+            WORD x = 0, y = 108, w = 50, h = 50;
             char str[2];
             str[1] = 0;
             SetCurrIduFontID(FONT_ID_HeiTi19);
             Idu_FontColorSet(0,0,0);
             if (dwTextId == 0)
             {
-                x = 298;
+                x = 270;
                 //mpDebugPrint("cur-input password = %s", strEditPassword);
-                Idu_PaintWinArea(pWin, x, y, w, h, RGB2YUV(255,255,255));
+                Idu_PaintWinArea(pWin, x, y, w, h, RGB2YUV(0xc9,0xc9,0xc9));
+                Idu_PaintWinArea(pWin, x+2, y+2, w-4, h-4, RGB2YUV(0xff,0xff,0xff));
                 str[0] = strEditPassword[0];
                 if (str[0] != 0)
-                    Idu_PrintStringCenter(pWin, str, x, y+4, 0, w);
-                x = 352;
-                Idu_PaintWinArea(pWin, x, y, w, h, RGB2YUV(255,255,255));
+                    Idu_PrintStringCenter(pWin, str, x, y+10, 0, w);
+                x = 340;
+                Idu_PaintWinArea(pWin, x, y, w, h, RGB2YUV(0xc9,0xc9,0xc9));
+                Idu_PaintWinArea(pWin, x+2, y+2, w-4, h-4, RGB2YUV(0xff,0xff,0xff));
                 str[0] = strEditPassword[1];
                 if (str[0] != 0)
-                    Idu_PrintStringCenter(pWin, str, x, y+4, 0, w);
-                x = 406;
-                Idu_PaintWinArea(pWin, x, y, w, h, RGB2YUV(255,255,255));
+                    Idu_PrintStringCenter(pWin, str, x, y+10, 0, w);
+                x = 410;
+                Idu_PaintWinArea(pWin, x, y, w, h, RGB2YUV(0xc9,0xc9,0xc9));
+                Idu_PaintWinArea(pWin, x+2, y+2, w-4, h-4, RGB2YUV(0xff,0xff,0xff));
                 str[0] = strEditPassword[2];
                 if (str[0] != 0)
-                    Idu_PrintStringCenter(pWin, str, x, y+4, 0, w);
-                x = 460;
-                Idu_PaintWinArea(pWin, x, y, w, h, RGB2YUV(255,255,255));
+                    Idu_PrintStringCenter(pWin, str, x, y+10, 0, w);
+                x = 480;
+                Idu_PaintWinArea(pWin, x, y, w, h, RGB2YUV(0xc9,0xc9,0xc9));
+                Idu_PaintWinArea(pWin, x+2, y+2, w-4, h-4, RGB2YUV(0xff,0xff,0xff));
                 str[0] = strEditPassword[3];
                 if (str[0] != 0)
-                    Idu_PrintStringCenter(pWin, str, x, y+4, 0, w);
+                    Idu_PrintStringCenter(pWin, str, x, y+10, 0, w);
             }
             Idu_FontColorSet(0xff,0xff,0xff);
         }
@@ -4921,15 +4938,25 @@ SWORD xpgDrawSprite_Dialog(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
         }
         else if (dialogId == Dialog_SetPassword1 || dialogId == Dialog_SetPassword2 || dialogId == Dialog_CheckPassword || dialogId == Dialog_EditValue)
         {
-            dialogW = 300;
-            dialogH = 340;
-            dailogX = (pWin->wWidth - dialogW) / 2;
-            dialogY = (pWin->wHeight - dialogH) / 2;
-            MakeDialogRole(&stRole, dialogW, dialogH);
+            curDialogWidth = dialogW = 360;
+            curDialogHeight = dialogH = 420;
+            curDialogLeft = dailogX = (pWin->wWidth - dialogW) / 2;
+            curDialogTop = dialogY = (pWin->wHeight - dialogH) / 2;
+            MakeDialogRoleNew(&stRole, dialogW, dialogH);
             MakeMaskRole(&stMaskRole, XPG_ROLE_ICON_MASK_0, dialogW, dialogH);
             xpgRoleDrawMask(&stRole, pWin->pdwStart, dailogX, dialogY, pWin->wWidth, pWin->wHeight, &stMaskRole);
             SetCurrIduFontID(FONT_ID_HeiTi19);
-            Idu_PrintStringCenter(pWin, strDialogTitle, dailogX, dialogY + 5, 0, dialogW);
+            if (dialogId == Dialog_About)
+                text = getstr(Str_GuanYuBenJi);
+            else if (dialogId == Dialog_Times)
+                text = getstr(Str_DianJiBangXinXi);
+            else if (dialogId == Dialog_TempInfo)
+                text = getstr(Str_WenDuXinXi);
+            else if (dialogId == Dialog_BatInfo)
+                text = getstr(Str_DianChiXinXi);
+            Idu_FontColorSet(0, 0, 0);
+            Idu_PrintStringCenter(pWin, strDialogTitle, dailogX, dialogY + 10, 0, dialogW);
+            Idu_FontColorSet(255, 255, 255);
         }
         else if (dialogId == Dialog_Value)
         {

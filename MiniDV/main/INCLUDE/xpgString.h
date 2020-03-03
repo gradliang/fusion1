@@ -200,7 +200,7 @@ enum xpgStringId {
 	Str_SuoDingMiMa,				//   190
 	Str_GengGaiSuoDingMiMa,			//   191
 	Str_SuoDingRiQi,				//   192
-	
+	Str_WangJiMiMa,					//   193
 	
 	Str_MAX_ID,
 };
