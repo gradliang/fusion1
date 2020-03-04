@@ -2691,9 +2691,9 @@ SWORD xpgDrawSprite_CloseIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite
         }
         else if (dialogType == Dialog_EditValue)
         {
-            pstSprite->m_wPx = 502;
-            pstSprite->m_wPy = 72;
-            xpgRoleDrawMask(pstRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, pstMask);
+            pstSprite->m_wPx = curDialogLeft + curDialogWidth - 40 - 8;
+            pstSprite->m_wPy = curDialogTop + 5;
+            xpgDirectDrawRoleOnWin(pWin, g_pstXpgMovie->m_pstObjRole[XPG_ROLE_CLOSE_ICON], pstSprite->m_wPx, pstSprite->m_wPy, pstSprite, boClip);
         }
         else if (dialogType == Dialog_Value)
         {
@@ -4066,14 +4066,15 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         }
         else if (dialogType == Dialog_EditValue)
         {
-            WORD x = 298, y = 138, w = 202, h = 40;
+            WORD x = 250, y = 108, w = 300, h = 50;
             SetCurrIduFontID(FONT_ID_HeiTi19);
             Idu_FontColorSet(0,0,0);
             if (dwTextId == 0)
             {
-                Idu_PaintWinArea(pWin, x, y, w, h, RGB2YUV(255,255,255));
+                Idu_PaintWinArea(pWin, x, y, w, h, RGB2YUV(0xc9,0xc9,0xc9));
+                Idu_PaintWinArea(pWin, x+2, y+2, w-4, h-4, RGB2YUV(0xff,0xff,0xff));
                 if (strEditValue[0])
-                    Idu_PrintString(pWin, strEditValue, x+4, y+4, 0, 0);
+                    Idu_PrintString(pWin, strEditValue, x+8, y+10, 0, 0);
             }
             Idu_FontColorSet(0xff,0xff,0xff);
         }
@@ -4391,6 +4392,7 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         }
         else if (dwListId == 5)
         {
+            char tmpbuf[64];
             textX += 30;
             text = getstr(Str_SuoDingRiQi);
             if (g_psSetupMenu->bEnableHirePassword)
@@ -4404,16 +4406,20 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             pstMask2 = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 2);
             if (pstMask1 && pstMask2)
                 xpgRoleDrawMask(pstMask1->m_pstRole, pWin->pdwStart, radioX, radioY, pWin->wWidth, pWin->wHeight, pstMask2->m_pstRole);
-            if (g_psSetupMenu->bLockTimeMode)
+            if (g_psSetupMenu->bLockDateMode != 0)
             {
                 pstMask1 = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, g_psSetupMenu->bEnableHirePassword ? 6 : 3);
                 pstMask2 = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 4);
                 if (pstMask1 && pstMask2)
                     xpgRoleDrawMask(pstMask1->m_pstRole, pWin->pdwStart, radioX + 6, radioY + 5, pWin->wWidth, pWin->wHeight, pstMask2->m_pstRole);
             }
+
+            sprintf(tmpbuf, "%04d/%02d/%02d%s", g_psSetupMenu->wLockDateYear, g_psSetupMenu->bLockDateMonth, g_psSetupMenu->bLockDateDay, getstr(Str_Zhi));
+            Idu_PrintStringRight(pWin, tmpbuf, pstSprite->m_wPx + lineWidth, pstSprite->m_wPy, 0);
         }
         else if (dwListId == 6)
         {
+            char tmpbuf[64];
             textX += 30;
             text = getstr(Str_SuoDingRongJieCiShu);
             if (g_psSetupMenu->bEnableHirePassword)
@@ -4427,13 +4433,16 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             pstMask2 = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 2);
             if (pstMask1 && pstMask2)
                 xpgRoleDrawMask(pstMask1->m_pstRole, pWin->pdwStart, radioX, radioY, pWin->wWidth, pWin->wHeight, pstMask2->m_pstRole);
-            if (! g_psSetupMenu->bLockTimeMode)
+            if (g_psSetupMenu->bLockDateMode == 0)
             {
                 pstMask1 = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, g_psSetupMenu->bEnableHirePassword ? 6 : 3);
                 pstMask2 = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 4);
                 if (pstMask1 && pstMask2)
                     xpgRoleDrawMask(pstMask1->m_pstRole, pWin->pdwStart, radioX + 6, radioY + 5, pWin->wWidth, pWin->wHeight, pstMask2->m_pstRole);
             }
+
+            sprintf(tmpbuf, "%d%s", g_psSetupMenu->wLockedTimes, getstr(Str_Ci));
+            Idu_PrintStringRight(pWin, tmpbuf, pstSprite->m_wPx + lineWidth, pstSprite->m_wPy, 0);
         }
 
         //Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy - 14, lineWidth, 50, RGB2YUV(0x4F, 0x4F, 0x00));

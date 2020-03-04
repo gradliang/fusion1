@@ -914,18 +914,23 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
             }
             else if (dwIconId == 6)
             {
-                ST_SYSTEM_TIME curTime;
-				  DWORD dwLastRtc;
+                if (dialogOnClose != NULL)
+                    dialogOnClose();
+                else
+                {
+                    ST_SYSTEM_TIME curTime;
+                    DWORD dwLastRtc;
 
-                SystemTimeGet(&curTime);
-                curTime.u16Year = dwDialogTempValue >> 16;
-                curTime.u08Month = (dwDialogTempValue >> 8) & 0xff;
-                curTime.u08Day = dwDialogTempValue & 0xff;
-				  dwLastRtc=RTC_ReadCount();
-                SystemTimeSet(&curTime);
-				  g_psSetupMenu->sdwRtcOffset+=dwLastRtc-RTC_ReadCount();
-				  WriteSetupChg();
-                exitDialog();
+                    SystemTimeGet(&curTime);
+                    curTime.u16Year = dwDialogTempValue >> 16;
+                    curTime.u08Month = (dwDialogTempValue >> 8) & 0xff;
+                    curTime.u08Day = dwDialogTempValue & 0xff;
+                    dwLastRtc=RTC_ReadCount();
+                    SystemTimeSet(&curTime);
+                    g_psSetupMenu->sdwRtcOffset+=dwLastRtc-RTC_ReadCount();
+                    WriteSetupChg();
+                    exitDialog();
+                }
             }
             else if (dwIconId == 7)
             {
@@ -1388,6 +1393,11 @@ SWORD touchSprite_CloseIcon(STXPGSPRITE * sprite, WORD x, WORD y)
                 {
                     int newValue = atoi(strEditValue);
                     dwDialogTempValue = newValue;
+                    if (dialogOnClose != NULL)
+                    {
+                        dialogOnClose();
+                        return 0;
+                    }
                 }
             }
             exitDialog();
@@ -1475,9 +1485,21 @@ static void Dialog_SetPassword_HirePassword_OnInput()
 static void Dialog_SetValue_SuoDingRongJieCiShu()
 {
     g_psSetupMenu->wLockedTimes = dwDialogTempValue;
+    g_psSetupMenu->bLockDateMode = 0;
     exitDialog();
     WriteSetupChg();
 }
+
+static void Dialog_SetValue_SuoDingRongJieRiQi()
+{
+    g_psSetupMenu->wLockDateYear = dwDialogTempValue >> 16;;
+    g_psSetupMenu->bLockDateMonth = (dwDialogTempValue >> 8) & 0xff;
+    g_psSetupMenu->bLockDateDay = dwDialogTempValue & 0xff;   
+    g_psSetupMenu->bLockDateMode = 1;
+    exitDialog();
+    WriteSetupChg();
+}
+
 
 static void Dialog_SetValue_RongJieSheZhi()
 {
@@ -1504,6 +1526,7 @@ SWORD touchSprite_Text(STXPGSPRITE * sprite, WORD x, WORD y)
                     sprintf(strEditValue, "%d.%d", dwDialogTempValue>>6, dwDialogTempValue&0x3F);
                 else
                     sprintf(strEditValue, "%d", dwDialogTempValue);
+                dialogOnClose = NULL;
                 popupDialog(Dialog_EditValue, DIALOG_PAGE_NAME);
                 xpgUpdateStage();
             }
@@ -1836,6 +1859,7 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
             ST_SYSTEM_TIME curTime;
             SystemTimeGet(&curTime);
             dwDialogTempValue = (curTime.u16Year<<16) | (curTime.u08Month<< 8) | curTime.u08Day;
+            dialogOnClose = NULL;
             popupDialog(Dialog_SetDate, "SetTime");
             xpgUpdateStage();
         }
@@ -1886,47 +1910,30 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
         }
         else if (dwSpriteId == 5)
         {
-            if (!g_psSetupMenu->bEnableHirePassword)
-            {
-                g_psSetupMenu->bLockTimeMode = 1;
-                xpgUpdateStage();
-                WriteSetupChg();
-            }
-            /*
-            if (!g_psSetupMenu->bEnableHirePassword)
-            {
-                strDialogTitle = getstr(Str_SuoDingRongJieCiShu);
-                dialogOnClose = Dialog_SetValue_SuoDingRongJieCiShu;
-                dwDialogTempValue = g_psSetupMenu->wLockedTimes;
-                boDialogValueIsFloat = 0;
-                popupDialog(Dialog_Value, "SetPassword");
-                xpgUpdateStage();
-            }*/
-            
+            Free_CacheWin();
+            Idu_GetCacheWin_WithInit();
+            DrakWin(Idu_GetCacheWin(), 2, 1);
+            mpCopyEqualWin(Idu_GetCurrWin(), Idu_GetCacheWin());
+            ////////////////
+            strDialogTitle = getstr(Str_SuoDingRiQi);
+            dialogOnClose = Dialog_SetValue_SuoDingRongJieRiQi;
+            dwDialogTempValue = (g_psSetupMenu->wLockDateYear <<16) | (g_psSetupMenu->bLockDateMonth << 8) | g_psSetupMenu->bLockDateDay;
+            popupDialog(Dialog_SetDate, "SetPassword");
+            xpgUpdateStage();
         }
         else if (dwSpriteId == 6)
         {
-            if (!g_psSetupMenu->bEnableHirePassword)
-            {
-                g_psSetupMenu->bLockTimeMode = 0;
-                xpgUpdateStage();
-                WriteSetupChg();
-            }
-            
-            /*
-            if (g_psSetupMenu->bEnableOpenPassword)
-            {
-                
-            }*/
-        }
-        else if (dwSpriteId == 7)
-        {
-            /*
-            if (g_psSetupMenu->bEnableHirePassword)
-            {
-                
-            }
-            */
+            Free_CacheWin();
+            Idu_GetCacheWin_WithInit();
+            DrakWin(Idu_GetCacheWin(), 2, 1);
+            mpCopyEqualWin(Idu_GetCurrWin(), Idu_GetCacheWin());
+            ////////////////
+            strDialogTitle = getstr(Str_SuoDingRongJieCiShu);
+            dialogOnClose = Dialog_SetValue_SuoDingRongJieCiShu;
+            dwDialogTempValue = g_psSetupMenu->wLockedTimes;
+            boDialogValueIsFloat = 0;
+            popupDialog(Dialog_EditValue, "SetPassword");
+            xpgUpdateStage();
         }
     }
     else if (dwHashKey == xpgHash("SetInfo"))
