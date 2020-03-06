@@ -183,8 +183,8 @@ typedef struct ST_SETUP_MENU_SETTING_VALUE
     char bCustomizeIcon[6];
     BYTE bCustomizeIconEnable[6];
     BYTE bCloudMode;
-    BYTE bBrightness;                   // Liang Du,  0-100
-    BYTE bVolume;                       // Yin Liang, 0 -100 
+    BYTE bBrightness;                   // 亮度,  0-100
+    BYTE bVolume;                       // 音量, 0 -100 
     BYTE bPreHotEnable;                 // 预热模式
     BYTE bHotUpMode;                    // 加热模式
     BYTE bRongJieZhiLiang;              // 熔接质量

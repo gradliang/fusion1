@@ -5031,6 +5031,38 @@ SWORD xpgDrawSprite_Dialog(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
 
 SWORD xpgDrawSprite_Status(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOOL boClip)         // type24
 {
+    DWORD rightStart = 800 - 108;
+    DWORD rightX = rightStart;
+
+    if (1)          // auto fusion
+    {
+        xpgDirectDrawRoleOnWin(pWin, g_pstXpgMovie->m_pstObjRole[XPG_ROLE_STATUS_ICON_AUTOFUSION], rightX-24, 8, pstSprite, boClip);
+        rightX -= 30;
+    }
+    if (g_psSetupMenu->bCloudMode)
+    {
+        if (1)          // cloud connect
+        {
+            xpgDirectDrawRoleOnWin(pWin, g_pstXpgMovie->m_pstObjRole[XPG_ROLE_STATUS_ICON_CLOUD_MODE], rightX-24, 8, pstSprite, boClip);
+            rightX -= 30;
+        }
+        else            // cloud disconnect
+        {
+            xpgDirectDrawRoleOnWin(pWin, g_pstXpgMovie->m_pstObjRole[XPG_ROLE_STATUS_ICON_CLOUD_OFF], rightX-24, 8, pstSprite, boClip);
+            rightX -= 30;
+        }
+    }
+    if (g_psSetupMenu->bAutoShutdown)
+    {
+        xpgDirectDrawRoleOnWin(pWin, g_pstXpgMovie->m_pstObjRole[XPG_ROLE_STATUS_ICON_AUTO_OFF], rightX-24, 8, pstSprite, boClip);
+        rightX -= 30;
+    }
+    if (g_psSetupMenu->bSmartBacklight)
+    {
+        xpgDirectDrawRoleOnWin(pWin, g_pstXpgMovie->m_pstObjRole[XPG_ROLE_STATUS_ICON_SMART_BL], rightX-24, 8, pstSprite, boClip);
+        rightX -= 30;
+    }
+    
     return PASS;
 }
 
