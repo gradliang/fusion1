@@ -725,7 +725,7 @@
 #define XPG_ROLE_SMALL_BUTTON_ICON          3
 #define XPG_ROLE_SMALL_BUTTON_LIGHT         4
 #define XPG_ROLE_CLOSE_ICON_MASK            5
-#define XPG_ROLE_CLOSE_ICON                 6
+#define XPG_ROLE_CLOSE_ICON_OLD             6
 #define XPG_ROLE_ADD_MINUS                  7
 #define XPG_ROLE_ADD_MASK                   8
 #define XPG_ROLE_MINUS_MASK                 9

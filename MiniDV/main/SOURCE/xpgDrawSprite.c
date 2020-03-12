@@ -2627,7 +2627,7 @@ SWORD xpgDrawSprite_CloseIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite
     if (dwHashKey == xpgHash(DIALOG_PAGE_NAME))
     {
         int dialogType = xpgGetCurrDialogTypeId();
-        STXPGROLE * pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_CLOSE_ICON];
+        STXPGROLE * pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_CLOSE_ICON_OLD];
         STXPGROLE * pstMask = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_CLOSE_ICON_MASK];
         if (dialogType == Dialog_ReSuGuan)
         {
