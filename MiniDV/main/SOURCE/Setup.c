@@ -421,6 +421,19 @@ SWORD  SetupSendHot(void)
 	return TSPI_PacketSend(bTxData,0);
 }
 
+//use to st_dwSetupSendFlag
+#define						SETUP_RESET_TIMES					10
+//only send,need not save
+enum{
+    SETUP_SEND_HOT,
+    SETUP_SEND_REDPEN, 
+    SETUP_SEND_CLOUDONOFF,
+    SETUP_SEND_SMARTBACKLIGHT,
+    SETUP_SEND_TOUCHVOICE,
+
+    SETUP_SEND_MAXNUM
+}; 
+//--上下必须一一对应
 #pragma alignvar(4)
 SWORD(*SetupSendFunctions[]) (void) =
 {

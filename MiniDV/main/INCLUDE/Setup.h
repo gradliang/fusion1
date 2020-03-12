@@ -99,21 +99,6 @@ enum {
 
 #define						SETTING_NUMBER					256  //对应下面设置的数量
 
-//use to st_dwSetupSendFlag
-#define						SETUP_RESET_TIMES					10
-enum{
-    SETUP_SEND_HOT,
-    SETUP_SEND_CLOUDONOFF,
-    SETUP_SEND_SMARTBACKLIGHT,
-    SETUP_SEND_TOUCHVOICE,
-
-    SETUP_SEND_REDPEN, //only send,need not save
-
-    SETUP_SEND_MAXNUM
-};
-
-
-
 typedef struct {
     unsigned int    fangDianZhongXin;
     unsigned int    rongJieDianYa;
