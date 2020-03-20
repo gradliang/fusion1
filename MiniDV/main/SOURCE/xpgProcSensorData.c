@@ -1326,6 +1326,8 @@ void Weld_StartPause()
 	if (st_dwProcState & BIT30)
 	{
 		st_dwProcState &=~BIT30;
+		//if (st_dwProcState==SENSOR_DISCHARGE2)
+		//	st_dwProcState=SENSOR_FACE_POS2B;
 		EventSet(UI_EVENT, EVENT_PROC_DATA);
 	}
 	else if (st_dwProcState==SENSOR_IDLE)
@@ -1663,7 +1665,12 @@ SWORD SearchLeftFiberBottomEdge(ST_IMGWIN *pWin,BYTE bMode)
 	//DEBUG_POS("wValidLineCnt %d ",wValidLineCnt);
 	if (wValidLineCnt>X_SCAN_VALID_NUM)
 	{
-		swYValidStartAver=GetReallyData(&wYValidStartArry[0],wValidLineCnt,NULL,HORI_OFFSET,st_swFaceY3[bMode]);
+		for (i=HORI_OFFSET;i<(HORI_OFFSET<<3);i++)
+		{
+			swYValidStartAver=GetReallyData(&wYValidStartArry[0],wValidLineCnt,NULL,i,st_swFaceY3[bMode]);
+			if (swYValidStartAver>0)
+				break;
+		}
 		if (swYValidStartAver>0)
 		{
 			#if DISPLAY_IN_ONE_WIN
@@ -1814,7 +1821,12 @@ SWORD SearchLeftFiberCenter(ST_IMGWIN *pWin,BYTE bMode)
 					//计算有效Y起始坐标
 					if (wYStartIndex>X_SCAN_VALID_NUM)
 					{
-						swYValidStartAver=GetReallyData(wYValidArry,wYStartIndex,NULL,HORI_OFFSET,st_swFaceY2[bMode]);
+						for (i=HORI_OFFSET;i<(HORI_OFFSET<<3);i++)
+						{
+							swYValidStartAver=GetReallyData(wYValidArry,wYStartIndex,NULL,i,st_swFaceY2[bMode]);
+							if (swYValidStartAver>0)
+								break;
+						}
 						if (swYValidStartAver>0)
 						{
 							#if DISPLAY_IN_ONE_WIN
@@ -2319,7 +2331,12 @@ SDWORD SearchTopEdge(ST_IMGWIN *pWin,SWORD swStartX,SWORD swXEnd,SWORD swStartY,
 	//计算有效Y起始坐标
 	if (wValidLineCnt>4)
 	{
-		swYValidStartAver=GetReallyData(pwYValidStartArry,wValidLineCnt,NULL,HORI_OFFSET,-1);
+		for (i=HORI_OFFSET;i<(HORI_OFFSET<<3);i++)
+		{
+			swYValidStartAver=GetReallyData(pwYValidStartArry,wValidLineCnt,NULL,i,-1);
+			if (swYValidStartAver>0)
+				break;
+		}
 		if (swYValidStartAver>0)
 		{
 			ext_mem_free(pwYValidStartArry);
@@ -2393,7 +2410,12 @@ SWORD SearchLeftFiberFaceAndTopEdge(ST_IMGWIN *pWin,BYTE bMode,BYTE bScanFace,BY
 	//DEBUG_POS("bScanTopEdge=%d wValidLineCnt %d ",bScanTopEdge,wValidLineCnt);
 	if (bScanTopEdge && wValidLineCnt>X_SCAN_VALID_NUM)
 	{
-		swYValidStartAver=GetReallyData(&wYValidStartArry[0],wValidLineCnt,NULL,HORI_OFFSET,st_swFaceY1[bMode]);
+		for (i=HORI_OFFSET;i<(HORI_OFFSET<<3);i++)
+		{
+			swYValidStartAver=GetReallyData(&wYValidStartArry[0],wValidLineCnt,NULL,i,st_swFaceY1[bMode]);
+			if (swYValidStartAver>0)
+				break;
+		}
 		if (swYValidStartAver>0)
 		{
 			if (st_swFaceY1[bMode]!=swYValidStartAver)
@@ -2431,7 +2453,8 @@ SWORD SearchLeftFiberFaceAndTopEdge(ST_IMGWIN *pWin,BYTE bMode,BYTE bScanFace,BY
 		if (swRet!=FAIL)
 		{
 			x>>=1;
-			if (st_swFaceX[bMode]>=x+X_SHAKE || st_swFaceX[bMode]+X_SHAKE<=x)
+			//if (st_swFaceX[bMode]>=x+X_SHAKE || st_swFaceX[bMode]+X_SHAKE<=x)
+			if (st_swFaceX[bMode]!=x)
 			{
 				st_swFaceX[bMode]=x;
 				DEBUG_POS("X[%d]=%d",bMode,x);
@@ -2518,7 +2541,7 @@ SWORD SearchRightFiberBottomEdge(ST_IMGWIN *pWin,BYTE bMode)
 		}
 		else if (swRet>0)
 		{
-			if (wValidLineCnt<X_SCAN_MAX_SUM)
+			if (wValidLineCnt<X_SCAN_VALID_NUM)
 			{
 				wYValidStartArry[wValidLineCnt]=swRet-1;
 				//mpDebugPrintN(" %d ",wYValidStartArry[wValidLineCnt]);
@@ -2529,11 +2552,17 @@ SWORD SearchRightFiberBottomEdge(ST_IMGWIN *pWin,BYTE bMode)
 		}
 		//TaskYield();
 	}
+	//mpDebugPrint("");
 
 	//计算有效Y起始坐标
-	if (wValidLineCnt>X_SCAN_VALID_NUM)
+	if (wValidLineCnt>=X_SCAN_VALID_NUM)
 	{
-		swYValidStartAver=GetReallyData(&wYValidStartArry[0],wValidLineCnt,NULL,HORI_OFFSET,st_swFaceY3[bMode]);
+		for (i=HORI_OFFSET;i<(HORI_OFFSET<<3);i++)
+		{
+			swYValidStartAver=GetReallyData(&wYValidStartArry[0],wValidLineCnt,NULL,i,st_swFaceY3[bMode]);
+			if (swYValidStartAver>0)
+				break;
+		}
 		if (swYValidStartAver>0)
 		{
 			#if DISPLAY_IN_ONE_WIN
@@ -2688,7 +2717,12 @@ SWORD SearchRightFiberCenter(ST_IMGWIN *pWin,BYTE bMode)
 					//计算有效Y起始坐标
 					if (wYStartIndex>X_SCAN_VALID_NUM)
 					{
-						swYValidStartAver=GetReallyData(wYValidArry,wYStartIndex,NULL,HORI_OFFSET,st_swFaceY2[bMode]);
+						for (i=HORI_OFFSET;i<(HORI_OFFSET<<3);i++)
+						{
+							swYValidStartAver=GetReallyData(wYValidArry,wYStartIndex,NULL,i,st_swFaceY2[bMode]);
+							if (swYValidStartAver>0)
+								break;
+						}
 						if (swYValidStartAver>0)
 						{
 							#if DISPLAY_IN_ONE_WIN
@@ -2794,7 +2828,12 @@ SWORD SearchRightFiberFaceAndTopEdge(ST_IMGWIN *pWin,BYTE bMode,BYTE bScanFace,B
 	//计算有效Y起始坐标
 	if (bScanTopEdge && wValidLineCnt>X_SCAN_VALID_NUM)
 	{
-		swYValidStartAver=GetReallyData(&wYValidStartArry[0],wValidLineCnt,NULL,HORI_OFFSET,st_swFaceY1[bMode]);
+		for (i=HORI_OFFSET;i<(HORI_OFFSET<<3);i++)
+		{
+			swYValidStartAver=GetReallyData(&wYValidStartArry[0],wValidLineCnt,NULL,i,st_swFaceY1[bMode]);
+			if (swYValidStartAver>0)
+				break;
+		}
 		if (swYValidStartAver>0)
 		{
 			#if DISPLAY_IN_ONE_WIN
@@ -2847,7 +2886,8 @@ SWORD SearchRightFiberFaceAndTopEdge(ST_IMGWIN *pWin,BYTE bMode,BYTE bScanFace,B
 		if (swRet!=FAIL)
 		{
 			x>>=1;
-			if (st_swFaceX[bMode]>=x+X_SHAKE || st_swFaceX[bMode]+X_SHAKE<=x)
+			//if (st_swFaceX[bMode]>=x+X_SHAKE || st_swFaceX[bMode]+X_SHAKE<=x)
+			if (st_swFaceX[bMode]!=x)
 			{
 				st_swFaceX[bMode]=x;
 				DEBUG_POS("X[%d]=%d",bMode,x);
@@ -3124,7 +3164,7 @@ SWORD MoveHMotorToSpecPosition(BYTE bSensorIndex,SWORD swSx,SWORD swTx)
 	else
 		return FAIL;
 	swDiffX=swTx-swSx;
-	if (ABS(swDiffX)<X_SHAKE)
+	if (ABS(swDiffX)<=X_SHAKE)
 	{
 		//MotorSetStatus(bMotorInex,MOTOR_NO_HOLD);
 		return PASS;
@@ -4311,34 +4351,44 @@ void Proc_Weld_State()
 			//--left
 			bMode=MOTOR_LEFT_TOP;
 			if (st_swFaceX[bMode]==-1 || st_swFaceY1[bMode]==-1)
-				SearchLeftFiberFaceAndTopEdge(pWin,bMode,0,1);
+				SearchLeftFiberFaceAndTopEdge(pWin,bMode,1,1);
 			if (st_swFaceY3[bMode]==-1)
 				SearchLeftFiberBottomEdge(pWin,bMode);
 			//--right
 			bMode=MOTOR_RIGHT_TOP;
-			SearchRightFiberFaceAndTopEdge(pWin,bMode,0,1);
+			SearchRightFiberFaceAndTopEdge(pWin,bMode,1,1);
 			SearchRightFiberBottomEdge(pWin,bMode);
 
-			swTrgPos=(st_swFaceY1[bMode-1]+st_swFaceY3[bMode-1])>>1;
-			if (st_swFaceY3[bMode]<=0)
-				swSrcPos=(st_swFaceY1[bMode]+pWin->wHeight)>>1;
-			else
-				swSrcPos=(st_swFaceY1[bMode]+st_swFaceY3[bMode])>>1;
 			mpDebugPrint(" MOTOR_LEFT %d - %d",st_swFaceY1[bMode-1],st_swFaceY3[bMode-1]);
 			mpDebugPrint(" MOTOR_RIGHT %d - %d",st_swFaceY1[bMode],st_swFaceY3[bMode]);
-			swRet=MoveVMotorToSpecPosition(bMode,swSrcPos,swTrgPos);
-			if (swRet!=PASS)
+			if ((st_swFaceY1[bMode-1] <0  && st_swFaceY3[bMode-1]<0 ) ||(st_swFaceY1[bMode]<0 && st_swFaceY3[bMode]<0))
 			{
 				TimerToFillReferWin(0,RPOC_WIN0);
 			}
 			else
 			{
-				//MotorSetStatus(GetMotoIdxByFiberIdx(bMode),MOTOR_NO_HOLD);
-				mpDebugPrint("SENSOR_ALIGN_H1A OK  %d - %d",swSrcPos,swTrgPos);
-				g_bDisplayMode=0x81;
-				st_dwProcState++;
-				MotorSetStatus(GetMotoIdxByFiberIdx(MOTOR_RIGHT_BOTTOM),MOTOR_HOLD);
-				TimerToFillReferWin(10,RPOC_WIN1);
+				if (st_swFaceY3[bMode-1]<0)
+					swTrgPos=(st_swFaceY1[bMode-1]+pWin->wHeight)>>1;
+				else
+					swTrgPos=(st_swFaceY1[bMode-1]+st_swFaceY3[bMode-1])>>1;
+				if (st_swFaceY3[bMode]<=0)
+					swSrcPos=(st_swFaceY1[bMode]+pWin->wHeight)>>1;
+				else
+					swSrcPos=(st_swFaceY1[bMode]+st_swFaceY3[bMode])>>1;
+				swRet=MoveVMotorToSpecPosition(bMode,swSrcPos,swTrgPos);
+				if (swRet!=PASS)
+				{
+					TimerToFillReferWin(0,RPOC_WIN0);
+				}
+				else
+				{
+					//MotorSetStatus(GetMotoIdxByFiberIdx(bMode),MOTOR_NO_HOLD);
+					mpDebugPrint("SENSOR_ALIGN_H1A OK  %d - %d",swSrcPos,swTrgPos);
+					g_bDisplayMode=0x81;
+					st_dwProcState++;
+					MotorSetStatus(GetMotoIdxByFiberIdx(MOTOR_RIGHT_BOTTOM),MOTOR_HOLD);
+					TimerToFillReferWin(10,RPOC_WIN1);
+				}
 			}
 			break;
 
@@ -4605,7 +4655,7 @@ void Proc_Weld_State()
 		{
 			if (g_bDisplayMode==1)
 				pWin=(ST_IMGWIN *)&SensorInWin[1];
-#if 1
+#if 0
 	//pWin=(ST_IMGWIN *)Idu_GetCurrWin();
 	bMode=MOTOR_LEFT_TOP;
 	SearchLeftFiberFaceAndTopEdge(pWin,bMode,1,1);
@@ -5608,7 +5658,7 @@ void DisplaySensorOnCurrWin( BYTE bIpw2)
 		TimerCheckToFillReferWin(10);
 		#endif
 	}
-
+//return;
 #if 1
 //    mpDebugPrintN("  %08x %08x  ", ipu->Ipu_reg_10A,ipu->Ipu_reg_10B);
 	if (g_bDisplayMode==2)

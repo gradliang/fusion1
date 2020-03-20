@@ -11,6 +11,7 @@
 #include "idu.h"
 #include "sensor.h"
 #include "peripheral.h"
+#include "xpg.h"
 
 //#include "../../SpyCamera/main/include/ui_timer.h"
 
@@ -110,6 +111,7 @@ DWORD DisplayWindowOffset_Get()
 void Sensor_DisplayWindow_Set()
 {
 	ST_IMGWIN *pDstWin=(ST_IMGWIN *)Idu_GetNextWin();
+    DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
 
 	g_bDisplayMode&=0x0f;
 	if (g_bDisplayMode>3)
@@ -140,28 +142,56 @@ void Sensor_DisplayWindow_Set()
 	}
 
 #else
-	switch (g_bDisplayMode)
-	{
-		case 0:
-			Sensor_Channel_Set(0);
-			API_SetSensorWindow(0, 24, pDstWin->wWidth, pDstWin->wHeight-100);
-			break;
+	 if (dwHashKey == xpgHash("Manual_work"))
+	 {
+		switch (g_bDisplayMode)
+		{
+			case 0:
+				Sensor_Channel_Set(0);
+				API_SetSensorWindow(80, 0, pDstWin->wWidth-160, pDstWin->wHeight-80);
+				break;
 
-		case 1:
-			Sensor_Channel_Set(1);
-			API_SetSensorWindow(0, 24, pDstWin->wWidth, pDstWin->wHeight-100);
-			break;
+			case 1:
+				Sensor_Channel_Set(1);
+				API_SetSensorWindow(80, 0, pDstWin->wWidth-160, pDstWin->wHeight-80);
+				break;
 
-		case 2:
-			API_SetSensorWindow(0, 24, pDstWin->wWidth, (pDstWin->wHeight-100)>>1);
-			break;
-		case 3:
-			API_SetSensorWindow(0, 24, pDstWin->wWidth>>1, pDstWin->wHeight-100);
-			break;
+			case 2:
+				API_SetSensorWindow(80, 0, pDstWin->wWidth-160, (pDstWin->wHeight-80)>>1);
+				break;
+			case 3:
+				API_SetSensorWindow(80, 0, (pDstWin->wWidth-160)>>1, pDstWin->wHeight-80);
+				break;
 
-		default:
-			break;
-	}
+			default:
+				break;
+		}
+	 }
+	 else
+	 {
+		switch (g_bDisplayMode)
+		{
+			case 0:
+				Sensor_Channel_Set(0);
+				API_SetSensorWindow(0, 24, pDstWin->wWidth, pDstWin->wHeight-100);
+				break;
+
+			case 1:
+				Sensor_Channel_Set(1);
+				API_SetSensorWindow(0, 24, pDstWin->wWidth, pDstWin->wHeight-100);
+				break;
+
+			case 2:
+				API_SetSensorWindow(0, 24, pDstWin->wWidth, (pDstWin->wHeight-100)>>1);
+				break;
+			case 3:
+				API_SetSensorWindow(0, 24, pDstWin->wWidth>>1, pDstWin->wHeight-100);
+				break;
+
+			default:
+				break;
+		}
+	 }
 #endif
 }
 void Sensor_DisplayMode_Set()
