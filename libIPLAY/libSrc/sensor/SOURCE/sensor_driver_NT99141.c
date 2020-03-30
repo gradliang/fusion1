@@ -887,8 +887,8 @@ sensor_nt99140_setRegister(0x3011, 0xD0);
 
 #if 1//AE_OFF
 sensor_nt99140_setRegister(0x3201, 0x5F); 
-sensor_nt99140_setRegister(0x3012, 0x04); 
-sensor_nt99140_setRegister(0x3013, 0xC0); 
+sensor_nt99140_setRegister(0x3012, 0x03); 
+sensor_nt99140_setRegister(0x3013, 0x80); 
 #else
 sensor_nt99140_setRegister(0x3201, 0x7F); 
 #endif
