@@ -45,6 +45,7 @@ DWORD g_dwProcWinFlag = 0;  // 用于拍照等WIN0_CAPTURE_FLAG
 static SWORD st_swFaceX[MOTOR_NUM]={-1,-1,-1,-1};
 static SWORD st_swFaceY1[MOTOR_NUM]={-1,-1,-1,-1},st_swFaceY2[MOTOR_NUM]={-1,-1,-1,-1},st_swFaceY20[MOTOR_NUM]={-1,-1,-1,-1},st_swFaceY3[MOTOR_NUM]={-1,-1,-1,-1}; //4  上中下  
 static BYTE st_bDirectionArry[MOTOR_NUM],st_bMotorBaseStep[4]={15,15,30,30},st_bBaseRetryArry[MOTOR_NUM],st_bMotorHold=0,st_bMotorStaus=0;// 0->STOP 1->RUN BIT0
+static DWORD st_dwMotoStartTime[MOTOR_NUM];
 static BYTE st_bTopVMotorUpValue=0,st_bBottomVMotorUpValue=0,st_bVmotorMoveTimes[2]={0};
 static SWORD st_swLastProcStep[2]={0,0},st_swVmotorMoveValue[2][VMOTOR_CNT]; // 0->up motor  1->down motor
 //--st_wDiachargeRunTime 前一次放电时间  st_wDischargeTimeSet:设置需要放电的时间或模式
@@ -3205,18 +3206,28 @@ SWORD SearchRightFiberFaceAndTopEdge(ST_IMGWIN *pWin,BYTE bMode,BYTE bScanFace,B
 	return FAIL;
 }
 
-
+void ResetMotoPara(void)
+{
+	BYTE i;
+	for (i=0;i<MOTOR_NUM;i++)
+	{
+		st_bDirectionArry[i]=0;
+		st_dwMotoStartTime[i];
+	}
+}
 
 #define		MOTO_BASE_RETRY_TIMES					10
 #define		MOTO_BASE_STEPS									8 // pixel
 void DriveMotor(BYTE bMotorInex,BYTE bDirection,WORD wStep,BYTE bSpeed)
 {
 	BYTE bTxData[10],bChecksum,i,bDataIndex=bMotorInex-1;
-	WORD wPulse=wStep;
+	//WORD wPulse=wStep;
 
 	//mpDebugPrint("--bMotorInex=%d  bDirection=%d/%d st_bMotorStaus %p",bMotorInex,bDirection,st_bDirectionArry[bDataIndex],st_bMotorStaus);
 	if (bMotorInex<5)
 	{
+		//moto 1 ,speed 10,step 10000,FF or FR  need 788ms, 12.7 puls/ms
+		//if ((st_bMotorStaus&(1<<bDataIndex)) && st_bDirectionArry[bDataIndex]==bDirection && SystemGetElapsedTime(st_dwMotoStartTime[bDataIndex])<10)
 		if ((st_bMotorStaus&(1<<bDataIndex)) && st_bDirectionArry[bDataIndex]==bDirection)
 			return;
 #if 0
@@ -3248,18 +3259,19 @@ void DriveMotor(BYTE bMotorInex,BYTE bDirection,WORD wStep,BYTE bSpeed)
 #endif
 	}
 	//wStep+=st_bMotorBaseStep[bDataIndex];
-	mpDebugPrint("bMotorInex=%d  bDirection=%d wPulse %d",bMotorInex,bDirection,wPulse);
+	mpDebugPrint("bMotorInex=%d  bDirection=%d wPulse %d",bMotorInex,bDirection,wStep);
 	bTxData[0]=0xa2;
 	bTxData[1]=3+5;
 	bTxData[2]=bMotorInex; // 左马达0x01 右马达0x02   Y上马达0x03  Y下马达0x04
 	bTxData[3]=bDirection; // 0（后退）1（前进
-	bTxData[4]=wPulse>>8;
-	bTxData[5]=wPulse&0x00ff;
+	bTxData[4]=wStep>>8;
+	bTxData[5]=wStep&0x00ff;
 	bTxData[6]=bSpeed; // min 1  max=10
 	if (TSPI_PacketSend(bTxData,0)==PASS)
 	{
 		st_bMotorStaus|=(1<<bDataIndex);
 		st_bDirectionArry[bDataIndex]=bDirection;
+		st_dwMotoStartTime[bDataIndex]=GetSysTime();
 	}
 
 }
@@ -3471,6 +3483,15 @@ SWORD MoveHMotorToSpecPosition(BYTE bSensorIndex,SWORD swSx,SWORD swTx)
 		bSpeed=5;
 	else
 		bSpeed=3;
+	if (st_dwProcState==SENSOR_FACE_POS2A || st_dwProcState==SENSOR_FACE_POS2B)
+	{
+		if (bDirection==0)
+		{
+			//bDirection=1;
+			wStep=200;
+		}
+			
+	}
 	DriveMotor(bMotorInex,bDirection,wStep,bSpeed);
 	return FAIL;
 }
@@ -4471,7 +4492,10 @@ void ResetMotor(void)
 
 void TimerToNextState(void)
 {
+	if (st_dwProcState==SENSOR_IDLE)
+		return;
 	st_dwProcState++;
+	mpDebugPrint("TimerToNextState %d",st_dwProcState);
 	EventSet(UI_EVENT, EVENT_PROC_DATA);
 }
 
@@ -4499,6 +4523,7 @@ void Proc_Weld_State()
 	switch (st_dwProcState)
 	{
 		case SENSOR_FACE_POS1A:
+			mpDebugPrint("SENSOR_FACE_POS1A");
 			bMode=MOTOR_LEFT_TOP;
 			pWin=(ST_IMGWIN *)&SensorInWin[0];
 			swRet=SearchLeftFiberFaceAndTopEdge(pWin,bMode,1,0);
@@ -4542,7 +4567,7 @@ void Proc_Weld_State()
 			mpDebugPrint("SENSOR_DISCHARGE1");
 			st_wDischargeTimeSet=1;
 			Discharge(st_wDischargeTimeSet,0);
-			Ui_TimerProcAdd(3000, TimerToNextState);
+			Ui_TimerProcAdd(10000, TimerToNextState);
 			break;
 
 		case SENSOR_AUTO_FOCUS:
@@ -4879,19 +4904,21 @@ void Proc_Weld_State()
 
 		case SENSOR_PAUSE:
 			st_dwProcState=SENSOR_DISCHARGE2;
-			Weld_StartPause();
+			//Weld_StartPause();
 			//st_dwProcState=SENSOR_IDLE;
-			//EventSet(UI_EVENT, EVENT_PROC_DATA);
+			EventSet(UI_EVENT, EVENT_PROC_DATA);
 			break;
 
 		case SENSOR_DISCHARGE2:
+			#if 0
 			if (0)//(st_wDischargeTimeSet!=2)
 			{
 				st_wDischargeTimeSet=2;
 				Discharge(st_wDischargeTimeSet,0);
-				Ui_TimerProcAdd(3000, TimerToNextState);
+				Ui_TimerProcAdd(10000, TimerToNextState);
 			}
 			else
+			#endif
 			{
 				st_dwProcState++;
 				EventSet(UI_EVENT, EVENT_PROC_DATA);
@@ -4899,6 +4926,7 @@ void Proc_Weld_State()
 			break;
 
 		case SENSOR_DISCHARGE3:
+			mpDebugPrint("SENSOR_DISCHARGE3");
 			if (st_wDischargeTimeSet!=3)
 			{
 				#if TEST_PLANE||ALIGN_DEMO_MODE
@@ -4910,16 +4938,17 @@ void Proc_Weld_State()
 				Discharge(st_wDischargeTimeSet,0);
 				//xpgDelay(10);
 				//DriveMotor(01,1,10,10);
-				Ui_TimerProcAdd(6000, TimerToNextState);
+				Ui_TimerProcAdd(12000, TimerToNextState);
 			}
 			else
 			{
-				st_dwProcState++;
-				EventSet(UI_EVENT, EVENT_PROC_DATA);
+				//st_dwProcState++;
+				//EventSet(UI_EVENT, EVENT_PROC_DATA);
 			}
 			break;
 
 		case SENSOR_GET_LOSS:
+			mpDebugPrint("SENSOR_GET_LOSS");
 			SendWeldStaus(1);
 			st_dwProcState=SENSOR_IDLE;
 			Ui_TimerProcAdd(2000, TimerToReleaseAllHold);
@@ -5100,6 +5129,7 @@ void TspiSendRTC(void)
 
 
 //------TSPI通讯接收处理
+//DWORD g_dwTestTime;
 void TSPI_DataProc(void)
 {
 	BYTE i,bChecksum,index,*pbBuffer;
@@ -5154,7 +5184,7 @@ void TSPI_DataProc(void)
 								if (st_bToolMotoIndex<5)
 									st_wMotoStep[st_bToolMotoIndex-1]-=20;
 								else if (st_bToolMotoIndex==6||st_bToolMotoIndex==8||st_bToolMotoIndex==9)
-									st_wMotoStep[st_bToolMotoIndex-1]-=100;
+									st_wMotoStep[st_bToolMotoIndex-1]-=50;
 								else
 									st_wMotoStep[st_bToolMotoIndex-1]--;
 								PutAdjOsdString();
@@ -5163,6 +5193,9 @@ void TSPI_DataProc(void)
 							{
 								DriveMotor(st_bToolMotoIndex,0,st_wMotoStep[st_bToolMotoIndex-1],8);
 								TimerCheckToFillReferWin(10);
+							//DriveMotor(01,0,10000,10);
+							//g_dwTestTime=GetSysTime();
+							//mpDebugPrint("Start FR:%d",g_dwTestTime);
 							}
 						}
 						#else
@@ -5193,7 +5226,7 @@ void TSPI_DataProc(void)
 								if (st_bToolMotoIndex<5)
 									st_wMotoStep[st_bToolMotoIndex-1]+=20;
 								else if (st_bToolMotoIndex==6||st_bToolMotoIndex==8||st_bToolMotoIndex==9)
-									st_wMotoStep[st_bToolMotoIndex-1]+=100;
+									st_wMotoStep[st_bToolMotoIndex-1]+=50;
 								else
 									st_wMotoStep[st_bToolMotoIndex-1]++;
 								PutAdjOsdString();
@@ -5202,6 +5235,9 @@ void TSPI_DataProc(void)
 							{
 								DriveMotor(st_bToolMotoIndex,1,st_wMotoStep[st_bToolMotoIndex-1],8);
 								TimerCheckToFillReferWin(10);
+								//DriveMotor(01,1,10000,10);
+								//g_dwTestTime=GetSysTime();
+								//mpDebugPrint("Start FF:%d",g_dwTestTime);
 							}
 						}
 						#else
@@ -5285,7 +5321,7 @@ void TSPI_DataProc(void)
 						{
 							if (st_bAdjustMotoStep)
 							{
-								#if 0
+								#if 1
 								if (st_dwGetCenterState)
 									st_dwGetCenterState=0;
 								else
@@ -5447,6 +5483,7 @@ void TSPI_DataProc(void)
 			break;
 //马达状态
 		case 0xb2:
+			//mpDebugPrint("-Stop-");
 			st_bMotorStaus=pbTspiRxBuffer[2];
 			#if TEST_PLANE
 			if (st_bWaitMotoStop && !(st_bMotorStaus&(1<<MOTOR_LEFT_TOP)))
@@ -6482,6 +6519,8 @@ void WeldDataInit(void)
 		WriteSetupChg();
 	}
 #endif
+
+	ResetMotoPara();
 
 #if TEST_PLANE||ALIGN_DEMO_MODE
 	for (i=0;i<MOTOR_NUM;i++)
