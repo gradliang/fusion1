@@ -88,6 +88,11 @@ typedef struct {
 #define	MOTOR_HOLD														2
 #define	MOTOR_HOLD_TIMEOUT										30*1000
 
+//最大水平偏差
+#define   MOTOR_HORI_MAX_PULSE								66000 // really 67000
+#define   MOTOR_HORI_REVERSE_PULSE						200
+
+
 //  累计多少次垂直马达变化次数
 #define	VMOTOR_CNT														3 
 //  累计多少个黑边有效点
