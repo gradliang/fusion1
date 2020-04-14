@@ -834,8 +834,7 @@ sensor_nt99140_setRegister(0x3021, 0x06);
 sensor_nt99140_setRegister(0x3060, 0x01); 
 #endif
 
-#if 1
-
+#if 0
 //[YUYV_800x480_20.00_20.01_FpsPCLK48Mhz]
 sensor_nt99140_setRegister(0x32BF, 0x60); 
 sensor_nt99140_setRegister(0x32C0, 0x64); 
@@ -895,7 +894,8 @@ sensor_nt99140_setRegister(0x3201, 0x7F);
 sensor_nt99140_setRegister(0x3021, 0x06); 
 sensor_nt99140_setRegister(0x3060, 0x01); 
 #endif
-#if 0
+
+#if 1
 //[YUYV_800x480_30.00_30.03_Fps_PCLK70Mhz]
 
 sensor_nt99140_setRegister(0x32BF, 0x60); 
@@ -940,13 +940,21 @@ sensor_nt99140_setRegister(0x3009, 0xD3);
 sensor_nt99140_setRegister(0x300A, 0x06); 
 sensor_nt99140_setRegister(0x300B, 0x2C); 
 sensor_nt99140_setRegister(0x300C, 0x02); 
-sensor_nt99140_setRegister(0x300D, 0xE7); 
+sensor_nt99140_setRegister(0x300D, 0xe7); //E7
 sensor_nt99140_setRegister(0x300E, 0x04); 
 sensor_nt99140_setRegister(0x300F, 0xB0); 
 sensor_nt99140_setRegister(0x3010, 0x02); 
 sensor_nt99140_setRegister(0x3011, 0xD0); 
 
+//sensor_nt99140_setRegister(0x3201, 0x7F); 
+#if 1//AE_OFF
+sensor_nt99140_setRegister(0x3201, 0x5F); 
+sensor_nt99140_setRegister(0x3012, 0x05); 
+sensor_nt99140_setRegister(0x3013, 0x80); // 0x80
+#else
 sensor_nt99140_setRegister(0x3201, 0x7F); 
+#endif
+
 sensor_nt99140_setRegister(0x3021, 0x06); 
 sensor_nt99140_setRegister(0x3060, 0x01); 
 

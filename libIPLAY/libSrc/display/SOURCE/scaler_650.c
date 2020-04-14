@@ -320,10 +320,18 @@ void ScalerIsr()
 	ipu = (IPU *) IPU_BASE;
 	INTERRUPT *isr = (INTERRUPT *) INT_BASE;
 	DWORD val = 0 ;
-
 	
 #if (((CHIP_VER & 0xffff0000) == CHIP_VER_650)||((CHIP_VER & 0xffff0000) == CHIP_VER_660))
 
+#if IPW_FAST_MODE
+	//--BIT6->IPW2  BIT7->IPW1
+	if (ipu->Ipu_reg_1C & 0x000000c0)
+	{
+		val=ipu->Ipu_reg_1C;
+		ipu->Ipu_reg_1C = val & 0xffffffc0;			
+		ProcIpwIsr(val);
+	}
+#else
 #if (SENSOR_ENABLE == ENABLE)
 	//extern BYTE Sensor_Mode;
 	//if(Sensor_Mode)
@@ -353,6 +361,7 @@ IPW2:
 	ipu->Ipu_reg_F4 = (1<<31)+(height_ratio<<16)+width_ratio ;//scaling
 
 */
+		//mpDebugPrintN(" %08x ", ipu->Ipu_reg_1C); // 0000c0cc  0000c04c 
 
 		// IPW2		Bit 1
 		if (ipu->Ipu_reg_1C & BIT6)
@@ -417,7 +426,7 @@ IPW2:
 
 	}
 #endif
-
+#endif
 
 
 

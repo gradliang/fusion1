@@ -489,7 +489,7 @@ static void HW_SensorMainScale_Set(void)
 
 }
 
-
+//--for sensor data process
 static void Set_Ipw1(void)
 {
 	IPU *ipu = (IPU *) IPU_BASE;
@@ -688,6 +688,7 @@ static void Set_Ipw1(void)
 
 }
 
+//--for display
 static void Set_Ipw2(void)
 {
 	IPU *ipu = (IPU *) IPU_BASE;

@@ -4,8 +4,47 @@
 #include "global612.h"
 
 
+
+
+//----debug switch
+#define   ALIGN_DEMO_MODE											1
+#define   DEBUG_POS_DATA												0
+#define   ALIGN_NEW_MODE											1
+
+#define   ALIGN_FAST_MODE											0
+
+#if ALIGN_FAST_MODE
 enum {
     SENSOR_IDLE,
+    SENSOR_PROC_INIT,
+    SENSOR_FACE_POS1A,
+    SENSOR_FACE_POS11A,
+    SENSOR_FACE_POS1B,
+    SENSOR_FACE_POS11B,
+    SENSOR_DISCHARGE1,
+    SENSOR_AUTO_FOCUS,
+    SENSOR_GET_ANGLE,
+    SENSOR_FACE_POS2A,	//TOP SENSOR
+    SENSOR_FACE_POS21A,
+    SENSOR_FACE_POS2B,  // BOTTOM  SENSOR
+    SENSOR_FACE_POS21B,
+    SENSOR_ALIGN_H1A,
+    SENSOR_ALIGN_H1B,
+    SENSOR_ALIGN_H2A,
+    SENSOR_ALIGN_H2B,
+    SENSOR_ALIGN_H3A,
+    SENSOR_ALIGN_H3B,
+    SENSOR_PAUSE,
+    SENSOR_DISCHARGE2,
+    SENSOR_DISCHARGE3,
+    SENSOR_GET_LOSS,
+    SENSOR_WELD_TOTAL,
+};
+
+#else
+enum {
+    SENSOR_IDLE,
+    SENSOR_PROC_INIT,
     SENSOR_FACE_POS1A,
     SENSOR_FACE_POS1B,
     SENSOR_DISCHARGE1,
@@ -25,7 +64,7 @@ enum {
     SENSOR_GET_LOSS,
     SENSOR_WELD_TOTAL,
 };
-
+#endif
 //g_swAutoFocusState
 enum {
     AF_OFF,
@@ -46,12 +85,6 @@ enum {
     SENSER_TOP,
     SENSER_BOTTOM,
     SENSER_TOTAL,
-};
-
-enum {
-    RPOC_WIN0,
-    RPOC_WIN1,
-    RPOC_WIN_TOTAL,
 };
 
 
@@ -103,6 +136,8 @@ typedef struct {
 //最大水平偏差
 #define   HORI_OFFSET														3
 
+//背景亮度设定
+#define   BG_SET																	4
 
 //string lenth
 #define	POS_STR_LEN														16
@@ -118,13 +153,6 @@ typedef struct {
 #define ABS(A)          ((A) < 0 ? (-A) : (A))
 
 
-//----debug switch
-#define   ALIGN_DEMO_MODE											1
-#define   DEBUG_POS_DATA												0
-#define   ALIGN_NEW_MODE											1
-
-
-
 void TSPI_DataProc();
 SWORD TSPI_PacketSend(BYTE *pbDataBuf,BYTE bCheckResend);
 //void DriveMotor(BYTE bMotorInex,BYTE bSpeed,BYTE bDiv,BYTE bDirector,WORD wStep);
@@ -134,6 +162,7 @@ void MotoHoldTimeoutSet(BYTE bMotorInex,BYTE bMode);
 void StopAllMoto(void);
 void Discharge(WORD wMode,BYTE bStep);
 SWORD ScanFiberUptoDown(ST_IMGWIN *pWin, SWORD x,SWORD y,SWORD swYEnd,BYTE bLowLevel);
+SWORD ScanFiberFaceExistPos(ST_IMGWIN *pWin, SWORD x);
 
 #if TEST_PLANE||ALIGN_DEMO_MODE
 void  PutAdjOsdString();

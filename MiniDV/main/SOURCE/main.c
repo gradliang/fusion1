@@ -963,10 +963,10 @@ Timer_FirstEnterCamPreview();
 					Proc_SensorData_State();
             }
 #endif
-#if 0//(PRODUCT_UI==UI_WELDING) && SENSOR_ENABLE&&PROC_SENSOR_DATA_MODE
+#if IPW_FAST_MODE
             if (dwMainEvent & EVENT_DISP_DATA)
             {
-					ShowSensorImage();
+					Idu_ChgWin(Idu_GetNextWin());
             }
 #endif
 

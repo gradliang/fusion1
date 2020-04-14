@@ -37,6 +37,7 @@
 #define		TEST_TWO_LED										0 //4  测试照射光纤的两个LED灯的亮度
 //#define		VAUTO_PLAY_VIDEO									1
 #define		PROC_SENSOR_DATA_MODE					0
+#define		IPW_FAST_MODE										0
 #endif
 
 //#define FILE_IN_RESOURCE										1

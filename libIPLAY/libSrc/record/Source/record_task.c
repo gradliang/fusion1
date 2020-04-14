@@ -14,7 +14,7 @@
 
 
 /*---state---*/
-
+/*
 char *S_Preview_state       	        ="Preview_state        ";
 char *S_Recording_state     	        ="Recording_state      ";
 char *S_Recording_stop_state            ="Recording_stop_state ";
@@ -23,9 +23,10 @@ char *S_Preview_stop_state              ="Preview_stop_state   ";
 char *S_Rec_StandBy_state               ="StandBy_state        ";
 char *S_ExceptionCheck_state            ="ExceptionCheck_state ";
 char *S_Unknown_state                   ="Unknown_state        ";
-
+*/
+	
 /*---op_code---*/
-
+/*
 char *S_VIDEO_REC_OP_PREVIEW_START      ="Preview_Start        ";
 char *S_VIDEO_REC_OP_RECORDING_START    ="Recording_Sstart     ";
 char *S_VIDEO_REC_OP_RECORDING_STOP     ="Recording_Stop       ";
@@ -34,7 +35,7 @@ char *S_VIDEO_REC_OP_RECORDING_PAUSE    ="Recording_Pause      ";
 char *S_VIDEO_REC_OP_RECORDING_RESUME   ="Recording_Resume     ";
 char *S_VIDEO_REC_OP_RECORDING_EXCEPTION="Recording_Exception  ";
 char *S_VIDEO_REC_OP_Unknown            ="Unknown              ";
-
+*/
 
 #if (RECORD_ENABLE)
 void RecordTask_State(BYTE apievent);
@@ -566,12 +567,12 @@ void RecordVideoTask()
 
 		EventWait(SENSOR_IPW_FRAME_END_EVENT_ID, BIT0, OS_EVENT_OR, &SensorEvent);
 	//	mpDebugPrint("b");
-
+#if !IPW_FAST_MODE
      //SensorApplication();	        
 #if (PRODUCT_UI==UI_WELDING)
 		ProcIpwBit0Event();
 #endif
-
+#endif
     }
 }
 
@@ -597,8 +598,9 @@ void record_panel_task()
 
  while(1)
  { 
-  	EventWait(SENSOR_IPW_FRAME_END_EVENT_ID, BIT1, OS_EVENT_OR, &SensorEvent);
+  	EventWait(SENSOR_IPW_FRAME_END_EVENT_ID, BIT1, OS_EVENT_OR, &SensorEvent); //IPW2->BIT1
 
+#if !IPW_FAST_MODE
 #if (PRODUCT_UI==UI_WELDING)
 		ProcIpwFrameEvent();
 #elif (PRODUCT_UI==UI_SURFACE)
@@ -612,6 +614,7 @@ void record_panel_task()
 			ipu->Ipu_reg_F2 = ((DWORD) pDstWin->pdwStart| 0xA0000000);	
 	}
 	//API_Open_Write_Into_EncBuf();
+#endif
 #endif
 
 #if (USE_IPW1_DISPLAY_MOTHOD == ENABLE) 
