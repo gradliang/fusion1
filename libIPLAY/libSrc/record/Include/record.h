@@ -31,12 +31,12 @@
 #define r_open    0
 #define r_close   1
 /*---state---*/
-#define Preview_state       	0
+#define Rec_StandBy_state       0
 #define Recording_state     	1
 #define Recording_stop_state    2
 #define Recording_pause_state   3
 #define Preview_stop_state      4
-#define Rec_StandBy_state       5
+#define Preview_state       	5
 #define ExceptionCheck_state    6
 
 #define AudioRecording_state    7

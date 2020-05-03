@@ -1592,9 +1592,9 @@ BYTE Api_SetRecordVolume(WORD ivol)
 #endif
 	return PASS;
 }
+#endif
 
-
-
+#if RECORD_ENABLE||SENSOR_WITH_DISPLAY
 SDWORD Api_VideoRecordingPreviewStart(record_argument *p)//ST_IMGWIN * trgWin,int PathSelect)
 {
     BYTE a = VIDEO_REC_OP_PREVIEW_START;
@@ -1634,29 +1634,6 @@ SDWORD Api_VideoRecordingPreviewStop(void)
     mpDebugPrint("StopSensor---BIT1---");
     return -1;
 }
-
-#if 0 //where use is 
-extern STREAM *shandle_jpg;
-extern int get_onepicture;
-SDWORD Api_VideoRecordingGetPicture(STREAM *shandle_jpeg)
-{
-	DWORD RecErrEvent;
-	shandle_jpg=shandle_jpeg;
-	get_onepicture=1;
-    EventWait(REC_ERR_EVENT, BIT3 | BIT4, OS_EVENT_OR, &RecErrEvent);
-	mpDebugPrint("+++Api_VideoRecordingGetPicture+++");
-	if(RecErrEvent & BIT3)
-	   {
-		   mpDebugPrint("GetPicture---BIT3---");
-		   return PASS;
-	   }
-	
-	   mpDebugPrint("GetPicture---BIT1---");
-	   return -1;
-
-	return PASS;
-}
-#endif
 #endif
 
 

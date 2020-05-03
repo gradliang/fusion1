@@ -11,23 +11,21 @@
 #define   DEBUG_POS_DATA												0
 #define   ALIGN_NEW_MODE											1
 
-#define   ALIGN_FAST_MODE											0
+#define   ALIGN_FAST_MODE											1
 
 #if ALIGN_FAST_MODE
 enum {
     SENSOR_IDLE,
     SENSOR_PROC_INIT,
     SENSOR_FACE_POS1A,
-    SENSOR_FACE_POS11A,
+    //SENSOR_FACE_POS11A,
     SENSOR_FACE_POS1B,
-    SENSOR_FACE_POS11B,
+    //SENSOR_FACE_POS11B,
     SENSOR_DISCHARGE1,
     SENSOR_AUTO_FOCUS,
     SENSOR_GET_ANGLE,
     SENSOR_FACE_POS2A,	//TOP SENSOR
-    SENSOR_FACE_POS21A,
     SENSOR_FACE_POS2B,  // BOTTOM  SENSOR
-    SENSOR_FACE_POS21B,
     SENSOR_ALIGN_H1A,
     SENSOR_ALIGN_H1B,
     SENSOR_ALIGN_H2A,
@@ -106,6 +104,7 @@ typedef struct {
 #define	FILL_WIN_UP_WAIT											BIT2
 #define	FILL_WIN_DOWN_WAIT										BIT3
 
+#define	FILL_WIN_END														BIT6
 #define	FILL_WIN_INIT													BIT7
 
  // 0->左上  1->右上 2->左下 3->右下

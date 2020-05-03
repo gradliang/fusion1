@@ -47,13 +47,12 @@
 
 DWORD g_dwCurIndex = 0,g_dwModeIconStatus=0; //high word is page index  g_dwModeIconStatus:1bit对应一个ICON
 #if (SENSOR_ENABLE == ENABLE)
-int CameraInit = 1;
-E_MINI_DV_MODE g_MinidvMode;
+//int CameraInit = 1;
+//E_MINI_DV_MODE g_MinidvMode;
 #endif
 
 #if MAKE_XPG_PLAYER
 extern DWORD g_dwTotalSeconds;
-extern E_MINI_DV_MODE g_MinidvMode;
 extern BYTE g_bXpgStatus;
 extern BYTE g_boNeedRepaint;
 extern BOOL bSetUpChg;
@@ -642,17 +641,13 @@ void xpgStopAllAction()
 {
     MP_DEBUG("-- xpgStopAllAction --");
     
-#if (SENSOR_ENABLE == ENABLE)
+#if (RECORD_ENABLE == ENABLE)
     if (g_bAniFlag & ANI_CAMRECORDING)
 	{
         MP_DEBUG("### ANI_CAMRECORDING ###");
         Camcorder_RecordStop();
         //Camcorder_PreviewStop();         //allen add to mini-DV
     }
-#endif
-
-#if (RECORD_ENABLE)
-
     if(RecordTaskStattusGet() == ExceptionCheck_state)
 	{
         Idu_OsdErase();
@@ -1112,7 +1107,7 @@ void xpgCb_EnterCamcoderPreview()
 
     MP_DEBUG("%s: total=%d", __FUNCTION__,mem_get_free_space_total());
 
-#if (PRODUCT_UI==UI_WELDING)
+#if SENSOR_WITH_DISPLAY
        if (RecordTaskStattusGet() != Rec_StandBy_state)
 		{
     		mpDebugPrint("%s:  state=%d", __FUNCTION__,RecordTaskStattusGet());
@@ -1165,34 +1160,41 @@ void xpgCb_EnterCamcoderPreview()
     Camcorder_PreviewStart(CAMCORDER_RESOLUTION_VGA);
 #endif
 
-    g_MinidvMode = CAMPREVIEW;
+   // g_MinidvMode = CAMPREVIEW;
 #if (AUDIO_DAC==DAC_ALC5621)
       Codec_ElecSwitch_RecordMode();
 #endif
+    mpCopyEqualWin(Idu_GetNextWin(), Idu_GetCurrWin());
 
 }
 
 void xpgCb_StopAllSensorWork()
 {
+#if (RECORD_ENABLE == ENABLE)
     if(RecordTaskStattusGet() == Recording_pause_state)
     	Camcorder_RecordResume();
 
     if(RecordTaskStattusGet() == Recording_state || RecordTaskStattusGet() == ExceptionCheck_state)
     	Camcorder_RecordStop();
 
+#endif
+#if SENSOR_WITH_DISPLAY
     if(RecordTaskStattusGet() == Preview_state)
     {
     	Camcorder_PreviewStop();
-	    g_bAniFlag &= ~ANI_PREVIEW;
+	    //g_bAniFlag &= ~ANI_PREVIEW;
     }
+#endif
 }
 
 void xpgCb_EnterSetupPage()
 {
 	MP_DEBUG("%s", __func__);
 	xpgStopAllAction();
+#if SENSOR_WITH_DISPLAY
     if(RecordTaskStattusGet() != Rec_StandBy_state)
     	Camcorder_PreviewStop();
+#endif
     g_bXpgStatus = XPG_MODE_SETUP;
 #if MAKE_XPG_PLAYER
     xpgPreactionAndGotoPage("Setup");
@@ -1205,8 +1207,10 @@ void xpgCb_EnterPhotoViewPage()
 {
 	MP_DEBUG("%s", __func__);
 	xpgStopAllAction();
+#if SENSOR_WITH_DISPLAY
     if(RecordTaskStattusGet() != Rec_StandBy_state)
     	Camcorder_PreviewStop();
+#endif
     g_bXpgStatus = XPG_MODE_PHOTOVIEW;
 #if MAKE_XPG_PLAYER
     xpgChangeMenuMode(OP_IMAGE_MODE, 1);
@@ -1219,7 +1223,7 @@ void xpgCb_EnterPhotoViewPage()
 
 void AddAutoEnterPreview(void)
 {
-#if 1//(PRODUCT_PCBA!=PCBA_MAIN_BOARD_V12)
+#if SENSOR_WITH_DISPLAY
 	Ui_TimerProcRemove(xpgCb_EnterCamcoderPreview);
 	 if(RecordTaskStattusGet() == Rec_StandBy_state && g_pstXpgMovie->m_pstCurPage->m_dwHashKey==xpgHash("Main"))
 	 {

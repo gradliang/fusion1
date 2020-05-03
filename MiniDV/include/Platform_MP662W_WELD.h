@@ -10,8 +10,8 @@
 //--产品总开关
 //#define PRODUCT_ID									(PCBA_MAIN_BOARD_V10|PANEL_800x600|UI_SURFACE)
 //#define PRODUCT_ID									(PCBA_MAIN_BOARD_V11|PANEL_LVDS_1024x600|UI_SURFACE)
-#define PRODUCT_ID									(PCBA_MAIN_BOARD_V12|PANEL_800x480|UI_WELDING)
-//#define PRODUCT_ID									(PCBA_MAIN_BOARD_V20|PANEL_800x480|UI_WELDING)
+//#define PRODUCT_ID									(PCBA_MAIN_BOARD_V12|PANEL_800x480|UI_WELDING)
+#define PRODUCT_ID									(PCBA_MAIN_BOARD_V20|PANEL_800x480|UI_WELDING)
 
 
 //common function
@@ -37,7 +37,7 @@
 #define		TEST_TWO_LED										0 //4  测试照射光纤的两个LED灯的亮度
 //#define		VAUTO_PLAY_VIDEO									1
 #define		PROC_SENSOR_DATA_MODE					0
-#define		IPW_FAST_MODE										0
+#define		IPW_FAST_MODE										1
 #endif
 
 //#define FILE_IN_RESOURCE										1
@@ -432,7 +432,7 @@
 #define SENSOR_GPIO_RESET           (KGPIO | GPIO_01)
 #endif
 
-#if SENSOR_ENABLE
+#if 0//SENSOR_ENABLE
 #define RECORD_ENABLE               ENABLE              //You must enable SENSOR_ENABLE befor enabing thsi flag
 #endif
 #if RECORD_ENABLE

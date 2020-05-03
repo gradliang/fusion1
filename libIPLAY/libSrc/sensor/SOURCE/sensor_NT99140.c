@@ -97,16 +97,11 @@ void Sensor_Channel_Set(BYTE bChannel)
 
 #elif (PRODUCT_PCBA==PCBA_MAIN_BOARD_V11||PRODUCT_PCBA==PCBA_MAIN_BOARD_V12||PRODUCT_PCBA==PCBA_MAIN_BOARD_V20)
 //--st_bCurChannel:0->channel 0  1->channel 1
-static BYTE st_bCurChannel=0;
+BYTE st_bCurChannel=0;
 
 // 0-> display sensor 1   1->sensor 2     2-> 1(up)+2(down)  3->1(left)+2(right) 
 BYTE g_bDisplayMode=0x82;// 0x80
-static DWORD st_dwDisplayOffset=0;
-
-DWORD DisplayWindowOffset_Get()
-{
-	return st_dwDisplayOffset;
-}
+DWORD g_dwDisplayOffset=0;
 
 void Sensor_DisplayWindow_Set()
 {
@@ -221,15 +216,32 @@ void Sensor_ChangeIO_Init(void)
 
 void Sensor_Channel_Set(BYTE bChannel)
 {
-	register GPIO *vGpio;
-	vGpio = (GPIO *)(GPIO_BASE);
+	register GPIO *vGpio = (GPIO *)(GPIO_BASE);
 
+	//UartOutText(" x ");
 	st_bCurChannel=bChannel;
-
 	if (st_bCurChannel)
 		vGpio->Pgpdat |= 0x00000004;
 	else
 		vGpio->Pgpdat &= 0xfffffffb;
+
+}
+
+void Sensor_Channel_Swap(void)
+{
+	register GPIO *vGpio = (GPIO *)(GPIO_BASE);
+
+	//UartOutText(" x ");
+	if (st_bCurChannel)
+	{
+		st_bCurChannel=0;
+		vGpio->Pgpdat &= 0xfffffffb;
+	}
+	else
+	{
+		st_bCurChannel=1;
+		vGpio->Pgpdat |= 0x00000004;
+	}
 
 }
 
@@ -692,7 +704,7 @@ static void Set_Ipw1(void)
 static void Set_Ipw2(void)
 {
 	IPU *ipu = (IPU *) IPU_BASE;
-	ST_IMGWIN *pWin = (ST_IMGWIN *)Idu_GetCurrWin(),*pSensorWin=(ST_IMGWIN *)&SensorInWin[0];
+	ST_IMGWIN *pWin = (ST_IMGWIN *)Idu_GetNextWin(),*pSensorWin=(ST_IMGWIN *)&SensorInWin[0];
 	WORD DisplayWin_W,DisplayWin_H;
 	WORD SrcWidth,SrcHeight;
 	DWORD DisplayWinStartAddr=0;
@@ -770,7 +782,7 @@ static void Set_Ipw2(void)
 	ipu->Ipu_reg_F1 = (SrcWidth - DisplayWin_W)<<1;
 
 	ipu->Ipu_reg_F2 = ((DWORD) pWin->pdwStart| 0xA0000000)+DisplayWinStartAddr;
-	st_dwDisplayOffset=DisplayWinStartAddr;
+	g_dwDisplayOffset=DisplayWinStartAddr;
 }
 
 static void Local_HW_StopIPW1(void)
@@ -1066,7 +1078,7 @@ int Sensor_Run_capture(void)
 
 
 //set recording win
-int Init_Sensor_Record_Win(void)
+void Init_Sensor_Record_Win(void)
 {
 	ST_IMGWIN *pDstWin=Idu_GetCurrWin();
 	WORD i,wWidth,wHeight;
@@ -1085,7 +1097,8 @@ int Init_Sensor_Record_Win(void)
 	if (pbSensorWinBuffer==NULL)
 	{
 		MP_ALERT("--E-- %s: pbSensorWinBuffer NULL", __FUNCTION__);
-        __asm("break 100");
+       // __asm("break 100");
+       return;
 	}
 	for (i=0;i<SENSOR_WIN_NUM;i++)
 		mpWinInit(&SensorInWin[i],(DWORD *)pbSensorWinBuffer+wWidth/2*wHeight*i,wHeight,wWidth);

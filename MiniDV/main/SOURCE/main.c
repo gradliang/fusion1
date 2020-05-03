@@ -538,7 +538,6 @@ static void MainEventProcess(DWORD *dwEvent, BYTE *bKeyCode)
 //
 //
 //////////////////////////////////////////////////////////////////
-extern E_MINI_DV_MODE g_MinidvMode;
 
 #if TEST_DISPLAY_PANEL
 static WORD st_wtmp=60;
@@ -755,8 +754,9 @@ Timer_FirstEnterCamPreview();
             //////////////////////////////////////////////////////////////////
             //  EVENT_FETAL_ERROR_WHEN_CARD_WRITING_FAILURE
             ////////////////////////////////////////////////////////////////// 
-            if (dwMainEvent & EVENT_CARD_FATAL_ERROR){
-#if (SENSOR_ENABLE == ENABLE)
+            if (dwMainEvent & EVENT_CARD_FATAL_ERROR)
+			 {
+#if (RECORD_ENABLE == ENABLE)
                 Camcorder_RecordStop();
 #endif
             }
@@ -1129,6 +1129,9 @@ static SWORD SystemInit(void)
 #if(RECORD_ENABLE)
     aviStreamTaskCreate();
     recopcontrolInit();
+#endif
+#if (RECORD_ENABLE||SENSOR_WITH_DISPLAY)
+	PreviewRecStateTaskInit();
 #endif
 #if 0 // it is the earlist bootup sensor preview    
     Camcorder_BootPreview();
@@ -1822,10 +1825,10 @@ static void ClkInit(void)
     //////////////////////////////////////////////////////////////////
     PutUartChar(' ');       // Clean UART FIFO
 
-   Clock_PllFreqSet(CLOCK_PLL2_INDEX, 120000000);       //default
+  // Clock_PllFreqSet(CLOCK_PLL2_INDEX, 120000000);       //default
     //Clock_PllFreqSet(CLOCK_PLL2_INDEX, 132000000);
     //Clock_PllFreqSet(CLOCK_PLL2_INDEX, 138000000);
-  //Clock_PllFreqSet(CLOCK_PLL2_INDEX, 144000000);
+  Clock_PllFreqSet(CLOCK_PLL2_INDEX, 144000000);
     //Clock_PllFreqSet(CLOCK_PLL2_INDEX, 153000000);
     // Clock Source Select Setting
     //Clock_MemClockSelSet(MEMCKS_PLL2);

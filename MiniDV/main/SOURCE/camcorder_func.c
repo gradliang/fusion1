@@ -195,6 +195,7 @@ SDWORD Camcorder_PreviewStop(void)
     return retVal;
 }
 
+#if RECORD_ENABLE
 #if (RECYCLING==ENABLE)
 SDWORD CheckReleaseForFreeSize()
 {
@@ -288,6 +289,7 @@ SDWORD Camcorder_RecordResume(void)
     MP_DEBUG("%s -", __FUNCTION__);
     return (SDWORD) Api_VideoRecordingResume();
 }
+#endif
 
 #if RECORD_AUDIO
 static WORD audioFileNamePreFix[] = {'A', 'U', '_', 0};     // at least 3 char

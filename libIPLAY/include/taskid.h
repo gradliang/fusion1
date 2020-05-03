@@ -96,8 +96,10 @@ enum {
     UAC_TASK,
 #endif
 
-#if RECORD_ENABLE  //avi record
+#if SENSOR_WITH_DISPLAY||RECORD_ENABLE
     REC_OP_CONTROL_TASK,
+#endif
+#if RECORD_ENABLE  //avi record
     AVI_AUDIO_TASK,
     WEB_REC_TASK,
     RECORD_CNT_TASK,

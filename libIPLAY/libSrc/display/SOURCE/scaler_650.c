@@ -313,7 +313,7 @@ static int Get650ScaParm(ST_SCA_PARM * psScaParm, WORD SrcWidth, WORD SrcHeight,
 
 
 
-
+extern volatile int recordTaskState;
 void ScalerIsr()
 {
 	IPU *ipu;
@@ -328,8 +328,11 @@ void ScalerIsr()
 	if (ipu->Ipu_reg_1C & 0x000000c0)
 	{
 		val=ipu->Ipu_reg_1C;
-		ipu->Ipu_reg_1C = val & 0xffffffc0;			
-		ProcIpwIsr(val);
+		ipu->Ipu_reg_1C = val & 0xffffffc0;
+		//stop IPW1 IPW2
+		ipu->Ipu_reg_F0 |= 0x000000c0; 
+		if (recordTaskState)
+				ProcIpwIsr(val);
 	}
 #else
 #if (SENSOR_ENABLE == ENABLE)
