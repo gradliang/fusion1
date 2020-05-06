@@ -49,7 +49,7 @@ static DWORD st_dwMotoStartTime[MOTOR_NUM],st_dwHMotoPos[2];
 static BYTE st_bTopVMotorUpValue=0,st_bBottomVMotorUpValue=0,st_bVmotorMoveTimes[2]={0};
 static SWORD st_swLastProcStep[2]={0,0},st_swVmotorMoveValue[2][VMOTOR_CNT]; // 0->up motor  1->down motor
 //--st_wDiachargeRunTime 前一次放电时间  st_wDischargeTimeSet:设置需要放电的时间或模式
-static WORD st_wDiachargeRunTime=0,st_wDischargeTimeSet=0; // st_wDischargeTimeSet:0->off 
+static WORD st_wDiachargeRunTime=0,st_wDischargeTimeSet=0,st_wMotorSpeed[MOTOR_NUM]={0,0,0,0}; // st_wDischargeTimeSet:0->off 
 static BYTE st_bFiberBlackLevel[SENSER_TOTAL]={0xff,0xff};
 
 static STWELDSTATUS st_WeldStatus;
@@ -117,7 +117,7 @@ DWORD OpmGetTotalNumber(BYTE bMode)
 {
 	DWORD *pdwHead;
 	
-	if (pdwHead=OpmGetbuffer(bMode))
+	if (pdwHead=(DWORD *)OpmGetbuffer(bMode))
 	{
 		return *pdwHead;
 	}
@@ -605,7 +605,7 @@ SWORD Weld_CaptureFile(ST_IMGWIN *pWin)
 		{
 			pbBuf=JpegBuf+IMG_size;
 			memset(pbBuf,0,WELD_FILE_INFO_LENTH);
-			pdwBuf=pbBuf;
+			pdwBuf=(DWORD*)pbBuf;
 			//--flag (4bytes):BYTE 0-7
 			for (i=0;i<4;i++)
 			{
@@ -662,7 +662,7 @@ SWORD Weld_ReadFileWeldInfo(STREAM* handle,BYTE *pbTitle,STWELDSTATUS *pWeldStat
 		FileClose(handle);
 		return FAIL;
 	}
-	pbBuf = (WORD *) ext_mem_malloc(WELD_FILE_INFO_LENTH);
+	pbBuf = (BYTE *) ext_mem_malloc(WELD_FILE_INFO_LENTH);
 	if (pbBuf==NULL)
 	{
 		if (bHandleNull)
@@ -745,7 +745,7 @@ SWORD Weld_SendFileInit(DWORD dwFileIndex)
 	dwFileSize = FileSizeGet(handle);
 	if (st_pbBuf)
 		ext_mem_free(st_pbBuf);
-	st_pbBuf = (WORD *) ext_mem_malloc(ALIGN_32(dwFileSize));
+	st_pbBuf = (BYTE *) ext_mem_malloc(ALIGN_32(dwFileSize));
 	if (st_pbBuf==NULL)
 	{
 		FileClose(handle);
@@ -982,6 +982,7 @@ void ResetFiberPara(void)
 		st_swFaceY2[i]=-1;
 		st_swFaceY20[i]=-1;
 		st_swFaceY3[i]=-1;
+		st_wMotorSpeed[i]=0;
 	}
 
 	//for (i=0;i<SENSER_TOTAL;i++)
@@ -2421,7 +2422,7 @@ SDWORD SearchTopEdge(ST_IMGWIN *pWin,SWORD swStartX,SWORD swXEnd,SWORD swStartY,
 	SWORD i,x,y,swYValidStartAver;
 	BYTE *pbWinBuffer,bContinueCnt,bSensorIndex;
 
-	pwYValidStartArry = (DWORD *)ext_mem_malloc(ALIGN_32(swXEnd-swStartX+1)<<2);
+	pwYValidStartArry = (WORD *)ext_mem_malloc(ALIGN_32(swXEnd-swStartX+1)<<2);
 	if (pwYValidStartArry==NULL)
 		return FAIL;
 	if ((DWORD)pWin==(DWORD)&SensorInWin[1])
@@ -2512,9 +2513,9 @@ SWORD SearchLeftFiberFaceAndTopEdge(ST_IMGWIN *pWin,BYTE bMode,BYTE bScanFace,BY
 	WORD wXValidArry[X_SCAN_MAX_SUM];
 #endif
 
-	if ((DWORD)pWin==(DWORD)&SensorInWin[1])
+	if (bMode==MOTOR_LEFT_BOTTOM)
 		bSensorIndex=SENSER_BOTTOM;
-	else
+	else //MOTOR_LEFT_TOP
 		bSensorIndex=SENSER_TOP;
 	dwOffset=pWin->dwOffset;
 	swXEnd=pWin->dwOffset;//(g_wCenterPos<<1)+(g_wCenterPos>>1);
@@ -2560,7 +2561,7 @@ SWORD SearchLeftFiberFaceAndTopEdge(ST_IMGWIN *pWin,BYTE bMode,BYTE bScanFace,BY
 	}
 
 	//计算有效Y起始坐标
-	//DEBUG_POS("bScanTopEdge=%d wValidLineCnt %d ",bScanTopEdge,wValidLineCnt);
+	DEBUG_POS("bScanTopEdge=%d wValidLineCnt %d ",bScanTopEdge,wValidLineCnt);
 #if ALIGN_NEW_MODE
 	if (bScanTopEdge && wValidLineCnt>X_SCAN_VALID_NUM)
 	{
@@ -2625,7 +2626,7 @@ SWORD SearchLeftFiberFaceAndTopEdge(ST_IMGWIN *pWin,BYTE bMode,BYTE bScanFace,BY
 	{
 		//在最后一个有效端面与第一个无效端面间精确定位
 		swXEnd=x-X_STEP;
-		for (;x>swXEnd;x-=4)
+		for (;x>=swXEnd;x-=4)
 		{
 			swRet=ScanFiberUptoDown(pWin,x,swStartY,swYEnd,g_psSetupMenu->bBackGroundLevel[bSensorIndex]/BG_SET);
 			if (swRet!=FAIL)
@@ -2633,14 +2634,16 @@ SWORD SearchLeftFiberFaceAndTopEdge(ST_IMGWIN *pWin,BYTE bMode,BYTE bScanFace,BY
 				break;
 			}
 		}
+			DEBUG_POS("%d X[%d]=%d  ",swRet,bMode,x>>1);
 		if (swRet!=FAIL)
 		{
 			x>>=1;
+			DEBUG_POS("X[%d]=%d",bMode,x);
 			//if (st_swFaceX[bMode]>=x+X_SHAKE || st_swFaceX[bMode]+X_SHAKE<=x)
 			if (st_swFaceX[bMode]!=x)
 			{
 				st_swFaceX[bMode]=x;
-				DEBUG_POS("X[%d]=%d",bMode,x);
+				//DEBUG_POS("X[%d]=%d",bMode,x);
 				#if TEST_PLANE||ALIGN_DEMO_MODE
 				if (st_swFaceX[bMode]>80 && st_swFaceY1[bMode]>0)
 				{
@@ -2657,6 +2660,7 @@ SWORD SearchLeftFiberFaceAndTopEdge(ST_IMGWIN *pWin,BYTE bMode,BYTE bScanFace,BY
 				#endif
 
 				#if OSD_LINE_NUM && !TEST_PLANE
+				if (bSensorIndex==SENSER_BOTTOM)
 				OsdLineSet(1<<g_pstXpgMovie->m_wCurPage,bMode,x,(bMode>1 ? pWin->wHeight/2:0),2,pWin->wHeight/2,OSD_COLOR_GREEN);
 				#endif
 				#if TEST_PLANE||ALIGN_DEMO_MODE
@@ -3288,8 +3292,9 @@ void DriveMotor(BYTE bMotorInex,BYTE bDirection,WORD wStep,BYTE bSpeed)
 	if (bMotorInex<5)
 	{
 
-		if ((st_bMotorStaus&(1<<bDataIndex)) && st_bDirectionArry[bDataIndex]==bDirection && SystemGetElapsedTime(st_dwMotoStartTime[bDataIndex])<300)
+		//if ((st_bMotorStaus&(1<<bDataIndex)) && st_bDirectionArry[bDataIndex]==bDirection && SystemGetElapsedTime(st_dwMotoStartTime[bDataIndex])<300)
 		//if ((st_bMotorStaus&(1<<bDataIndex)) && st_bDirectionArry[bDataIndex]==bDirection)
+		if ((st_bMotorStaus&(1<<bDataIndex)) && st_bDirectionArry[bDataIndex]==bDirection && wStep>100)
 			return;
 		/*
 		if (bDataIndex<2 && bDirection)
@@ -3386,7 +3391,7 @@ void MotorSetStatus(BYTE bMotorInex,BYTE bMode) //0xa3   bmode:0->stop  BYT4~7  
 		bTxData[1]=3+1;
 		bTxData[2]=(bMode<<4)|bMotorInex; // 左马达0x01 右马达0x02   Y上马达0x03  Y下马达0x04
 		if (TSPI_PacketSend(bTxData,1)==PASS)
-			st_bMotorStaus&= ~(1<<bDataIndex);
+			;//st_bMotorStaus&= ~(1<<bDataIndex); //由MCU反馈状态比较合适
 	}
 
 }
@@ -5134,13 +5139,15 @@ void Proc_Weld_State()
 }
 
 #if ALIGN_FAST_MODE
+#define	MOTO_TEST_PULSE													975
+#define	MOTO_TEST_SPEED													8
 void Proc_Weld_State_Fast()
 {
 	ST_IMGWIN *pWin=(ST_IMGWIN *)&SensorInWin[0];
 	SWORD swRet,swSrcPos,swTrgPos;
 	BYTE bMode=0; //4 0->左上  1->右上 2->左下 3->右下
 	static BYTE st_bRedo;
-	static SWORD st_swRet[2];
+	static SWORD st_swRet[4],st_swPosx[4];
 
 #if TSPI_ENBALE
 	TSPI_Receive_Check();
@@ -5157,11 +5164,16 @@ void Proc_Weld_State_Fast()
 				MP_DEBUG("SENSOR_PROC_INIT");
 				Idu_OsdErase();
 				//g_bDisplayMode=0x80;
-				st_swRet[0]=-1;
-				st_swRet[1]=-1;
+				for (swRet=0;swRet<4;swRet++)
+				{
+					st_swRet[swRet]=-1;
+					st_swPosx[swRet]=0;
+				}
 				st_wDischargeTimeSet=0;
 				ResetFiberPara();
 				SendWeldStaus(0);
+				MotorSetStatus(01,MOTOR_HOLD);
+				//MotorSetStatus(02,MOTOR_HOLD);
 				#if 0//OSD_LINE_NUM && !TEST_PLANE
 				OsdLineSet(1<<g_pstXpgMovie->m_wCurPage,0,g_psSetupMenu->wElectrodePos[0]-180, pWin->wHeight/4,2,pWin->wHeight/2,OSD_COLOR_GREEN);
 				OsdLineSet(1<<g_pstXpgMovie->m_wCurPage,1,g_psSetupMenu->wElectrodePos[0]-40, pWin->wHeight/4,2,pWin->wHeight/2,OSD_COLOR_GREEN);
@@ -5174,7 +5186,7 @@ void Proc_Weld_State_Fast()
 			if (st_swRet[0]<=0)
 			{
 				pWin=(ST_IMGWIN *)&SensorInWin[0];
-				st_swRet[0]=ScanFiberFaceExistPos(pWin,8);
+				st_swRet[0]=ScanFiberFaceExistPos(pWin,20);
 				if (st_swRet[0]<=0)
 				{
 					DriveMotor(01,1,0xffff,10);
@@ -5182,13 +5194,34 @@ void Proc_Weld_State_Fast()
 				else
 				{
 					MP_DEBUG("SENSOR_FACE_POS1A  STOP");
-					MotorSetStatus(01,MOTOR_STOP);
+					//MotorSetStatus(01,MOTOR_STOP);
+					DriveMotor(01,1,12,8);
+				}
+			}
+			else
+			{
+				bMode=MOTOR_LEFT_TOP;
+				pWin=(ST_IMGWIN *)&SensorInWin[0];
+				
+				if (st_swFaceX[bMode]<0 && !(st_bMotorStaus&0x01))
+				{
+					SearchLeftFiberFaceAndTopEdge(pWin,bMode,1,0);
+					if (st_swFaceX[bMode]>0)
+					{
+						st_swPosx[bMode]=st_swFaceX[bMode];
+						//OsdLineSet(1<<g_pstXpgMovie->m_wCurPage,OSD_LINE_NUM-1,st_swPosx[bMode],24,2,64,OSD_COLOR_BLUE);
+						DriveMotor(01,1,MOTO_TEST_PULSE,MOTO_TEST_SPEED);
+					}
+					else
+					{
+						DriveMotor(01,1,210,8);
+					}
 				}
 			}
 			if (st_swRet[1]<=0)
 			{
 				pWin=(ST_IMGWIN *)&SensorInWin[1];
-				st_swRet[1]=ScanFiberFaceExistPos(pWin,8);
+				st_swRet[1]=ScanFiberFaceExistPos(pWin,20);
 				if (st_swRet[1]<=0)
 				{
 					DriveMotor(02,1,0xffff,10);
@@ -5196,20 +5229,88 @@ void Proc_Weld_State_Fast()
 				else
 				{
 					mpDebugPrint("SENSOR_FACE_POS1B  STOP");
-					MotorSetStatus(02,MOTOR_STOP);
+					//MotorSetStatus(02,MOTOR_STOP);
+					DriveMotor(02,1,12,8);
+				}
+			}
+			else
+			{
+				bMode=MOTOR_LEFT_BOTTOM;
+				pWin=(ST_IMGWIN *)&SensorInWin[1];
+				
+				if (st_swFaceX[bMode]<0 && !(st_bMotorStaus&0x02))
+				{
+					SearchLeftFiberFaceAndTopEdge(pWin,bMode,1,0);
+					if (st_swFaceX[bMode]>0)
+					{
+						st_swPosx[bMode]=st_swFaceX[bMode];
+						OsdLineSet(1<<g_pstXpgMovie->m_wCurPage,OSD_LINE_NUM-1,st_swPosx[bMode],24,2,64,OSD_COLOR_BLUE);
+						DriveMotor(02,1,MOTO_TEST_PULSE,MOTO_TEST_SPEED);
+					}
+					else
+					{
+						DriveMotor(02,1,210,8);
+					}
 				}
 			}
 
-			if (st_swRet[0]>0 && st_swRet[1]>0)
+			if (st_swFaceX[MOTOR_LEFT_TOP]>0 && st_swFaceX[MOTOR_LEFT_BOTTOM]>0 && !(st_bMotorStaus&0x03))
 			{
 				st_swRet[0]=-1;
 				st_swRet[1]=-1;
 				//st_dwProcState=SENSOR_IDLE;
 				st_dwProcState++;
+				MP_DEBUG("TO SENSOR_FACE_POS1B ");
+				TimerToFillReferWin(30,FILL_WIN_INIT);
 			}
-			SetFillProcWinFlag();
+			else
+				SetFillProcWinFlag();
 			break;
 		case SENSOR_FACE_POS1B:
+			if (!st_wMotorSpeed[MOTOR_LEFT_TOP])
+			{
+				bMode=MOTOR_LEFT_TOP;
+				pWin=(ST_IMGWIN *)&SensorInWin[0];
+				SearchLeftFiberFaceAndTopEdge(pWin,bMode,1,0);
+				MP_DEBUG("SENSOR_FACE_POS1B1 %d",st_swFaceX[bMode]);
+				if (st_swFaceX[bMode]>st_swPosx[bMode])
+				{
+					// about 19.5puls/pixel
+					st_wMotorSpeed[bMode]=st_swFaceX[bMode]-st_swPosx[bMode];
+					st_wMotorSpeed[bMode]=((MOTO_TEST_PULSE<<1)+(st_wMotorSpeed[bMode]>>1))/st_wMotorSpeed[bMode];
+					MP_DEBUG("st_wMotorSpeed[%d]=%d",bMode,st_wMotorSpeed[bMode]);
+					swTrgPos=g_psSetupMenu->wElectrodePos[0]-100;
+					if (swTrgPos>st_swFaceX[bMode])
+						DriveMotor(01,1,(swTrgPos-st_swFaceX[bMode])*st_wMotorSpeed[bMode]/2,MOTO_TEST_SPEED);
+					//st_dwProcState=SENSOR_IDLE;
+				}
+				xpgUpdatePageOsd();
+				SetFillProcWinFlag();
+			}
+			if (!st_wMotorSpeed[MOTOR_LEFT_BOTTOM])
+			{
+				bMode=MOTOR_LEFT_BOTTOM;
+				pWin=(ST_IMGWIN *)&SensorInWin[1];
+				SearchLeftFiberFaceAndTopEdge(pWin,bMode,1,0);
+				if (st_swFaceX[bMode]>st_swPosx[bMode])
+				{
+					// about 19.5puls/pixel
+					st_wMotorSpeed[bMode]=st_swFaceX[bMode]-st_swPosx[bMode];
+					st_wMotorSpeed[bMode]=((MOTO_TEST_PULSE<<1)+(st_wMotorSpeed[bMode]>>1))/st_wMotorSpeed[bMode];
+					MP_DEBUG("st_wMotorSpeed[%d]=%d",bMode,st_wMotorSpeed[bMode]);
+					swTrgPos=pWin->wWidth-g_psSetupMenu->wElectrodePos[0]-100; // 40
+					if (swTrgPos>st_swFaceX[bMode])
+						DriveMotor(02,1,(swTrgPos-st_swFaceX[bMode])*st_wMotorSpeed[bMode]/2,MOTO_TEST_SPEED);
+				}
+				xpgUpdatePageOsd();
+				SetFillProcWinFlag();
+			}
+			if (st_wMotorSpeed[MOTOR_LEFT_TOP]&& st_wMotorSpeed[MOTOR_LEFT_BOTTOM])
+			{
+					st_dwProcState=SENSOR_IDLE;
+			}
+			break;
+		case SENSOR_FACE_POS1C:
 			if (st_swRet[0]<=0)
 			{
 				pWin=(ST_IMGWIN *)&SensorInWin[0];
@@ -5290,13 +5391,14 @@ void Proc_Weld_State_Fast()
 			//g_bDisplayMode=0x80;
 			//TimerToFillReferWin(10,FILL_WIN_UP);
 			SetFillProcWinFlag();
-			st_dwProcState=SENSOR_IDLE;
+			//st_dwProcState=SENSOR_IDLE;
 			break;
 
 		case SENSOR_FACE_POS2A: // TOP
 			bMode=MOTOR_LEFT_TOP;
 			pWin=(ST_IMGWIN *)&SensorInWin[0];
 			SearchLeftFiberFaceAndTopEdge(pWin,bMode,1,1);
+			#if 1
 			#if TEST_PLANE||ALIGN_DEMO_MODE
 			swTrgPos=g_psSetupMenu->wElectrodePos[0]-st_wMotoStep[MAX_ADJ_NUM-3];
 			#else
@@ -5308,7 +5410,10 @@ void Proc_Weld_State_Fast()
 				st_dwProcState++;
 				mpDebugPrint("--SENSOR_FACE_POS2A OK! %d/%d",st_swFaceX[bMode],swTrgPos);
 			}
+			#endif
 			SetFillProcWinFlag();
+			xpgUpdatePageOsd();
+			st_dwProcState=SENSOR_IDLE;
 			break;
 			
 		case SENSOR_FACE_POS2B: // BOTTOM
@@ -5645,6 +5750,14 @@ void Proc_Weld_State_Fast()
 
 
 		case SENSOR_IDLE:
+			#if 0
+				bMode=MOTOR_LEFT_BOTTOM;
+				pWin=(ST_IMGWIN *)&SensorInWin[1];
+			
+				SearchLeftFiberFaceAndTopEdge(pWin,bMode,1,0);
+				xpgUpdatePageOsd();
+				TimerCheckToFillReferWin(10);
+				#endif
 			break;
 
 		default:
@@ -6211,12 +6324,12 @@ void TSPI_DataProc(void)
 		case 0xb4:
 			if (pbTspiRxBuffer[2]==0x01)
 			{
+				st_wDiachargeRunTime=0;
 				if (st_dwProcState==SENSOR_DISCHARGE1 || st_dwProcState==SENSOR_DISCHARGE2 ||st_dwProcState==SENSOR_DISCHARGE3)
 				{
 					Ui_TimerProcRemove(TimerToNextState);
 					st_dwProcState++;//=SENSOR_FACE_POS2A;
 					EventSet(UI_EVENT, EVENT_PROC_DATA);
-					st_wDiachargeRunTime=0;
 				}
 				if (st_bAutoDischarge)
 				{
@@ -6299,7 +6412,7 @@ void TSPI_DataProc(void)
 					if (wIndex<FileBrowserGetTotalFile())
 					{
 						FileListSetCurIndex(wIndex);
-						Weld_ReadFileWeldInfo(NULL,&pbData[9],&pbData[20]);
+						Weld_ReadFileWeldInfo(NULL,&pbData[9],(STWELDSTATUS *)&pbData[20]);
 						//--head
 						pbData[0]=0xa6;
 						pbData[1]=3+23;
@@ -6527,7 +6640,6 @@ void ProcIpwIsr(DWORD dwRegValue)
 {
 	IPU *ipu = (IPU *) IPU_BASE;
 	ST_IMGWIN *pDstWin=(ST_IMGWIN *)Idu_GetCurrWin();
-	BYTE bCacheWinIndex=0xff;
 
 	//stop IPW1 IPW2
 	//ipu->Ipu_reg_F0 |= 0x000000c0; 
@@ -6554,7 +6666,6 @@ void ProcIpwIsr(DWORD dwRegValue)
 		goto IPW_ISR_END;
 	}
 	
-#if 1
 	//UartOutText(" - ");
 	Sensor_Channel_Swap();
 	if (st_bNeedFillProcWin==FILL_WIN_END)
@@ -6562,15 +6673,16 @@ void ProcIpwIsr(DWORD dwRegValue)
 			st_bNeedFillProcWin=0;
 			Ui_TimerProcAdd(10, TimerToProcWin);
 	}
-	
+	//st_bNeedFillProcWin|=(FILL_WIN_UP|FILL_WIN_DOWN);
 	if (st_bCurChannel)
 	{
-		if ((st_bNeedFillProcWin&FILL_WIN_DOWN)&&(dwRegValue&BIT7))
+		if ((st_bNeedFillProcWin&FILL_WIN_DOWN))//(dwRegValue&BIT7)
 		{
 			//UartOutText(" 1 ");
 			st_bNeedFillProcWin &=0xfd;//FILL_WIN_DOWN
 			ipu->Ipu_reg_A3 = ((DWORD) SensorInWin[1].pdwStart| 0xA0000000);	
 			//ipu->Ipu_reg_A3 = ((DWORD) ((ST_IMGWIN *)Idu_GetCurrWin())->pdwStart| 0xA0000000);	
+			//ipu->Ipu_reg_F2 = ((DWORD) pDstWin->pdwStart| 0xA0000000)+g_dwDisplayOffset;
 		}
 		#if 1
 		if (g_bDisplayMode==1)
@@ -6580,17 +6692,18 @@ void ProcIpwIsr(DWORD dwRegValue)
 		else if (g_bDisplayMode==3)
 			ipu->Ipu_reg_F2 = ((DWORD) pDstWin->pdwStart| 0xA0000000)+g_dwDisplayOffset+(SensorWindow_Width<<1);
 		else // (g_bDisplayMode==0)
-			ipu->Ipu_reg_F2 = ((ST_IMGWIN *)Idu_GetNextWin())->pdwStart;//+g_dwDisplayOffset
+			ipu->Ipu_reg_F2 = ((DWORD) ((ST_IMGWIN *)Idu_GetNextWin())->pdwStart| 0xA0000000);
 		#endif
 	}
 	else
 	{
-		if ((st_bNeedFillProcWin&FILL_WIN_UP)&&(dwRegValue&BIT7)) // up win
+		if ((st_bNeedFillProcWin&FILL_WIN_UP)) // up win//(dwRegValue&BIT7)
 		{
 			//UartOutText(" 0 ");
 			st_bNeedFillProcWin &=0xfe;//FILL_WIN_UP
 			ipu->Ipu_reg_A3 = ((DWORD) SensorInWin[0].pdwStart| 0xA0000000);	
 			//ipu->Ipu_reg_A3 = ((DWORD) pDstWin->pdwStart| 0xA0000000);	
+			//ipu->Ipu_reg_F2 = ((DWORD) ((ST_IMGWIN *)Idu_GetNextWin())->pdwStart| 0xA0000000);
 		}
 		#if 1
 		if (g_bDisplayMode==1)
@@ -6600,116 +6713,6 @@ void ProcIpwIsr(DWORD dwRegValue)
 		#endif
 	}
 
-#else
-
-	if (st_bIpwSkipFrame)
-	{
-		st_bIpwSkipFrame--;
-		goto IPW_ISR_END;
-	}
-    //mpDebugPrintN("  %d  ", ipu->Ipu_reg_10A>>16);
-    //mpDebugPrintN("   %08x %08x   ", ipu->Ipu_reg_10A,ipu->Ipu_reg_10B);
-
-
-	//--cache data
-	if (st_bNeedFillProcWin)//ipw1   (dwRegValue&BIT7)
-	{
-		//MP_DEBUG("--%s-- %p",__FUNCTION__,st_bNeedFillProcWin);
-
-		if (st_bNeedFillProcWin&FILL_WIN_UP) // up win
-		{
-			UartOutText(" 0 ");
-			if (Sensor_CurChannel_Get())
-				Sensor_Channel_Set(0);
-			st_bNeedFillProcWin &=0xfe;//FILL_WIN_UP
-			ipu->Ipu_reg_A3 = ((DWORD) SensorInWin[0].pdwStart| 0xA0000000);	
-			if (g_bDisplayMode==1)
-				ipu->Ipu_reg_F2 = ((DWORD) ((ST_IMGWIN *)Idu_GetNextWin())->pdwStart| 0xA0000000)+g_dwDisplayOffset;
-			else
-				ipu->Ipu_reg_F2 = ((DWORD) pDstWin->pdwStart| 0xA0000000)+g_dwDisplayOffset;
-		}
-		else if (st_bNeedFillProcWin&FILL_WIN_DOWN) // down win
-		{
-			UartOutText(" 1 ");
-			if (!Sensor_CurChannel_Get())
-				Sensor_Channel_Set(1);
-			st_bNeedFillProcWin &=0xfd;//FILL_WIN_DOWN
-			ipu->Ipu_reg_A3 = ((DWORD) SensorInWin[1].pdwStart| 0xA0000000);	
-			if (g_bDisplayMode==1)
-				ipu->Ipu_reg_F2 = ((DWORD) pDstWin->pdwStart| 0xA0000000)+g_dwDisplayOffset;
-			/*
-			else if (g_bDisplayMode==2)
-				ipu->Ipu_reg_F2 = ((DWORD) pDstWin->pdwStart| 0xA0000000)+g_dwDisplayOffset+pDstWin->dwOffset*SensorWindow_Height;
-			else if (g_bDisplayMode==3)
-				ipu->Ipu_reg_F2 = ((DWORD) pDstWin->pdwStart| 0xA0000000)+g_dwDisplayOffset+(SensorWindow_Width<<1);
-				*/
-			else // (g_bDisplayMode==0)
-				ipu->Ipu_reg_F2 = ((ST_IMGWIN *)Idu_GetNextWin())->pdwStart+g_dwDisplayOffset;
-		}
-		else // FILL_WIN_END
-		{
-			if (g_bDisplayMode<2 && g_bDisplayMode!=Sensor_CurChannel_Get())
-			{
-				Sensor_Channel_Set(g_bDisplayMode);
-			}
-			//mpDebugPrintN("  - ");
-			UartOutText(" 9 ");
-			/*
-			if (Sensor_CurChannel_Get() && g_bDisplayMode==2)
-				ipu->Ipu_reg_F2 = ((DWORD) ((ST_IMGWIN *)Idu_GetNextWin())->pdwStart| 0xA0000000)+g_dwDisplayOffset+pDstWin->dwOffset*SensorWindow_Height;
-			else if (Sensor_CurChannel_Get() && g_bDisplayMode==3)
-				ipu->Ipu_reg_F2 = ((DWORD) ((ST_IMGWIN *)Idu_GetNextWin())->pdwStart| 0xA0000000)+g_dwDisplayOffset+(SensorWindow_Width<<1);
-			else
-			*/
-				ipu->Ipu_reg_F2 = ((DWORD) ((ST_IMGWIN *)Idu_GetNextWin())->pdwStart| 0xA0000000)+g_dwDisplayOffset;
-			//st_bIpwSkipFrame=4;
-
-			//st_bBackupChanel=0xff;
-			st_bNeedFillProcWin=0;
-			Ui_TimerProcAdd(10, TimerToProcWin);
-			//EventSet(UI_EVENT, EVENT_PROC_DATA);
-		}
-
-	}
-	else
-	{
-	//--display
-	if (g_bDisplayMode==2)
-	{
-			if (Sensor_CurChannel_Get())
-			{
-				Sensor_Channel_Set(0);
-				ipu->Ipu_reg_F2 = ((DWORD) pDstWin->pdwStart| 0xA0000000)+g_dwDisplayOffset;	
-			}
-			else
-			{
-				Sensor_Channel_Set(1);
-				ipu->Ipu_reg_F2 = ((DWORD) pDstWin->pdwStart| 0xA0000000)+g_dwDisplayOffset+pDstWin->dwOffset*SensorWindow_Height;	
-			}
-	}
-	else if (g_bDisplayMode==3)
-	{
-			if (Sensor_CurChannel_Get())
-			{
-				Sensor_Channel_Set(0);
-				ipu->Ipu_reg_F2 = ((DWORD) pDstWin->pdwStart| 0xA0000000)+g_dwDisplayOffset;	
-			}
-			else
-			{
-				Sensor_Channel_Set(1);
-				ipu->Ipu_reg_F2 = ((DWORD) pDstWin->pdwStart| 0xA0000000)+g_dwDisplayOffset+(SensorWindow_Width<<1);
-			}
-	}
-	else if (g_bDisplayMode== Sensor_CurChannel_Get())
-	{
-		ipu->Ipu_reg_F2 = ((DWORD) pDstWin->pdwStart| 0xA0000000)+g_dwDisplayOffset;
-	}
-	else
-	{
-		ipu->Ipu_reg_F2 = ((DWORD) ((ST_IMGWIN *)Idu_GetNextWin())->pdwStart| 0xA0000000)+g_dwDisplayOffset;
-	}
-}
-#endif
 
 	IPW_ISR_END:
 	if (st_bNeedFillProcWin)
@@ -7457,6 +7460,7 @@ void WeldDataInit(void)
 	{
 		mpDebugPrint("BackGroundLevel 0x%02x-0x%02x",g_psSetupMenu->bBackGroundLevel[0],g_psSetupMenu->bBackGroundLevel[1]);
 	}
+	//TimerCheckToFillReferWin(10);
 }
 
 #endif

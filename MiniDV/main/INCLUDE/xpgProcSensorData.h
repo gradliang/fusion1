@@ -20,7 +20,7 @@ enum {
     SENSOR_FACE_POS1A,
     //SENSOR_FACE_POS11A,
     SENSOR_FACE_POS1B,
-    //SENSOR_FACE_POS11B,
+    SENSOR_FACE_POS1C,
     SENSOR_DISCHARGE1,
     SENSOR_AUTO_FOCUS,
     SENSOR_GET_ANGLE,
@@ -159,6 +159,7 @@ void DriveMotor(BYTE bMotorInex,BYTE bDirection,WORD wStep,BYTE bSpeed);
 void MotorSetStatus(BYTE bMotorInex,BYTE bMode);
 void MotoHoldTimeoutSet(BYTE bMotorInex,BYTE bMode);
 void StopAllMoto(void);
+void WeldStopAllAction(void);
 void Discharge(WORD wMode,BYTE bStep);
 SWORD ScanFiberUptoDown(ST_IMGWIN *pWin, SWORD x,SWORD y,SWORD swYEnd,BYTE bLowLevel);
 SWORD ScanFiberFaceExistPos(ST_IMGWIN *pWin, SWORD x);
