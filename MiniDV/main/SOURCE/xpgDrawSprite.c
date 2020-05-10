@@ -1267,6 +1267,14 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
                     Idu_PrintStringCenter(pWin, getstr(Str_WangJiMiMa), wX, wY + 18, 0, pstSprite->m_wWidth);
                     Idu_FontColorSet(0xff, 0xff, 0xff);
                 }
+                else if (dialogType == Dialog_EditValue)
+                {
+                    const char * text1 = getstr(Str_QueDing);
+                    SetCurrIduFontID(FONT_ID_HeiTi19);
+                    Idu_FontColorSet(0,0,0);
+                    Idu_PrintStringCenter(pWin, text1, wX, wY + 15, 0, pstSprite->m_wWidth);
+                    Idu_FontColorSet(0xff,0xff,0xff);
+                }
             }
             else if (dwSpriteId == 11)
             {

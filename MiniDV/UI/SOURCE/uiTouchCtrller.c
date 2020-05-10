@@ -1049,6 +1049,40 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
             }
             else if (dwIconId == 10)
             {
+                if (strEditValue[0])
+                {
+                    if (boDialogValueIsFloat)
+                    {
+                        unsigned int value1, value2;
+                        char *pp;
+                        pp = strchr(strEditValue, '.');
+                        if (pp == NULL)
+                        {
+                            value1 = atoi(strEditValue);
+                            dwDialogTempValue = value1 << 6;
+                        }
+                        else
+                        {
+                            char tempbuf1[128];
+                            strncpy(tempbuf1, strEditValue, pp - strEditValue);
+                            tempbuf1[pp - strEditValue] = 0;
+                            value1 = atoi(tempbuf1);
+                            value2 = atoi(pp+1);
+                            dwDialogTempValue = (value1 << 6) | value2;
+                        }
+                    }
+                    else
+                    {
+                        int newValue = atoi(strEditValue);
+                        dwDialogTempValue = newValue;
+                        if (dialogOnClose != NULL)
+                        {
+                            dialogOnClose();
+                            return 0;
+                        }
+                    }
+                }
+                exitDialog();
             }
             else if (dwIconId == 11)
             {
@@ -1378,39 +1412,6 @@ SWORD touchSprite_CloseIcon(STXPGSPRITE * sprite, WORD x, WORD y)
         }
         else if (dialogType == Dialog_EditValue)
         {
-            if (strEditValue[0])
-            {
-                if (boDialogValueIsFloat)
-                {
-                    unsigned int value1, value2;
-                    char *pp;
-                    pp = strchr(strEditValue, '.');
-                    if (pp == NULL)
-                    {
-                        value1 = atoi(strEditValue);
-                        dwDialogTempValue = value1 << 6;
-                    }
-                    else
-                    {
-                        char tempbuf1[128];
-                        strncpy(tempbuf1, strEditValue, pp - strEditValue);
-                        tempbuf1[pp - strEditValue] = 0;
-                        value1 = atoi(tempbuf1);
-                        value2 = atoi(pp+1);
-                        dwDialogTempValue = (value1 << 6) | value2;
-                    }
-                }
-                else
-                {
-                    int newValue = atoi(strEditValue);
-                    dwDialogTempValue = newValue;
-                    if (dialogOnClose != NULL)
-                    {
-                        dialogOnClose();
-                        return 0;
-                    }
-                }
-            }
             exitDialog();
         }
     }
