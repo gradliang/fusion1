@@ -110,6 +110,7 @@ extern DWORD g_dwCurIndex,g_dwModeIconStatus;
 extern DWORD g_dwPassNum,g_dwFailNum;
 #endif
 
+static DWORD asideColor;
 //---------------------------------------------------------------------------
 // Dialog
 //---------------------------------------------------------------------------
@@ -2499,6 +2500,8 @@ SWORD xpgDrawSprite_Title(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BO
     STXPGSPRITE * pstMask;
     DWORD dwSpriteId = pstSprite->m_dwTypeIndex;
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
+    asideColor = RGB2YUV(0x14, 0x14, 0x14);
+    
     if (dwHashKey == xpgHash("FuncSet") || 
         dwHashKey == xpgHash("FuncSet2"))
     {
@@ -2515,7 +2518,7 @@ SWORD xpgDrawSprite_Title(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BO
              dwHashKey == xpgHash("SetInfo") )
     {
         //Idu_PaintWinArea(pWin, 0, 0, pWin->wWidth, 40, RGB2YUV(0x0B, 0x0C, 0x0E));
-        Idu_PaintWinArea(pWin, 0, 0, pWin->wWidth, 40, RGB2YUV(0x0B, 0x0B, 0x0B));
+        Idu_PaintWinArea(pWin, 0, 0, pWin->wWidth, 40, asideColor);
         SetCurrIduFontID(FONT_ID_HeiTi19);
         Idu_PrintString(pWin, getstr(Str_XiTongSheZhi), pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
     }
@@ -2524,14 +2527,14 @@ SWORD xpgDrawSprite_Title(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BO
              dwHashKey == xpgHash("FusionSet3"))
     {
         //Idu_PaintWinArea(pWin, 0, 0, pWin->wWidth, 40, RGB2YUV(0x0B, 0x0C, 0x0E));
-        Idu_PaintWinArea(pWin, 0, 0, pWin->wWidth, 40, RGB2YUV(0x0B, 0x0B, 0x0B));
+        Idu_PaintWinArea(pWin, 0, 0, pWin->wWidth, 40, asideColor);
         SetCurrIduFontID(FONT_ID_HeiTi19);
         Idu_PrintString(pWin, getstr(Str_RongJieSheZhi), pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
     }
     else if (dwHashKey == xpgHash("FusionModeSet") )
     {
         //Idu_PaintWinArea(pWin, 0, 0, pWin->wWidth, 40, RGB2YUV(0x0B, 0x0C, 0x0E));
-        Idu_PaintWinArea(pWin, 0, 0, pWin->wWidth, 40, RGB2YUV(0x0B, 0x0B, 0x0B));
+        Idu_PaintWinArea(pWin, 0, 0, pWin->wWidth, 40, asideColor);
         SetCurrIduFontID(FONT_ID_HeiTi19);
         Idu_PrintString(pWin, getstr(Str_XiTongSheZhi), pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
     }
@@ -2584,6 +2587,7 @@ SWORD xpgDrawSprite_Title(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BO
 
 SWORD xpgDrawSprite_Aside(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOOL boClip)
 {
+    asideColor = RGB2YUV(0x14, 0x14, 0x14);
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
     if (dwHashKey == xpgHash("FuncSet") || 
         dwHashKey == xpgHash("FuncSet2") ||
@@ -2598,16 +2602,14 @@ SWORD xpgDrawSprite_Aside(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BO
         dwHashKey == xpgHash("FusionSet2") ||
         dwHashKey == xpgHash("FusionSet3"))
     {
-        //Idu_PaintWinArea(pWin, 248, 0, 2, pWin->wHeight, RGB2YUV(0x14, 0x14, 0x14));
-        Idu_PaintWinArea(pWin, 0, 0, 250, pWin->wHeight, RGB2YUV(0x0B, 0x0B, 0x0B));
+        Idu_PaintWinArea(pWin, 0, 0, 250, pWin->wHeight, asideColor);
     }    
     else if (dwHashKey == xpgHash("opm1") || 
         dwHashKey == xpgHash("opm2") ||
         dwHashKey == xpgHash("opm3") ||
         dwHashKey == xpgHash("opm4"))
     {
-        //Idu_PaintWinArea(pWin, 200, 0, 2, pWin->wHeight, RGB2YUV(0x14, 0x14, 0x14));
-        Idu_PaintWinArea(pWin, 0, 0, 250, pWin->wHeight, RGB2YUV(0x0B, 0x0B, 0x0B));
+        Idu_PaintWinArea(pWin, 0, 0, 250, pWin->wHeight, asideColor);
     }
     return PASS;
 }
@@ -4129,7 +4131,8 @@ SWORD xpgDrawSprite_Selector(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite,
     char * text = "";
     DWORD dwSelectorId = pstSprite->m_dwTypeIndex;
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
-
+    asideColor = RGB2YUV(0x14, 0x14, 0x14);
+    
     if (dwHashKey == xpgHash("FuncSet"))
     {
         if (dwSelectorId == 0)
@@ -4141,7 +4144,7 @@ SWORD xpgDrawSprite_Selector(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite,
         }
         else if (dwSelectorId == 1)
         {
-            Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy, pstSprite->m_wWidth, pstSprite->m_wHeight, RGB2YUV(0x0B, 0x0B, 0x0B));
+            Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy, pstSprite->m_wWidth, pstSprite->m_wHeight, asideColor);
             Idu_PaintWinArea(pWin, pstSprite->m_wPx + pstSprite->m_wWidth - 2, pstSprite->m_wPy, 2, pstSprite->m_wHeight, RGB2YUV(0x2E, 0x2E, 0x2E));
             Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy, pstSprite->m_wWidth, 2, RGB2YUV(0x2E, 0x2E, 0x2E));
             Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + pstSprite->m_wHeight - 2, pstSprite->m_wWidth, 2, RGB2YUV(0x2E, 0x2E, 0x2E));
@@ -4155,7 +4158,7 @@ SWORD xpgDrawSprite_Selector(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite,
     {
         if (dwSelectorId == 0)
         {
-            Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy, pstSprite->m_wWidth, pstSprite->m_wHeight, RGB2YUV(0x0B, 0x0B, 0x0B));
+            Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy, pstSprite->m_wWidth, pstSprite->m_wHeight, asideColor);
             Idu_PaintWinArea(pWin, pstSprite->m_wPx + pstSprite->m_wWidth - 2, pstSprite->m_wPy, 2, pstSprite->m_wHeight, RGB2YUV(0x2E, 0x2E, 0x2E));
             Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy, pstSprite->m_wWidth, 2, RGB2YUV(0x2E, 0x2E, 0x2E));
             Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + pstSprite->m_wHeight - 2, pstSprite->m_wWidth, 2, RGB2YUV(0x2E, 0x2E, 0x2E));
@@ -4224,7 +4227,7 @@ SWORD xpgDrawSprite_Selector(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite,
         }
         else
         {
-            Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy, pstSprite->m_wWidth, pstSprite->m_wHeight, RGB2YUV(0x0B, 0x0B, 0x0B));
+            Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy, pstSprite->m_wWidth, pstSprite->m_wHeight, asideColor);
             Idu_PaintWinArea(pWin, pstSprite->m_wPx + pstSprite->m_wWidth - 2, pstSprite->m_wPy, 2, pstSprite->m_wHeight, RGB2YUV(0x2E, 0x2E, 0x2E));
             Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy, pstSprite->m_wWidth, 1, RGB2YUV(0x2E, 0x2E, 0x2E));
             Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + pstSprite->m_wHeight - 2, pstSprite->m_wWidth, 1, RGB2YUV(0x2E, 0x2E, 0x2E));
@@ -4263,7 +4266,7 @@ SWORD xpgDrawSprite_Selector(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite,
         }
         else
         {
-            Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy, pstSprite->m_wWidth, pstSprite->m_wHeight, RGB2YUV(0x0B, 0x0B, 0x0B));
+            Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy, pstSprite->m_wWidth, pstSprite->m_wHeight, asideColor);
             Idu_PaintWinArea(pWin, pstSprite->m_wPx + pstSprite->m_wWidth - 2, pstSprite->m_wPy, 2, pstSprite->m_wHeight, RGB2YUV(0x2E, 0x2E, 0x2E));
             Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy, pstSprite->m_wWidth, 1, RGB2YUV(0x2E, 0x2E, 0x2E));
             Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + pstSprite->m_wHeight - 2, pstSprite->m_wWidth, 1, RGB2YUV(0x2E, 0x2E, 0x2E));
