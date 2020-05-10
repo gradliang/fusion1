@@ -1812,7 +1812,7 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
     }
     else if (dwHashKey == xpgHash("SetSleep"))
     {
-        if (dwSpriteId == 1)
+        if (dwSpriteId == 1 && !g_psSetupMenu->bSmartBacklight)
         {
             Free_CacheWin();
             Idu_GetCacheWin_WithInit();
@@ -1822,7 +1822,7 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
             popupDialog(Dialog_SetBrightness, "SetSleep");
             xpgUpdateStage();
         }
-        else if (dwSpriteId == 3)
+        else if (dwSpriteId == 3 && !g_psSetupMenu->bAutoShutdown)
         {
             Free_CacheWin();
             Idu_GetCacheWin_WithInit();

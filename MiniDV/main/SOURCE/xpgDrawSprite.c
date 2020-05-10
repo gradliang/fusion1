@@ -3323,6 +3323,8 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         Idu_FontColorSet(0x00, 0x00, 0x00);
         if (dwTextId == 1)
         {
+            if (g_psSetupMenu->bSmartBacklight)
+                Idu_FontColorSet(191, 191, 191);
             
             if (g_psSetupMenu->bSmartBacklight)
                 strcpy(tmpbuf, "AUTO >");
@@ -3340,7 +3342,13 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         }
         else if (dwTextId == 3)
         {
-            sprintf(tmpbuf, "%dmin >", g_psSetupMenu->wShutdownTime);
+            if (g_psSetupMenu->bAutoShutdown)
+                Idu_FontColorSet(191, 191, 191);
+
+            if (g_psSetupMenu->bAutoShutdown)
+                sprintf(tmpbuf, "---");
+            else
+                sprintf(tmpbuf, "%dmin >", g_psSetupMenu->wShutdownTime);
             if (tmpbuf[0])
             {
                 SetCurrIduFontID(FONT_ID_HeiTi19);
@@ -4352,6 +4360,7 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
     }
     else if (dwHashKey == xpgHash("SetSleep"))
     {
+        DWORD lineColor = RGB2YUV(0x2F, 0x2F, 0x2F);
         if (dwListId == 0)
             text = getstr(Str_ZhiNengBeiGuang);
         else if (dwListId == 1)
@@ -4363,20 +4372,31 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
 
         SetCurrIduFontID(FONT_ID_HeiTi19);
         Idu_FontColorSet(0x00, 0x00, 0x00);
+        if (g_psSetupMenu->bSmartBacklight && dwListId == 1) 
+        {
+            Idu_FontColorSet(191, 191, 191);
+            lineColor = RGB2YUV(191, 191, 191);
+        }
+        if (g_psSetupMenu->bAutoShutdown && dwListId == 3) 
+        {
+            Idu_FontColorSet(191, 191, 191);
+            lineColor = RGB2YUV(191, 191, 191);
+        }
+        
         Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
-        Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + 38, 470, 2, RGB2YUV(0x2F, 0x2F, 0x2F));
+        Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + 38, 470, 2, lineColor);
 
         if (dwListId == 0)
         {
             text = getstr(Str_ZhiNengBeiGuang_DESC);
             SetCurrIduFontID(FONT_ID_HeiTi10);
-            Idu_PrintString(pWin, text, pstSprite->m_wPx + 110, pstSprite->m_wPy + 16, 0, 0);
+            Idu_PrintString(pWin, text, pstSprite->m_wPx + 110, pstSprite->m_wPy + 12, 0, 0);
         }
         if (dwListId == 2)
         {
             text = getstr(Str_ZiDongGuanJi_DESC);
             SetCurrIduFontID(FONT_ID_HeiTi10);
-            Idu_PrintString(pWin, text, pstSprite->m_wPx + 110, pstSprite->m_wPy + 16, 0, 0);
+            Idu_PrintString(pWin, text, pstSprite->m_wPx + 110, pstSprite->m_wPy + 12, 0, 0);
         }
         Idu_FontColorSet(0xff, 0xff, 0xff);
         
