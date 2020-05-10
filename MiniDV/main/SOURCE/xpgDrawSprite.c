@@ -218,18 +218,22 @@ int popupDialog(int dialogType, char * backToPage)
         xpgAddDialogSprite(SPRITE_TYPE_ICON, 1, 0);
         xpgAddDialogSprite(SPRITE_TYPE_ICON, 2, 0);
         xpgAddDialogSprite(SPRITE_TYPE_ICON, 3, 0);
+        /*
         xpgAddDialogSprite(SPRITE_TYPE_ICON, 4, 0);
         xpgAddDialogSprite(SPRITE_TYPE_ICON, 5, 0);
         xpgAddDialogSprite(SPRITE_TYPE_ICON, 6, 0);
         xpgAddDialogSprite(SPRITE_TYPE_ICON, 7, 0);
+        */
         xpgAddDialogSprite(SPRITE_TYPE_LIGHT_ICON, 0, 0);
         xpgAddDialogSprite(SPRITE_TYPE_LIGHT_ICON, 1, 0);
+        /*
         xpgAddDialogSprite(SPRITE_TYPE_LIGHT_ICON, 2, 0);
         xpgAddDialogSprite(SPRITE_TYPE_LIGHT_ICON, 3, 0);
         xpgAddDialogSprite(SPRITE_TYPE_LIGHT_ICON, 4, 0);
         xpgAddDialogSprite(SPRITE_TYPE_LIGHT_ICON, 5, 0);
         xpgAddDialogSprite(SPRITE_TYPE_LIGHT_ICON, 6, 0);
         xpgAddDialogSprite(SPRITE_TYPE_LIGHT_ICON, 7, 0);
+        */
     }
     else if (dialogType == Dialog_About)
     {
@@ -1090,20 +1094,59 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         }
         else if (dialogType == Dialog_SetLang)
         {
-            pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_MID2_LIST_DARK];
-            pstRoleMask = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_MID2_LIST_MASK];
             if (dwSpriteId == 0)
             {
-                wX = pstSprite->m_wPx = 164;
-                wY = pstSprite->m_wPy = 137;
+                pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_LONG2_LIST_DARK];
+                pstRoleMask = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_LONG2_LIST_MASK];
+                wX = pstSprite->m_wPx = 224;
+                wY = pstSprite->m_wPy = 180;
                 text = getstr(Str_JianTiZhongWen);
+                wW = pstSprite->m_wWidth = 350;
+                wH = pstSprite->m_wHeight = 50;
+                xpgRoleDrawMask(pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstRoleMask);
+                SetCurrIduFontID(FONT_ID_HeiTi19);
+                Idu_PrintStringCenter(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy + 10, 0, pstSprite->m_wWidth);
             }
             else if (dwSpriteId == 1)
             {
-                wX = pstSprite->m_wPx = 404;
-                wY = pstSprite->m_wPy = 137;
+                pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_LONG2_LIST_DARK];
+                pstRoleMask = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_LONG2_LIST_MASK];
+                wX = pstSprite->m_wPx = 224;
+                wY = pstSprite->m_wPy = 262;
                 text = getstr(Str_YingWen);
+                wW = pstSprite->m_wWidth = 350;
+                wH = pstSprite->m_wHeight = 50;
+                xpgRoleDrawMask(pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstRoleMask);
+                SetCurrIduFontID(FONT_ID_HeiTi19);
+                Idu_PrintStringCenter(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy + 10, 0, pstSprite->m_wWidth);
             }
+            else if (dwSpriteId == 2)
+            {
+                wX = pstSprite->m_wPx = 120;
+                wY = pstSprite->m_wPy = 378;
+                pstSprite->m_wWidth = 280;
+                pstSprite->m_wHeight = 70;
+                pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_OK_BUTTON];
+                pstRoleMask = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_OK_BUTTON_MASK];
+                xpgRoleDrawMask(pstRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, pstRoleMask);
+                //SetCurrIduFontID(FONT_ID_HeiTi19);
+                //Idu_PrintStringCenter(pWin, getstr(Str_QueRen), pstSprite->m_wPx, pstSprite->m_wPy + 8, 0, pstSprite->m_wWidth);
+            }
+            else if (dwSpriteId == 3)
+            {
+                wX = pstSprite->m_wPx = 400;
+                wY = pstSprite->m_wPy = 378;
+                pstSprite->m_wWidth = 280;
+                pstSprite->m_wHeight = 70;
+                pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_CANCEL_BUTTON];
+                pstRoleMask = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_CANCEL_BUTTON_MASK];
+                xpgRoleDrawMask(pstRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, pstRoleMask);
+                //SetCurrIduFontID(FONT_ID_HeiTi19);
+                //Idu_PrintStringCenter(pWin, getstr(Str_QuXiao), pstSprite->m_wPx, pstSprite->m_wPy + 8, 0, pstSprite->m_wWidth);
+            }
+            else
+                return PASS;
+            /*
             else if (dwSpriteId == 2)
             {
                 wX = pstSprite->m_wPx = 164;
@@ -1140,13 +1183,8 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
                 wY = pstSprite->m_wPy = 331;
                 text = getstr(Str_ALaBoWen);
             }
-            else 
-                return PASS;
-            wW = pstSprite->m_wWidth = 230;
-            wH = pstSprite->m_wHeight = 50;
-            xpgRoleDrawMask(pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstRoleMask);
-            SetCurrIduFontID(FONT_ID_HeiTi19);
-            Idu_PrintStringCenter(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy + 10, 0, pstSprite->m_wWidth);
+            */
+            
         }
         else if (dialogType == Dialog_SetPassword1 || dialogType == Dialog_SetPassword2 || dialogType == Dialog_CheckPassword || dialogType == Dialog_EditValue)
         {
@@ -2083,24 +2121,26 @@ SWORD xpgDrawSprite_LightIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite
         else if (dialogType == Dialog_SetLang)
         {
             WORD langid = g_psSetupMenu->bLanguage;
-            if (langid >= 8)
+            //if (langid >= 8)
+            //    langid = 0;
+            if (langid >= 2)
                 langid = 0;
             if (langid != dwSpriteId)
                 return PASS;
-            pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_MID2_LIST_LIGHT];
-            pstMask = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_MID2_LIST_MASK];
+            pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_LONG2_LIST_LIGHT];
+            pstMask = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_LONG2_LIST_MASK];
             if (dwSpriteId == 0)
             {
-                wX = pstSprite->m_wPx = 164;
-                wY = pstSprite->m_wPy = 137;
+                wX = pstSprite->m_wPx = 224;
+                wY = pstSprite->m_wPy = 180;
                 text = getstr(Str_JianTiZhongWen);
             }
             else if (dwSpriteId == 1)
             {
-                wX = pstSprite->m_wPx = 404;
-                wY = pstSprite->m_wPy = 137;
+                wX = pstSprite->m_wPx = 224;
+                wY = pstSprite->m_wPy = 262;
                 text = getstr(Str_YingWen);
-            }
+            }/*
             else if (dwSpriteId == 2)
             {
                 wX = pstSprite->m_wPx = 164;
@@ -2136,10 +2176,10 @@ SWORD xpgDrawSprite_LightIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite
                 wX = pstSprite->m_wPx = 404;
                 wY = pstSprite->m_wPy = 331;
                 text = getstr(Str_ALaBoWen);
-            }
+            }*/
             else 
                 return PASS;
-            wW = pstSprite->m_wWidth = 230;
+            wW = pstSprite->m_wWidth = 350;
             wH = pstSprite->m_wHeight = 50;
             xpgRoleDrawMask(pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask);
             SetCurrIduFontID(FONT_ID_HeiTi19);

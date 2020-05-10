@@ -954,9 +954,20 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
         }
         else if (dialogType == Dialog_SetLang)
         {
-            g_psSetupMenu->bLanguage = dwIconId;
-            xpgUpdateStage();
-            WriteSetupChg();
+            if (dwIconId == 0 || dwIconId == 1)
+            {
+                g_psSetupMenu->bLanguage = dwIconId;
+                xpgUpdateStage();
+            }
+            else if (dwIconId == 2)
+            {
+                WriteSetupChg();
+                exitDialog();
+            }
+            else if (dwIconId == 3)
+            {
+                exitDialog();
+            }
         }
         else if (dialogType == Dialog_SetPassword1 || dialogType == Dialog_SetPassword2 || dialogType == Dialog_CheckPassword)
         {
