@@ -4517,7 +4517,7 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
                     xpgRoleDrawMask(pstMask1->m_pstRole, pWin->pdwStart, radioX + 6, radioY + 5, pWin->wWidth, pWin->wHeight, pstMask2->m_pstRole);
             }
 
-            sprintf(tmpbuf, "%04d/%02d/%02d%s", g_psSetupMenu->wLockDateYear, g_psSetupMenu->bLockDateMonth, g_psSetupMenu->bLockDateDay, getstr(Str_Zhi));
+            sprintf(tmpbuf, "%04d/%02d/%02d%s >", g_psSetupMenu->wLockDateYear, g_psSetupMenu->bLockDateMonth, g_psSetupMenu->bLockDateDay, getstr(Str_Zhi));
             Idu_PrintStringRight(pWin, tmpbuf, pstSprite->m_wPx + lineWidth, pstSprite->m_wPy, 0);
         }
         else if (dwListId == 6)
@@ -4544,7 +4544,7 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
                     xpgRoleDrawMask(pstMask1->m_pstRole, pWin->pdwStart, radioX + 6, radioY + 5, pWin->wWidth, pWin->wHeight, pstMask2->m_pstRole);
             }
 
-            sprintf(tmpbuf, "%d%s", g_psSetupMenu->wLockedTimes, getstr(Str_Ci));
+            sprintf(tmpbuf, "%d%s >", g_psSetupMenu->wLockedTimes, getstr(Str_Ci));
             Idu_PrintStringRight(pWin, tmpbuf, pstSprite->m_wPx + lineWidth, pstSprite->m_wPy, 0);
         }
 
