@@ -2719,12 +2719,6 @@ SWORD xpgDrawSprite_CloseIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite
             pstSprite->m_wPy = curDialogTop + 5;
             xpgDirectDrawRoleOnWin(pWin, g_pstXpgMovie->m_pstObjRole[XPG_ROLE_CLOSE_ICON], pstSprite->m_wPx, pstSprite->m_wPy, pstSprite, boClip);
         }
-        else if (/*dialogType == Dialog_About || */ dialogType == Dialog_Times || dialogType == Dialog_TempInfo || dialogType == Dialog_BatInfo)
-        {
-            pstSprite->m_wPx = 548;
-            pstSprite->m_wPy = 138;
-            xpgRoleDrawMask(pstRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, pstMask);
-        }
         else if (dialogType == Dialog_SetPassword1 || dialogType == Dialog_SetPassword2 || dialogType == Dialog_CheckPassword)
         {
             pstSprite->m_wPx = curDialogLeft + curDialogWidth - 40 - 8;
@@ -2743,7 +2737,7 @@ SWORD xpgDrawSprite_CloseIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite
             pstSprite->m_wPy = 152;
             xpgRoleDrawMask(pstRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, pstMask);
         }
-        else if (dialogType == Dialog_About)
+        else if (dialogType == Dialog_About || dialogType == Dialog_Times || dialogType == Dialog_TempInfo || dialogType == Dialog_BatInfo)
         {
             pstSprite->m_wPx = curDialogLeft + curDialogWidth - 40 - 8;
             pstSprite->m_wPy = curDialogTop + 5;
@@ -3966,91 +3960,97 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         else if (dialogType == Dialog_Times)
         {
             char text1[128], text2[128];
+            Idu_FontColorSet(0x00, 0x00, 0x00);
             if (dwTextId == 0)
             {
                 sprintf(text1, "%s:", getstr(Str_XuLieHao));
                 sprintf(text2, "%s", "DJ201809080001");
-                Idu_PrintString(pWin, text1, 258, 222, 0, 0);
-                Idu_PrintStringRight(pWin, text2, 542, 222, 0);
+                Idu_PrintString(pWin, text1, 210, 198, 0, 0);
+                Idu_PrintStringRight(pWin, text2, 590, 198, 0);
             }
             else if (dwTextId == 1)
             {
                 sprintf(text1, "%s:", getstr(Str_JiHuoRiQi));
                 sprintf(text2, "%d%s%d%s%d%s", 2018, getstr(Str_Year), 8, getstr(Str_Month), 8, getstr(Str_Day));
-                Idu_PrintString(pWin, text1, 258, 250, 0, 0);
-                Idu_PrintStringRight(pWin, text2, 542, 250, 0);
+                Idu_PrintString(pWin, text1, 210, 234, 0, 0);
+                Idu_PrintStringRight(pWin, text2, 590, 234, 0);
             }
             else if (dwTextId == 2)
             {
                 sprintf(text1, "%s:", getstr(Str_ShengYuCiShu));
                 sprintf(text2, "%d", 2800);
-                Idu_PrintString(pWin, text1, 258, 278, 0, 0);
-                Idu_PrintStringRight(pWin, text2, 542, 278, 0);
+                Idu_PrintString(pWin, text1, 210, 270, 0, 0);
+                Idu_PrintStringRight(pWin, text2, 590, 270, 0);
             }
+            Idu_FontColorSet(0xff, 0xff, 0xff);
         }
         else if (dialogType == Dialog_TempInfo)
         {
             char text1[128], text2[128];
+            Idu_FontColorSet(0x00, 0x00, 0x00);
             if (dwTextId == 0)
             {
                 sprintf(text1, "%s:", getstr(Str_HuanJingWenDu));
                 sprintf(text2, "%d%s", 28, getstr(Str_DuC));
-                Idu_PrintString(pWin, text1, 258, 208, 0, 0);
-                Idu_PrintStringRight(pWin, text2, 542, 208, 0);
+                Idu_PrintString(pWin, text1, 210, 198, 0, 0);
+                Idu_PrintStringRight(pWin, text2, 590, 198, 0);
             }
             else if (dwTextId == 1)
             {
                 sprintf(text1, "%s:", getstr(Str_NeiBuWenDu));
                 sprintf(text2, "%d%s", 30, getstr(Str_DuC));
-                Idu_PrintString(pWin, text1, 258, 236, 0, 0);
-                Idu_PrintStringRight(pWin, text2, 542, 236, 0);
+                Idu_PrintString(pWin, text1, 210, 234, 0, 0);
+                Idu_PrintStringRight(pWin, text2, 590, 234, 0);
             }
             else if (dwTextId == 2)
             {
                 sprintf(text1, "%s:", getstr(Str_HuanJingShiDu));
                 sprintf(text2, "%d%%", 60);
-                Idu_PrintString(pWin, text1, 258, 264, 0, 0);
-                Idu_PrintStringRight(pWin, text2, 542, 264, 0);
+                Idu_PrintString(pWin, text1, 210, 270, 0, 0);
+                Idu_PrintStringRight(pWin, text2, 590, 270, 0);
             }
             else if (dwTextId == 3)
             {
                 sprintf(text1, "%s:", getstr(Str_QiYa));
                 sprintf(text2, "%dkPa", 101);
-                Idu_PrintString(pWin, text1, 258, 292, 0, 0);
-                Idu_PrintStringRight(pWin, text2, 542, 292, 0);
+                Idu_PrintString(pWin, text1, 210, 306, 0, 0);
+                Idu_PrintStringRight(pWin, text2, 590, 306, 0);
             }
+            Idu_FontColorSet(0xff, 0xff, 0xff);
         }
         else if (dialogType == Dialog_BatInfo)
         {
             char text1[128], text2[128];
+            Idu_FontColorSet(0x00, 0x00, 0x00);
             if (dwTextId == 0)
             {
                 sprintf(text1, "%s:", getstr(Str_DianChiRongLiang));
                 sprintf(text2, "%d%%", 100);
-                Idu_PrintString(pWin, text1, 258, 208, 0, 0);
-                Idu_PrintStringRight(pWin, text2, 542, 208, 0);
+                Idu_PrintString(pWin, text1, 210, 198, 0, 0);
+                Idu_PrintStringRight(pWin, text2, 590, 198, 0);
             }
             else if (dwTextId == 1)
             {
                 sprintf(text1, "%s:", getstr(Str_FangDianCiShu));
                 sprintf(text2, "%d%s", 15, getstr(Str_Ci));
-                Idu_PrintString(pWin, text1, 258, 236, 0, 0);
-                Idu_PrintStringRight(pWin, text2, 542, 236, 0);
+                Idu_PrintString(pWin, text1, 210, 234, 0, 0);
+                Idu_PrintStringRight(pWin, text2, 590, 234, 0);
             }
             else if (dwTextId == 2)
             {
                 sprintf(text1, "%s:", getstr(Str_ShiYongShiJian));
                 sprintf(text2, "%d%s", 30, getstr(Str_FenZhong));
-                Idu_PrintString(pWin, text1, 258, 264, 0, 0);
-                Idu_PrintStringRight(pWin, text2, 542, 264, 0);
+                Idu_PrintString(pWin, text1, 210, 270, 0, 0);
+                Idu_PrintStringRight(pWin, text2, 590, 270, 0);
             }
             else if (dwTextId == 3)
             {
                 sprintf(text1, "%s:", getstr(Str_DaiJiShiJian));
                 sprintf(text2, "%d%s%d%s", 3, getstr(Str_XiaoShi), 45, getstr(Str_FenZhong));
-                Idu_PrintString(pWin, text1, 258, 292, 0, 0);
-                Idu_PrintStringRight(pWin, text2, 542, 292, 0);
+                Idu_PrintString(pWin, text1, 210, 306, 0, 0);
+                Idu_PrintStringRight(pWin, text2, 590, 306, 0);
             }
+            Idu_FontColorSet(0xff, 0xff, 0xff);
         }
         else if (dialogType == Dialog_SetPassword1 || dialogType == Dialog_SetPassword2 || dialogType == Dialog_CheckPassword)
         {
@@ -4968,26 +4968,6 @@ SWORD xpgDrawSprite_Dialog(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
             Idu_PrintStringCenter(pWin, getstr(Str_XiTongYuYan), dailogX, dialogY + 10, 0, dialogW);
             Idu_FontColorSet(0xff, 0xff, 0xff);
         }
-        else if (dialogId == Dialog_Times || dialogId == Dialog_TempInfo || dialogId == Dialog_BatInfo)
-        {
-            dialogW = 400;
-            dialogH = 210;
-            dailogX = (pWin->wWidth - dialogW) / 2;
-            dialogY = (pWin->wHeight - dialogH) / 2;
-            MakeDialogRole(&stRole, dialogW, dialogH);
-            MakeMaskRole(&stMaskRole, XPG_ROLE_ICON_MASK_0, dialogW, dialogH);
-            xpgRoleDrawMask(&stRole, pWin->pdwStart, dailogX, dialogY, pWin->wWidth, pWin->wHeight, &stMaskRole);
-            SetCurrIduFontID(FONT_ID_HeiTi19);
-            if (dialogId == Dialog_About)
-                text = getstr(Str_GuanYuBenJi);
-            else if (dialogId == Dialog_Times)
-                text = getstr(Str_DianJiBangXinXi);
-            else if (dialogId == Dialog_TempInfo)
-                text = getstr(Str_WenDuXinXi);
-            else if (dialogId == Dialog_BatInfo)
-                text = getstr(Str_DianChiXinXi);
-            Idu_PrintStringCenter(pWin, text, dailogX, dialogY + 5, 0, dialogW);
-        }
         else if (dialogId == Dialog_SetPassword1 || dialogId == Dialog_SetPassword2 || dialogId == Dialog_CheckPassword || dialogId == Dialog_EditValue)
         {
             curDialogWidth = dialogW = 360;
@@ -5022,7 +5002,7 @@ SWORD xpgDrawSprite_Dialog(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
             SetCurrIduFontID(FONT_ID_HeiTi19);
             Idu_PrintStringCenter(pWin, strDialogTitle, dailogX, dialogY + 5, 0, dialogW);
         }
-        else if (dialogId == Dialog_About)
+        else if (dialogId == Dialog_About || dialogId == Dialog_Times || dialogId == Dialog_TempInfo || dialogId == Dialog_BatInfo)
         {
             curDialogWidth = dialogW = 560;
             curDialogHeight = dialogH = 300;

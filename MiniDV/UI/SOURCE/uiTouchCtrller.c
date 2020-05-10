@@ -1960,16 +1960,28 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
         }
         else if (dwSpriteId == 1)
         {
+            Free_CacheWin();
+            Idu_GetCacheWin_WithInit();
+            DrakWin(Idu_GetCacheWin(), 2, 1);
+            mpCopyEqualWin(Idu_GetCurrWin(), Idu_GetCacheWin());
             popupDialog(Dialog_Times, "SetInfo");
             xpgUpdateStage();
         }
         else if (dwSpriteId == 2)
         {
+            Free_CacheWin();
+            Idu_GetCacheWin_WithInit();
+            DrakWin(Idu_GetCacheWin(), 2, 1);
+            mpCopyEqualWin(Idu_GetCurrWin(), Idu_GetCacheWin());
             popupDialog(Dialog_TempInfo, "SetInfo");
             xpgUpdateStage();
         }
         else if (dwSpriteId == 3)
         {
+            Free_CacheWin();
+            Idu_GetCacheWin_WithInit();
+            DrakWin(Idu_GetCacheWin(), 2, 1);
+            mpCopyEqualWin(Idu_GetCurrWin(), Idu_GetCacheWin());
             popupDialog(Dialog_BatInfo, "SetInfo");
             xpgUpdateStage();
         }
