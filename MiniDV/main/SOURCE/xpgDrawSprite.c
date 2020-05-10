@@ -3361,6 +3361,9 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
     {
         char tmpbuf[64];
         Idu_FontColorSet(0x00, 0x00, 0x00);
+        if (g_psSetupMenu->bToundSoundEnable)
+            Idu_FontColorSet(191, 191, 191);
+        
         if (dwTextId == 1)
         {
             if (!g_psSetupMenu->bToundSoundEnable)
@@ -4409,15 +4412,21 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
     }
     else if (dwHashKey == xpgHash("SetSound"))
     {
+        DWORD dwColor = RGB2YUV(0x2F, 0x2F, 0x2F);
         if (dwListId == 0)
             text = getstr(Str_ChuPingShengYin);
         else if (dwListId == 1)
             text = getstr(Str_YinLiangTiaoJie);
         SetCurrIduFontID(FONT_ID_HeiTi19);
         Idu_FontColorSet(0x00, 0x00, 0x00);
+        if (g_psSetupMenu->bToundSoundEnable && dwListId == 1)
+        {
+            Idu_FontColorSet(191, 191, 191);
+            dwColor = RGB2YUV(191, 191, 191);
+        }
         Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
         Idu_FontColorSet(0xff, 0xff, 0xff);
-        Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + 38, 470, 2, RGB2YUV(0x2F, 0x2F, 0x2F));
+        Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + 38, 470, 2, dwColor);
         if (dwListId == 1)
         {
             //Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy - 20, 470, 56, RGB2YUV(0xff, 0xff, 0x37));

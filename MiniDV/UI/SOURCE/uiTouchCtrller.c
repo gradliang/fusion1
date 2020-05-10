@@ -1835,7 +1835,7 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
     }
     else if (dwHashKey == xpgHash("SetSound"))
     {
-        if (dwSpriteId == 1)
+        if (dwSpriteId == 1 && !g_psSetupMenu->bToundSoundEnable)
         {
             Free_CacheWin();
             Idu_GetCacheWin_WithInit();
