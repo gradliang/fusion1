@@ -3361,7 +3361,7 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
     {
         char tmpbuf[64];
         Idu_FontColorSet(0x00, 0x00, 0x00);
-        if (g_psSetupMenu->bToundSoundEnable)
+        if (!g_psSetupMenu->bToundSoundEnable)
             Idu_FontColorSet(191, 191, 191);
         
         if (dwTextId == 1)
@@ -4419,7 +4419,7 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             text = getstr(Str_YinLiangTiaoJie);
         SetCurrIduFontID(FONT_ID_HeiTi19);
         Idu_FontColorSet(0x00, 0x00, 0x00);
-        if (g_psSetupMenu->bToundSoundEnable && dwListId == 1)
+        if (!g_psSetupMenu->bToundSoundEnable && dwListId == 1)
         {
             Idu_FontColorSet(191, 191, 191);
             dwColor = RGB2YUV(191, 191, 191);
@@ -4471,6 +4471,11 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             text = getstr(Str_KaiJiMiMa);
         else if (dwListId == 1)
         {
+            if (!g_psSetupMenu->bEnableOpenPassword)
+            {
+                Idu_FontColorSet(191, 191, 191);
+                lineColor = RGB2YUV(191, 191, 191);
+            }
             text = getstr(Str_GengGaiKaiJiMiMa);
             Idu_PrintStringRight(pWin, ">", pstSprite->m_wPx + lineWidth, pstSprite->m_wPy, 0);
         }
@@ -4480,6 +4485,11 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             text = getstr(Str_SuoDingMiMa);
         else if (dwListId == 4)
         {
+            if (!g_psSetupMenu->bEnableHirePassword)
+            {
+                Idu_FontColorSet(191, 191, 191);
+                lineColor = RGB2YUV(191, 191, 191);
+            }
             text = getstr(Str_GengGaiSuoDingMiMa);
             Idu_PrintStringRight(pWin, ">", pstSprite->m_wPx + lineWidth, pstSprite->m_wPy, 0);
         }
@@ -4490,8 +4500,8 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             text = getstr(Str_SuoDingRiQi);
             if (g_psSetupMenu->bEnableHirePassword)
             {
-                Idu_FontColorSet(130,130,130);
-                lineColor = RGB2YUV(130, 130, 130);
+                Idu_FontColorSet(191,191,191);
+                lineColor = RGB2YUV(191, 191, 191);
             }
             DWORD radioX = pstSprite->m_wPx;
             DWORD radioY = pstSprite->m_wPy + 4;
