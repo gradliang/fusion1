@@ -10,8 +10,8 @@
 //--产品总开关
 //#define PRODUCT_ID									(PCBA_MAIN_BOARD_V10|PANEL_800x600|UI_SURFACE)
 //#define PRODUCT_ID									(PCBA_MAIN_BOARD_V11|PANEL_LVDS_1024x600|UI_SURFACE)
-//#define PRODUCT_ID									(PCBA_MAIN_BOARD_V12|PANEL_800x480|UI_WELDING)
-#define PRODUCT_ID									(PCBA_MAIN_BOARD_V20|PANEL_800x480|UI_WELDING)
+#define PRODUCT_ID									(PCBA_MAIN_BOARD_V12|PANEL_800x480|UI_WELDING)
+//#define PRODUCT_ID									(PCBA_MAIN_BOARD_V20|PANEL_800x480|UI_WELDING)
 
 
 //common function
@@ -37,7 +37,7 @@
 #define		TEST_TWO_LED										0 //4  测试照射光纤的两个LED灯的亮度
 //#define		VAUTO_PLAY_VIDEO									1
 #define		PROC_SENSOR_DATA_MODE					0
-#define		IPW_FAST_MODE										1
+#define		IPW_FAST_MODE										0
 #endif
 
 //#define FILE_IN_RESOURCE										1
@@ -218,7 +218,8 @@
 #define FONT_ID_DotumChe18      4
 #define FONT_ID_HeiTi19         5
 #define FONT_ID_HeiTi16         6
-#define FONT_ID_ARIAL_36        7
+#define FONT_ID_HeiTi10         7
+#define FONT_ID_ARIAL_36        8
 #endif
 
 #if EXT_FONT_FORMAT_ENABLE
