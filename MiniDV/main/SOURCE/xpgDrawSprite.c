@@ -4124,7 +4124,7 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
                 Idu_PaintWinArea(pWin, x, y, w, h, RGB2YUV(0xc9,0xc9,0xc9));
                 Idu_PaintWinArea(pWin, x+2, y+2, w-4, h-4, RGB2YUV(0xff,0xff,0xff));
                 if (strEditValue[0])
-                    Idu_PrintString(pWin, strEditValue, x+8, y+10, 0, 0);
+                    Idu_PrintStringCenter(pWin, strEditValue, x+8, y+10, 0, w - 20);
             }
             Idu_FontColorSet(0xff,0xff,0xff);
         }
