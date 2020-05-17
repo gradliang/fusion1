@@ -1332,17 +1332,34 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
     }
     else if (dwHashKey == xpgHash("FuncSet2"))
     {
+        STXPGSPRITE * tinyIcon = NULL, * tinyMask = NULL;
 		pstRoleMask = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_ICON_MASK_0];
-        if ( dwSpriteId<6 && g_psSetupMenu->bCustomizeIcon[dwSpriteId]>=0)
+        tinyMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 2);
+        if (dwSpriteId < 6)
         {
-				if (g_psSetupMenu->bFunctionIconEnable[dwSpriteId] )
-                pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_ICON_YJR_ON+g_psSetupMenu->bCustomizeIcon[dwSpriteId]];
-				else
-                pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_ICON_YJR_OFF+g_psSetupMenu->bCustomizeIcon[dwSpriteId]];
+            if (g_psSetupMenu->bCustomizeIcon[dwSpriteId] >= 0)
+            {
+                pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_ICON_YJR_ON + g_psSetupMenu->bCustomizeIcon[dwSpriteId]];
+                tinyIcon = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 3);
+            }
+            else
+            {
+                pstRole = pstSprite->m_pstRole;
+            }
         }
-		else
+        else if (dwSpriteId >= 6 && dwSpriteId < 18)
+        {
             pstRole = pstSprite->m_pstRole;
+            tinyIcon = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 4);
+        }
+        else
+            return PASS;
+        
         xpgRoleDrawMask(pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstRoleMask);
+        if (tinyIcon && tinyMask)
+        {
+            xpgRoleDrawMask(tinyIcon->m_pstRole, pWin->pdwStart, wX - 4, wY - 4, pWin->wWidth, pWin->wHeight, tinyMask->m_pstRole);
+        }
     }
     else if (dwHashKey == xpgHash("ToolBox"))
     {
