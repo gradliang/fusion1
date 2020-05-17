@@ -186,27 +186,7 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
     }
     else if (dwHashKey == xpgHash("FuncSet"))
     {
-#if 0
-        BYTE * pb;
-        if (dwIconId == 0)
-            pb = &(g_psSetupMenu->bEnableIcon_LaLiCeShi);
-        else if (dwIconId == 1)
-            pb = &(g_psSetupMenu->bEnableIcon_DuanMianJianCe);
-        else if (dwIconId == 2)
-            pb = &(g_psSetupMenu->bEnableIcon_ZiDongDuiJiao);
-        else if (dwIconId == 3)
-            pb = &(g_psSetupMenu->bEnableIcon_JiaoDuJianCe);
-        else if (dwIconId == 4)
-            pb = &(g_psSetupMenu->bEnableIcon_BaoCunTuXiang);
-        else if (dwIconId == 5)
-            pb = &(g_psSetupMenu->bEnableIcon_HuiChenJianCe);
-        else if (dwIconId == 6)
-            pb = &(g_psSetupMenu->bEnableIcon_RongJieZanTing);
-        else
-            pb = &(g_psSetupMenu->bEnableIcon_YunDuanCeLiang);
-        *pb = !(*pb);
-#endif
-		g_psSetupMenu->bCustomizeIconEnable[dwIconId] = !g_psSetupMenu->bCustomizeIconEnable[dwIconId];
+		g_psSetupMenu->bFunctionIconEnable[dwIconId] = !g_psSetupMenu->bFunctionIconEnable[dwIconId];
         xpgUpdateStage();
         WriteSetupChg();
     }
@@ -246,7 +226,7 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
                 }
             }
             g_psSetupMenu->bCustomizeIcon[foundIdx] = nowIdx;
-            g_psSetupMenu->bCustomizeIconEnable[foundIdx] = 1;
+            g_psSetupMenu->bFunctionIconEnable[foundIdx] = 1;
             WriteSetupChg();
         }
         xpgUpdateStage();
@@ -262,7 +242,7 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
                 xpgUpdateStage();
                 return 0;
             }
-            g_psSetupMenu->bCustomizeIconEnable[dwIconId] = !g_psSetupMenu->bCustomizeIconEnable[dwIconId];
+            g_psSetupMenu->bFunctionIconEnable[dwIconId] = !g_psSetupMenu->bFunctionIconEnable[dwIconId];
             //xpgUpdateStage();
             xpgSpriteRedraw(Idu_GetCurrWin(),SPRITE_TYPE_LIGHT_ICON, dwIconId);
             xpgSpriteRedraw(Idu_GetCurrWin(),SPRITE_TYPE_DARK_ICON,  dwIconId);

@@ -1318,12 +1318,24 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
     {
         xpgDrawSprite(pWin, pstSprite, boClip);
     }
-    else if (dwHashKey == xpgHash("FuncSet")||dwHashKey == xpgHash("FuncSet2"))
+    else if (dwHashKey == xpgHash("FuncSet"))
+    {
+        pstRoleMask = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_ICON_MASK_0];
+        if ( dwSpriteId < 12 )
+        {
+            if (g_psSetupMenu->bFunctionIconEnable[dwSpriteId])
+                pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_ICON_YJR_ON + dwSpriteId];
+            else
+                pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_ICON_YJR_OFF + dwSpriteId];
+            xpgRoleDrawMask(pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstRoleMask);
+        }
+    }
+    else if (dwHashKey == xpgHash("FuncSet2"))
     {
 		pstRoleMask = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_ICON_MASK_0];
         if ( dwSpriteId<6 && g_psSetupMenu->bCustomizeIcon[dwSpriteId]>=0)
         {
-				if (g_psSetupMenu->bCustomizeIconEnable[dwSpriteId] )
+				if (g_psSetupMenu->bFunctionIconEnable[dwSpriteId] )
                 pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_ICON_YJR_ON+g_psSetupMenu->bCustomizeIcon[dwSpriteId]];
 				else
                 pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_ICON_YJR_OFF+g_psSetupMenu->bCustomizeIcon[dwSpriteId]];
@@ -1390,7 +1402,7 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         if ( dwSpriteId<6 && g_psSetupMenu->bCustomizeIcon[dwSpriteId]>=0)
         {
 				pstRoleMask = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_ICON_MASK_0];
-				if (g_psSetupMenu->bCustomizeIconEnable[dwSpriteId] )
+				if (g_psSetupMenu->bFunctionIconEnable[dwSpriteId] )
                 pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_ICON_YJR_ON+g_psSetupMenu->bCustomizeIcon[dwSpriteId]];
 				else
                 pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_ICON_YJR_OFF+g_psSetupMenu->bCustomizeIcon[dwSpriteId]];
@@ -2793,20 +2805,28 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
     {
         Idu_FontColorSet(0x00, 0x00, 0x00);
         if (dwTextId == 0)
-            text = getstr(Str_LaLiCeShi);
+            text = getstr(Str_YuJiaRe);
         else if (dwTextId == 1)
-            text = getstr(Str_DuanMianJianCe);
+            text = getstr(Str_LaLiCeShi);
         else if (dwTextId == 2)
-            text = getstr(Str_ZiDongDuiJiao);
+            text = getstr(Str_DuanMianJianCe);
         else if (dwTextId == 3)
-            text = getstr(Str_JiaoDuJianCe);
+            text = getstr(Str_ZiDongDuiJiao);
         else if (dwTextId == 4)
-            text = getstr(Str_BaoCunTuXiang);
+            text = getstr(Str_JiaoDuJianCe);
         else if (dwTextId == 5)
-            text = getstr(Str_HuiChenJianCe);
+            text = getstr(Str_FangDianJiaoZheng);
         else if (dwTextId == 6)
-            text = getstr(Str_RongJieZanTing);
+            text = getstr(Str_HuiChenJianCe);
         else if (dwTextId == 7)
+            text = getstr(Str_RongJieZanTing);
+        else if (dwTextId == 8)
+            text = getstr(Str_HongGuangBi);
+        else if (dwTextId == 9)
+            text = getstr(Str_GuangGongLvJi);
+        else if (dwTextId == 10)
+            text = getstr(Str_BaoCunTuXiang);
+        else if (dwTextId == 11)
             text = getstr(Str_YunDuanCeLiang);
         SetCurrIduFontID(FONT_ID_HeiTi16);
         Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
