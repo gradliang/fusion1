@@ -2921,7 +2921,7 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         }
         else if (dwTextId == 18){
             text = getstr(Str_Display_CanChoose6Icons);
-            Idu_PaintWinArea(pWin, 290, 84, 470, 2, RGB2YUV(0,0,0));
+            Idu_PaintWinArea(pWin, 290, 82, 470, 2, RGB2YUV(0,0,0));
         }
         else if (dwTextId == 19){
             text = getstr(Str_TianJiaKongZhi);
@@ -4907,8 +4907,8 @@ void MakeMaskRole(STXPGROLE * pstMaskRole, int maskRoleIndex, WORD width, WORD h
     
     if (maskRoleIndex == XPG_ROLE_ICON_MASK_0)
     {
-        iconWidth = 66;
-        iconHeight = 66;
+        iconWidth = 70;
+        iconHeight = 70;
         corner = 12;
     }
     else 
