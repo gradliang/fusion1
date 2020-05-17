@@ -372,6 +372,7 @@ SWORD(*drawSpriteFunctions[]) (ST_IMGWIN *, STXPGSPRITE *, BOOL) =
     xpgDrawSprite_Frame,                // type27
 	xpgDrawSprite_Null,		        //type28
 	xpgDrawSprite_RepeatIcon,		        //type29
+	xpgDrawSprite_HomeStatus,           //type30
 #endif
 };
 
@@ -5174,6 +5175,13 @@ SWORD xpgDrawSprite_Status(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
 {
     DWORD rightStart = 800 - 108;
     DWORD rightX = rightStart;
+    DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
+
+    if (dwHashKey == xpgHash("Main"))
+    {
+        Idu_PaintWinArea(pWin, 0, 0, 800, 40, RGB2YUV(0,0,0));
+        
+    }
 
     if (1)          // auto fusion
     {
@@ -5344,6 +5352,23 @@ SWORD xpgDrawSprite_Scroll(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
             xpgSpriteSetTouchArea(pstSprite, pstSprite->m_wPx-20, pstSprite->m_wPy-20, pstSprite->m_wWidth+40, pstSprite->m_wHeight+40);
         }
         */
+    }
+    return PASS;
+}
+
+int tem1Value = 30;
+unsigned tem1_fraction = 5;
+int tem2Value = -30;
+unsigned tem2_fraction = 5;
+
+
+SWORD xpgDrawSprite_HomeStatus(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOOL boClip)
+{
+    DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
+    if (dwHashKey == xpgHash("Main"))
+    {
+        xpgDrawSprite(pWin, pstSprite, boClip);
+        
     }
     return PASS;
 }
