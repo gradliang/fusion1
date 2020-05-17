@@ -206,6 +206,8 @@ enum xpgStringId {
 	Str_ZiDongGuanJi_DESC,			//   196
 	Str_ClickCanSetupFunction,		//   197
 	Str_Display_CanChoose6Icons,    //   198
+	Str_DianJiShengYuCiShu,         //   199
+	Str_RongJieZongCiShu2,			//   200
 	
 	Str_MAX_ID,
 };

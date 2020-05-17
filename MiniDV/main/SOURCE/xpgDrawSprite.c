@@ -2816,6 +2816,10 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             text = getstr(Str_XiTongSheZhi);
         else if (dwTextId == 6)
             text = getstr(Str_GongNengPeiZhi);
+        else if (dwTextId == 7)
+            text = getstr(Str_DianJiShengYuCiShu);
+        else if (dwTextId == 8)
+            text = getstr(Str_RongJieZongCiShu2);
         SetCurrIduFontID(FONT_ID_HeiTi16);
         Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
     }
@@ -5356,19 +5360,125 @@ SWORD xpgDrawSprite_Scroll(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
     return PASS;
 }
 
-int tem1Value = 30;
-unsigned tem1_fraction = 5;
-int tem2Value = -30;
-unsigned tem2_fraction = 5;
+int tem1Value = 28;                 // 温度值1的整数部分，可以是负数
+unsigned tem1_fraction = 4;         // 温度值1的小数部分
+int tem2Value = -30;                // 温度值2的整数部分，可以是负数
+unsigned tem2_fraction = 5;         // 温度值2的小数部分
+int percentValue = 50;
+int kpa = 101;
 
+#define VALUE_TYPE_TEMPERATURE      1
+#define VALUE_TYPE_PERCENT          2
+#define VALUE_TYPE_PRESSURE         3
+#define VALUE_TYPE_TIMES            4
+
+static void showMainPageValue(int type, ST_IMGWIN * pWin, DWORD X, DWORD Y, int intValue, unsigned int fraction, BOOL isNeedShowRed)
+{
+    DWORD BIG_NUM_START;
+    DWORD SMALL_NUM_START;
+    DWORD COLOR;
+    DWORD MINUS_SIGN_INDEX;
+    STXPGSPRITE * pstSprite;
+    BYTE strvalue[64];
+    int i = 0;
+    DWORD offset = 0;
+
+    if (isNeedShowRed)
+    {
+        BIG_NUM_START = 10;
+        SMALL_NUM_START = 30;
+        COLOR = RGB2YUV(255, 0, 0);
+        MINUS_SIGN_INDEX = 41;
+    }
+    else
+    {
+        BIG_NUM_START = 0;
+        SMALL_NUM_START = 20;
+        COLOR = RGB2YUV(255, 255, 255);
+        MINUS_SIGN_INDEX = 40;
+    }
+    if (intValue < 0)
+    {
+        pstSprite = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, MINUS_SIGN_INDEX);
+        if (pstSprite)
+            xpgDirectDrawRoleOnWin(pWin, pstSprite->m_pstRole, X, Y, pstSprite, 0);
+    }
+
+    sprintf(strvalue, "%d", (intValue >= 0) ? intValue : (-intValue));
+    while (strvalue[i]) 
+    {
+        BYTE numindex = strvalue[i] - '0';
+        pstSprite = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, BIG_NUM_START + numindex);
+        if (pstSprite)
+            xpgDirectDrawRoleOnWin(pWin, pstSprite->m_pstRole, X + offset, Y, pstSprite, 0);
+        offset += 28;
+        i++;
+    }
+
+    // 小数部分
+    if (type == VALUE_TYPE_TEMPERATURE)
+    {
+        // point
+        Idu_PaintWinArea(pWin, X + offset, Y + 34, 6, 6, COLOR);
+        offset += 10;
+
+        // fraction
+        sprintf(strvalue, "%d", fraction);
+        pstSprite = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, SMALL_NUM_START + (strvalue[0] - '0'));
+        if (pstSprite)
+            xpgDirectDrawRoleOnWin(pWin, pstSprite->m_pstRole, X + offset, Y + 20, pstSprite, 0);
+        offset += 16;
+    }
+    
+    // 单位
+    if (type == VALUE_TYPE_TEMPERATURE)
+    {
+        pstSprite = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 42);
+        if (pstSprite)
+            xpgDirectDrawRoleOnWin(pWin, pstSprite->m_pstRole, X + offset, Y + 20, pstSprite, 0);
+    }
+    else if (type == VALUE_TYPE_PERCENT)
+    {
+        pstSprite = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 43);
+        if (pstSprite)
+            xpgDirectDrawRoleOnWin(pWin, pstSprite->m_pstRole, X + offset, Y + 20, pstSprite, 0);
+    }
+    else if (type == VALUE_TYPE_PRESSURE)
+    {
+        pstSprite = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 44);
+        if (pstSprite)
+            xpgDirectDrawRoleOnWin(pWin, pstSprite->m_pstRole, X + offset, Y + 20, pstSprite, 0);
+    }
+    else if (type == VALUE_TYPE_TIMES)
+    {
+        const char * text;
+        text = getstr(Str_Ci);
+        SetCurrIduFontID(FONT_ID_HeiTi19);
+        Idu_SetFontColor(255, 255, 255);
+        Idu_PrintString(pWin, text, X + offset, Y + 20, 0, 0);
+    }
+    return;
+}
 
 SWORD xpgDrawSprite_HomeStatus(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOOL boClip)
 {
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
+    
     if (dwHashKey == xpgHash("Main"))
     {
         xpgDrawSprite(pWin, pstSprite, boClip);
-        
+        ///// 温度 value 1
+        showMainPageValue(VALUE_TYPE_TEMPERATURE, pWin, 255, 88, tem1Value, tem1_fraction, FALSE);
+        ///// 温度 value 2
+        showMainPageValue(VALUE_TYPE_TEMPERATURE, pWin, 454, 88, tem2Value, tem2_fraction, FALSE);
+        ////  
+        showMainPageValue(VALUE_TYPE_PERCENT, pWin, 270, 178, percentValue, 0, FALSE);
+        ////  
+        showMainPageValue(VALUE_TYPE_PRESSURE, pWin, 453, 178, kpa, 0, FALSE);
+        ////  
+        showMainPageValue(VALUE_TYPE_TIMES, pWin, 240, 270, 2000, 0, FALSE);
+        ////  
+        showMainPageValue(VALUE_TYPE_TIMES, pWin, 450, 270, 200, 0, FALSE);
     }
     return PASS;
 }
