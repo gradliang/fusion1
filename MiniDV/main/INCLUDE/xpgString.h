@@ -204,6 +204,8 @@ enum xpgStringId {
 	Str_QueDing,					//   194
 	Str_ZhiNengBeiGuang_DESC,		//   195
 	Str_ZiDongGuanJi_DESC,			//   196
+	Str_ClickCanSetupFunction,		//   197
+	Str_Display_CanChoose6Icons,    //   198
 	
 	Str_MAX_ID,
 };
