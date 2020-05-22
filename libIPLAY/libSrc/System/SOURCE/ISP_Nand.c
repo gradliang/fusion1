@@ -90,7 +90,7 @@ void checkNandIspRegion(DWORD tag)
     }
     else
     {
-        MP_ALERT("NAND ISP of %c%c%c%c is fine !!!", tag >> 24, tag >> 16,tag >> 8, tag);
+        MP_ALERT("NAND ISP of %c%c%c%c is fine .", tag >> 24, tag >> 16,tag >> 8, tag);
     }
     MP_DEBUG("%s ---> Exit", __func__);
 }

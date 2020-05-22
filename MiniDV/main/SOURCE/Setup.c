@@ -87,7 +87,7 @@ void GetDefaultSetupMenuValue(void)
     g_psSetupMenu->bPreHotEnable = 0;
     g_psSetupMenu->bHotUpMode = SETUP_MENU_HOT_UP_MODE_AUTO;
     g_psSetupMenu->bRongJieZhiLiang = 0;
-    g_psSetupMenu->bDuiXianFangShi = 0;
+    g_psSetupMenu->bDuiXianFangShi = 1;
     g_psSetupMenu->bPingXianFangShi = 0;
     g_psSetupMenu->bCurrFusionMode = 0;
     initModeParamDefault(&(g_psSetupMenu->SM));

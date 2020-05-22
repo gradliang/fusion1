@@ -78,9 +78,6 @@ static SWORD SystemInit(void);
 static SWORD XpgInit(BYTE bMcardId, DWORD dwXPGTag);
 static SDWORD MainWaitEvent(DWORD * pdwEvent, DWORD dwNextEvent);
 static SWORD OnBoardNandSpiInit(E_DRIVE_INDEX_ID);
-#if (ISP_FUNC_ENABLE && (BOOTUP_TYPE == BOOTUP_TYPE_NAND))
-static void checkNandIspRegion(DWORD);
-#endif
 
 #if DM9KS_ETHERNET_ENABLE
 extern struct net_device* dmfe_dev;
@@ -562,6 +559,7 @@ void Display_panel(void)
 	//Ui_TimerProcAdd(2000, Display_panel);
 }
 #endif
+#if 0 // for test
 static BYTE st_bDisplayindex=0x01,st_bDisplayindex2=0;
 void DisplayColorTest(void)
 {
@@ -589,6 +587,107 @@ void DisplayColorTest(void)
 	Ui_TimerProcAdd(2000, DisplayColorTest);
 	
 }
+
+SWORD MakeTestFile(void)
+{
+	STREAM *handle;
+	SWORD swRet=PASS;
+	BYTE *pbBuf=NULL;
+	DWORD dwBufSize,i,j,k,w,h,len;
+
+	if (DriveCurIdGet()==NULL_DRIVE)
+    {
+        MP_ALERT("%s: NULL drive index!", __FUNCTION__);
+        return FAIL;
+    }
+	if (SystemGetFlagReadOnly(DriveCurIdGet()))
+	{
+        MP_ALERT("Write protected !");
+	      TaskSleep(4000);
+	      return FAIL;
+	}
+
+	handle=(STREAM *)GetNewWeldPhotoHandle();
+	if (handle==NULL)
+		return FAIL;
+	dwBufSize = 1024*600*3;
+	pbBuf = (BYTE*)ext_mem_malloc(ALIGN_32(dwBufSize));
+	if (pbBuf==NULL)
+		return FAIL;
+
+	i=0;
+	for (h=0;h<600;h++)
+	{
+		len=128;
+		for (w=0;w<len;w++)
+		{
+			pbBuf[i++]=255;
+			pbBuf[i++]=255;
+			pbBuf[i++]=255;
+		}
+		len+=128;
+		for (;w<len;w++)
+		{
+			pbBuf[i++]=255;
+			pbBuf[i++]=255;
+			pbBuf[i++]=1;
+		}
+		len+=128;
+		for (;w<len;w++)
+		{
+			pbBuf[i++]=1;
+			pbBuf[i++]=255;
+			pbBuf[i++]=255;
+		}
+		len+=128;
+		for (;w<len;w++)
+		{
+			pbBuf[i++]=0;
+			pbBuf[i++]=255;
+			pbBuf[i++]=1;
+		}
+		len+=128;
+		for (;w<len;w++)
+		{
+			pbBuf[i++]=255;
+			pbBuf[i++]=0;
+			pbBuf[i++]=254;
+		}
+		len+=128;
+		for (;w<len;w++)
+		{
+			pbBuf[i++]=254;
+			pbBuf[i++]=0;
+			pbBuf[i++]=0;
+		}
+		len+=128;
+		for (;w<len;w++)
+		{
+			pbBuf[i++]=0;
+			pbBuf[i++]=0;
+			pbBuf[i++]=254;
+		}
+		len+=128;
+		for (;w<len;w++)
+		{
+			pbBuf[i++]=0;
+			pbBuf[i++]=0;
+			pbBuf[i++]=0;
+		}
+
+	}
+
+	FileWrite(handle, (BYTE *) pbBuf, dwBufSize);
+	FileClose(handle);
+	mpDebugPrint("----- %s:ok! %d", __FUNCTION__,dwBufSize);
+
+	//free memory
+	ext_mem_free(pbBuf);
+
+	return PASS;
+}
+
+#endif
 #if VAUTO_PLAY_VIDEO
 void AutoPlayVideoTimer(void)
 {
@@ -667,7 +766,7 @@ CheckAutoSleepOrAutoOff();
 #else
 Timer_FirstEnterCamPreview();
 //NonxpgEnterPhotoView();
-//	Ui_TimerProcAdd(2000, DisplayColorTest);
+//	Ui_TimerProcAdd(2000, MakeTestFile);
 //			mpPaintWin(Idu_GetCurrWin(), RGB2YUV(st_bDisplayindex,0,0));
 #endif   
 
@@ -984,44 +1083,6 @@ Timer_FirstEnterCamPreview();
 //
 //
 //////////////////////////////////////////////////////////////////
-#if (ISP_FUNC_ENABLE && (BOOTUP_TYPE == BOOTUP_TYPE_NAND))
-static void checkNandIspRegion(DWORD tag)
-{
-    int apCodePart1, apCodePart2;
-
-    apCodePart1 = NandCodeCheck(tag, 0);
-    apCodePart2 = NandCodeCheck(tag, 1);
-
-    if ((apCodePart1 == FAIL) || (apCodePart2 == FAIL))
-    {
-        if ((apCodePart1 == FAIL) && (apCodePart2 == PASS))
-        {
-            MP_ALERT("--E-- 1st %c%c%c%c code is bad !!!\r\nRecorver 1st %c%c%c%c from 2nd %c%c%c%c !!!",
-                     tag >> 24, tag >> 16,tag >> 8, tag,
-                     tag >> 24, tag >> 16,tag >> 8, tag,
-                     tag >> 24, tag >> 16,tag >> 8, tag);
-            NandCodeBackup(tag, 1);
-        }
-        else if ((apCodePart1 == PASS) && (apCodePart2 == FAIL))
-        {
-            MP_ALERT("--E-- 2nd %c%c%c%c is bad !!!\r\nRecorver 2nd %c%c%c%c from 1st %c%c%c%c !!!",
-                     tag >> 24, tag >> 16,tag >> 8, tag,
-                     tag >> 24, tag >> 16,tag >> 8, tag,
-                     tag >> 24, tag >> 16,tag >> 8, tag);
-            NandCodeBackup(tag, 0);
-        }
-        else //if ((apCodePart1 == FAIL) && (apCodePart2 == FAIL))
-        {
-            MP_ALERT("--E-- No %c%c%c%c infomation in NAND !!!", tag >> 24, tag >> 16,tag >> 8, tag);
-        }
-    }
-    else
-    {
-        MP_ALERT("NAND ISP of %c%c%c%c is fine !!!", tag >> 24, tag >> 16,tag >> 8, tag);
-    }
-}
-#endif
-
 
 static SWORD SystemInit(void)
 {
@@ -1101,14 +1162,6 @@ static SWORD SystemInit(void)
     SystemIntHandleRegister(IM_JPEG, CduIsr);
 #endif
 
-#if (ISP_FUNC_ENABLE && (BOOTUP_TYPE == BOOTUP_TYPE_NAND))
-	  checkNandIspRegion(RES_TAG);
-#endif
-
-#if (ISP_FUNC_ENABLE && (BOOTUP_TYPE == BOOTUP_TYPE_NAND))
-	  checkNandIspRegion(AP_TAG);
-#endif
-
 
 /*
     DisplayInit(DISPLAY_INIT_DEFAULT_RESOLUTION);
@@ -1179,6 +1232,13 @@ static SWORD SystemInit(void)
     ISP_NandInit(DEFAULT_RES_ADDR);
 #endif
 
+#if (ISP_FUNC_ENABLE && (BOOTUP_TYPE == BOOTUP_TYPE_NAND))
+	  checkNandIspRegion(RES_TAG);
+#endif
+
+#if (ISP_FUNC_ENABLE && (BOOTUP_TYPE == BOOTUP_TYPE_NAND))
+	  checkNandIspRegion(AP_TAG);
+#endif
 
     //////////////////////////////////////////////////////////////////
     //

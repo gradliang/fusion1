@@ -598,11 +598,6 @@ void xpgUpdatePageOsd(void)
 	//OsdLineSet(1<<g_pstXpgMovie->m_wCurPage,16,400-1-1,0,2,pDstWin->wHeight,OSD_COLOR_WHITE); //4 屏中竖线//OSD_COLOR_RED
 	//OsdLineSet(1<<g_pstXpgMovie->m_wCurPage,17,476,0,2,pDstWin->wHeight/2,OSD_COLOR_RED);
 	//OsdLineSet(1<<g_pstXpgMovie->m_wCurPage,18,324,pDstWin->wHeight/2,2,pDstWin->wHeight/2,OSD_COLOR_RED);
-#if 0//TEST_PLANE
-	OsdLineSet(1<<g_pstXpgMovie->m_wCurPage,16,pDstWin->wWidth/2-1-1,0,2,pDstWin->wHeight,OSD_COLOR_WHITE); //4 屏中竖线//OSD_COLOR_RED
-	OsdLineSet(1<<g_pstXpgMovie->m_wCurPage,17,0,pDstWin->wHeight/4-1,pDstWin->wWidth,2,OSD_COLOR_WHITE); //4 上半屏水平中线//OSD_COLOR_GREEN
-	OsdLineSet(1<<g_pstXpgMovie->m_wCurPage,18,0,pDstWin->wHeight*3/4-1,pDstWin->wWidth,2,OSD_COLOR_WHITE); //4 下半屏水平中线
-#endif
 
 	Idu_OsdErase();
 	for (i=0;i<OSD_LINE_NUM;i++)
@@ -1228,7 +1223,7 @@ void AddAutoEnterPreview(void)
 	 if(RecordTaskStattusGet() == Rec_StandBy_state && g_pstXpgMovie->m_pstCurPage->m_dwHashKey==xpgHash("Main"))
 	 {
 		WeldModeSet(0);
-#if TEST_PLANE||TEST_TWO_LED
+#if TEST_TWO_LED
 	    Ui_TimerProcAdd(10, xpgCb_EnterCamcoderPreview);//xpgCb_EnterCamcoderPreview
 #else
 	    Ui_TimerProcAdd(5*1000, xpgCb_EnterCamcoderPreview);//xpgCb_EnterCamcoderPreview  10

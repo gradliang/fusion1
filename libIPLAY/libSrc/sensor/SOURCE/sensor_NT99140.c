@@ -116,12 +116,12 @@ void Sensor_DisplayWindow_Set()
 	switch (g_bDisplayMode)
 	{
 		case 0:
-			Sensor_Channel_Set(0);
+			//Sensor_Channel_Set(0);
 			API_SetSensorWindow(0, 0, pDstWin->wWidth, pDstWin->wHeight);
 			break;
 
 		case 1:
-			Sensor_Channel_Set(1);
+			//Sensor_Channel_Set(1);
 			API_SetSensorWindow(0, 0, pDstWin->wWidth, pDstWin->wHeight);
 			break;
 

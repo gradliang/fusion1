@@ -44,7 +44,7 @@
 #if NETWARE_ENABLE
 #define OS_MAX_NUMBER_OF_TASK       64 //52
 #else
-#define OS_MAX_NUMBER_OF_TASK       46 //42 //32
+#define OS_MAX_NUMBER_OF_TASK       10 // 46 //42 //32
 #endif
 
 ///@brief   Define the maximal number of object that can be created semultaneously,
@@ -61,7 +61,7 @@
 #if USBOTG_WEB_CAM
 #define OS_MAX_NUMBER_OF_OBJECT     120 //110 //80//32
 #else
-#define OS_MAX_NUMBER_OF_OBJECT     116 //110 //80//32
+#define OS_MAX_NUMBER_OF_OBJECT     62 // 116 //110 //80//32
 #endif
 #endif // #if NETWARE_ENABLE
 

@@ -17,14 +17,20 @@ enum {
     GHOST_TASK,                 ///< task id=1
     MAIN_TASK,                  ///< task id=2
     MCARD_TASK,                 ///< task id=3
+#if (VIDEO_ON || AUDIO_ON)
     VIDEO_DECODE_TASK,          ///< task id=4
     VIDEO_DATA_TASK,            ///< task id=5
     AUDIO_DECODE_TASK,          ///< task id=6
     AUDIO_DATA_TASK,            ///< task id=7
     AV_CONTROL_TASK,            ///< task id=8
     STREAM_CACHE_TASK,          ///< task id=9
+#endif
+#if (MJPEG_ENABLE && MJPEG_TOGGLE)
     MJPEG_DATAIO_TASK,          ///< task id=10
+#endif
+#if (MAKE_BLUETOOTH == 1)
     BT_OS_TASK,                 ///< task id=11, for bluetooth
+#endif
 
     #if SC_USBDEVICE
     USBOTG0_DEVICE_TASK,
@@ -41,7 +47,7 @@ enum {
 #if ( BT_DRIVER_TYPE == BT_UART )
     BTUART_DRIVER_TASK,         ///< task id=16, for bluetooth Uart driver
     BT_UI_TASK,                 ///< task id=17
-#else
+#elif (MAKE_BLUETOOTH == 1)
     USB_BT_TASK,                ///< task id=18
     BT_UI_TASK,                 ///< task id=19
 #endif
@@ -56,6 +62,7 @@ enum {
     USBOTG_DEVICE_EXTERN_TASK,
 #endif
 
+#if !IPW_FAST_MODE
     NETWARE_TASK,               ///< task id=18 //20
     WPA_MAIN_TASK_ID,           ///< task id=19
     RALINK_HISR_TASK,           ///< task id=20
@@ -77,6 +84,7 @@ enum {
     BT_A2DP_TASK ,
     BT_SCO_TASK ,
     UPNP_DOWNLOAD_TASK,
+#endif
 
 #if TOUCH_CONTROLLER_ENABLE
     TOUCH_CONTROLLRT_TASK,
@@ -115,7 +123,7 @@ enum {
 #endif
     EXCEPTION_TASK,
     
-    SYSTEM_CHECK_TASK, // for Alarm Check
+    //SYSTEM_CHECK_TASK, // for Alarm Check
     
     TOTAL_TASK_NUMBER           // Keep this at last and should be small than OS_MAX_NUMBER_OF_TASK
 };
@@ -141,23 +149,30 @@ All objects use the same object array
 */
 enum {
     NULL_OBJECT = 0,                        ///< 0
-    OS_MEM_SEMAPHORE,                       ///< 1
+    //OS_MEM_SEMAPHORE,                       ///< 1
     UI_EVENT,                               ///< 2
+#if (VIDEO_ON || AUDIO_ON)
     MJPEG_DATAIO_EVENT,                     ///< 3
     MJPEG_READ_EVENT,                       ///< 4
     MOVIE_EVENT,                            ///< 5
     VIDEO_SEMA_ID,                          ///< 6
     AV_CMD_SEMA_ID,                         ///< 7
+#endif
     FILE_READ_SEMA_ID,                      ///< 8  /* temp solution for protecting concurrent multiple file read operations */
-    JPEG_DECODE_SEMA_ID,                    ///< 9
-    SLIDE_SEMA_ID,                          ///< 10
+    //JPEG_DECODE_SEMA_ID,                    ///< 9
+    //SLIDE_SEMA_ID,                          ///< 10
+#if (MAKE_BLUETOOTH == 1)
     BThw_SEMA_ID,                           ///< 11
     BTir_SEMA_ID,                           ///< 12
+#endif
 
+#if SC_USBDEVICE
     //USB_DEVICE_MESSAGE_ID,
     USBOTG0_DEVICE_MESSAGE_ID,              ///< 13
     USBOTG1_DEVICE_MESSAGE_ID,              ///< 14
+#endif
 
+#if (SC_USBHOST)
     //USBOTG_HOST_CLASS_MAIL_ID,
     USBOTG0_HOST_CLASS_MAIL_ID,             ///< 15
     USBOTG1_HOST_CLASS_MAIL_ID,             ///< 16
@@ -167,14 +182,20 @@ enum {
     //USBOTG_HOST_MSDC_TRANSACTION_DONE_EVENT,
     USBOTG0_HOST_MSDC_TRANSACTION_DONE_EVENT,///< 19
     USBOTG1_HOST_MSDC_TRANSACTION_DONE_EVENT,///< 20
+#endif
 
+#if Make_TESTCONSOLE
     TCONS_EVENT,                            ///< 21
+#endif
     IDU_SEMA_ID,                            ///< 22
     IDU_EVENT_ID,                           ///< 23
 
+#if (MAKE_BLUETOOTH == 1)
     USB_BT_EVENT,                           ///< 24
     BT_UI_MSG_ID,                           ///< 25
+#endif
 
+#if NETWARE_ENABLE
     NETWARE_EVENT,                          ///< 26
     WIFI_EVENT,                             ///< 27
     NET_SEM_ID,                             ///< 28, used by LWIP
@@ -183,26 +204,35 @@ enum {
     NET_CACHE_SEMA_ID,                      ///< 31
     USB_CONTROL_SEMA,                       ///< 32
     USB_BULK_COMPLETE_EVENT,                ///< 33
+#endif
 
     MMCP_SEMA_ID,                           ///< 34
     SYSTEM_EVENT_ID,                        ///< 35
     JPEG_LOAD_DATA_EVENT_ID1,               ///< 36
-    MPV_EVENT_ID,                           ///< 37
-    PP_EVENT_ID,                            ///< 38
+    //MPV_EVENT_ID,                           ///< 37
+    //PP_EVENT_ID,                            ///< 38
     MCARD_MAIL_ID,                          ///< 39
     MCARD_EVENT_ID,                         ///< 40
     MCARD_SEMAPHORE_ID,                     ///< 41
     AV_DECODER_EVENT,                       ///< 42
     SENSOR_IPW_FRAME_END_EVENT_ID,          ///< 43  /*BIT0 for record, BIT1  for display, BIT2 for caputre flow, BIT3 for PCCam*/
     SCALING_FINISH_EVENT_ID,                ///< 44
+#if (HW_IIC_MASTER_ENABLE == 1)
     I2CM_SEMA_ID,                           ///< 45
+#endif
     FILE_WRITE_SEMA_ID,                     ///< 46  /* temp solution for protecting concurrent multiple file write operations */
+#if NETWARE_ENABLE
     NETWORK_STREAM_EVENT,                   ///< 47
     UPNP_START_EVENT,                       ///< 48
+#endif
 
     EXCEPTION_MSG_ID,
+#if (VIDEO_ON || AUDIO_ON)
     STREAM_READ_SEMA_ID,                    ///< 50
+#endif
+#if !SETUP_SAVE_IN_UST
     STTB_SEMA_ID,                           ///< 51
+#endif
 
 #if EREADER_ENABLE
     TYPESETTING_EVENT,                      ///< 52
@@ -210,6 +240,7 @@ enum {
     TYPESETTING_SEMA_ID,
 #endif
 
+#if (MAKE_BLUETOOTH == 1)
     BTstack_SEMA_ID,
     BTwaveIn_SEMA_ID,
     BTwaveOut_SEMA_ID,
@@ -219,10 +250,15 @@ enum {
     BT_SCO_EVENT,
     BT_OS_EVENT,
     BT_UART_EVENT,
+#endif
 
+#if (IDU_CHANGEWIN_MODE == 1)
     IDU_WAIT_BE_SEMA_ID,
+#endif
 
+#if (VIDEO_ON || AUDIO_ON)
 	AVP_SYNC_EVENT,
+#endif
 #if TOUCH_CONTROLLER_ENABLE
     TOUCH_CONTROLLER_MSG_ID,
     UI_TC_MSG_ID,
@@ -247,20 +283,33 @@ enum {
     //////// Semaphore IDs for each drive's FAT cache buffer [begin] ////////
     /* note: make sure count of reserved semaphore IDs here must >= MAX_DRIVE (max drive index ID defined in drive.h) */
     DRIVE_FAT_CACHE_SEMA_ID_BASE,
+#if (MEM_2M)
     DRIVE_FAT_CACHE_SEMA_ID_MAX = (DRIVE_FAT_CACHE_SEMA_ID_BASE + 36),
+#else
+    DRIVE_FAT_CACHE_SEMA_ID_MAX = (DRIVE_FAT_CACHE_SEMA_ID_BASE + 37),
+#endif
     //////// Semaphore IDs for each drive's FAT cache buffer [end] ////////
 
 
+#if (VIDEO_ON || AUDIO_ON) && __USE_STREAM_CACHE__
 	STREAM_CACHE_EVENT,
-//#if RECORD_ENABLE
+#endif
+#if RECORD_ENABLE||SENSOR_WITH_DISPLAY
     REC_ERR_EVENT,
     REC_OP_MSG_ID,
-    REC_SENDMSG_EVENT,
+    //REC_SENDMSG_EVENT,
+#if AUDIO_ON
     AUDIO_ID,
+#endif
+#if RECORD_ENABLE
     RECORD_STREAM_CACHE_SEMA_ID,
-    RECORD_opcode_SEMA_ID,
+#endif
+    //RECORD_opcode_SEMA_ID,
+#if AUDIO_ON
     AUDIO_STREAM_MSG_ID,
-//#endif
+#endif
+#endif
+
 #if USBOTG_HOST_ISOC
     USBOTG_HOST_ISOC_EVENT,
 #endif
@@ -269,7 +318,7 @@ enum {
 	SOFT_RECORD_AUDIO,
 #endif
 
-    UI_KEY_MSG_ID,
+    //UI_KEY_MSG_ID,
 #if (DM9KS_ETHERNET_ENABLE || DM9621_ETHERNET_ENABLE)
 	ETHERNET_RECV_EVENT,
 	ETHERNET_ARPRECV_EVENT,
@@ -279,8 +328,10 @@ enum {
 	AMR_RECORD_AUDIO,
 #endif
 
+#if (VIDEO_ON || AUDIO_ON)
 	VIDEO_DATA_EVENT,
 	MOVIE_STATUS,
+#endif
 
     JPEG_CDU_SEMA_ID,
 

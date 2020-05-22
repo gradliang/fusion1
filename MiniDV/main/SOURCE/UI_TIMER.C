@@ -396,7 +396,7 @@ DWORD CheckTimerAction(register void (*Action) (void))
 
 void Ui_TimerProcInit(void)
 {
-    mpDebugPrint("### %s:%d ###", __FUNCTION__, __LINE__);
+    MP_DEBUG("### %s:%d ###", __FUNCTION__, __LINE__);
     uiTimerProcInit();
     SysTimerProcAdd(UI_TIMER_TICK_PERIOD, uiTimerHandler, FALSE);
 }

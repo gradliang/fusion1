@@ -40,6 +40,8 @@
 #include "btsetting.h"
 #include "BtApi.h"
 #endif
+
+#if AUDIO_ON
 void inline AudioIntEnable(void);
 void inline AudioIntDisable(void);
 static BYTE inline Get_Audio_Buf_Num();
@@ -1207,4 +1209,5 @@ int init_audio_driver(AUDIO_DEVICE * audio_dev)
 
 	return 1;
 }
+#endif
 

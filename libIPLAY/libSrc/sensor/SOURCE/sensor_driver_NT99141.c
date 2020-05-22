@@ -927,7 +927,10 @@ sensor_nt99140_setRegister(0x3201, 0x0F);
 sensor_nt99140_setRegister(0x3028, 0x2E); 
 sensor_nt99140_setRegister(0x3029, 0x10); 
 sensor_nt99140_setRegister(0x302A, 0x04); 
-sensor_nt99140_setRegister(0x3022, 0x24); 
+if (Sensor_CurChannel_Get())
+	sensor_nt99140_setRegister(0x3022, 0x26); 
+else
+	sensor_nt99140_setRegister(0x3022, 0x24); 
 sensor_nt99140_setRegister(0x3023, 0x24); 
 sensor_nt99140_setRegister(0x3002, 0x00); 
 sensor_nt99140_setRegister(0x3003, 0x2C); 

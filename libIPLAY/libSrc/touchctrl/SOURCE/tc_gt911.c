@@ -627,26 +627,26 @@ void TouchIntDisable()
 
 void ResetTouchPanel()
 {
-	mpDebugPrint("ResetTouchPanel");
+	MP_DEBUG("ResetTouchPanel");
 
 	SetGPIOValue(TOUCH_RESET_PIN,0);
 	//TimerDelay(50);
 	SetGPIOValue(TOUCH_CONTROLLER_INT_PIN,0);
-	TimerDelay(50);
+	TimerDelay(5); // 50
 
 	SetGPIOValue(TOUCH_RESET_PIN,0);
 	IODelay(100); //min = 100us
 	SetGPIOValue(TOUCH_RESET_PIN,1);
-	TimerDelay(1000); //min 5ms
+	TimerDelay(50); //min 5ms  1000
 	//SetGPIODirection(TOUCH_CONTROLLER_INT_PIN,GPIO_INPUT);
 	GetGPIOValue(TOUCH_CONTROLLER_INT_PIN);
-	IODelay(100); //min = 100us
+	//IODelay(100); //min = 100us
 
 }
 
 void TouchPanelInit()
 {
-         MP_ALERT("TouchPanelInit");
+	MP_DEBUG("TouchPanelInit");
 		 
 	ResetTouchPanel(); //Reset before touch
 	 //Gpio_Config2GpioFunc(SW_IIC_CLK_PIN, GPIO_INPUT_MODE, 1, 1);
