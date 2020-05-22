@@ -186,27 +186,7 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
     }
     else if (dwHashKey == xpgHash("FuncSet"))
     {
-#if 0
-        BYTE * pb;
-        if (dwIconId == 0)
-            pb = &(g_psSetupMenu->bEnableIcon_LaLiCeShi);
-        else if (dwIconId == 1)
-            pb = &(g_psSetupMenu->bEnableIcon_DuanMianJianCe);
-        else if (dwIconId == 2)
-            pb = &(g_psSetupMenu->bEnableIcon_ZiDongDuiJiao);
-        else if (dwIconId == 3)
-            pb = &(g_psSetupMenu->bEnableIcon_JiaoDuJianCe);
-        else if (dwIconId == 4)
-            pb = &(g_psSetupMenu->bEnableIcon_BaoCunTuXiang);
-        else if (dwIconId == 5)
-            pb = &(g_psSetupMenu->bEnableIcon_HuiChenJianCe);
-        else if (dwIconId == 6)
-            pb = &(g_psSetupMenu->bEnableIcon_RongJieZanTing);
-        else
-            pb = &(g_psSetupMenu->bEnableIcon_YunDuanCeLiang);
-        *pb = !(*pb);
-#endif
-		g_psSetupMenu->bCustomizeIconEnable[dwIconId] = !g_psSetupMenu->bCustomizeIconEnable[dwIconId];
+		g_psSetupMenu->bFunctionIconEnable[dwIconId] = !g_psSetupMenu->bFunctionIconEnable[dwIconId];
         xpgUpdateStage();
         WriteSetupChg();
     }
@@ -246,7 +226,7 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
                 }
             }
             g_psSetupMenu->bCustomizeIcon[foundIdx] = nowIdx;
-            g_psSetupMenu->bCustomizeIconEnable[foundIdx] = 1;
+            g_psSetupMenu->bFunctionIconEnable[foundIdx] = 1;
             WriteSetupChg();
         }
         xpgUpdateStage();
@@ -262,7 +242,7 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
                 xpgUpdateStage();
                 return 0;
             }
-            g_psSetupMenu->bCustomizeIconEnable[dwIconId] = !g_psSetupMenu->bCustomizeIconEnable[dwIconId];
+            g_psSetupMenu->bFunctionIconEnable[dwIconId] = !g_psSetupMenu->bFunctionIconEnable[dwIconId];
             //xpgUpdateStage();
             xpgSpriteRedraw(Idu_GetCurrWin(),SPRITE_TYPE_LIGHT_ICON, dwIconId);
             xpgSpriteRedraw(Idu_GetCurrWin(),SPRITE_TYPE_DARK_ICON,  dwIconId);
@@ -954,9 +934,20 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
         }
         else if (dialogType == Dialog_SetLang)
         {
-            g_psSetupMenu->bLanguage = dwIconId;
-            xpgUpdateStage();
-            WriteSetupChg();
+            if (dwIconId == 0 || dwIconId == 1)
+            {
+                g_psSetupMenu->bLanguage = dwIconId;
+                xpgUpdateStage();
+            }
+            else if (dwIconId == 2)
+            {
+                WriteSetupChg();
+                exitDialog();
+            }
+            else if (dwIconId == 3)
+            {
+                exitDialog();
+            }
         }
         else if (dialogType == Dialog_SetPassword1 || dialogType == Dialog_SetPassword2 || dialogType == Dialog_CheckPassword)
         {
@@ -1038,6 +1029,40 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
             }
             else if (dwIconId == 10)
             {
+                if (strEditValue[0])
+                {
+                    if (boDialogValueIsFloat)
+                    {
+                        unsigned int value1, value2;
+                        char *pp;
+                        pp = strchr(strEditValue, '.');
+                        if (pp == NULL)
+                        {
+                            value1 = atoi(strEditValue);
+                            dwDialogTempValue = value1 << 6;
+                        }
+                        else
+                        {
+                            char tempbuf1[128];
+                            strncpy(tempbuf1, strEditValue, pp - strEditValue);
+                            tempbuf1[pp - strEditValue] = 0;
+                            value1 = atoi(tempbuf1);
+                            value2 = atoi(pp+1);
+                            dwDialogTempValue = (value1 << 6) | value2;
+                        }
+                    }
+                    else
+                    {
+                        int newValue = atoi(strEditValue);
+                        dwDialogTempValue = newValue;
+                        if (dialogOnClose != NULL)
+                        {
+                            dialogOnClose();
+                            return 0;
+                        }
+                    }
+                }
+                exitDialog();
             }
             else if (dwIconId == 11)
             {
@@ -1367,39 +1392,6 @@ SWORD touchSprite_CloseIcon(STXPGSPRITE * sprite, WORD x, WORD y)
         }
         else if (dialogType == Dialog_EditValue)
         {
-            if (strEditValue[0])
-            {
-                if (boDialogValueIsFloat)
-                {
-                    unsigned int value1, value2;
-                    char *pp;
-                    pp = strchr(strEditValue, '.');
-                    if (pp == NULL)
-                    {
-                        value1 = atoi(strEditValue);
-                        dwDialogTempValue = value1 << 6;
-                    }
-                    else
-                    {
-                        char tempbuf1[128];
-                        strncpy(tempbuf1, strEditValue, pp - strEditValue);
-                        tempbuf1[pp - strEditValue] = 0;
-                        value1 = atoi(tempbuf1);
-                        value2 = atoi(pp+1);
-                        dwDialogTempValue = (value1 << 6) | value2;
-                    }
-                }
-                else
-                {
-                    int newValue = atoi(strEditValue);
-                    dwDialogTempValue = newValue;
-                    if (dialogOnClose != NULL)
-                    {
-                        dialogOnClose();
-                        return 0;
-                    }
-                }
-            }
             exitDialog();
         }
     }
@@ -1800,7 +1792,7 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
     }
     else if (dwHashKey == xpgHash("SetSleep"))
     {
-        if (dwSpriteId == 1)
+        if (dwSpriteId == 1 && !g_psSetupMenu->bSmartBacklight)
         {
             Free_CacheWin();
             Idu_GetCacheWin_WithInit();
@@ -1810,7 +1802,7 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
             popupDialog(Dialog_SetBrightness, "SetSleep");
             xpgUpdateStage();
         }
-        else if (dwSpriteId == 3)
+        else if (dwSpriteId == 3 && !g_psSetupMenu->bAutoShutdown)
         {
             Free_CacheWin();
             Idu_GetCacheWin_WithInit();
@@ -1823,7 +1815,7 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
     }
     else if (dwHashKey == xpgHash("SetSound"))
     {
-        if (dwSpriteId == 1)
+        if (dwSpriteId == 1 && !g_psSetupMenu->bToundSoundEnable)
         {
             Free_CacheWin();
             Idu_GetCacheWin_WithInit();
@@ -1949,16 +1941,28 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
         }
         else if (dwSpriteId == 1)
         {
+            Free_CacheWin();
+            Idu_GetCacheWin_WithInit();
+            DrakWin(Idu_GetCacheWin(), 2, 1);
+            mpCopyEqualWin(Idu_GetCurrWin(), Idu_GetCacheWin());
             popupDialog(Dialog_Times, "SetInfo");
             xpgUpdateStage();
         }
         else if (dwSpriteId == 2)
         {
+            Free_CacheWin();
+            Idu_GetCacheWin_WithInit();
+            DrakWin(Idu_GetCacheWin(), 2, 1);
+            mpCopyEqualWin(Idu_GetCurrWin(), Idu_GetCacheWin());
             popupDialog(Dialog_TempInfo, "SetInfo");
             xpgUpdateStage();
         }
         else if (dwSpriteId == 3)
         {
+            Free_CacheWin();
+            Idu_GetCacheWin_WithInit();
+            DrakWin(Idu_GetCacheWin(), 2, 1);
+            mpCopyEqualWin(Idu_GetCurrWin(), Idu_GetCacheWin());
             popupDialog(Dialog_BatInfo, "SetInfo");
             xpgUpdateStage();
         }

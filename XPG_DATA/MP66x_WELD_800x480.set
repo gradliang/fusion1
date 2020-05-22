@@ -37,6 +37,7 @@ type26=Scroll
 type27=Frame
 type28=Role
 type29=RepeatIcon
+type30=HomeStatus
 
 [ACTION]
 ;//Main Menu
