@@ -152,35 +152,47 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
         }
         else if (dwIconId == 2) 
         {
-			st_bGoSetupFrom=0;
-            xpgPreactionAndGotoPage("FusionSet1");
+            st_bGoSetupFrom=0;
+            xpgPreactionAndGotoPage("FuncSet");
             xpgUpdateStage();
         }
         else if (dwIconId == 3) 
         {
+            st_bGoSetupFrom=0;
+            xpgPreactionAndGotoPage("FusionSet1");
+            xpgUpdateStage();
+
+            /*
             //xpgPreactionAndGotoPage("Auto_work");
             //xpgPreactionAndGotoPage("Manual_work");
            // xpgUpdateStage();
            WeldModeSet(1);
-			xpgCb_EnterCamcoderPreview();
+		    xpgCb_EnterCamcoderPreview();
+		    */
         }
-        else if (dwIconId == 4) 
+        else if (dwIconId == 4)
         {
+            xpgPreactionAndGotoPage("SetYun");
+            xpgUpdateStage();
+
+            /*
             Free_CacheWin();
             Idu_GetCacheWin_WithInit();
             DrakWin(Idu_GetCacheWin(), 2, 1);
             xpgPreactionAndGotoPage("ToolBox");
             xpgUpdateStage();
+            */
         }
         else if (dwIconId == 5) 
         {
-            xpgPreactionAndGotoPage("SetYun");
+            isSelectOnlineOPM = 0;
+            xpgPreactionAndGotoPage("opm1");
             xpgUpdateStage();
         }
         else if (dwIconId == 6) 
         {
-			st_bGoSetupFrom=0;
-            xpgPreactionAndGotoPage("FuncSet");
+		    SendCmdA4GetStaus(0x09);
+            xpgPreactionAndGotoPage("RedLight");
             xpgUpdateStage();
         }
     }

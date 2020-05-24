@@ -208,6 +208,9 @@ enum xpgStringId {
 	Str_Display_CanChoose6Icons,    //   198
 	Str_DianJiShengYuCiShu,         //   199
 	Str_RongJieZongCiShu2,			//   200
+	Str_OPM_YunDuanOPM,             //   201
+	Str_KeShiHuaHongGuangYuan,      //   202
+	
 	
 	Str_MAX_ID,
 };

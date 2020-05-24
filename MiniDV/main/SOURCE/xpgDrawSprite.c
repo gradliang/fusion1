@@ -2807,15 +2807,15 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         else if (dwTextId == 1)
             text = getstr(Str_RongJieJiLu);
         else if (dwTextId == 2)
-            text = getstr(Str_RongJieSheZhi);
-        else if (dwTextId == 3)
-            text = getstr(Str_ShouDongMoShi);
-        else if (dwTextId == 4)
-            text = getstr(Str_GongJuXiang);
-        else if (dwTextId == 5)
-            text = getstr(Str_XiTongSheZhi);
-        else if (dwTextId == 6)
             text = getstr(Str_GongNengPeiZhi);
+        else if (dwTextId == 3)
+            text = getstr(Str_RongJieSheZhi);
+        else if (dwTextId == 4)
+            text = getstr(Str_XiTongSheZhi);
+        else if (dwTextId == 5)
+            text = getstr(Str_OPM_YunDuanOPM);
+        else if (dwTextId == 6)
+            text = getstr(Str_KeShiHuaHongGuangYuan);
         else if (dwTextId == 7)
             text = getstr(Str_DianJiShengYuCiShu);
         else if (dwTextId == 8)
