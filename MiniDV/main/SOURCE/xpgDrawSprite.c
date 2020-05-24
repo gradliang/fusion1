@@ -5150,7 +5150,7 @@ SWORD xpgDrawSprite_Dialog(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
     }
     else if (dwHashKey == xpgHash("User"))
     {
-        MakeDialogRole(&stRole, 400, 440);
+        MakeDialogRoleNew(&stRole, 400, 440);
         MakeMaskRole(&stMaskRole, XPG_ROLE_ICON_MASK_0, 400, 440);
         xpgRoleDrawMask(&stRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, &stMaskRole);
         
