@@ -2038,6 +2038,15 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
         // if (PAGE_RECORD_SIZE * g_dwRecordListCurrPage+dwSpriteId <FileBrowserGetTotalFile())
         startEditFusionRecordName(pr);
     }
+    else if (dwHashKey == xpgHash("User"))
+    {
+        if (g_psSetupMenu->bUserMode != dwSpriteId)
+        {
+            g_psSetupMenu->bUserMode = dwSpriteId;
+            xpgUpdateStage();
+            WriteSetupChg();
+        }
+    }
     
     return 0;
 }

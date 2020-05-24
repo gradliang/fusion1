@@ -114,6 +114,7 @@ void GetDefaultSetupMenuValue(void)
     g_psSetupMenu->bAutoShutdown = 0;
     g_psSetupMenu->bToundSoundEnable = 0;
     g_psSetupMenu->bLanguage = 0;
+    g_psSetupMenu->bUserMode = 0;
     g_psSetupMenu->bEnableOpenPassword = 0;
     g_psSetupMenu->bEnableHirePassword = 0;
     memset(g_psSetupMenu->srtOpenPassword, 0, 8);

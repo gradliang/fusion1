@@ -2462,6 +2462,28 @@ SWORD xpgDrawSprite_LightIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite
          //   boKeyLight = FALSE;
         }
     }
+    else if (dwHashKey == xpgHash("User"))
+    {
+        if (g_psSetupMenu->bUserMode != dwSpriteId)
+            return PASS;
+        
+        if (dwSpriteId == 0)
+            text = getstr(Str_ZiDongRongJieMoShi);
+        else if (dwSpriteId == 1)
+            text = getstr(Str_GongChangTiaoXinMoShi);
+        else if (dwSpriteId == 2)
+            text = getstr(Str_FangDianJiaoZhengMoShi);
+        else if (dwSpriteId == 3)
+            text = getstr(Str_PingMuHuiChenJianCe);
+        else if (dwSpriteId == 4)
+            text = getstr(Str_GongChangMoShi);
+        else if (dwSpriteId == 5)
+            text = getstr(Str_DianJiBangJiHuo);
+        
+        xpgDrawSprite(pWin, pstSprite, boClip);
+        SetCurrIduFontID(FONT_ID_HeiTi19);
+        Idu_PrintStringCenter(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy + 3, 0, 300);
+    }
     
     return PASS;
 }
@@ -2785,6 +2807,11 @@ SWORD xpgDrawSprite_CloseIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite
             return PASS;
         pstSprite->m_wWidth = 40;
         pstSprite->m_wHeight = 40;
+        xpgSpriteEnableTouch(pstSprite);
+    }
+    else if (dwHashKey == xpgHash("User"))
+    {
+        xpgDirectDrawRoleOnWin(pWin, g_pstXpgMovie->m_pstObjRole[XPG_ROLE_CLOSE_ICON], pstSprite->m_wPx, pstSprite->m_wPy, pstSprite, boClip);
         xpgSpriteEnableTouch(pstSprite);
     }
     else

@@ -194,6 +194,7 @@ typedef struct ST_SETUP_MENU_SETTING_VALUE
     BYTE bAutoShutdown;                 // 自动关机
     BYTE bToundSoundEnable;             // 触屏声音
     BYTE bLanguage;                     // 语言
+    BYTE bUserMode;                     // 用户模式
     BYTE bEnableOpenPassword;           // 开启开机密码
     BYTE bEnableHirePassword;           // 开启租借密码
     char srtOpenPassword[8];            // 开机密码  
