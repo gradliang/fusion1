@@ -186,6 +186,12 @@ typedef struct {
 #define	FEBER_POS1																150//4 --去灰尘
 #define	FEBER_POS2																38 //4 --熔接起始位置
 
+SWORD TspiSendCmdPolling0xA4(BYTE bCmd);
+SWORD  TspiSendSimpleInfo0xAF(BYTE bInfo);
+void SendCmdPowerOff();
+
+void uiCb_CheckInStandby(void);
+void uiCb_CheckBattery(void);
 
 void TSPI_DataProc();
 SWORD TSPI_PacketSend(BYTE *pbDataBuf,BYTE bCheckResend);
@@ -197,6 +203,7 @@ void StopAllMoto(void);
 void WeldStopAllAction(void);
 void Discharge(WORD wMode,BYTE bStep);
 SWORD ScanFiberUptoDown(ST_IMGWIN *pWin, SWORD x,SWORD y,SWORD swYEnd,BYTE bLowLevel);
+void  PutErrorOsdString(SWORD swData0,SWORD swData1,SWORD swData2,SWORD swData3);
 
 #if TEST_PLANE||ALIGN_DEMO_MODE
 void  PutAdjOsdString();

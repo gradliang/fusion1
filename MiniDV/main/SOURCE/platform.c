@@ -54,4 +54,11 @@ void TurnOffBackLight(void)
     SetGPIOValue(GPIO_BL_CTRL, 0); // Platform_MP663_DV.h, #define GPIO_BL_CTRL GPIO_NULL
 }
 
+void TimerToBacklightOff(DWORD dwTime)
+{
+	if (dwTime)
+		Ui_TimerProcAdd(dwTime, TurnOffBackLight);
+	else
+		Ui_TimerProcRemove(TurnOffBackLight);
+}
 

@@ -75,6 +75,9 @@ BYTE Sensor_GetPicMode(void)
 	return st_bSensorMode;
 }
 
+BYTE g_bInCharge=0,g_bBatteryQuantity=60,g_bStandby=0,g_bLowPower=0,g_bLogoMix=0;
+SBYTE g_sbLogoStep=4;
+
 #if 1 //OPM
 //实时申请,前一个SEG为HEAD，HEAD内每个DWORD为有效SEG数
 static BYTE* st_pOpmLocalBuf=NULL,* st_pOpmCloudBuf=NULL;
@@ -4168,18 +4171,6 @@ void DischargeAndDriveMotor(BYTE bMotorInex,BYTE bDirection,WORD wPulseBeforDis,
 	TSPI_PacketSend(bTxData,1);
 }
 
-SWORD  SendWeldStaus(BYTE bStart)
-{
-	BYTE i,bTxData[8];
-
-	bTxData[0]=0x96;
-	bTxData[1]=3+1;
-	if (bStart)
-		bTxData[2] =BIT1;
-	return TSPI_PacketSend(bTxData,0);
-		
-}
-
 
 #endif
 
@@ -4960,18 +4951,6 @@ void Proc_AutoFocus()
 		Ui_TimerProcAdd(100, Proc_AutoFocus);
 }
 
-// 马达复位
-void ResetMotor(void)
-{
-	BYTE bTxData[6];
-
-	bTxData[0]= 0xa4;
-	bTxData[1]= 4;
-	bTxData[2]= 2;
-	TSPI_PacketSend(bTxData,1);
-}
-
-
 void TimerToNextState(void)
 {
 	if (st_dwProcState==SENSOR_IDLE)
@@ -5022,7 +5001,7 @@ void Proc_Weld_State_Fast()
 				st_dwRedo1=POS_RETRY_TIMES;
 				st_wDischargeTimeSet=0;
 				ResetFiberPara();
-				SendWeldStaus(0);
+				TspiSendSimpleInfo0xAF(0x02);
 				MotorSetStatus(01,MOTOR_HOLD);
 				MotorSetStatus(02,MOTOR_HOLD);
 				#if 0//OSD_LINE_NUM && !TEST_PLANE
@@ -5952,7 +5931,7 @@ void Proc_Weld_State_Fast()
 
 		case SENSOR_RPOC_END:
 			mpDebugPrint("SENSOR_RPOC_END");
-			SendWeldStaus(1);
+			TspiSendSimpleInfo0xAF(0x03);
 			st_dwProcState=SENSOR_IDLE;
 			TimerToReleaseAllHold();
 			break;
@@ -6008,7 +5987,7 @@ void Proc_Weld_State()
 			g_bDisplayMode=0x80;
 			st_wDischargeTimeSet=0;
 			ResetFiberPara();
-			SendWeldStaus(0);
+			TspiSendSimpleInfo0xAF(0x02);
 			st_dwProcState++;
 			TimerToFillProcWin(10);
 			break;
@@ -6445,7 +6424,7 @@ void Proc_Weld_State()
 
 		case SENSOR_RPOC_END:
 			mpDebugPrint("SENSOR_RPOC_END");
-			SendWeldStaus(1);
+			TspiSendSimpleInfo0xAF(0x03);
 			st_dwProcState=SENSOR_IDLE;
 			TimerToReleaseAllHold();
 			break;
@@ -6573,7 +6552,35 @@ void Proc_SensorData_State()
 
 }
 
-//------TSPI通讯回复
+//------TSPI通讯发送数据
+
+//--查询指令
+SWORD TspiSendCmdPolling0xA4(BYTE bCmd)
+{
+	BYTE bTxData[8];
+
+	bTxData[0]=0xa4;
+	bTxData[1]=3+1;
+	bTxData[2]=bCmd;
+	return TSPI_PacketSend(bTxData,1);
+}
+
+// 马达复位
+void ResetMotor(void)
+{
+	TspiSendCmdPolling0xA4(0x02);
+}
+
+//--电击棒信息
+void TspiSendElectrodeInfo(void)
+{
+	BYTE bTxData[18];
+
+	bTxData[0]=0xa8;
+	bTxData[1]=3+15;
+	memcpy(&bTxData[2],&g_psSetupMenu->bElectrodeInfo[0],15);
+	TSPI_PacketSend(bTxData,1);
+}
 
 //--锁定信息
 void TspiSendLockInfo(void)
@@ -6598,16 +6605,29 @@ void TspiSendLockInfo(void)
 	}
 	TSPI_PacketSend(bTxData,1);
 }
-//--电击棒信息
-void TspiSendElectrodeInfo(void)
-{
-	BYTE bTxData[18];
 
-	bTxData[0]=0xa8;
-	bTxData[1]=3+15;
-	memcpy(&bTxData[2],&g_psSetupMenu->bElectrodeInfo[0],15);
-	TSPI_PacketSend(bTxData,1);
+
+SWORD  TspiSendSimpleInfo0xAF(BYTE bInfo)
+{
+	BYTE i,bTxData[8];
+
+	bTxData[0]=0xAF;
+	bTxData[1]=3+1;
+	bTxData[2] =bInfo;
+	return TSPI_PacketSend(bTxData,1);
 }
+
+//power
+void SendCmdPowerOff()
+{
+	BYTE bTxData[8];
+
+	bTxData[0]=0x98;
+	bTxData[1]=3+1;
+	bTxData[2]=0;
+	TSPI_PacketSend(bTxData,0);
+}
+
 //--RTC
 void TspiSendRTC(void)
 {
@@ -6661,7 +6681,14 @@ void TSPI_DataProc(void)
 		mpDebugPrintN(" checksum error really %p data %p ",bChecksum,pbTspiRxBuffer[st_dwTspiRxIndex-1]);
 		return;
 	}
-
+	//接收成功
+	if (!(pbTspiRxBuffer[0]==0xbf && pbTspiRxBuffer[2]<0x03))
+		TspiSendSimpleInfo0xAF(0x01);
+	if (g_bStandby &&(pbTspiRxBuffer[0]==0xb1))
+	{
+		TurnOnBackLight();
+		TimerToBacklightOff(5000);
+	}
 	switch (pbTspiRxBuffer[0])
 	{
 		case 0xb1:
@@ -7293,16 +7320,33 @@ void TSPI_DataProc(void)
 			g_psSetupMenu->wJiaReShiJian=pbTspiRxBuffer[4];
 			WriteSetupChg();
 			break;
-#if 0
-		//指令回复
+		//简单状态发送
 		case 0xbf:
-			if (st_bTspiTxRetry && pbTspiRxBuffer[2]==0x01)//0x00->接收错误 0x01->接收成功
+			switch (pbTspiRxBuffer[2])
 			{
-				st_bTspiTxRetry=0;
-				Ui_TimerProcRemove(TSPI_TimerToResend);
+				case 0x00://0x00->接收错误 0x01->接收成功
+					if (st_bTspiTxRetry)
+					{
+						st_bTspiTxRetry--;
+						TSPI_TimerToResend();
+						Ui_TimerProcRemove(TSPI_TimerToResend);
+					}
+				break;
+				case 0x01:
+					if (st_bTspiTxRetry)
+					{
+						st_bTspiTxRetry=0;
+						Ui_TimerProcRemove(TSPI_TimerToResend);
+					}
+				break;
+				case 0x02:
+					g_bStandby=1;
+				break;
+				case 0x03:
+					g_bStandby=0;
+				break;
 			}
 			break;
-#endif
 
 		//云端/本地OPM数据
 		case 0xc2:
@@ -7359,6 +7403,19 @@ void TSPI_DataProc(void)
 				g_psUnsaveParam->bRedPenTimerEnable=0;
 			if (dwHashKey == xpgHash("RedLight"))
 				xpgUpdateStage();
+			break;
+
+		//充电状态与电量
+		case 0xc7:
+			g_bInCharge=pbTspiRxBuffer[2];
+			if (!g_bInCharge)
+			{
+				g_bBatteryQuantity=pbTspiRxBuffer[3];
+				if (g_bBatteryQuantity>100)
+					g_bBatteryQuantity=100;
+				if (g_bStandby)
+					SendCmdPowerOff();
+			}
 			break;
 
 		default:
@@ -8188,7 +8245,7 @@ void WeldDataInit(void)
 #endif
 
 //--查询MCU可接收的最长指令长度
-	SendCmdA4GetStaus(0x0a);
+	TspiSendCmdPolling0xA4(0x0a);
 
 //--读取电极棒位置
 	if (g_psSetupMenu->wElectrodePos[0]<pWin->wWidth/4 ||  g_psSetupMenu->wElectrodePos[0]>pWin->wWidth*3/4)
@@ -8218,6 +8275,81 @@ void WeldDataInit(void)
 	}
 	TimerCheckToFillReferWin(10);
 }
+
+//>------------UI CODE FUNCION-----------------------
+
+void uiCb_CheckInStandby(void)
+{
+//--Battery info
+	TspiSendCmdPolling0xA4(0x0b);
+	if (g_bStandby)
+	{
+		if (g_bInCharge)
+		{
+			g_bBatteryQuantity+=20;
+			if (g_bBatteryQuantity>=100)
+				g_bBatteryQuantity=0;
+		}
+		xpgUpdateStage();
+		Ui_TimerProcAdd(1000, uiCb_CheckInStandby);
+	}
+	else if (g_bLowPower)
+	{
+		if (!g_bInCharge && g_bBatteryQuantity < 10 )
+		{
+			if (g_bLowPower>9)
+				SendCmdPowerOff();
+			else if (g_bLowPower&0x01)
+				xpgUpdateStage();
+			else
+				mpClearWin(Idu_GetCurrWin());
+			g_bLowPower++;
+			Ui_TimerProcAdd(500, uiCb_CheckInStandby);
+		}
+		else
+		{
+			g_bLogoMix=0;
+			uiCb_CheckBattery();
+		}
+	}
+}
+
+void uiCb_CheckBattery(void)
+{
+	if (!g_bInCharge && g_bBatteryQuantity < 10 )
+	{
+		g_bLowPower=1;
+		xpgPreactionAndGotoPage("Charge");
+		uiCb_CheckInStandby();
+	}
+	else 
+	{
+			if (g_bBatteryQuantity<=100 && g_bLogoMix==128)
+			{
+				SystemClearStatus(SYS_STATUS_INIT);
+				xpgPreactionAndGotoPage("Main");
+				xpgUpdateStage();
+				Timer_FirstEnterCamPreview();
+			}
+			else
+			{
+				if (g_bBatteryQuantity>100 && (!(g_bLogoMix&0x0f)))
+					TspiSendCmdPolling0xA4(0x0b);
+				if (g_bLogoMix>=128)
+				{
+					g_sbLogoStep=-4;
+					g_bLogoMix=128;
+				}
+				else if (!g_bLogoMix)
+					g_sbLogoStep=4;
+				g_bLogoMix+=g_sbLogoStep;
+				xpgUpdateStage();
+				Ui_TimerProcAdd(10, uiCb_CheckBattery);
+			}
+	}
+}
+
+//<------------UI CODE FUNCION-----------------------
 
 #endif
 #endif

@@ -63,17 +63,22 @@
 
 #include "xpgCamFunc.h"
 #include "SPI_Ex.h"
+#include "xpgProcSensorData.h"
 /*
 // Constant declarations
 */
 #define memset          MpMemSet
 #define memcpy          MpMemCopy
 
-static void ClkInit(void);
 /*
 // Variable declarations
 */
 extern BYTE g_bXpgStatus;
+#if (PRODUCT_UI==UI_WELDING)
+extern BYTE g_bStandby;
+#endif
+
+static void ClkInit(void);
 static SWORD SystemInit(void);
 static SWORD XpgInit(BYTE bMcardId, DWORD dwXPGTag);
 static SDWORD MainWaitEvent(DWORD * pdwEvent, DWORD dwNextEvent);
@@ -764,7 +769,14 @@ CheckAutoSleepOrAutoOff();
 #if TEST_DISPLAY_PANEL
 	Ui_TimerProcAdd(6000, Display_panel);
 #else
-Timer_FirstEnterCamPreview();
+#if (PRODUCT_UI==UI_WELDING)
+if (g_bStandby)
+	Ui_TimerProcAdd(1000, uiCb_CheckInStandby);
+else if (SystemGetStatus(SYS_STATUS_INIT))
+	Ui_TimerProcAdd(10, uiCb_CheckBattery);
+else
+#endif
+	Timer_FirstEnterCamPreview();
 //NonxpgEnterPhotoView();
 //	Ui_TimerProcAdd(2000, MakeTestFile);
 //			mpPaintWin(Idu_GetCurrWin(), RGB2YUV(st_bDisplayindex,0,0));
@@ -1216,7 +1228,14 @@ static SWORD SystemInit(void)
 #if TSPI_ENBALE
 	TSPI_Init();
 #endif
-
+#if (PRODUCT_UI==UI_WELDING)
+//CPU初始化完成
+	TspiSendSimpleInfo0xAF(0x04);
+//--Battery info
+	TspiSendCmdPolling0xA4(0x0b);
+//--standby or power on
+	TspiSendCmdPolling0xA4(0x0c);
+#endif
     FileSystemInit();
 
     Ui_TimerProcInit();
@@ -1361,6 +1380,9 @@ static SWORD SystemInit(void)
     //Codec_ElecSwitch_RecordMode();
 #endif
 
+#if (PRODUCT_UI==UI_WELDING)
+	if (g_bStandby)
+#endif
     SystemClearStatus(SYS_STATUS_INIT);
     mpDebugPrint("System init ok\r\n");
 
@@ -1466,8 +1488,19 @@ static SWORD XpgInit(BYTE driveId, DWORD dwXPGTag)
         //xpgInitThumbBuffer(THUMB_COUNT, THUMB_WIDTH * THUMB_HEIGHT * 2);
         //g_pDrawIconBuffer = xpgMalloc(ICON_BUFFER_SIZE);	// alloc buffer for Icon Capture screen
 
-        //if (xpgSearchAndGotoPage("Logo")!=NULL)
-        if (xpgPreactionAndGotoPage("Main")!=NULL)
+#if (PRODUCT_UI==UI_WELDING)
+		SWORD swRet;
+		STXPGPAGE *pstPage;
+
+		if (g_bStandby)
+		{
+				pstPage=xpgPreactionAndGotoPage("Charge");
+		}
+		else
+		{
+			pstPage=xpgPreactionAndGotoPage("Logo");
+		}
+        if (pstPage!=NULL)
         {
 			xpgUpdateStage();
         }
@@ -1475,7 +1508,17 @@ static SWORD XpgInit(BYTE driveId, DWORD dwXPGTag)
 		{
 			mpClearWin(Idu_GetCurrWin());
 		}
-
+#else
+        if (xpgPreactionAndGotoPage("Logo")!=NULL)
+        //if (xpgPreactionAndGotoPage("Main")!=NULL)
+        {
+			xpgUpdateStage();
+        }
+		else
+		{
+			mpClearWin(Idu_GetCurrWin());
+		}
+#endif
         MP_DEBUG("UI initialize OK 1!!\r\n");
         return 0;
     }

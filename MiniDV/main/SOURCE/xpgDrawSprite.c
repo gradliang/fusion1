@@ -727,6 +727,35 @@ SWORD xpgDrawSprite_Background(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprit
         if (pCacheWin != NULL && pCacheWin->pdwStart != NULL)
             mpCopyEqualWin(pWin, pCacheWin);
     }
+    else if (dwHashKey == xpgHash("Logo"))
+    {
+		extern BYTE g_bLogoMix;
+		
+		mmcp_memset_u32((BYTE *)pWin->pdwStart,0x00008080, pWin->dwOffset*pWin->wHeight);
+		xpgRoleMixOnWin(pWin,pstSprite->m_pstRole, pstSprite->m_wPx, pstSprite->m_wPy,g_bLogoMix);
+		//xpgDirectDrawRoleOnWin(pWin, pstSprite->m_pstRole, pstSprite->m_wPx, pstSprite->m_wPy, NULL, 0);
+    }
+    else if (dwHashKey == xpgHash("Charge"))
+    {
+		extern BYTE g_bInCharge,g_bBatteryQuantity;
+		if ( pstSprite->m_dwTypeIndex==100)
+		{
+			mmcp_memset_u32((BYTE *)pWin->pdwStart,0x00008080, pWin->dwOffset*pWin->wHeight);
+			 xpgDrawSprite(pWin, pstSprite, boClip);
+		}
+		else if (g_bInCharge)
+		{
+			if (pstSprite->m_dwTypeIndex<=g_bBatteryQuantity/20)
+				mpPaintWinArea(pWin,  pstSprite->m_wPx, pstSprite->m_wPy,  ALIGN_CUT_2(pstSprite->m_wWidth), pstSprite->m_wHeight, RGB2YUV(0xff,0xd8,0));
+		}
+		else
+		{
+			if (g_bBatteryQuantity<20 && pstSprite->m_dwTypeIndex==0)
+				mpPaintWinArea(pWin,  pstSprite->m_wPx, pstSprite->m_wPy,  ALIGN_CUT_2(pstSprite->m_wWidth), pstSprite->m_wHeight, RGB2YUV(0xff,0,0));
+			else if (pstSprite->m_dwTypeIndex<=g_bBatteryQuantity/20)
+				mpPaintWinArea(pWin,  pstSprite->m_wPx, pstSprite->m_wPy,  ALIGN_CUT_2(pstSprite->m_wWidth), pstSprite->m_wHeight, RGB2YUV(0,0xff,0x29));
+		}
+    }
     else
         xpgDrawSprite(pWin, pstSprite, boClip);
     return PASS;

@@ -36,6 +36,7 @@
 #include "xpgString.h"
 #include "charset.h"
 #include "peripheral.h"
+#include "xpgProcSensorData.h"
 
 #if ((CHIP_VER_MSB == CHIP_VER_650) || (CHIP_VER_MSB == CHIP_VER_660))
 #define memset          mmcp_memset
@@ -1252,17 +1253,13 @@ void Timer_FirstEnterCamPreview()
 
 #endif //#if (SENSOR_ENABLE == ENABLE)
 
-//>------------TOUCH UI FUNCION-----------------------
-//power
-void SendCmdPowerOff()
-{
-	BYTE bTxData[8];
+//>------------UI CODE FUNCION-----------------------
 
-	bTxData[0]=0x98;
-	bTxData[1]=3+1;
-	bTxData[2]=0;
-	TSPI_PacketSend(bTxData,0);
-}
+
+//<------------UI CODE FUNCION-----------------------
+
+
+//>------------TOUCH UI FUNCION-----------------------
 
 void xpgCb_AutoPowerOff(BYTE bEnable,DWORD dwTime)
 {
@@ -1276,17 +1273,6 @@ void xpgCb_AutoPowerOff(BYTE bEnable,DWORD dwTime)
 		Ui_TimerProcRemove(SendCmdPowerOff);
 	}
 }
-//--≤È—Ø÷∏¡Ó
-SWORD SendCmdA4GetStaus(BYTE bCmd)
-{
-	BYTE bTxData[8];
-
-	bTxData[0]=0xa4;
-	bTxData[1]=3+1;
-	bTxData[2]=bCmd;
-	return TSPI_PacketSend(bTxData,0);
-}
-
 
 //<------------TOUCH UI FUNCION-----------------------
 

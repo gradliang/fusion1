@@ -191,7 +191,7 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
         }
         else if (dwIconId == 6) 
         {
-		    SendCmdA4GetStaus(0x09);
+		    TspiSendCmdPolling0xA4(0x09);
             xpgPreactionAndGotoPage("RedLight");
             xpgUpdateStage();
         }
@@ -479,7 +479,7 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
     {
         if (dwIconId == 0)
         {
-			SendCmdA4GetStaus(0x09);
+			TspiSendCmdPolling0xA4(0x09);
             xpgPreactionAndGotoPage("RedLight");
             xpgUpdateStage();
         }

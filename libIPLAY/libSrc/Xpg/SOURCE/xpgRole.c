@@ -65,13 +65,13 @@ void xpgRolePreload(STXPGROLE * pstRole)
 	    //MP_ALERT("pstRole->m_pRawImage != NULL"); // log too often
 		return;
 	}
-
+#if XPG_ROLE_USE_CACHE
 	if (pstRole->m_wIndex == 0) 
     {
 		MP_DEBUG3("malloc role %d, w%d h%d null", pstRole->m_wIndex, pstRole->m_wWidth, pstRole->m_wHeight);
 		return;
 	}
-
+#endif		
 	dwSize = ALIGN_16(pstRole->m_wWidth) * ALIGN_16(pstRole->m_wHeight) * 2 + 256;
 
 	MP_DEBUG3("malloc role %d, w%d h%d ", pstRole->m_wIndex, pstRole->m_wWidth, pstRole->m_wHeight);
@@ -238,6 +238,71 @@ void xpgRoleDrawTransperant(STXPGROLE * pstRole, void *pTarget, DWORD px, DWORD 
 				cDst = ((cy0 & 0xff) << 24) | ((cy1 & 0xff) << 16) | ((cb & 0xff) << 8) | (cr & 0xff);
 				*(pdwScreenBuffer + j) = cDst;
 			}
+		}
+	}
+#if !XPG_ROLE_USE_CACHE
+	xpgRoleRelease(pstRole);
+#endif	
+}
+
+
+//--Role部分显示在WIN上
+//--bMix  0-128:0->pwin  128->role
+void xpgRoleMixOnWin(ST_IMGWIN * pWin, STXPGROLE * pstRole, DWORD px, DWORD py, BYTE bMix)
+{
+	register DWORD *pdwScreenBuffer =  pWin->pdwStart;
+	register DWORD *pdwSourceBuffer;
+	DWORD right, bottom;
+	register DWORD x, y, j, k;
+
+	if (!bMix)
+		return;
+	if (bMix>128)
+		bMix=128;
+	if (pstRole->m_pRawImage == NULL)
+	{
+		xpgRolePreload(pstRole);
+	}
+	pdwSourceBuffer = (DWORD *) pstRole->m_pRawImage;
+	if (pstRole->m_pRawImage == NULL || pdwScreenBuffer == NULL)
+	{
+		MP_DEBUG("xpgRoleMixOnWin null");
+		return;
+	}
+
+	if (px < 0)	px = 0;
+	if (py < 0)	py = 0;
+	if (px & 1)	px++;
+	if ((DWORD)pdwSourceBuffer & 3) {
+		MP_DEBUG("pdwSourceBuffer & 3");
+	}
+	if ((DWORD)pdwScreenBuffer & 3) {
+		MP_DEBUG("pdwScreenBuffer & 3");
+	}
+	right = px + pstRole->m_wWidth;
+	if (right > pWin->wWidth)
+		right = pWin->wWidth;
+
+	bottom = py + pstRole->m_wHeight;
+	if (bottom > pWin->wHeight)
+		bottom = pWin->wHeight;
+
+	register DWORD cy0, cy1, cb, cr;
+	register DWORD c, cDst;
+	for (y = py; y < bottom; y++) 
+	{
+		j = ((y * pWin->wWidth) >> 1) + (px >> 1);
+		k = (((y - py) * pstRole->m_wRawWidth) >> 1);
+		for (x = px; x < right; x += 2, j++, k++) 
+		{
+			c = *(pdwSourceBuffer + k);
+			cDst = *(pdwScreenBuffer + j);
+
+			cy0 = (YYCbCr_Y0(c)*bMix+YYCbCr_Y0(cDst)*(128-bMix))>>7;
+			cy1 = (YYCbCr_Y1(c)*bMix+YYCbCr_Y1(cDst)*(128-bMix))>>7;
+			cb = (YYCbCr_Cb(c)*bMix+YYCbCr_Cb(cDst)*(128-bMix))>>7;
+			cr = (YYCbCr_Cr(c)*bMix+YYCbCr_Cr(cDst)*(128-bMix))>>7;
+			*(pdwScreenBuffer + j) = ((cy0 & 0xff) << 24) | ((cy1 & 0xff) << 16) | ((cb & 0xff) << 8) | (cr & 0xff);
 		}
 	}
 #if !XPG_ROLE_USE_CACHE
