@@ -17,7 +17,6 @@ extern DWORD dwDialogTempValue;
 extern BOOL  boDialogValueIsFloat;
 extern char strEditPassword[8];
 extern char strEditValue[32];
-extern char * strDialogTitle;
 extern DWORD * pdwEditingFusionValue;
 extern BOOL isSelectOnlineOPM;
 
@@ -52,7 +51,7 @@ SWORD xpgDrawSprite_HomeStatus(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprit
 
 
 int popupDialog(int dialogType, char * backToPage);
-int exitDialog();
+void exitDialog();
 
 
 typedef struct _OPMDATAITEM{

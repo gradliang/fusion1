@@ -27,6 +27,7 @@
 #include "SPI_Ex.h"
 #include "Setup.h"
 #include "uiTouchCtrller.h"
+#include "xpgProcSensorData.h"
 
 #if ((CHIP_VER_MSB == CHIP_VER_650) || (CHIP_VER_MSB == CHIP_VER_660))
 #define memset          mmcp_memset
@@ -109,6 +110,7 @@ extern DWORD g_dwCurIndex,g_dwModeIconStatus;
 #if  (PRODUCT_UI==UI_SURFACE)
 extern DWORD g_dwPassNum,g_dwFailNum;
 #endif
+extern DWORD g_dwMachineErrorFlag,g_dwMachineErrorShow;
 
 static DWORD asideColor;
 //---------------------------------------------------------------------------
@@ -316,12 +318,17 @@ int popupDialog(int dialogType, char * backToPage)
         xpgAddDialogSprite(SPRITE_TYPE_ICON, 10, 0);
         xpgAddDialogSprite(SPRITE_TYPE_ICON, 11, 0);
     }
+    else if(dialogType == Dialog_MainPageError)
+    {
+        xpgAddDialogSprite(SPRITE_TYPE_DIALOG, 0, 0);
+        xpgAddDialogSprite(SPRITE_TYPE_CLOSE_ICON, 0, 0);
+    }
     
     xpgPreactionAndGotoPage(DIALOG_PAGE_NAME);
 #endif
 }
 
-int exitDialog()
+void exitDialog()
 {
     char backPage[32];
     char * pageName = xpgGetCurrDialogBackPage();
@@ -2832,6 +2839,16 @@ SWORD xpgDrawSprite_CloseIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite
             pstSprite->m_wPy = curDialogTop + 5;
             xpgDirectDrawRoleOnWin(pWin, g_pstXpgMovie->m_pstObjRole[XPG_ROLE_CLOSE_ICON], pstSprite->m_wPx, pstSprite->m_wPy, pstSprite, boClip);
         }
+        else if (dialogType == Dialog_MainPageError)
+        {
+			STXPGROLE stMaskRole;
+			pstSprite->m_wPx = 640-20;
+			pstSprite->m_wPy = 90+12;
+			pstRole=g_pstXpgMovie->m_pstObjRole[XPG_ROLE_CLOSE_ICON];
+			MakeMaskRole(&stMaskRole, XPG_ROLE_ICON_MASK_0, pstRole->m_wWidth, pstRole->m_wHeight);
+			xpgRoleDrawMask(pstRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, &stMaskRole);
+			//xpgDirectDrawRoleOnWin(pWin, g_pstXpgMovie->m_pstObjRole[XPG_ROLE_CLOSE_ICON], pstSprite->m_wPx, pstSprite->m_wPy, pstSprite, boClip);
+        }
         else
             return PASS;
         pstSprite->m_wWidth = 40;
@@ -4898,6 +4915,30 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
     return PASS;
 }
 
+void MakeDialogColorRole(STXPGROLE * pstRole, WORD width, WORD height,DWORD dwColor)
+{
+    DWORD dwSize;
+    ST_IMGWIN win;
+    
+    xpgRoleInit(pstRole);
+    pstRole->m_bBitDepth = 24;
+    pstRole->m_wIndex = 0;
+    pstRole->m_wWidth = ALIGN_2(width);
+    pstRole->m_wHeight = height;
+    if (pstRole->m_wHeight < 4)
+        pstRole->m_wHeight = 4;
+    
+    dwSize = ALIGN_16(pstRole->m_wWidth) * ALIGN_16(pstRole->m_wHeight) * 2 + 256;
+
+    pstRole->m_pRawImage = (BYTE *) ext_mem_malloc(dwSize);
+    pstRole->m_wRawWidth = pstRole->m_wWidth;
+
+	MP_ASSERT(pstRole->m_pRawImage != NULL);
+    MP_DEBUG4("malloc role %d, w%d h%d raw_w%d", pstRole->m_wIndex, pstRole->m_wWidth, pstRole->m_wHeight, pstRole->m_wRawWidth);
+
+    mpWinInit(&win, pstRole->m_pRawImage, pstRole->m_wHeight, pstRole->m_wWidth);
+    Idu_PaintWinArea(&win, 0, 0, win.wWidth, win.wHeight, dwColor);
+}
 
 void MakeDialogRoleNew(STXPGROLE * pstRole, WORD width, WORD height)
 {
@@ -5026,6 +5067,7 @@ SWORD xpgDrawSprite_Dialog(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
 {
     char *text = "";
     STXPGROLE  stRole, stMaskRole;
+	STXPGROLE *pstRole, *pstMask;
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
 
     xpgRoleInit(&stRole);
@@ -5202,6 +5244,22 @@ SWORD xpgDrawSprite_Dialog(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
             Idu_FontColorSet(0, 0, 0);
             Idu_PrintStringCenter(pWin, text, dailogX, dialogY + 10, 0, dialogW);
             Idu_FontColorSet(255, 255, 255);
+        }
+        else if (dialogId == Dialog_MainPageError)
+        {
+				dialogW = 560;//pstRole->m_wWidth;
+				dialogH = 300;//pstRole->m_wHeight;
+				dailogX = (pWin->wWidth - dialogW) / 2;
+				dialogY = (pWin->wHeight - dialogH) / 2;
+		       MakeDialogColorRole(&stRole, dialogW, dialogH,RGB2YUV(0xf9,0x59,0x5a));
+        		//MakeDialogRoleNew(&stRole, dialogW, dialogH);
+		        MakeMaskRole(&stMaskRole, XPG_ROLE_ICON_MASK_0, dialogW, dialogH);
+		        xpgRoleDrawMask(&stRole, pWin->pdwStart, dailogX, dialogY, pWin->wWidth, pWin->wHeight, &stMaskRole);
+			 	pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_MAIN_ERROR_BG];
+				xpgDirectDrawRoleOnWin(pWin, pstRole,dailogX+(dialogW-pstRole->m_wWidth)/2, dialogY+40, NULL, boClip);
+				SetCurrIduFontID(FONT_ID_HeiTi19);
+				if (g_dwMachineErrorFlag&g_dwMachineErrorShow&MACHINE_ERROR_SENSOR)
+					Idu_PrintStringCenter(pWin, getstr(Str_SheXiangTouGuZhang), dailogX, dialogY + dialogH/2+10, 0, dialogW);
         }
     }
     else if (dwHashKey == xpgHash("User"))

@@ -210,6 +210,10 @@ enum xpgStringId {
 	Str_RongJieZongCiShu2,			//   200
 	Str_OPM_YunDuanOPM,             //   201
 	Str_KeShiHuaHongGuangYuan,      //   202
+	Str_SheXiangTouGuZhang,      //   203
+	Str_DianQiBangGuZhang,      //   204
+	Str_ShuRuKaiJiMiMa,      //   205
+	Str_ShuRuZhuJieMiMa,      //   206
 	
 	
 	Str_MAX_ID,

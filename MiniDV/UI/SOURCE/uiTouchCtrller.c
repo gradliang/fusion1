@@ -1406,6 +1406,10 @@ SWORD touchSprite_CloseIcon(STXPGSPRITE * sprite, WORD x, WORD y)
         {
             exitDialog();
         }
+        else if (dialogOnClose != NULL)
+        {
+                dialogOnClose();
+        }
     }
     return 0;
 }

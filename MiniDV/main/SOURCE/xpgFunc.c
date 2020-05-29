@@ -74,6 +74,8 @@ ST_IMGWIN g_stVolWin;
 #if  (PRODUCT_UI==UI_SURFACE)
 DWORD g_dwPassNum = 0,g_dwFailNum=0;
 #endif
+extern DWORD g_dwMachineErrorFlag,g_dwMachineErrorShow;
+
 //---------------------------------------------------------------------------
 // For xpg call main functions
 //---------------------------------------------------------------------------
@@ -953,8 +955,8 @@ void xpgCb_PressExitKey()
 
 STXPGPAGE *xpgPreactionAndGotoPage(const char *name)
 {
-    STXPGPAGE *pstPage = xpgMovieSearchPage(name);
 	DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
+    STXPGPAGE *pstPage = xpgMovieSearchPage(name);
 
     if (pstPage == NULL)
     {
@@ -971,6 +973,8 @@ STXPGPAGE *xpgPreactionAndGotoPage(const char *name)
 #if  (PRODUCT_UI==UI_WELDING)
 	if (dwHashKey == xpgHash("Auto_work") || dwHashKey == xpgHash("Manual_work"))
 		xpgCb_StopAllSensorWork();
+	if (dwHashKey == xpgHash("Main"))
+		Ui_TimerProcRemove(xpgCb_EnterCamcoderPreview);
 #endif
 
 	//mpDebugPrint("---------xpgPreactionAndGotoPage :%s-> %d",name,pstPage->m_wIndex);
@@ -979,6 +983,10 @@ STXPGPAGE *xpgPreactionAndGotoPage(const char *name)
         MP_ALERT("xpgPreactionAndGotoPage : xpgGotoPage() failed !");
         return NULL;
     }
+#if  (PRODUCT_UI==UI_WELDING)
+	if (g_pstXpgMovie->m_pstCurPage->m_dwHashKey == xpgHash("Main"))
+		AddAutoEnterPreview();
+#endif
 
     return pstPage;
 }
@@ -1254,7 +1262,30 @@ void Timer_FirstEnterCamPreview()
 #endif //#if (SENSOR_ENABLE == ENABLE)
 
 //>------------UI CODE FUNCION-----------------------
+void uiCb_ExitMainPagePopdialog(void)
+{
+	g_dwMachineErrorShow=0;
+	exitDialog();
+}
+void uiCb_CheckPopDialogAfterUpdatestage(void)
+{
+	if (g_pstXpgMovie->m_pstCurPage->m_dwHashKey == xpgHash("Main"))
+	{
+		if (g_dwMachineErrorFlag&g_dwMachineErrorShow)
+		{
+            DrakWin(Idu_GetCurrWin(), 2, 1);
+            //strDialogTitle = NULL;
+            dialogOnClose = uiCb_ExitMainPagePopdialog;
+            popupDialog(Dialog_MainPageError, "Main");
+            xpgUpdateStage();
+		}
+	}
+}
 
+void Timer_CheckPopDialogAfterUpdatestage(void)
+{
+	Ui_TimerProcAdd(10, uiCb_CheckPopDialogAfterUpdatestage);
+}
 
 //<------------UI CODE FUNCION-----------------------
 

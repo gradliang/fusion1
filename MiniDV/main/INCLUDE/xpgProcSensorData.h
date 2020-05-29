@@ -186,6 +186,12 @@ typedef struct {
 #define	FEBER_POS1																150//4 --去灰尘
 #define	FEBER_POS2																38 //4 --熔接起始位置
 
+//----UI
+//--g_dwMachineErrorFlag g_dwMachineErrorShow
+#define	MACHINE_ERROR_SENSOR										BIT0
+
+
+
 SWORD TspiSendCmdPolling0xA4(BYTE bCmd);
 SWORD  TspiSendSimpleInfo0xAF(BYTE bInfo);
 void SendCmdPowerOff();

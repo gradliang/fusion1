@@ -785,6 +785,9 @@
 #define XPG_ROLE_STATUS_ICON_CLOUD_OFF      79
 #define XPG_ROLE_STATUS_ICON_AUTO_OFF       80
 #define XPG_ROLE_STATUS_ICON_SMART_BL       81
+#define XPG_ROLE_MAIN_ERROR_BG       					82
+
+
 
 
 #define SPRITE_TYPE_HILIGHTFRAME            5
@@ -825,6 +828,7 @@
 #define Dialog_Times                        17          // 电极棒信息
 #define Dialog_TempInfo                     18          // 温度信息
 #define Dialog_BatInfo                      19          // 电池信息
+#define Dialog_MainPageError                      20          //4 主界面出现的错误提示框
 
 
 

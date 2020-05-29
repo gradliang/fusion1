@@ -665,9 +665,12 @@ int xpgAddDialog(int dialogId, char * backToPage, ST_IMGWIN* backupWin)
 		pCacheWin->pdwStart = NULL;
     }
 
-	ImgWinInit(pCacheWin, NULL, backupWin->wHeight, backupWin->wWidth);
-	pCacheWin->pdwStart = ext_mem_malloc(backupWin->wWidth * backupWin->wHeight * 2);
-	mpCopyEqualWin(pCacheWin, backupWin);
+	if (backupWin !=NULL && backupWin->pdwStart !=NULL)
+	{
+		ImgWinInit(pCacheWin, NULL, backupWin->wHeight, backupWin->wWidth);
+		pCacheWin->pdwStart = ext_mem_malloc(backupWin->wWidth * backupWin->wHeight * 2);
+		mpCopyEqualWin(pCacheWin, backupWin);
+	}
 	
     dialogCount++;
     mpDebugPrint("xpgAddDialog OK, index = %d", curDialogIndex);

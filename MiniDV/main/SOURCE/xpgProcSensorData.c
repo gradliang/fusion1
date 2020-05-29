@@ -77,6 +77,7 @@ BYTE Sensor_GetPicMode(void)
 
 BYTE g_bInCharge=0,g_bBatteryQuantity=60,g_bStandby=0,g_bLowPower=0,g_bLogoMix=0;
 SBYTE g_sbLogoStep=4;
+DWORD g_dwMachineErrorFlag=0,g_dwMachineErrorShow=0;
 
 #if 1 //OPM
 //实时申请,前一个SEG为HEAD，HEAD内每个DWORD为有效SEG数
@@ -8327,6 +8328,13 @@ void uiCb_CheckBattery(void)
 			if (g_bBatteryQuantity<=100 && g_bLogoMix==128)
 			{
 				SystemClearStatus(SYS_STATUS_INIT);
+				//--check sensor
+				if (sensor_NT99140_CheckID()!=PASS)
+				{
+					g_dwMachineErrorFlag|=MACHINE_ERROR_SENSOR;
+					g_dwMachineErrorShow|=MACHINE_ERROR_SENSOR;
+				}
+				//--goto main page
 				xpgPreactionAndGotoPage("Main");
 				xpgUpdateStage();
 				Timer_FirstEnterCamPreview();

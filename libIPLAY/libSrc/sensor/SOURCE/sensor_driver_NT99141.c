@@ -475,6 +475,37 @@ static BYTE sensor_nt99140_readRegister(WORD addr)
 
 #endif
 
+SWORD sensor_NT99140_CheckID(void)
+{
+	WORD wID;
+	BYTE bChanel=Sensor_CurChannel_Get();
+
+	Sensor_ChangeIO_Init();
+	Sensor_Channel_Set(0); //->g_bDisplayMode=0x81; down sensor near to panel connect
+	Local_Sensor_GPIO_Reset();
+	//Drive_Sensor_NT99140();
+	wID=sensor_nt99140_readRegister(0x3000);
+	wID<<=8;
+	wID|=sensor_nt99140_readRegister(0x3001);
+    MP_DEBUG("sensor_NT99140_CheckID %d:%p",Sensor_CurChannel_Get(),wID);
+	wID>>=4;
+	if (wID !=0x141)
+		return FAIL;
+	Sensor_Channel_Set(1); //->g_bDisplayMode=0x81; down sensor near to panel connect
+	IODelay(100);
+	Local_Sensor_GPIO_Reset();
+	//Drive_Sensor_NT99140();
+	wID=sensor_nt99140_readRegister(0x3000);
+	wID<<=8;
+	wID|=sensor_nt99140_readRegister(0x3001);
+    MP_DEBUG("sensor_NT99140_CheckID %d:%p",Sensor_CurChannel_Get(),wID);
+	wID>>=4;
+	Sensor_Channel_Set(bChanel);
+	if (wID !=0x141)
+		return FAIL;
+	return PASS;
+}
+
 
 extern BYTE sensor_mode;
 extern BYTE sensor_IMGSIZE_ID;

@@ -44,6 +44,11 @@ extern BOOL  g_boSaveFileToSPI;
 
 extern DWORD g_dwCurIndex;
 
+extern char * strDialogTitle;
+extern void (*dialogOnClose)();
+extern void exitDialog();
+
+
 void xpgCb_NullFunc(void);
 
 //Main Menu
@@ -182,6 +187,7 @@ void DrakWin(ST_IMGWIN* pWin, DWORD largeNum, DWORD smallNum);
 STXPGPAGE *xpgPreactionAndGotoPage(const char *name);
 
 void xpgCb_AutoPowerOff(BYTE bEnable,DWORD dwTime);
+void xpgCb_EnterCamcoderPreview();
 
 
 #endif

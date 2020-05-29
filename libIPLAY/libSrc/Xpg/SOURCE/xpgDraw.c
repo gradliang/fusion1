@@ -259,8 +259,10 @@ void xpgUpdateStage()
 			ShowItemIndex();
     }
 #endif
-        
+
     MP_DEBUG("%s() exit, g_bXpgStatus = %u", __FUNCTION__, g_bXpgStatus);
+	Timer_CheckPopDialogAfterUpdatestage();
+
 }
 
 //---------------------------------------------------------------------------
