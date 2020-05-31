@@ -248,7 +248,7 @@ void Sensor_Channel_Swap(void)
 #endif
 
 
-static void Sensor_Pin_Set(void)
+void Sensor_Pin_Set(void)
 {
     register GPIO *gpio = (GPIO *) (GPIO_BASE);
 
@@ -281,7 +281,7 @@ static void Sensor_Pin_Set(void)
 
 }
 
-static void Local_HW_MCLK_Set(void)
+void Local_HW_MCLK_Set(void)
 {
     CLOCK *clock = (CLOCK *)CLOCK_BASE;
 
@@ -877,7 +877,7 @@ static void Local_HW_Set(void)
     ipu->Ipu_reg_100 |= BIT9;//Vsync pos=1    is ok too
     //ipu->Ipu_reg_100 &= ~BIT9;//VsRefPos :Vertical sync reference point: 0=falling edge; 1=rising edge;
 
-    clock->MdClken |= BIT10;//enable mclk
+    //clock->MdClken |= BIT10;//enable mclk
     //**********************
     //SenInCKS(PCLK,pixel clock form sensor)
     /* Clkss2 bit 15-18 sensor in clock select

@@ -8329,11 +8329,13 @@ void uiCb_CheckBattery(void)
 			{
 				SystemClearStatus(SYS_STATUS_INIT);
 				//--check sensor
+				#if 1
 				if (sensor_NT99140_CheckID()!=PASS)
 				{
 					g_dwMachineErrorFlag|=MACHINE_ERROR_SENSOR;
 					g_dwMachineErrorShow|=MACHINE_ERROR_SENSOR;
 				}
+				#endif
 				//--goto main page
 				xpgPreactionAndGotoPage("Main");
 				xpgUpdateStage();

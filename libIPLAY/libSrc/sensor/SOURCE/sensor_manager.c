@@ -374,13 +374,13 @@ DWORD API_SensorUsbUsedBufNum(void)
 
 void API_SensorUsb_EnableShareBuf(void)
 {
-mpDebugPrint("%s", __func__);
+//mpDebugPrint("%s", __func__);
 	SensorUsb_Use = 1;
 }
 
 void API_SensorUsb_DisableShareBuf(void)
 {
-mpDebugPrint("%s", __func__);
+//mpDebugPrint("%s", __func__);
 	SensorUsb_Use = 0;
 }
 

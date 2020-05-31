@@ -785,7 +785,8 @@
 #define XPG_ROLE_STATUS_ICON_CLOUD_OFF      79
 #define XPG_ROLE_STATUS_ICON_AUTO_OFF       80
 #define XPG_ROLE_STATUS_ICON_SMART_BL       81
-#define XPG_ROLE_MAIN_ERROR_BG       					82
+#define XPG_ROLE_MAIN_ERROR_ICON       					82
+#define XPG_ROLE_CLOSE_ICON_NEW_MASK       		83
 
 
 

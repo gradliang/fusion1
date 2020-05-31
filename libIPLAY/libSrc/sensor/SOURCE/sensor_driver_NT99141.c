@@ -13,7 +13,7 @@
 #if ((SENSOR_ENABLE == ENABLE) && defined(SENSOR_TYPE_NT99141))
 #if 1       // Software I2C
 
-#define SENSOR_NT99140_DEVICE_ADDRESS   (0x54>>1)
+#define SENSOR_NT99140_DEVICE_ADDRESS   (0x54)
 #define IIC_FLAG_NO_ACK     1
 #define IIC_FLAG_ACK        2
 #define IIC_FLAG_START      3
@@ -24,7 +24,7 @@
 #define WAIT_TIME_WAIT_ACK  50
 
 //--------------------------------------------------------
-static BYTE ACK1=1, ACK2=1, ACK3=1, ACK4=1;
+//static BYTE ACK1=1, ACK2=1, ACK3=1, ACK4=1;
 
 //////////////////////////////////////////
 // software simulate i2c base
@@ -396,7 +396,8 @@ static BYTE SW_sensor_nt99140_IIC_GetValue_NoStop()     // get value, but no sto
         data <<= 1;
         //sensor_nt99140_i2c_clk_low();
         sensor_nt99140_i2c_clk_high();
-        data |= __sensor_nt99140_i2c_read_data();
+		if ( __sensor_nt99140_i2c_read_data())
+        	data |= 0x01;
         sensor_nt99140_i2c_clk_low();
     }
     // ACK
@@ -425,7 +426,8 @@ static BYTE SW_sensor_nt99140_IIC_GetValue()
         data <<= 1;        
        // sensor_nt99140_i2c_clk_low();
         sensor_nt99140_i2c_clk_high();
-        data |= __sensor_nt99140_i2c_read_data();
+		if ( __sensor_nt99140_i2c_read_data())
+        	data |= 0x01;
         sensor_nt99140_i2c_clk_low();       
     }
     // ACK
@@ -451,8 +453,10 @@ static BYTE SW_sensor_nt99140_IIC_GetValue()
 
 static BYTE sensor_nt99140_setRegister(WORD addr, BYTE data)
 {
+    BYTE ACK1,ACK2,ACK3,ACK4;
+
     //SemaphoreWait(SW_I2C_SEMA_ID);
-    ACK1 = SW_sensor_nt99140_IIC_SetValue(SENSOR_NT99140_DEVICE_ADDRESS<<1, IIC_FLAG_START); 
+    ACK1 = SW_sensor_nt99140_IIC_SetValue(SENSOR_NT99140_DEVICE_ADDRESS, IIC_FLAG_START); 
     ACK2 = SW_sensor_nt99140_IIC_SetValue((addr>>8)&0xff, IIC_FLAG_IGNORE);
     ACK3 = SW_sensor_nt99140_IIC_SetValue(addr&0xff, IIC_FLAG_IGNORE);
     ACK4 = SW_sensor_nt99140_IIC_SetValue(data, IIC_FLAG_STOP);
@@ -461,16 +465,17 @@ static BYTE sensor_nt99140_setRegister(WORD addr, BYTE data)
 
 static BYTE sensor_nt99140_readRegister(WORD addr)
 {
-    BYTE value1 = 0;
+    BYTE value= 0,ACK1,ACK2,ACK3,ACK4;
     //SemaphoreWait(SW_I2C_SEMA_ID);
-    ACK1 = SW_sensor_nt99140_IIC_SetValue(SENSOR_NT99140_DEVICE_ADDRESS<<1, IIC_FLAG_START);
+    ACK1 = SW_sensor_nt99140_IIC_SetValue(SENSOR_NT99140_DEVICE_ADDRESS, IIC_FLAG_START);
     ACK2 = SW_sensor_nt99140_IIC_SetValue((addr>>8)&0xff, IIC_FLAG_IGNORE);
-    ACK2 = SW_sensor_nt99140_IIC_SetValue(addr&0xff, IIC_FLAG_IGNORE);
-    __sensor_nt99140_i2c_data_high();
-    ACK3 = SW_sensor_nt99140_IIC_SetValue((SENSOR_NT99140_DEVICE_ADDRESS<<1) | 0x01, IIC_FLAG_START);
-    value1 = SW_sensor_nt99140_IIC_GetValue();
+    ACK3 = SW_sensor_nt99140_IIC_SetValue(addr&0xff, IIC_FLAG_STOP);
+  //  __sensor_nt99140_i2c_data_high();
+    ACK4 = SW_sensor_nt99140_IIC_SetValue(SENSOR_NT99140_DEVICE_ADDRESS | 0x01, IIC_FLAG_START);
+    value = SW_sensor_nt99140_IIC_GetValue();
+    //MP_DEBUG("ACK %p %p %p %p",ACK1,ACK2,ACK3,value);
     //SemaphoreRelease(SW_I2C_SEMA_ID);
-    return value1;
+    return value;
 }
 
 #endif
@@ -479,15 +484,20 @@ SWORD sensor_NT99140_CheckID(void)
 {
 	WORD wID;
 	BYTE bChanel=Sensor_CurChannel_Get();
+    CLOCK *clock = (CLOCK *)CLOCK_BASE;
 
+	//Global_Sensor_Initial_NT99140();
+    Local_HW_MCLK_Set();
+    Sensor_Pin_Set();
+    clock->Clkss2 &=~(BIT15|BIT16|BIT17|BIT18);
+    clock->MdClken |= 0x00000c00 ;  //enable clock to sensor and clock for sensor_in
 	Sensor_ChangeIO_Init();
 	Sensor_Channel_Set(0); //->g_bDisplayMode=0x81; down sensor near to panel connect
 	Local_Sensor_GPIO_Reset();
-	//Drive_Sensor_NT99140();
 	wID=sensor_nt99140_readRegister(0x3000);
 	wID<<=8;
 	wID|=sensor_nt99140_readRegister(0x3001);
-    MP_DEBUG("sensor_NT99140_CheckID %d:%p",Sensor_CurChannel_Get(),wID);
+    //MP_DEBUG("sensor_NT99140_CheckID %d:%p",Sensor_CurChannel_Get(),wID);
 	wID>>=4;
 	if (wID !=0x141)
 		return FAIL;

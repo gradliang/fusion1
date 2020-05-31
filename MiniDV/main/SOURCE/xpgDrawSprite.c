@@ -2845,9 +2845,8 @@ SWORD xpgDrawSprite_CloseIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite
 			pstSprite->m_wPx = 640-20;
 			pstSprite->m_wPy = 90+12;
 			pstRole=g_pstXpgMovie->m_pstObjRole[XPG_ROLE_CLOSE_ICON];
-			MakeMaskRole(&stMaskRole, XPG_ROLE_ICON_MASK_0, pstRole->m_wWidth, pstRole->m_wHeight);
-			xpgRoleDrawMask(pstRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, &stMaskRole);
-			//xpgDirectDrawRoleOnWin(pWin, g_pstXpgMovie->m_pstObjRole[XPG_ROLE_CLOSE_ICON], pstSprite->m_wPx, pstSprite->m_wPy, pstSprite, boClip);
+			pstMask = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_CLOSE_ICON_NEW_MASK];
+			xpgRoleDrawMask(pstRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, pstMask);
         }
         else
             return PASS;
@@ -5039,8 +5038,8 @@ void MakeMaskRole(STXPGROLE * pstMaskRole, int maskRoleIndex, WORD width, WORD h
     if (width % 2)
         width ++;
     
-    pdwStart2 = (DWORD*) ext_mem_malloc(width * height * 2);
-    mpWinInit(&win2, pdwStart2, height, width);
+    pdwStart2 = (DWORD*) ext_mem_malloc(ALIGN_16(width) * height * 2);
+    mpWinInit(&win2, pdwStart2, height, ALIGN_16(width));
     pWin2 = &win2;
     mpPaintWin(pWin2, 0xffff8080);
 
@@ -5255,7 +5254,7 @@ SWORD xpgDrawSprite_Dialog(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
         		//MakeDialogRoleNew(&stRole, dialogW, dialogH);
 		        MakeMaskRole(&stMaskRole, XPG_ROLE_ICON_MASK_0, dialogW, dialogH);
 		        xpgRoleDrawMask(&stRole, pWin->pdwStart, dailogX, dialogY, pWin->wWidth, pWin->wHeight, &stMaskRole);
-			 	pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_MAIN_ERROR_BG];
+			 	pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_MAIN_ERROR_ICON];
 				xpgDirectDrawRoleOnWin(pWin, pstRole,dailogX+(dialogW-pstRole->m_wWidth)/2, dialogY+40, NULL, boClip);
 				SetCurrIduFontID(FONT_ID_HeiTi19);
 				if (g_dwMachineErrorFlag&g_dwMachineErrorShow&MACHINE_ERROR_SENSOR)
