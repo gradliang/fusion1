@@ -190,6 +190,7 @@ typedef struct {
 //--g_dwMachineErrorFlag g_dwMachineErrorShow
 #define	MACHINE_ERROR_SENSOR										BIT0
 
+extern DWORD g_dwMachineErrorFlag,g_dwMachineErrorShow;
 
 
 SWORD TspiSendCmdPolling0xA4(BYTE bCmd);

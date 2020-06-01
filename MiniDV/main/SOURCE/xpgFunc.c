@@ -36,6 +36,7 @@
 #include "xpgString.h"
 #include "charset.h"
 #include "peripheral.h"
+#include "xpgDrawSprite.h"
 #include "xpgProcSensorData.h"
 
 #if ((CHIP_VER_MSB == CHIP_VER_650) || (CHIP_VER_MSB == CHIP_VER_660))
@@ -74,7 +75,7 @@ ST_IMGWIN g_stVolWin;
 #if  (PRODUCT_UI==UI_SURFACE)
 DWORD g_dwPassNum = 0,g_dwFailNum=0;
 #endif
-extern DWORD g_dwMachineErrorFlag,g_dwMachineErrorShow;
+BYTE g_bPowerOnCheckPassword=2;
 
 //---------------------------------------------------------------------------
 // For xpg call main functions
@@ -1262,11 +1263,56 @@ void Timer_FirstEnterCamPreview()
 #endif //#if (SENSOR_ENABLE == ENABLE)
 
 //>------------UI CODE FUNCION-----------------------
-void uiCb_ExitMainPagePopdialog(void)
+void DialogCb_ExitMainPagePopError(void)
 {
 	g_dwMachineErrorShow=0;
 	exitDialog();
 }
+void DialogCb_ExitMainPagePopHireWord(void)
+{
+	 if (0 == strcmp(g_psSetupMenu->strHirePassword, strEditPassword))
+	 {
+			g_bPowerOnCheckPassword=0;
+			exitDialog();
+	 }
+	 else if (g_bPowerOnCheckPassword)
+	 {
+			g_bPowerOnCheckPassword--;
+			memset(strEditPassword, 0, sizeof(strEditPassword));
+			xpgUpdateStage();
+	 }
+	 else
+	 {
+	 	//SendCmdPowerOff();
+			strDialogTitle = getstr(Str_Note);
+			dialogOnClose = exitDialog;
+			popupDialog(Dialog_Note_ForgetHirePassword, DIALOG_PAGE_NAME,Idu_GetCacheWin());
+			xpgUpdateStage();
+	 }
+}
+void DialogCb_ExitMainPagePopOpenWord(void)
+{
+	 if (0 == strcmp(g_psSetupMenu->srtOpenPassword, strEditPassword))
+	 {
+			g_bPowerOnCheckPassword=0;
+			exitDialog();
+	 }
+	 else if (g_bPowerOnCheckPassword)
+	 {
+			g_bPowerOnCheckPassword--;
+			memset(strEditPassword, 0, sizeof(strEditPassword));
+			xpgUpdateStage();
+	 }
+	 else
+	 {
+	 	//SendCmdPowerOff();
+			strDialogTitle = getstr(Str_Note);
+			dialogOnClose = exitDialog;
+			popupDialog(Dialog_Note_ForgetOpenPassword, DIALOG_PAGE_NAME,Idu_GetCacheWin());
+			xpgUpdateStage();
+	 }
+}
+
 void uiCb_CheckPopDialogAfterUpdatestage(void)
 {
 	if (g_pstXpgMovie->m_pstCurPage->m_dwHashKey == xpgHash("Main"))
@@ -1275,9 +1321,34 @@ void uiCb_CheckPopDialogAfterUpdatestage(void)
 		{
             DrakWin(Idu_GetCurrWin(), 2, 1);
             //strDialogTitle = NULL;
-            dialogOnClose = uiCb_ExitMainPagePopdialog;
-            popupDialog(Dialog_MainPageError, "Main");
+            dialogOnClose = DialogCb_ExitMainPagePopError;
+            popupDialog(Dialog_MainPageError, "Main",Idu_GetCurrWin());
             xpgUpdateStage();
+		}
+		else if (g_bPowerOnCheckPassword&&(g_psSetupMenu->bEnableHirePassword||g_psSetupMenu->bEnableOpenPassword))
+		{
+			Idu_GetCacheWin_WithInit();
+			DrakWin(Idu_GetCurrWin(), 2, 1);
+			mpCopyEqualWin(Idu_GetCacheWin(), Idu_GetCurrWin());
+			memset(strEditPassword, 0, sizeof(strEditPassword));
+			if (g_psSetupMenu->bEnableHirePassword)
+			{
+				strDialogTitle = getstr(Str_ShuRuZhuJieMiMa);
+				dialogOnClose = DialogCb_ExitMainPagePopHireWord;
+				popupDialog(Dialog_PowerOnCheckHirePassword, "Main",Idu_GetCacheWin());
+			}
+			else
+			{
+				strDialogTitle = getstr(Str_ShuRuKaiJiMiMa);
+				dialogOnClose = DialogCb_ExitMainPagePopOpenWord;
+				popupDialog(Dialog_PowerOnCheckOpenPassword, "Main",Idu_GetCacheWin());
+			}
+			xpgUpdateStage();
+		}
+		else
+		{
+			g_dwMachineErrorShow=0;
+			g_bPowerOnCheckPassword=0;
 		}
 	}
 }

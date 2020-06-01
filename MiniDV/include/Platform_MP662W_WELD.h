@@ -830,7 +830,10 @@
 #define Dialog_TempInfo                     18          // 温度信息
 #define Dialog_BatInfo                      19          // 电池信息
 #define Dialog_MainPageError                      20          //4 主界面出现的错误提示框
-
+#define Dialog_PowerOnCheckHirePassword                      21          //4 开机确认租借密码
+#define Dialog_PowerOnCheckOpenPassword                      22          //4 开机确认开机密码
+#define Dialog_Note_ForgetHirePassword                      23          //4 忘记租借密码
+#define Dialog_Note_ForgetOpenPassword                      24          //4 忘记开机密码
 
 
 

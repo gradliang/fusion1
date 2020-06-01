@@ -394,7 +394,7 @@ WORD Idu_PrintStringWithSize(ST_IMGWIN * trgWin, BYTE * string, WORD startX, WOR
 	ST_FONT ft;
 
 	if (trgWin == NULL || trgWin->pdwStart == NULL || string == NULL)
-		return;
+		return 0;
 
 	ft.wX = startX;
 	ft.wY = startY;
@@ -429,6 +429,33 @@ WORD Idu_PrintStringWithSize(ST_IMGWIN * trgWin, BYTE * string, WORD startX, WOR
 
 }
 
+WORD Idu_GetStrPosByWidth(BYTE *string, BYTE UnicodeFlag,WORD wWidth)
+{
+    MP_DEBUG("%s", __func__);
+    //mpDebugPrint("%s: string = %s", __func__, string);
+    
+	ST_FONT ft;
+
+	if (string == NULL)
+		return 0;
+
+	ft.wX = 0;
+	ft.wY = 0;
+	ft.bTextGap = g_bImgTextGap;
+
+	DWORD dwFontColor = g_dwSystemFontColor;
+
+	ft.bFontColor = (dwFontColor >> 16) & 0xff;	//YYCbCr - Y
+	//mpDebugPrint("%s: dwFontColor = 0x%X, ft.bFontColor = 0x%X", __func__, dwFontColor, ft.bFontColor);
+	ft.bFontCb = (dwFontColor >> 8) & 0xff;
+	ft.bFontCr = dwFontColor & 0xff;
+	ft.wWidth = 0;
+	ft.wDisplayWidth = 0;
+	ft.bFontSize = 0;
+
+    return Font_GetStrPosByWidth(&ft, string, UnicodeFlag,wWidth);
+}
+
 WORD Idu_GetStringWidth(BYTE *string, BYTE UnicodeFlag)
 {
     MP_DEBUG("%s", __func__);
@@ -437,7 +464,7 @@ WORD Idu_GetStringWidth(BYTE *string, BYTE UnicodeFlag)
 	ST_FONT ft;
 
 	if (string == NULL)
-		return;
+		return 0;
 
 	ft.wX = 0;
 	ft.wY = 0;
@@ -463,6 +490,44 @@ WORD Idu_GetStringWidth(BYTE *string, BYTE UnicodeFlag)
 
     return ft.wX;
     
+}
+
+WORD Idu_PrintStringCenterNewLine(ST_IMGWIN * trgWin, BYTE * string, WORD startX, WORD startY, BYTE UnicodeFlag, WORD wWidth)
+{
+    WORD wStrWidth,wLen;
+    int newX,pos=0,pos1;
+	BYTE *pbBuffer=NULL,*pbStr=string;
+	
+    if (wWidth <= 8)
+        return Idu_PrintString(trgWin, string, startX, startY, UnicodeFlag, 0);
+	wWidth-=8;
+	startX+=4;
+	pos=0;
+	pbBuffer = (BYTE *) ext_mem_malloc((Str_Length(string,UnicodeFlag)+4)<<1);
+	while (1)
+	{
+		wLen=Str_Length(&pbStr[pos],UnicodeFlag);
+		if (wLen<=0)
+			break;
+		pos1 = Idu_GetStrPosByWidth(&pbStr[pos], UnicodeFlag,wWidth);
+		if (pos1<=0)
+			break;
+		memcpy(pbBuffer,&pbStr[pos],pos1);
+		pbBuffer[pos1]=0;
+		pbBuffer[pos1+1]=0;
+	    wStrWidth = Idu_GetStringWidth(pbBuffer, UnicodeFlag);
+		newX = startX + (wWidth - wStrWidth)/2;
+		if (newX < 0)
+			newX = 0;
+		Idu_PrintString(trgWin, pbBuffer, (WORD)newX, startY, UnicodeFlag, wWidth);
+		if (wLen<=pos1)
+			break;
+		pos+=pos1;
+		startY+=IduFontGetMaxHeight();
+	}
+
+	if (pbBuffer)
+		ext_mem_free(pbBuffer);
 }
 
 WORD Idu_PrintStringCenter(ST_IMGWIN * trgWin, BYTE * string, WORD startX, WORD startY, BYTE UnicodeFlag, WORD wWidth)

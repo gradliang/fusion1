@@ -214,7 +214,9 @@ enum xpgStringId {
 	Str_DianQiBangGuZhang,      //   204
 	Str_ShuRuKaiJiMiMa,      //   205
 	Str_ShuRuZhuJieMiMa,      //   206
-	
+	Str_Note,      //   207
+	Str_Password_Error,      //   208
+	Str_Info_ForgetPassword,      //   209
 	
 	Str_MAX_ID,
 };

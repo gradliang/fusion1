@@ -405,7 +405,7 @@ void xpgRoleDrawMask(STXPGROLE * pstRole, void *pTarget, DWORD px, DWORD py, DWO
 #else	
 		j = ((y * dwScrWd) >> 1) + (px >> 1);
 #endif		
-		k = (((y - py) * pstRole->m_wRawWidth) >> 1);
+		k = (((y - py) * pstRole->m_wRawWidth) >> 1);  //m_wRawWidth is align 16
 		for (x = px; x < right; x += 2, j++, k++) {
 			c = *(pdwMaskBuffer + k);
 			if ((c & 0xffff0000) == 0) continue; // skip black pixel

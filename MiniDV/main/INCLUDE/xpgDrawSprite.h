@@ -12,6 +12,13 @@
 #ifndef XPGDRAWSPRITE_H
 #define XPGDRAWSPRITE_H
 
+
+
+
+#define DIALOG_DEFAULT_WIDTH						352
+#define DIALOG_DEFAULT_HEIGHT					180
+
+
 extern MODEPARAM tempModeParam;
 extern DWORD dwDialogTempValue;
 extern BOOL  boDialogValueIsFloat;
@@ -50,7 +57,7 @@ SWORD xpgDrawSprite_RepeatIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprit
 SWORD xpgDrawSprite_HomeStatus(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOOL boClip);    // type30
 
 
-int popupDialog(int dialogType, char * backToPage);
+int popupDialog(int dialogType, char * backToPage, ST_IMGWIN* pWin_Background);
 void exitDialog();
 
 

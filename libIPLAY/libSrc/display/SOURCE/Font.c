@@ -150,6 +150,59 @@ void Font_GetStrWidth(ST_FONT *sFont, WORD *str, BYTE UnicodeFlag)
 }
 
 
+SWORD Font_GetStrPosByWidth(ST_FONT *sFont, WORD *str, BYTE UnicodeFlag,WORD wWidth)
+{
+	WORD i = 0;
+	WORD wtemp, Num;
+	BYTE *pbStr = (BYTE *)str;
+	
+	Num = Str_Length(pbStr,UnicodeFlag);
+	for(i = 0; i < Num; i++)
+	{
+		if(UnicodeFlag)
+		{
+			wtemp = (((*(pbStr+i))<<8)|(*(pbStr+i+1)));
+
+			if( wtemp <= 0x20 || wtemp==0xA0 ) 
+			{
+				sFont->wX += (IduFontGetBlankWidth() + sFont->bTextGap);
+				sFont->wDisplayWidth += (IduFontGetBlankWidth() + sFont->bTextGap);
+			}
+			else
+			{
+                if (ImgPutCharFake(sFont, wtemp, 0))
+                    break;
+			}
+			if (sFont->wX>wWidth)
+				break;
+			i++;
+		}
+		else	// UTF-8
+		{
+			int utf8CharLen, valid;
+			unsigned u32char;
+			U8BuffToU32Char(pbStr+i, &utf8CharLen, &u32char, &valid);
+
+			if (u32char == 0)
+				break;
+			wtemp = (WORD) u32char;
+			if( wtemp <= 0x20 || wtemp==0xA0 ) {
+				sFont->wX += (IduFontGetBlankWidth() + sFont->bTextGap);
+				sFont->wDisplayWidth += (IduFontGetBlankWidth() + sFont->bTextGap);
+			}
+			else 
+			{
+				if (ImgPutCharFake(sFont, wtemp, 0))
+                    break;
+			}
+			if (sFont->wX>wWidth)
+				break;
+			i += (utf8CharLen-1);
+		}
+	}
+	return i;
+}
+
 void Font_Draw_OSD(ST_OSDWIN *psWin,ST_FONT *sFont,unsigned short int *str)
 {
     DWORD    j;

@@ -6623,6 +6623,7 @@ void SendCmdPowerOff()
 {
 	BYTE bTxData[8];
 
+	MP_DEBUG("SendCmdPowerOff");
 	bTxData[0]=0x98;
 	bTxData[1]=3+1;
 	bTxData[2]=0;
