@@ -26,6 +26,7 @@ extern char strEditPassword[8];
 extern char strEditValue[32];
 extern DWORD * pdwEditingFusionValue;
 extern BOOL isSelectOnlineOPM;
+extern WORD g_wElectrodeRandomCode;
 
 
 SWORD xpgDrawSprite_Null				  ( ST_IMGWIN *, STXPGSPRITE *, BOOL );

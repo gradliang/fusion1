@@ -834,6 +834,10 @@
 #define Dialog_PowerOnCheckOpenPassword                      22          //4 开机确认开机密码
 #define Dialog_Note_ForgetHirePassword                      23          //4 忘记租借密码
 #define Dialog_Note_ForgetOpenPassword                      24          //4 忘记开机密码
+#define Dialog_Electrode_Enable                      25          //4 激活电极棒
+#define Dialog_Note_ElectrodeEnable_Path                      26          //4 激活电极棒方法
+#define Dialog_Note_ElectrodeEnable_PASS                      27          //4 激活电极棒PASS
+#define Dialog_Note_ElectrodeEnable_FAIL                      28          //4 激活电极棒FAIL
 
 
 

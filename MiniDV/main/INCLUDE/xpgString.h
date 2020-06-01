@@ -217,6 +217,10 @@ enum xpgStringId {
 	Str_Note,      //   207
 	Str_Password_Error,      //   208
 	Str_Info_ForgetPassword,      //   209
+	Str_Input_ElectrodeEnableCode,      //   210
+	Str_Note_GetElectrodeEnableCode,      //   211
+	Str_ElectrodeEnablePass,      //   212
+	Str_ElectrodeEnableFail,      //   213
 	
 	Str_MAX_ID,
 };

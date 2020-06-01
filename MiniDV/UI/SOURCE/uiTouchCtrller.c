@@ -962,7 +962,7 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
             }
         }
         else if (dialogType == Dialog_SetPassword1 || dialogType == Dialog_SetPassword2 || dialogType == Dialog_CheckPassword\
-					|| dialogType == Dialog_PowerOnCheckHirePassword|| dialogType == Dialog_PowerOnCheckOpenPassword)
+					|| dialogType == Dialog_PowerOnCheckHirePassword|| dialogType == Dialog_PowerOnCheckOpenPassword|| dialogType == Dialog_Electrode_Enable)
         {
             static char password1[8] = {0};
             //static char password2[8] = {0};
@@ -1004,6 +1004,22 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
                                 exitDialog();
                             }
                         }
+							else if (dialogType == Dialog_Electrode_Enable)
+							{
+								WORD wInputCode=(strEditPassword[0]-'0')*1000+(strEditPassword[1]-'0')*100+(strEditPassword[2]-'0')*10+(strEditPassword[3]-'0');
+								strDialogTitle = getstr(Str_Note);
+								dialogOnClose = exitDialog;
+								if (g_wElectrodeRandomCode==wInputCode)
+								{
+									popupDialog(Dialog_Note_ElectrodeEnable_PASS, "Main",Idu_GetCacheWin());
+								}
+								else
+								{
+									popupDialog(Dialog_Note_ElectrodeEnable_FAIL, "Main",Idu_GetCacheWin());
+								}
+								xpgUpdateStage();
+								Ui_TimerProcAdd(3000, exitDialog);
+							}
                     }
                 }
             }
@@ -1019,6 +1035,13 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
 							popupDialog(Dialog_Note_ForgetOpenPassword, DIALOG_PAGE_NAME,Idu_GetCacheWin());
 						xpgUpdateStage();
                 }
+				else if (dialogType == Dialog_Electrode_Enable)
+				{
+					strDialogTitle = getstr(Str_Note);
+					dialogOnClose = exitDialog;
+					popupDialog(Dialog_Note_ElectrodeEnable_Path, DIALOG_PAGE_NAME,Idu_GetCacheWin());
+					xpgUpdateStage();
+				}
             }
             else if (dwIconId == 11)
             {
@@ -2064,6 +2087,20 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
             xpgUpdateStage();
             WriteSetupChg();
         }
+		switch (dwSpriteId)
+		{
+			case 5:
+				g_wElectrodeRandomCode=GetSysTime()%10000;
+            strDialogTitle = getstr(Str_Input_ElectrodeEnableCode);
+            memset(strEditPassword, 0, sizeof(strEditPassword));
+            dialogOnClose = exitDialog;
+            popupDialog(Dialog_Electrode_Enable, "Main",Idu_GetCacheWin());
+            xpgUpdateStage();
+				break;
+
+			default:
+				break;
+		}
     }
     
     return 0;

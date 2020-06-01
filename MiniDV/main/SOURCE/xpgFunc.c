@@ -482,6 +482,20 @@ void Free_Cache_BGWin()
 
 void DrakWin(ST_IMGWIN* pWin, DWORD largeNum, DWORD smallNum)
 {
+#if 1
+	WORD i,j,wW=pWin->wWidth<<1;
+	BYTE *pbPixel;
+
+	for (j = 0; j < pWin->wHeight ; j++) 
+	{
+		pbPixel=(BYTE *)((DWORD *)pWin->pdwStart+j*(pWin->dwOffset>>2));
+		for (i = 0; i < wW; i+=4) 
+		{
+			pbPixel[i]>>=5;
+			pbPixel[i+1]>>=5;
+		}
+	}
+#else
     WORD i, j;
     DWORD * pLineStart;
     DWORD value;
@@ -500,6 +514,7 @@ void DrakWin(ST_IMGWIN* pWin, DWORD largeNum, DWORD smallNum)
             pLineStart[i] = 0x8080 | (y1 << 24) | (y2 << 16);
         }
     }
+#endif
 }
 
 /////////////////////////////////////////////////////////////////////
