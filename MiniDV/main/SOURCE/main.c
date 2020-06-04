@@ -74,9 +74,6 @@
 // Variable declarations
 */
 extern BYTE g_bXpgStatus;
-#if (PRODUCT_UI==UI_WELDING)
-extern BYTE g_bStandby;
-#endif
 
 static void ClkInit(void);
 static SWORD SystemInit(void);
@@ -770,7 +767,7 @@ CheckAutoSleepOrAutoOff();
 	Ui_TimerProcAdd(6000, Display_panel);
 #else
 #if (PRODUCT_UI==UI_WELDING)
-if (g_bStandby)
+if (g_psUnsaveParam->bStandby)
 	Ui_TimerProcAdd(1000, uiCb_CheckInStandby);
 else if (SystemGetStatus(SYS_STATUS_INIT))
 	Ui_TimerProcAdd(10, uiCb_CheckBattery);
@@ -1381,7 +1378,7 @@ static SWORD SystemInit(void)
 #endif
 
 #if (PRODUCT_UI==UI_WELDING)
-	if (g_bStandby)
+	if (g_psUnsaveParam->bStandby)
 #endif
     SystemClearStatus(SYS_STATUS_INIT);
     mpDebugPrint("System init ok\r\n");
@@ -1492,13 +1489,13 @@ static SWORD XpgInit(BYTE driveId, DWORD dwXPGTag)
 		SWORD swRet;
 		STXPGPAGE *pstPage;
 
-		if (g_bStandby)
+		if (g_psUnsaveParam->bStandby)
 		{
-				pstPage=xpgPreactionAndGotoPage("Charge");
+				pstPage=xpgSearchtoPageWithAction("Charge");
 		}
 		else
 		{
-			pstPage=xpgPreactionAndGotoPage("Logo");
+			pstPage=xpgSearchtoPageWithAction("Logo");
 		}
         if (pstPage!=NULL)
         {
@@ -1509,8 +1506,8 @@ static SWORD XpgInit(BYTE driveId, DWORD dwXPGTag)
 			mpClearWin(Idu_GetCurrWin());
 		}
 #else
-        if (xpgPreactionAndGotoPage("Logo")!=NULL)
-        //if (xpgPreactionAndGotoPage("Main")!=NULL)
+        if (xpgSearchtoPageWithAction("Logo")!=NULL)
+        //if (xpgSearchtoPageWithAction("Main")!=NULL)
         {
 			xpgUpdateStage();
         }

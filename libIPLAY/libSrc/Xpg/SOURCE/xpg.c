@@ -22,7 +22,7 @@ STXPGMOVIE g_stXpgMovie;
 STXPGMOVIE *g_pstXpgMovie = NULL;
 
 BYTE g_boNeedRepaint = 0;
-BOOL g_isDialogPage = 0;
+//BOOL g_isDialogPage = 0;
 //------------------------------------------------------------------------------
 BOOL xpgLoadFromSPINOR(DWORD dwNORStartAddr, DWORD dwNORSXPGSize)
 {
@@ -244,7 +244,7 @@ WORD xpgGotoEnterPage()  //Mason 20060619  //From Athena
 ///
 ///@return  page index
 ///
-#if 0 // please use xpgPreactionAndGotoPage
+#if 0 // please use xpgSearchtoPageWithAction
 STXPGPAGE *xpgSearchAndGotoPage(const char *name)
 {
     STXPGPAGE *pstPage = xpgMovieSearchPage(name);

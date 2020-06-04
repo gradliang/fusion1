@@ -526,7 +526,7 @@ ST_IMGWIN *Idu_GetCacheWin_WithInit()
 	if (pCacheWin->pdwStart == NULL)
 	{
 		ImgWinInit(pCacheWin, NULL, pWin->wHeight, pWin->wWidth);
-		pCacheWin->pdwStart = ext_mem_malloc(pWin->wWidth * pWin->wHeight * 2);
+		pCacheWin->pdwStart = (DWORD *)ext_mem_malloc(pWin->wWidth * pWin->wHeight * 2);
 		mpCopyEqualWin(pCacheWin, pWin);
 	}
 	return pCacheWin;
@@ -969,9 +969,41 @@ void xpgCb_PressExitKey()
 {
 }
 
-STXPGPAGE *xpgPreactionAndGotoPage(const char *name)
+SWORD xpgGotoPageWithAction(DWORD dwPage)  //Mason 20060619  //From Athena
 {
-	DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
+#ifdef DIALOG_PAGE_NAME
+/*
+    if ((STXPGPAGE *)xpgMovieSearchPage(DIALOG_PAGE_NAME)->m_wIndex==dwPage)
+        g_isDialogPage = 1;
+    else
+        g_isDialogPage = 0;
+ */
+ 	if (xpgGetCurrDialogTypeId())
+		xpgDeleteAllDialog();
+#endif
+#if  (PRODUCT_UI==UI_WELDING)
+	if (g_pstXpgMovie->m_pstCurPage->m_dwHashKey == xpgHash("Auto_work") || g_pstXpgMovie->m_pstCurPage->m_dwHashKey == xpgHash("Manual_work"))
+		xpgCb_StopAllSensorWork();
+	if (g_pstXpgMovie->m_pstCurPage->m_dwHashKey == xpgHash("Main"))
+		Ui_TimerProcRemove(xpgCb_EnterCamcoderPreview);
+#endif
+
+	//mpDebugPrint("---------xpgSearchtoPageWithAction :%s-> %d",name,pstPage->m_wIndex);
+    if (xpgGotoPage(dwPage) != PASS)
+    {
+        MP_ALERT("xpgSearchtoPageWithAction : xpgGotoPage() failed !");
+        return FAIL;
+    }
+#if  (PRODUCT_UI==UI_WELDING)
+	if (g_pstXpgMovie->m_pstCurPage->m_dwHashKey == xpgHash("Main"))
+		AddAutoEnterPreview();
+#endif
+
+	return PASS;
+}
+
+STXPGPAGE *xpgSearchtoPageWithAction(const char *name)
+{
     STXPGPAGE *pstPage = xpgMovieSearchPage(name);
 
     if (pstPage == NULL)
@@ -979,30 +1011,8 @@ STXPGPAGE *xpgPreactionAndGotoPage(const char *name)
         MP_ALERT("%s: XPG page name [%s] not found !", __FUNCTION__, name);
         return NULL;
     }
-
-#ifdef DIALOG_PAGE_NAME
-    if (0 == strcmp(name, DIALOG_PAGE_NAME))
-        g_isDialogPage = 1;
-    else
-        g_isDialogPage = 0;
-#endif
-#if  (PRODUCT_UI==UI_WELDING)
-	if (dwHashKey == xpgHash("Auto_work") || dwHashKey == xpgHash("Manual_work"))
-		xpgCb_StopAllSensorWork();
-	if (dwHashKey == xpgHash("Main"))
-		Ui_TimerProcRemove(xpgCb_EnterCamcoderPreview);
-#endif
-
-	//mpDebugPrint("---------xpgPreactionAndGotoPage :%s-> %d",name,pstPage->m_wIndex);
-    if (xpgGotoPage(pstPage->m_wIndex) != PASS)
-    {
-        MP_ALERT("xpgPreactionAndGotoPage : xpgGotoPage() failed !");
-        return NULL;
-    }
-#if  (PRODUCT_UI==UI_WELDING)
-	if (g_pstXpgMovie->m_pstCurPage->m_dwHashKey == xpgHash("Main"))
-		AddAutoEnterPreview();
-#endif
+	if (xpgGotoPage(pstPage->m_wIndex)!=PASS)
+		return NULL;
 
     return pstPage;
 }
@@ -1160,10 +1170,10 @@ void xpgCb_EnterCamcoderPreview()
 #if MAKE_XPG_PLAYER
     xpgChangeMenuMode(OP_IMAGE_MODE, 1);
 	if (st_bWeldMode)
-		xpgPreactionAndGotoPage("Manual_work");
+		xpgSearchtoPageWithAction("Manual_work");
 	else
-		xpgPreactionAndGotoPage("Auto_work");
-    //xpgPreactionAndGotoPage("Preview");
+		xpgSearchtoPageWithAction("Auto_work");
+    //xpgSearchtoPageWithAction("Preview");
     xpgUpdateStage();
     mpCopyEqualWin(Idu_GetNextWin(), Idu_GetCurrWin());
 #endif
@@ -1217,7 +1227,7 @@ void xpgCb_EnterSetupPage()
 #endif
     g_bXpgStatus = XPG_MODE_SETUP;
 #if MAKE_XPG_PLAYER
-    xpgPreactionAndGotoPage("Setup");
+    xpgSearchtoPageWithAction("Setup");
     xpgUpdateStage();
 #endif
     
@@ -1234,7 +1244,7 @@ void xpgCb_EnterPhotoViewPage()
     g_bXpgStatus = XPG_MODE_PHOTOVIEW;
 #if MAKE_XPG_PLAYER
     xpgChangeMenuMode(OP_IMAGE_MODE, 1);
-    xpgPreactionAndGotoPage("PhotoView");
+    xpgSearchtoPageWithAction("PhotoView");
     xpgUpdateStage();
 #endif
     
@@ -1251,7 +1261,7 @@ void AddAutoEnterPreview(void)
 #if TEST_TWO_LED
 	    Ui_TimerProcAdd(10, xpgCb_EnterCamcoderPreview);//xpgCb_EnterCamcoderPreview
 #else
-	    Ui_TimerProcAdd(5*1000, xpgCb_EnterCamcoderPreview);//xpgCb_EnterCamcoderPreview  10
+	//    Ui_TimerProcAdd(10*1000, xpgCb_EnterCamcoderPreview);//xpgCb_EnterCamcoderPreview  10
 #endif
 	 }
 #endif
@@ -1277,12 +1287,37 @@ void Timer_FirstEnterCamPreview()
 
 #endif //#if (SENSOR_ENABLE == ENABLE)
 
-//>------------UI CODE FUNCION-----------------------
+//>------------DIALOG CALLBACK
 void DialogCb_ExitMainPagePopError(void)
 {
 	g_dwMachineErrorShow=0;
 	exitDialog();
 }
+void DialogCb_ExitMainPagePopWarning(void)
+{
+	DWORD i;
+
+	for (i=BIT0;i<BIT31;i<<=1)
+	{
+		if (g_dwMachineWarningFlag&i)
+		{
+			g_dwMachineWarningFlag&=~i;
+			break;
+		}
+	}
+	exitDialog();
+}
+void DialogCb_ExitLowPowerPopWarning(void)
+{
+	g_dwMachineWarningFlag&=~WARNING_BATTERY_LOW;
+	exitDialog();
+}
+void DialogCb_ExitLowNetsignalPopWarning(void)
+{
+	g_dwMachineWarningFlag&=~WARNING_NETSIGNAL_LOW;
+	exitDialog();
+}
+
 void DialogCb_ExitMainPagePopHireWord(void)
 {
 	 if (0 == strcmp(g_psSetupMenu->strHirePassword, strEditPassword))
@@ -1301,7 +1336,7 @@ void DialogCb_ExitMainPagePopHireWord(void)
 	 	//SendCmdPowerOff();
 			strDialogTitle = getstr(Str_Note);
 			dialogOnClose = exitDialog;
-			popupDialog(Dialog_Note_ForgetHirePassword, DIALOG_PAGE_NAME,Idu_GetCacheWin());
+			popupDialog(Dialog_Note_ForgetHirePassword, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCacheWin());
 			xpgUpdateStage();
 	 }
 }
@@ -1323,13 +1358,140 @@ void DialogCb_ExitMainPagePopOpenWord(void)
 	 	//SendCmdPowerOff();
 			strDialogTitle = getstr(Str_Note);
 			dialogOnClose = exitDialog;
-			popupDialog(Dialog_Note_ForgetOpenPassword, DIALOG_PAGE_NAME,Idu_GetCacheWin());
+			popupDialog(Dialog_Note_ForgetOpenPassword, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCacheWin());
 			xpgUpdateStage();
 	 }
 }
 
+
+//>------------TIMER FUNCTION
+void Timer_GetTemperature(void)
+{
+	if (g_pstXpgMovie->m_pstCurPage->m_dwHashKey != xpgHash("Main"))
+		return;
+	//--0x06:查询 温度 压力  电量
+	TspiSendCmdPolling0xA4(0x06);
+	Ui_TimerProcAdd(1000, Timer_GetTemperature);
+}
+void Timer_CheckPopDialogAfterUpdatestage(void)
+{
+	Ui_TimerProcAdd(10, uiCb_CheckPopDialogAfterUpdatestage);
+}
+void Timer_PollingBatteryStatus(void)
+{
+//--Battery info
+	TspiSendCmdPolling0xA4(0x0b);
+	//TspiSendCmdPolling0xA4(0x0d);
+	Ui_TimerProcAdd(1000, Timer_PollingBatteryStatus);
+}
+
+
+//>------------UI CODE FUNCION-----------------------
+void uiCb_DisableKeyInput(BYTE bKeyExcept)  //0xff -> skip all key
+{
+	g_bKeyExcept=bKeyExcept;
+}
+void uiCb_EnableKeyInput(void)
+{
+	g_bKeyExcept=0;
+}
+BYTE g_bLowPower=0,g_bLogoMix=0;
+SBYTE g_sbLogoStep=4;
+void uiCb_CheckInStandby(void)
+{
+//--Battery info
+	TspiSendCmdPolling0xA4(0x0b);
+	if (g_psUnsaveParam->bStandby)
+	{
+		if (g_psUnsaveParam->bChargeStatus)
+		{
+			g_psUnsaveParam->bBatteryQuantity+=20;
+			if (g_psUnsaveParam->bBatteryQuantity>=100)
+				g_psUnsaveParam->bBatteryQuantity=0;
+		}
+		xpgUpdateStage();
+		Ui_TimerProcAdd(1000, uiCb_CheckInStandby);
+	}
+	else if (g_bLowPower)
+	{
+		if (!g_psUnsaveParam->bChargeStatus && g_psUnsaveParam->bBatteryQuantity < 10 )
+		{
+			if (g_bLowPower>9)
+				SendCmdPowerOff();
+			else if (g_bLowPower&0x01)
+				xpgUpdateStage();
+			else
+				mpClearWin(Idu_GetCurrWin());
+			g_bLowPower++;
+			Ui_TimerProcAdd(1000, uiCb_CheckInStandby);
+		}
+		else
+		{
+			g_bLogoMix=0;
+			uiCb_CheckBattery();
+		}
+	}
+}
+
+void uiCb_CheckBattery(void)
+{
+	if (!g_psUnsaveParam->bChargeStatus && g_psUnsaveParam->bBatteryQuantity < 10 )
+	{
+		g_bLowPower=1;
+		xpgSearchtoPageWithAction("Charge");
+		uiCb_CheckInStandby();
+	}
+	else 
+	{
+			if (g_psUnsaveParam->bBatteryQuantity<=100 && g_bLogoMix==128)
+			{
+				SystemClearStatus(SYS_STATUS_INIT);
+				//--check sensor
+				#if 1
+				if (sensor_NT99140_CheckID()!=PASS)
+				{
+					g_dwMachineErrorFlag|=MACHINE_ERROR_SENSOR;
+					g_dwMachineErrorShow|=MACHINE_ERROR_SENSOR;
+				}
+				//--查询网络信号强度
+				TspiSendCmdPolling0xA4(0x0d);
+				#endif
+				//--goto main page
+				xpgSearchtoPageWithAction("Main");
+				xpgUpdateStage();
+				uiCb_EnableKeyInput();
+				Timer_FirstEnterCamPreview();
+				Ui_TimerProcAdd(1000, Timer_PollingBatteryStatus);
+			}
+			else
+			{
+				if (g_psUnsaveParam->bBatteryQuantity>100 && (!(g_bLogoMix&0x0f)))
+					TspiSendCmdPolling0xA4(0x0b);
+				if (g_bLogoMix>=128)
+				{
+					g_sbLogoStep=-4;
+					g_bLogoMix=128;
+				}
+				else if (!g_bLogoMix)
+					g_sbLogoStep=4;
+				g_bLogoMix+=g_sbLogoStep;
+				xpgUpdateStage();
+				Ui_TimerProcAdd(10, uiCb_CheckBattery);
+			}
+	}
+}
+
+void uiCb_CheckElectrodePos(void)
+{
+	uiCb_EnableKeyInput();
+	xpgDeleteAllDialog();
+	xpgCb_EnterCamcoderPreview();
+	AutoGetFiberLowPoint();
+}
+
 void uiCb_CheckPopDialogAfterUpdatestage(void)
 {
+	//mpDebugPrint(" error %p  warning %p",g_dwMachineErrorShow,g_dwMachineWarningFlag);
 	if (g_pstXpgMovie->m_pstCurPage->m_dwHashKey == xpgHash("Main"))
 	{
 		if (g_dwMachineErrorFlag&g_dwMachineErrorShow)
@@ -1337,7 +1499,7 @@ void uiCb_CheckPopDialogAfterUpdatestage(void)
             DrakWin(Idu_GetCurrWin(), 2, 1);
             //strDialogTitle = NULL;
             dialogOnClose = DialogCb_ExitMainPagePopError;
-            popupDialog(Dialog_MainPageError, "Main",Idu_GetCurrWin());
+            popupDialog(Dialog_MainPageError, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
             xpgUpdateStage();
 		}
 		else if (g_bPowerOnCheckPassword&&(g_psSetupMenu->bEnableHirePassword||g_psSetupMenu->bEnableOpenPassword))
@@ -1350,13 +1512,13 @@ void uiCb_CheckPopDialogAfterUpdatestage(void)
 			{
 				strDialogTitle = getstr(Str_ShuRuZhuJieMiMa);
 				dialogOnClose = DialogCb_ExitMainPagePopHireWord;
-				popupDialog(Dialog_PowerOnCheckHirePassword, "Main",Idu_GetCacheWin());
+				popupDialog(Dialog_PowerOnCheckHirePassword, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCacheWin());
 			}
 			else
 			{
 				strDialogTitle = getstr(Str_ShuRuKaiJiMiMa);
 				dialogOnClose = DialogCb_ExitMainPagePopOpenWord;
-				popupDialog(Dialog_PowerOnCheckOpenPassword, "Main",Idu_GetCacheWin());
+				popupDialog(Dialog_PowerOnCheckOpenPassword, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCacheWin());
 			}
 			xpgUpdateStage();
 		}
@@ -1364,14 +1526,39 @@ void uiCb_CheckPopDialogAfterUpdatestage(void)
 		{
 			g_dwMachineErrorShow=0;
 			g_bPowerOnCheckPassword=0;
+			Ui_TimerProcAdd(1000, Timer_GetTemperature);
+			if (g_dwMachineWarningFlag)
+			{
+	            DrakWin(Idu_GetCurrWin(), 2, 1);
+	            //strDialogTitle = NULL;
+	            dialogOnClose = DialogCb_ExitMainPagePopWarning;
+	            popupDialog(Dialog_MachineWarning, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
+	            xpgUpdateStage();
+			}
 		}
+	}
+	else if (g_pstXpgMovie->m_pstCurPage->m_dwHashKey != xpgHash(DIALOG_PAGE_NAME))
+	{
+			if (g_dwMachineWarningFlag&WARNING_BATTERY_LOW)
+			{
+	            DrakWin(Idu_GetCurrWin(), 2, 1);
+	            //strDialogTitle = NULL;
+	            dialogOnClose = DialogCb_ExitLowPowerPopWarning;
+	            popupDialog(Dialog_MachineWarning, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
+	            xpgUpdateStage();
+			}
+			else if (g_dwMachineWarningFlag&WARNING_NETSIGNAL_LOW)
+			{
+	            DrakWin(Idu_GetCurrWin(), 2, 1);
+	            //strDialogTitle = NULL;
+	            dialogOnClose = DialogCb_ExitLowNetsignalPopWarning;
+	            popupDialog(Dialog_MachineWarning, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
+	            xpgUpdateStage();
+			}
 	}
 }
 
-void Timer_CheckPopDialogAfterUpdatestage(void)
-{
-	Ui_TimerProcAdd(10, uiCb_CheckPopDialogAfterUpdatestage);
-}
+
 
 //<------------UI CODE FUNCION-----------------------
 

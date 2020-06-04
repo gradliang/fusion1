@@ -589,7 +589,8 @@ typedef struct {
     XPGEXTRASPRITE  spriteList[DIALOG_MAX_SPRITE_CNT];
     DWORD           spriteCount;
     int             dailogId;
-    char            backToPage[32];
+    //char            backToPage[32];
+	DWORD dwReturnPageIndex;
     ST_IMGWIN       backupWin;
 }XPGDIALOGSTACK;
 
@@ -635,7 +636,7 @@ XPGEXTRASPRITE* getCurDialogExtraSpriteList()
     return pstCurDialogInfo->spriteList;
 }
 
-int xpgAddDialog(int dialogId, char * backToPage, ST_IMGWIN* backupWin)
+int xpgAddDialog(int dialogId, DWORD dwReturnPageIndex, ST_IMGWIN* backupWin)
 {
     DWORD curDialogIndex;
     if (dialogCount >= 3)
@@ -647,15 +648,7 @@ int xpgAddDialog(int dialogId, char * backToPage, ST_IMGWIN* backupWin)
     XPGDIALOGSTACK * pstCurDialogInfo = &dialogStacks[curDialogIndex];
     pstCurDialogInfo->dailogId = dialogId;
     pstCurDialogInfo->spriteCount = 0;
-    if (backToPage == NULL)
-    {
-        pstCurDialogInfo->backToPage[0] = 0;
-    }
-    else
-    {
-        strncpy(pstCurDialogInfo->backToPage, backToPage, sizeof(pstCurDialogInfo->backToPage) - 1);
-        pstCurDialogInfo->backToPage[sizeof(pstCurDialogInfo->backToPage) - 1] = 0;
-    }
+    pstCurDialogInfo->dwReturnPageIndex= dwReturnPageIndex;
 
 	ST_IMGWIN *pCacheWin = &pstCurDialogInfo->backupWin;
 
@@ -742,7 +735,7 @@ ST_IMGWIN* xpgGetCurrDialogCacheWin()
     return & pstCurDialogInfo->backupWin;
 }
 
-char* xpgGetCurrDialogBackPage()
+DWORD xpgGetCurrDialogBackPage()
 {
     DWORD curDialogIndex;
     XPGDIALOGSTACK * pstCurDialogInfo;
@@ -751,7 +744,7 @@ char* xpgGetCurrDialogBackPage()
         return 0;
     curDialogIndex = dialogCount - 1;
     pstCurDialogInfo = &dialogStacks[curDialogIndex];
-    return pstCurDialogInfo->backToPage;
+    return pstCurDialogInfo->dwReturnPageIndex;
 }
 
 

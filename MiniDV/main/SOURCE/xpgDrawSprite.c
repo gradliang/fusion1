@@ -116,15 +116,15 @@ static DWORD asideColor;
 //---------------------------------------------------------------------------
 // Dialog
 //---------------------------------------------------------------------------
-int popupDialog(int dialogType, char * backToPage, ST_IMGWIN* pWin_Background)
+int popupDialog(int dialogType, DWORD dwReturnPageIndex, ST_IMGWIN* pWin_Background)
 {
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
     
 #if  (PRODUCT_UI==UI_WELDING)
 	if (pWin_Background==NULL || pWin_Background->pdwStart==NULL)
 		pWin_Background=Idu_GetCurrWin();
-    xpgAddDialog(dialogType, backToPage, pWin_Background);
-    //mpDebugPrint("dialogType = %d, backToPage = %s", dialogType, backToPage);
+    xpgAddDialog(dialogType, dwReturnPageIndex, pWin_Background);
+    mpDebugPrint("dialogType = %d, dwReturnPageIndex = %d", dialogType, dwReturnPageIndex);
     
     if (dialogType == Dialog_ReSuGuan)
     {
@@ -320,7 +320,7 @@ int popupDialog(int dialogType, char * backToPage, ST_IMGWIN* pWin_Background)
         xpgAddDialogSprite(SPRITE_TYPE_ICON, 10, 0);
         xpgAddDialogSprite(SPRITE_TYPE_ICON, 11, 0);
     }
-    else if(dialogType == Dialog_MainPageError)
+    else if(dialogType == Dialog_MainPageError||dialogType == Dialog_MachineWarning)
     {
         xpgAddDialogSprite(SPRITE_TYPE_DIALOG, 0, 0);
         xpgAddDialogSprite(SPRITE_TYPE_CLOSE_ICON, 0, 0);
@@ -352,20 +352,17 @@ int popupDialog(int dialogType, char * backToPage, ST_IMGWIN* pWin_Background)
         xpgAddDialogSprite(SPRITE_TYPE_TEXT, 0, 0);
     }
     
-    xpgPreactionAndGotoPage(DIALOG_PAGE_NAME);
+    xpgSearchtoPageWithAction(DIALOG_PAGE_NAME);
 #endif
 }
 
 void exitDialog()
 {
-    char backPage[32];
-    char * pageName = xpgGetCurrDialogBackPage();
+    DWORD dwPageIndex = xpgGetCurrDialogBackPage();
 
-    strncpy(backPage, pageName, sizeof(backPage) - 1);
-    backPage[sizeof(backPage) - 1] = 0;
     xpgDeleteDialog();
-    if (backPage[0] != 0)
-        xpgPreactionAndGotoPage(backPage);
+    if (dwPageIndex != 0)
+        xpgGotoPageWithAction(dwPageIndex);
     xpgUpdateStage();
 }
 
@@ -772,22 +769,21 @@ SWORD xpgDrawSprite_Background(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprit
     }
     else if (dwHashKey == xpgHash("Charge"))
     {
-		extern BYTE g_bInCharge,g_bBatteryQuantity;
 		if ( pstSprite->m_dwTypeIndex==100)
 		{
 			mmcp_memset_u32((BYTE *)pWin->pdwStart,0x00008080, pWin->dwOffset*pWin->wHeight);
 			 xpgDrawSprite(pWin, pstSprite, boClip);
 		}
-		else if (g_bInCharge)
+		else if (g_psUnsaveParam->bChargeStatus)
 		{
-			if (pstSprite->m_dwTypeIndex<=g_bBatteryQuantity/20)
+			if (pstSprite->m_dwTypeIndex<=g_psUnsaveParam->bBatteryQuantity/20)
 				mpPaintWinArea(pWin,  pstSprite->m_wPx, pstSprite->m_wPy,  ALIGN_CUT_2(pstSprite->m_wWidth), pstSprite->m_wHeight, RGB2YUV(0xff,0xd8,0));
 		}
 		else
 		{
-			if (g_bBatteryQuantity<20 && pstSprite->m_dwTypeIndex==0)
+			if (g_psUnsaveParam->bBatteryQuantity<20 && pstSprite->m_dwTypeIndex==0)
 				mpPaintWinArea(pWin,  pstSprite->m_wPx, pstSprite->m_wPy,  ALIGN_CUT_2(pstSprite->m_wWidth), pstSprite->m_wHeight, RGB2YUV(0xff,0,0));
-			else if (pstSprite->m_dwTypeIndex<=g_bBatteryQuantity/20)
+			else if (pstSprite->m_dwTypeIndex<=g_psUnsaveParam->bBatteryQuantity/20)
 				mpPaintWinArea(pWin,  pstSprite->m_wPx, pstSprite->m_wPy,  ALIGN_CUT_2(pstSprite->m_wWidth), pstSprite->m_wHeight, RGB2YUV(0,0xff,0x29));
 		}
     }
@@ -2876,7 +2872,7 @@ SWORD xpgDrawSprite_CloseIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite
             pstSprite->m_wPy = curDialogTop + 5;
             xpgDirectDrawRoleOnWin(pWin, g_pstXpgMovie->m_pstObjRole[XPG_ROLE_CLOSE_ICON], pstSprite->m_wPx, pstSprite->m_wPy, pstSprite, boClip);
         }
-        else if (dialogType == Dialog_MainPageError)
+        else if (dialogType == Dialog_MainPageError||dialogType == Dialog_MachineWarning)
         {
 			STXPGROLE stMaskRole;
 			pstSprite->m_wPx = 640-20;
@@ -5132,7 +5128,7 @@ void MakeMaskRole(STXPGROLE * pstMaskRole, int maskRoleIndex, WORD width, WORD h
 
 SWORD xpgDrawSprite_Dialog(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOOL boClip)
 {
-    char *text = "";
+    char *text = "",*pStr=NULL;
     STXPGROLE  stRole, stMaskRole;
 	STXPGROLE *pstRole, *pstMask;
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
@@ -5315,7 +5311,7 @@ SWORD xpgDrawSprite_Dialog(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
             Idu_PrintStringCenter(pWin, text, dailogX, dialogY + 10, 0, dialogW);
             Idu_FontColorSet(255, 255, 255);
         }
-        else if (dialogType == Dialog_MainPageError)
+        else if (dialogType == Dialog_MainPageError||dialogType == Dialog_MachineWarning)
         {
 				dialogW = 560;//pstRole->m_wWidth;
 				dialogH = 300;//pstRole->m_wHeight;
@@ -5328,8 +5324,34 @@ SWORD xpgDrawSprite_Dialog(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
 			 	pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_MAIN_ERROR_ICON];
 				xpgDirectDrawRoleOnWin(pWin, pstRole,dailogX+(dialogW-pstRole->m_wWidth)/2, dialogY+40, NULL, boClip);
 				SetCurrIduFontID(FONT_ID_HeiTi19);
-				if (g_dwMachineErrorFlag&g_dwMachineErrorShow&MACHINE_ERROR_SENSOR)
-					Idu_PrintStringCenter(pWin, getstr(Str_SheXiangTouGuZhang), dailogX, dialogY + dialogH/2+10, 0, dialogW);
+				if (g_dwMachineErrorFlag&g_dwMachineErrorShow)
+				{
+					if (g_dwMachineErrorFlag&g_dwMachineErrorShow&MACHINE_ERROR_SENSOR)
+						Idu_PrintStringCenter(pWin, getstr(Str_SheXiangTouGuZhang), dailogX, dialogY + dialogH/2+10, 0, dialogW);
+				}
+				else if (g_dwMachineWarningFlag)
+				{
+					if (g_dwMachineWarningFlag&WARNING_OUTSIDE_TEMP_HIGH)
+						pStr=getstr(Str_Warning_OutTempHigh);
+					else if (g_dwMachineWarningFlag&WARNING_OUTSIDE_TEMP_LOW)
+						pStr=getstr(Str_Warning_OutTempLow);
+					else if (g_dwMachineWarningFlag&WARNING_INSIDE_TEMP_HIGH)
+						pStr=getstr(Str_Warning_InsideTempHigh);
+					else if (g_dwMachineWarningFlag&WARNING_INSIDE_TEMP_LOW)
+						pStr=getstr(Str_Warning_InsideTempLow);
+					else if (g_dwMachineWarningFlag&WARNING_HUMIDITY)
+						pStr=getstr(Str_Warning_Humity);
+					else if (g_dwMachineWarningFlag&WARNING_ATMOS_PRESSURE)
+						pStr=getstr(Str_Warning_Pressure);
+					else if (g_dwMachineWarningFlag&WARNING_ELECTRODE_LESS)
+						pStr=getstr(Str_Warning_ElectrodeLess);
+					else if (g_dwMachineWarningFlag&WARNING_BATTERY_LOW)
+						pStr=getstr(Str_Warning_LowPower);
+					else if (g_dwMachineWarningFlag&WARNING_NETSIGNAL_LOW)
+						pStr=getstr(Str_Warning_LowNetsignal);
+					if (pStr!=NULL)
+						Idu_PrintStringCenterNewLine(pWin,pStr, dailogX, dialogY + dialogH/2+10, 0, dialogW);
+				}
         }
         else if (dialogType == Dialog_Note_ForgetHirePassword||dialogType == Dialog_Note_ForgetOpenPassword||dialogType == Dialog_Note_ElectrodeEnable_Path\
 			||dialogType == Dialog_Note_ElectrodeEnable_PASS||dialogType == Dialog_Note_ElectrodeEnable_FAIL)
@@ -5559,13 +5581,6 @@ SWORD xpgDrawSprite_Scroll(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
     return PASS;
 }
 
-int tem1Value = 28;                 // 温度值1的整数部分，可以是负数
-unsigned tem1_fraction = 4;         // 温度值1的小数部分
-int tem2Value = -30;                // 温度值2的整数部分，可以是负数
-unsigned tem2_fraction = 5;         // 温度值2的小数部分
-int percentValue = 50;
-int kpa = 101;
-
 #define VALUE_TYPE_TEMPERATURE      1
 #define VALUE_TYPE_PERCENT          2
 #define VALUE_TYPE_PRESSURE         3
@@ -5600,7 +5615,10 @@ static void showMainPageValue(int type, ST_IMGWIN * pWin, DWORD X, DWORD Y, int 
     {
         pstSprite = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, MINUS_SIGN_INDEX);
         if (pstSprite)
+        {
             xpgDirectDrawRoleOnWin(pWin, pstSprite->m_pstRole, X, Y, pstSprite, 0);
+	        offset += 24;
+        }
     }
 
     sprintf(strvalue, "%d", (intValue >= 0) ? intValue : (-intValue));
@@ -5662,22 +5680,34 @@ static void showMainPageValue(int type, ST_IMGWIN * pWin, DWORD X, DWORD Y, int 
 SWORD xpgDrawSprite_HomeStatus(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOOL boClip)
 {
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
+	WORD wData;
+	int iData;
     
     if (dwHashKey == xpgHash("Main"))
     {
         xpgDrawSprite(pWin, pstSprite, boClip);
         ///// 温度 value 1
-        showMainPageValue(VALUE_TYPE_TEMPERATURE, pWin, 255, 88, tem1Value, tem1_fraction, FALSE);
+        g_psUnsaveParam->bTemperatureInhome[0]=0x8F;
+		if (g_psUnsaveParam->bTemperatureInhome[0]&BIT7)
+			iData=-(g_psUnsaveParam->bTemperatureInhome[0]&0x3f);
+		else
+			iData=(g_psUnsaveParam->bTemperatureInhome[0]&0x3f);
+        showMainPageValue(VALUE_TYPE_TEMPERATURE, pWin, 255, 88, iData, g_psUnsaveParam->bTemperatureInhome[1], (iData<0 || iData>60));
         ///// 温度 value 2
-        showMainPageValue(VALUE_TYPE_TEMPERATURE, pWin, 454, 88, tem2Value, tem2_fraction, FALSE);
+		if (g_psUnsaveParam->bTemperatureOuthome[0]&BIT7)
+			iData=-(g_psUnsaveParam->bTemperatureOuthome[0]&0x3f);
+		else
+			iData=(g_psUnsaveParam->bTemperatureOuthome[0]&0x3f);
+        showMainPageValue(VALUE_TYPE_TEMPERATURE, pWin, 454, 88, iData, g_psUnsaveParam->bTemperatureOuthome[1], (iData<-20 || iData>60));
         ////  
-        showMainPageValue(VALUE_TYPE_PERCENT, pWin, 270, 178, percentValue, 0, FALSE);
+        showMainPageValue(VALUE_TYPE_PERCENT, pWin, 270, 178, g_psUnsaveParam->bHumidity, 0, g_psUnsaveParam->bHumidity>60);
         ////  
-        showMainPageValue(VALUE_TYPE_PRESSURE, pWin, 453, 178, kpa, 0, FALSE);
+        showMainPageValue(VALUE_TYPE_PRESSURE, pWin, 453, 178, g_psUnsaveParam->wPressure, 0, (g_psUnsaveParam->wPressure<50) ||(g_psUnsaveParam->wPressure>200));
         ////  
-        showMainPageValue(VALUE_TYPE_TIMES, pWin, 240, 270, 2000, 0, FALSE);
+        wData=((WORD)g_psSetupMenu->bElectrodeInfo[13]<<8|g_psSetupMenu->bElectrodeInfo[14]);
+        showMainPageValue(VALUE_TYPE_TIMES, pWin, 240, 270, wData, 0, wData<5);
         ////  
-        showMainPageValue(VALUE_TYPE_TIMES, pWin, 450, 270, 200, 0, FALSE);
+        showMainPageValue(VALUE_TYPE_TIMES, pWin, 450, 270, g_psSetupMenu->dwWorkTotalTimes, 0, FALSE);
     }
     return PASS;
 }

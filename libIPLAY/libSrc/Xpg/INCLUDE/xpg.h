@@ -78,7 +78,7 @@ extern ST_IMGWIN *g_pXpgCanvasWin;
 extern ST_IMGWIN g_sXpgBuffWin;
 extern ST_IMGWIN *g_pXpgBuffWin;
 extern BYTE g_boNeedRepaint;
-extern BOOL g_isDialogPage;
+//extern BOOL g_isDialogPage;
 
 DWORD xpgGetXpgMemorySize(); // get final XPG Memory need size
 

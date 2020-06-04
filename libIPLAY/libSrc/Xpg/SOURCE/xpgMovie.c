@@ -138,7 +138,8 @@ void xpgMovieLoadPage(register STXPGMOVIE * pstMovie, DWORD iPage)
 
 #if XPG_DIALOG_EXTRA_SPRITE_ENABLE
     //mpDebugPrint("g_isDialogPage = %d", g_isDialogPage);
-    if (g_isDialogPage)
+    //if (g_isDialogPage)
+    if (pstMovie->m_pstCurPage->m_dwHashKey==xpgHash(DIALOG_PAGE_NAME))
     {
         DWORD dialogSpriteExtraCount = getCurDialogExtraSpriteCount();
         XPGEXTRASPRITE * extraSpriteList = getCurDialogExtraSpriteList();

@@ -221,6 +221,15 @@ enum xpgStringId {
 	Str_Note_GetElectrodeEnableCode,      //   211
 	Str_ElectrodeEnablePass,      //   212
 	Str_ElectrodeEnableFail,      //   213
+	Str_Warning_OutTempHigh,      //   214
+	Str_Warning_OutTempLow,      //   215
+	Str_Warning_InsideTempHigh,      //   216
+	Str_Warning_InsideTempLow,      //   217
+	Str_Warning_Humity,      //   218
+	Str_Warning_Pressure,      //   219
+	Str_Warning_ElectrodeLess,      //   220
+	Str_Warning_LowPower,      //   221
+	Str_Warning_LowNetsignal,      //   222
 	
 	Str_MAX_ID,
 };

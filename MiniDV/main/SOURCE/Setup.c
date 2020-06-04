@@ -127,6 +127,8 @@ void GetDefaultSetupMenuValue(void)
     g_psSetupMenu->sdwRtcOffset = 0;
     memset(g_psSetupMenu->bMADarry, 0, 6);
     memset(g_psSetupMenu->bBackGroundLevel, 0, 2);
+    memset(g_psSetupMenu->bElectrodeInfo, 0, 15);
+    g_psSetupMenu->dwWorkTotalTimes = 0;
     
 #endif	
 }
@@ -691,7 +693,7 @@ STTAB_OPEN_START:
             goto _OPEN_END;
         }
 
-        if (FileWrite(file_1, &dwFlag, 4) != 4)
+        if (FileWrite(file_1, (BYTE *)&dwFlag, 4) != 4)
         {
             MP_ALERT("write record1.sys error.");
             goto _OPEN_END;
@@ -700,7 +702,7 @@ STTAB_OPEN_START:
         for (i = 0; i < GetRecordTotal(); i++)
         {
             STRECORD* pstRecord = GetRecord(i);
-            FileWrite(file_1, pstRecord, sizeof(STRECORD));
+            FileWrite(file_1, (BYTE *)pstRecord, sizeof(STRECORD));
         }
         
 _OPEN_END:

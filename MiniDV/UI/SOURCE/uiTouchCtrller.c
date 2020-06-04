@@ -122,7 +122,7 @@ SWORD touchSprite_Background(STXPGSPRITE * sprite, WORD x, WORD y)
     {
         Free_CacheWin();
         isSelectOnlineOPM = 1;
-        xpgPreactionAndGotoPage("opm2");
+        xpgSearchtoPageWithAction("opm2");
         xpgUpdateStage();
     }
     return 0;
@@ -143,7 +143,7 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
             Free_CacheWin();
             Idu_GetCacheWin_WithInit();
             DrakWin(Idu_GetCacheWin(), 2, 1);
-            xpgPreactionAndGotoPage("User");
+            xpgSearchtoPageWithAction("User");
             xpgUpdateStage();
         }
         else if (dwIconId == 1) 
@@ -153,18 +153,18 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
         else if (dwIconId == 2) 
         {
             st_bGoSetupFrom=0;
-            xpgPreactionAndGotoPage("FuncSet");
+            xpgSearchtoPageWithAction("FuncSet");
             xpgUpdateStage();
         }
         else if (dwIconId == 3) 
         {
             st_bGoSetupFrom=0;
-            xpgPreactionAndGotoPage("FusionSet1");
+            xpgSearchtoPageWithAction("FusionSet1");
             xpgUpdateStage();
 
             /*
-            //xpgPreactionAndGotoPage("Auto_work");
-            //xpgPreactionAndGotoPage("Manual_work");
+            //xpgSearchtoPageWithAction("Auto_work");
+            //xpgSearchtoPageWithAction("Manual_work");
            // xpgUpdateStage();
            WeldModeSet(1);
 		    xpgCb_EnterCamcoderPreview();
@@ -172,27 +172,27 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
         }
         else if (dwIconId == 4)
         {
-            xpgPreactionAndGotoPage("SetYun");
+            xpgSearchtoPageWithAction("SetYun");
             xpgUpdateStage();
 
             /*
             Free_CacheWin();
             Idu_GetCacheWin_WithInit();
             DrakWin(Idu_GetCacheWin(), 2, 1);
-            xpgPreactionAndGotoPage("ToolBox");
+            xpgSearchtoPageWithAction("ToolBox");
             xpgUpdateStage();
             */
         }
         else if (dwIconId == 5) 
         {
             isSelectOnlineOPM = 0;
-            xpgPreactionAndGotoPage("opm1");
+            xpgSearchtoPageWithAction("opm1");
             xpgUpdateStage();
         }
         else if (dwIconId == 6) 
         {
 		    TspiSendCmdPolling0xA4(0x09);
-            xpgPreactionAndGotoPage("RedLight");
+            xpgSearchtoPageWithAction("RedLight");
             xpgUpdateStage();
         }
     }
@@ -250,7 +250,7 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
             if (g_psSetupMenu->bCustomizeIcon[dwIconId] < 0)
             {
 					st_bGoSetupFrom=1;
-                xpgPreactionAndGotoPage("FuncSet2");
+                xpgSearchtoPageWithAction("FuncSet2");
                 xpgUpdateStage();
                 return 0;
             }
@@ -263,13 +263,13 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
         else if (dwIconId == 6)
         {
 			st_bGoSetupFrom=1;
-            xpgPreactionAndGotoPage("FusionSet1");
+            xpgSearchtoPageWithAction("FusionSet1");
             xpgUpdateStage();
         }
         else if (dwIconId == 7)
         {
 			st_bGoSetupFrom=1;
-            xpgPreactionAndGotoPage("FuncSet2");
+            xpgSearchtoPageWithAction("FuncSet2");
             xpgUpdateStage();
         }
         else if (dwIconId == 8)
@@ -358,7 +358,7 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
                 return PASS;
         
             memcpy(&tempModeParam, pstModeParam, sizeof(MODEPARAM));
-            xpgPreactionAndGotoPage("FusionModeSet");
+            xpgSearchtoPageWithAction("FusionModeSet");
             xpgUpdateStage();
         }
     }
@@ -368,57 +368,57 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
         {
             if (dwIconId == 0)
             {
-                pdwEditingFusionValue = & tempModeParam.fangDianZhongXin;
+                pdwEditingFusionValue = (DWORD *)&tempModeParam.fangDianZhongXin;
                 strDialogTitle = getstr(Str_FangDianZhongXin);
             }
             else if (dwIconId == 1)
             {
-                pdwEditingFusionValue = & tempModeParam.rongJieDianYa;
+                pdwEditingFusionValue = (DWORD *)&tempModeParam.rongJieDianYa;
                 strDialogTitle = getstr(Str_RongJieDianYa);
             }
             else if (dwIconId == 2)
             {
-                pdwEditingFusionValue = & tempModeParam.yuRongDianYa;
+                pdwEditingFusionValue = (DWORD *)&tempModeParam.yuRongDianYa;
                 strDialogTitle = getstr(Str_YuRongDianYa);
             }
             else if (dwIconId == 3)
             {
-                pdwEditingFusionValue = & tempModeParam.chuChenDianYa;
+                pdwEditingFusionValue = (DWORD *)&tempModeParam.chuChenDianYa;
                 strDialogTitle = getstr(Str_ChuChenDianYa);
             }
             else if (dwIconId == 4)
             {
-                pdwEditingFusionValue = & tempModeParam.rongJieChongDieLiang;
+                pdwEditingFusionValue = (DWORD *)&tempModeParam.rongJieChongDieLiang;
                 strDialogTitle = getstr(Str_RongJieChongDieLiang);
             }
             else if (dwIconId == 5)
             {
-                pdwEditingFusionValue = & tempModeParam.duiJiaoMuBiaoZhi;
+                pdwEditingFusionValue = (DWORD *)&tempModeParam.duiJiaoMuBiaoZhi;
                 strDialogTitle = getstr(Str_DuiJiaoMuBiaoZhi);
             }
             else if (dwIconId == 6)
             {
-                pdwEditingFusionValue = & tempModeParam.rongJieShiJian;
+                pdwEditingFusionValue = (DWORD *)&tempModeParam.rongJieShiJian;
                 strDialogTitle = getstr(Str_RongJieShiJian);
             }
             else if (dwIconId == 7)
             {
-                pdwEditingFusionValue = & tempModeParam.yuRongShiJian;
+                pdwEditingFusionValue = (DWORD *)&tempModeParam.yuRongShiJian;
                 strDialogTitle = getstr(Str_YuRongShiJian);
             }
             else if (dwIconId == 8)
             {
-                pdwEditingFusionValue = & tempModeParam.chuChenShiJian;
+                pdwEditingFusionValue = (DWORD *)&tempModeParam.chuChenShiJian;
                 strDialogTitle = getstr(Str_ChuChenShiJian);
             }
             else if (dwIconId == 9)
             {
-                pdwEditingFusionValue = & tempModeParam.qieGeJiaoDuShangXian;
+                pdwEditingFusionValue = (DWORD *)&tempModeParam.qieGeJiaoDuShangXian;
                 strDialogTitle = getstr(Str_QieGeJiaoDuShangXian);
             }
             else if (dwIconId == 10)
             {
-                pdwEditingFusionValue = & tempModeParam.fangDianJiaoZhengMuBiaoZhi;
+                pdwEditingFusionValue = (DWORD *)&tempModeParam.fangDianJiaoZhengMuBiaoZhi;
                 strDialogTitle = getstr(Str_FangDianJiaoZhengMuBiaoZhi);
             }
             
@@ -428,7 +428,7 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
                 boDialogValueIsFloat = 1;
             else
                 boDialogValueIsFloat = 0;
-            popupDialog(Dialog_Value, "FusionModeSet",Idu_GetCurrWin());
+            popupDialog(Dialog_Value, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
             xpgUpdateStage();
         }
         else if (dwIconId == 11)
@@ -480,13 +480,13 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
         if (dwIconId == 0)
         {
 			TspiSendCmdPolling0xA4(0x09);
-            xpgPreactionAndGotoPage("RedLight");
+            xpgSearchtoPageWithAction("RedLight");
             xpgUpdateStage();
         }
         else if (dwIconId == 1)
         {
             isSelectOnlineOPM = 0;
-            xpgPreactionAndGotoPage("opm1");
+            xpgSearchtoPageWithAction("opm1");
             xpgUpdateStage();
         }
     }
@@ -558,11 +558,11 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
         else if (dwIconId == 1)
         {
             isSelectOnlineOPM = 1;
-            xpgPreactionAndGotoPage("opm2");
+            xpgSearchtoPageWithAction("opm2");
             xpgUpdateStage();
             Free_CacheWin();
             Idu_GetCacheWin_WithInit();
-            xpgPreactionAndGotoPage("opmWarn");
+            xpgSearchtoPageWithAction("opmWarn");
             xpgUpdateStage();
         }
     }
@@ -571,7 +571,7 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
         if (dwIconId == 0)
         {
             isSelectOnlineOPM = 0;
-            xpgPreactionAndGotoPage("opm1");
+            xpgSearchtoPageWithAction("opm1");
             xpgUpdateStage();
         }
         else if (dwIconId == 1)
@@ -584,13 +584,13 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
         if (dwIconId == 0)
         {
             isSelectOnlineOPM = 0;
-            xpgPreactionAndGotoPage("opm1");
+            xpgSearchtoPageWithAction("opm1");
             xpgUpdateStage();
         }
         else if (dwIconId == 1)
         {
             isSelectOnlineOPM = 1;
-            xpgPreactionAndGotoPage("opm2");
+            xpgSearchtoPageWithAction("opm2");
             xpgUpdateStage();
         }
     }
@@ -599,13 +599,13 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
         if (dwIconId == 0)
         {
             isSelectOnlineOPM = 0;
-            xpgPreactionAndGotoPage("opm1");
+            xpgSearchtoPageWithAction("opm1");
             xpgUpdateStage();
         }
         else if (dwIconId == 1)
         {
             isSelectOnlineOPM = 1;
-            xpgPreactionAndGotoPage("opm2");
+            xpgSearchtoPageWithAction("opm2");
             xpgUpdateStage();
         }
     }
@@ -613,7 +613,7 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
     {
         Free_CacheWin();
         isSelectOnlineOPM = 1;
-        xpgPreactionAndGotoPage("opm2");
+        xpgSearchtoPageWithAction("opm2");
         xpgUpdateStage();
     }
     else if(dwHashKey == xpgHash("Keyboard") )
@@ -988,7 +988,7 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
                             exitDialog();
                             memset(strEditPassword, 0, sizeof(strEditPassword));
                             strDialogTitle = getstr(Str_ZaiQueRenMiMa);
-                            popupDialog(Dialog_SetPassword2, "SetPassword",Idu_GetCurrWin());
+                            popupDialog(Dialog_SetPassword2, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
                             xpgUpdateStage();
                         }
                         else if (dialogType == Dialog_SetPassword2)
@@ -1009,16 +1009,19 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
 								WORD wInputCode=(strEditPassword[0]-'0')*1000+(strEditPassword[1]-'0')*100+(strEditPassword[2]-'0')*10+(strEditPassword[3]-'0');
 								strDialogTitle = getstr(Str_Note);
 								dialogOnClose = exitDialog;
+								uiCb_DisableKeyInput(0xff);
 								if (g_wElectrodeRandomCode==wInputCode)
 								{
-									popupDialog(Dialog_Note_ElectrodeEnable_PASS, "Main",Idu_GetCacheWin());
+									popupDialog(Dialog_Note_ElectrodeEnable_PASS, (STXPGPAGE *)xpgMovieSearchPage("Main")->m_wIndex,Idu_GetCacheWin());
+									Ui_TimerProcAdd(3000, uiCb_CheckElectrodePos);
 								}
 								else
 								{
-									popupDialog(Dialog_Note_ElectrodeEnable_FAIL, "Main",Idu_GetCacheWin());
+									popupDialog(Dialog_Note_ElectrodeEnable_FAIL, (STXPGPAGE *)xpgMovieSearchPage("Main")->m_wIndex,Idu_GetCacheWin());
+									Ui_TimerProcAdd(3000, uiCb_EnableKeyInput);
+									Ui_TimerProcAdd(3000, exitDialog);
 								}
 								xpgUpdateStage();
-								Ui_TimerProcAdd(3000, exitDialog);
 							}
                     }
                 }
@@ -1030,16 +1033,16 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
 						strDialogTitle = getstr(Str_Note);
 						dialogOnClose = exitDialog;
 						if (dialogType == Dialog_PowerOnCheckHirePassword)
-							popupDialog(Dialog_Note_ForgetHirePassword, DIALOG_PAGE_NAME,Idu_GetCacheWin());
+							popupDialog(Dialog_Note_ForgetHirePassword, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCacheWin());
 						else
-							popupDialog(Dialog_Note_ForgetOpenPassword, DIALOG_PAGE_NAME,Idu_GetCacheWin());
+							popupDialog(Dialog_Note_ForgetOpenPassword, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCacheWin());
 						xpgUpdateStage();
                 }
 				else if (dialogType == Dialog_Electrode_Enable)
 				{
 					strDialogTitle = getstr(Str_Note);
 					dialogOnClose = exitDialog;
-					popupDialog(Dialog_Note_ElectrodeEnable_Path, DIALOG_PAGE_NAME,Idu_GetCacheWin());
+					popupDialog(Dialog_Note_ElectrodeEnable_Path, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCacheWin());
 					xpgUpdateStage();
 				}
             }
@@ -1310,7 +1313,7 @@ SWORD touchSprite_BackIcon(STXPGSPRITE * sprite, WORD x, WORD y)
         dwHashKey == xpgHash("opm2") 
         )
     {
-        xpgPreactionAndGotoPage("Main");
+        xpgSearchtoPageWithAction("Main");
         xpgUpdateStage();
     }
     else if (dwHashKey == xpgHash("FuncSet") || 
@@ -1325,23 +1328,23 @@ SWORD touchSprite_BackIcon(STXPGSPRITE * sprite, WORD x, WORD y)
 		}
 		else
 		{
-	        xpgPreactionAndGotoPage("Main");
+	        xpgSearchtoPageWithAction("Main");
 	        xpgUpdateStage();
 		}
     }
     else if (dwHashKey == xpgHash("FusionModeSet"))
     {
-        xpgPreactionAndGotoPage("FusionSet1");
+        xpgSearchtoPageWithAction("FusionSet1");
         xpgUpdateStage();
     }
     else if (dwHashKey == xpgHash("opmList1"))
     {
-        xpgPreactionAndGotoPage("opm1");
+        xpgSearchtoPageWithAction("opm1");
 	    xpgUpdateStage();
     }
     else if (dwHashKey == xpgHash("opmList2"))
     {
-        xpgPreactionAndGotoPage("opm2");
+        xpgSearchtoPageWithAction("opm2");
 	    xpgUpdateStage();
     }
     
@@ -1357,7 +1360,7 @@ SWORD touchSprite_CloseIcon(STXPGSPRITE * sprite, WORD x, WORD y)
     if (dwHashKey == xpgHash("User") || 
         dwHashKey == xpgHash("ToolBox"))
     {
-        xpgPreactionAndGotoPage("Main");
+        xpgSearchtoPageWithAction("Main");
         xpgUpdateStage();
     }
     else if (dwHashKey == xpgHash(DIALOG_PAGE_NAME))
@@ -1485,7 +1488,7 @@ static void Dialog_CheckPassword_ChangeBootPassword_OnInput()
     memset(strEditPassword, 0, sizeof(strEditPassword));
     strDialogTitle = getstr(Str_SheZhiKaiJiMiMa);
     dialogOnClose = Dialog_SetPassword_BootPassword_OnInput;
-    popupDialog(Dialog_SetPassword1, "SetPassword",Idu_GetCurrWin());
+    popupDialog(Dialog_SetPassword1, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
     xpgUpdateStage();
 }
 
@@ -1505,7 +1508,7 @@ static void Dialog_CheckPassword_ChangeHirePassword_OnInput()
     memset(strEditPassword, 0, sizeof(strEditPassword));
     strDialogTitle = getstr(Str_SheZhiZuJieMiMa);
     dialogOnClose = Dialog_SetPassword_HirePassword_OnInput;
-    popupDialog(Dialog_SetPassword1, "SetPassword",Idu_GetCurrWin());
+    popupDialog(Dialog_SetPassword1, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
     xpgUpdateStage();
 }
 
@@ -1572,7 +1575,7 @@ SWORD touchSprite_Text(STXPGSPRITE * sprite, WORD x, WORD y)
                 else
                     sprintf(strEditValue, "%d", dwDialogTempValue);
                 dialogOnClose = NULL;
-                popupDialog(Dialog_EditValue, DIALOG_PAGE_NAME,Idu_GetCurrWin());
+                popupDialog(Dialog_EditValue, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
                 xpgUpdateStage();
             }
         }
@@ -1642,12 +1645,12 @@ SWORD touchSprite_Selector(STXPGSPRITE * sprite, WORD x, WORD y)
     
     if (dwHashKey == xpgHash("FuncSet"))
     {
-        xpgPreactionAndGotoPage("FuncSet2");
+        xpgSearchtoPageWithAction("FuncSet2");
         xpgUpdateStage();
     }
     else if (dwHashKey == xpgHash("FuncSet2"))
     {
-        xpgPreactionAndGotoPage("FuncSet");
+        xpgSearchtoPageWithAction("FuncSet");
         xpgUpdateStage();
     }
     else if (dwHashKey == xpgHash("SetYun") ||
@@ -1660,38 +1663,38 @@ SWORD touchSprite_Selector(STXPGSPRITE * sprite, WORD x, WORD y)
     {
         if (dwSelectorId == 0)
         {
-            xpgPreactionAndGotoPage("SetYun");
+            xpgSearchtoPageWithAction("SetYun");
             xpgUpdateStage();
         }
         else if (dwSelectorId == 1)
         {
-            xpgPreactionAndGotoPage("SetSleep");
+            xpgSearchtoPageWithAction("SetSleep");
             xpgUpdateStage();
         }
         else if (dwSelectorId == 2)
         {
-            xpgPreactionAndGotoPage("SetSound");
+            xpgSearchtoPageWithAction("SetSound");
             xpgUpdateStage();
         }
         else if (dwSelectorId == 3)
         {
-            xpgPreactionAndGotoPage("SetTime");
+            xpgSearchtoPageWithAction("SetTime");
             xpgUpdateStage();
         }
         else if (dwSelectorId == 4)
         {
-            xpgPreactionAndGotoPage("SetPassword");
+            xpgSearchtoPageWithAction("SetPassword");
             xpgUpdateStage();
         }
         else if (dwSelectorId == 5)
         {
-            //xpgPreactionAndGotoPage("SetUi");
-            xpgPreactionAndGotoPage("SetInfo");
+            //xpgSearchtoPageWithAction("SetUi");
+            xpgSearchtoPageWithAction("SetInfo");
             xpgUpdateStage();
         }
         //else if (dwSelectorId == 6)
         //{
-        //    xpgPreactionAndGotoPage("SetInfo");
+        //    xpgSearchtoPageWithAction("SetInfo");
         //    xpgUpdateStage();
         //}
         
@@ -1702,17 +1705,17 @@ SWORD touchSprite_Selector(STXPGSPRITE * sprite, WORD x, WORD y)
     {
         if (dwSelectorId == 0)
         {
-            xpgPreactionAndGotoPage("FusionSet1");
+            xpgSearchtoPageWithAction("FusionSet1");
             xpgUpdateStage();
         }
         else if (dwSelectorId == 1)
         {
-            xpgPreactionAndGotoPage("FusionSet2");
+            xpgSearchtoPageWithAction("FusionSet2");
             xpgUpdateStage();
         }
         else if (dwSelectorId == 2)
         {
-            xpgPreactionAndGotoPage("FusionSet3");
+            xpgSearchtoPageWithAction("FusionSet3");
             xpgUpdateStage();
         }
     }
@@ -1720,7 +1723,7 @@ SWORD touchSprite_Selector(STXPGSPRITE * sprite, WORD x, WORD y)
     {
         if (dwSelectorId == 0)
         {
-			xpgPreactionAndGotoPage("opmList1");
+			xpgSearchtoPageWithAction("opmList1");
 			pstBrowser->wListCount = 5;
 			pstBrowser->wListIndex= 0;
 			pstBrowser->wIndex= 0;
@@ -1732,7 +1735,7 @@ SWORD touchSprite_Selector(STXPGSPRITE * sprite, WORD x, WORD y)
     {
         if (dwSelectorId == 0)
         {
-			xpgPreactionAndGotoPage("opmList2");
+			xpgSearchtoPageWithAction("opmList2");
 			pstBrowser->wListCount = 5;
 			pstBrowser->wListIndex= 0;
 			pstBrowser->wIndex= 0;
@@ -1754,7 +1757,7 @@ static void opmKeyboardBack(BOOL boEnter)
         editingOpmDataItem->itemName[sizeof(editingOpmDataItem->itemName) - 1] = 0;
     }
     Free_CacheWin();
-    xpgPreactionAndGotoPage(opmBackPageName);
+    xpgSearchtoPageWithAction(opmBackPageName);
     xpgUpdateStage();
 }
 
@@ -1769,7 +1772,7 @@ void startEditOpmRecordName(const char * oldPageName, OPMDATAITEM * curItem)
     Free_CacheWin();
     Idu_GetCacheWin_WithInit();
     boCapsLock = FALSE;
-    xpgPreactionAndGotoPage("Keyboard");
+    xpgSearchtoPageWithAction("Keyboard");
     xpgUpdateStage();
 }
 
@@ -1783,7 +1786,7 @@ static void fusionRecordKeyboardBack(BOOL boEnter)
         editingFusionDataItem->bRecordName[sizeof(editingFusionDataItem->bRecordName) - 1] = 0;
     }
     Free_CacheWin();
-    xpgPreactionAndGotoPage("Record");
+    xpgSearchtoPageWithAction("Record");
     xpgUpdateStage();
 }
 
@@ -1797,7 +1800,7 @@ void startEditFusionRecordName(STRECORD * pr)
     Free_CacheWin();
     Idu_GetCacheWin_WithInit();
     boCapsLock = FALSE;
-    xpgPreactionAndGotoPage("Keyboard");
+    xpgSearchtoPageWithAction("Keyboard");
     xpgUpdateStage();
 }
 
@@ -1823,21 +1826,21 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
     {
         if (dwSpriteId == 2)
         {
-            popupDialog(Dialog_ReSuGuan, "FusionSet3",Idu_GetCurrWin());
+            popupDialog(Dialog_ReSuGuan, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
             xpgUpdateStage();
         }
         else if (dwSpriteId == 3)
         {
             dwDialogTempValue = g_psSetupMenu->wJiaReWenDu;
             dialogOnClose = Dialog_JiaReWenDu_OnClose;
-            popupDialog(Dialog_ModifyNumber, "FusionSet3",Idu_GetCurrWin());
+            popupDialog(Dialog_ModifyNumber, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
             xpgUpdateStage();
         }
         else if (dwSpriteId == 4)
         {
             dwDialogTempValue = g_psSetupMenu->wJiaReShiJian;
             dialogOnClose = Dialog_JiaReShiJian_OnClose;
-            popupDialog(Dialog_ModifyNumber, "FusionSet3",Idu_GetCurrWin());
+            popupDialog(Dialog_ModifyNumber, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
             xpgUpdateStage();
         }
         else
@@ -1852,7 +1855,7 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
             DrakWin(Idu_GetCacheWin(), 2, 1);
             mpCopyEqualWin(Idu_GetCurrWin(), Idu_GetCacheWin());
             dwDialogTempValue = g_psSetupMenu->bBrightness;
-            popupDialog(Dialog_SetBrightness, "SetSleep",Idu_GetCurrWin());
+            popupDialog(Dialog_SetBrightness, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
             xpgUpdateStage();
         }
         else if (dwSpriteId == 3 && !g_psSetupMenu->bAutoShutdown)
@@ -1862,7 +1865,7 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
             DrakWin(Idu_GetCacheWin(), 2, 1);
             mpCopyEqualWin(Idu_GetCurrWin(), Idu_GetCacheWin());
             dwDialogTempValue = g_psSetupMenu->wShutdownTime;
-            popupDialog(Dialog_ShutdownTime, "SetSleep",Idu_GetCurrWin());
+            popupDialog(Dialog_ShutdownTime, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
             xpgUpdateStage();
         }
     }
@@ -1875,7 +1878,7 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
             DrakWin(Idu_GetCacheWin(), 2, 1);
             mpCopyEqualWin(Idu_GetCurrWin(), Idu_GetCacheWin());
             dwDialogTempValue = g_psSetupMenu->bVolume;
-            popupDialog(Dialog_SetSound, "SetSound",Idu_GetCurrWin());
+            popupDialog(Dialog_SetSound, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
             xpgUpdateStage();
         }
     }
@@ -1891,7 +1894,7 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
             ST_SYSTEM_TIME curTime;
             SystemTimeGet(&curTime);
             dwDialogTempValue = (curTime.u08Hour<<16) | curTime.u08Minute;
-            popupDialog(Dialog_SetTime, "SetTime",Idu_GetCurrWin());
+            popupDialog(Dialog_SetTime, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
             xpgUpdateStage();
         }
         else if (dwSpriteId == 2)
@@ -1905,7 +1908,7 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
             SystemTimeGet(&curTime);
             dwDialogTempValue = (curTime.u16Year<<16) | (curTime.u08Month<< 8) | curTime.u08Day;
             dialogOnClose = NULL;
-            popupDialog(Dialog_SetDate, "SetTime",Idu_GetCurrWin());
+            popupDialog(Dialog_SetDate, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
             xpgUpdateStage();
         }
         else if (dwSpriteId == 3)
@@ -1914,7 +1917,7 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
             Idu_GetCacheWin_WithInit();
             DrakWin(Idu_GetCacheWin(), 2, 1);
             mpCopyEqualWin(Idu_GetCurrWin(), Idu_GetCacheWin());
-            popupDialog(Dialog_SetDateFormat, "SetTime",Idu_GetCurrWin());
+            popupDialog(Dialog_SetDateFormat, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
             xpgUpdateStage();
         }
         else if (dwSpriteId == 4)
@@ -1923,7 +1926,7 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
             Idu_GetCacheWin_WithInit();
             DrakWin(Idu_GetCacheWin(), 2, 1);
             mpCopyEqualWin(Idu_GetCurrWin(), Idu_GetCacheWin());
-            popupDialog(Dialog_SetLang, "SetTime",Idu_GetCurrWin());
+            popupDialog(Dialog_SetLang, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
             xpgUpdateStage();
         }
     }
@@ -1938,7 +1941,7 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
             memset(strEditPassword, 0, sizeof(strEditPassword));
             strDialogTitle = getstr(Str_QingShuRuMiMa);
             dialogOnClose = Dialog_CheckPassword_ChangeBootPassword_OnInput;
-            popupDialog(Dialog_CheckPassword, "SetPassword",Idu_GetCurrWin());
+            popupDialog(Dialog_CheckPassword, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
             xpgUpdateStage();
         }
         else if (dwSpriteId == 4)
@@ -1950,7 +1953,7 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
             memset(strEditPassword, 0, sizeof(strEditPassword));
             strDialogTitle = getstr(Str_QingShuRuMiMa);
             dialogOnClose = Dialog_CheckPassword_ChangeHirePassword_OnInput;
-            popupDialog(Dialog_CheckPassword, "SetPassword",Idu_GetCurrWin());
+            popupDialog(Dialog_CheckPassword, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
             xpgUpdateStage();
         }
         else if (dwSpriteId == 5)
@@ -1963,7 +1966,7 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
             strDialogTitle = getstr(Str_SuoDingRiQi);
             dialogOnClose = Dialog_SetValue_SuoDingRongJieRiQi;
             dwDialogTempValue = (g_psSetupMenu->wLockDateYear <<16) | (g_psSetupMenu->bLockDateMonth << 8) | g_psSetupMenu->bLockDateDay;
-            popupDialog(Dialog_SetDate, "SetPassword",Idu_GetCurrWin());
+            popupDialog(Dialog_SetDate, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
             xpgUpdateStage();
         }
         else if (dwSpriteId == 6)
@@ -1977,7 +1980,7 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
             dialogOnClose = Dialog_SetValue_SuoDingRongJieCiShu;
             dwDialogTempValue = g_psSetupMenu->wLockedTimes;
             boDialogValueIsFloat = 0;
-            popupDialog(Dialog_EditValue, "SetPassword",Idu_GetCurrWin());
+            popupDialog(Dialog_EditValue, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
             xpgUpdateStage();
         }
     }
@@ -1989,7 +1992,7 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
             Idu_GetCacheWin_WithInit();
             DrakWin(Idu_GetCacheWin(), 2, 1);
             mpCopyEqualWin(Idu_GetCurrWin(), Idu_GetCacheWin());
-            popupDialog(Dialog_About, "SetInfo",Idu_GetCurrWin());
+            popupDialog(Dialog_About, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
             xpgUpdateStage();
         }
         else if (dwSpriteId == 1)
@@ -1998,7 +2001,7 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
             Idu_GetCacheWin_WithInit();
             DrakWin(Idu_GetCacheWin(), 2, 1);
             mpCopyEqualWin(Idu_GetCurrWin(), Idu_GetCacheWin());
-            popupDialog(Dialog_Times, "SetInfo",Idu_GetCurrWin());
+            popupDialog(Dialog_Times, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
             xpgUpdateStage();
         }
         else if (dwSpriteId == 2)
@@ -2007,7 +2010,7 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
             Idu_GetCacheWin_WithInit();
             DrakWin(Idu_GetCacheWin(), 2, 1);
             mpCopyEqualWin(Idu_GetCurrWin(), Idu_GetCacheWin());
-            popupDialog(Dialog_TempInfo, "SetInfo",Idu_GetCurrWin());
+            popupDialog(Dialog_TempInfo, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
             xpgUpdateStage();
         }
         else if (dwSpriteId == 3)
@@ -2016,7 +2019,7 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
             Idu_GetCacheWin_WithInit();
             DrakWin(Idu_GetCacheWin(), 2, 1);
             mpCopyEqualWin(Idu_GetCurrWin(), Idu_GetCacheWin());
-            popupDialog(Dialog_BatInfo, "SetInfo",Idu_GetCurrWin());
+            popupDialog(Dialog_BatInfo, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
             xpgUpdateStage();
         }
     }
@@ -2094,7 +2097,7 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
             strDialogTitle = getstr(Str_Input_ElectrodeEnableCode);
             memset(strEditPassword, 0, sizeof(strEditPassword));
             dialogOnClose = exitDialog;
-            popupDialog(Dialog_Electrode_Enable, "Main",Idu_GetCacheWin());
+            popupDialog(Dialog_Electrode_Enable, (STXPGPAGE *)xpgMovieSearchPage("Main")->m_wIndex,Idu_GetCacheWin());
             xpgUpdateStage();
 				break;
 
@@ -2177,7 +2180,7 @@ SWORD touchSprite_Radio(STXPGSPRITE * sprite, WORD x, WORD y)
                 memset(strEditPassword, 0, sizeof(strEditPassword));
                 strDialogTitle = getstr(Str_QingShuRuMiMa);
                 dialogOnClose = Dialog_CheckPassword_CloseBootPassword_OnInput;
-                popupDialog(Dialog_CheckPassword, "SetPassword",Idu_GetCurrWin());
+                popupDialog(Dialog_CheckPassword, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
                 xpgUpdateStage();
             }
             else 
@@ -2189,7 +2192,7 @@ SWORD touchSprite_Radio(STXPGSPRITE * sprite, WORD x, WORD y)
                 memset(strEditPassword, 0, sizeof(strEditPassword));
                 strDialogTitle = getstr(Str_SheZhiKaiJiMiMa);
                 dialogOnClose = Dialog_SetPassword_BootPassword_OnInput;
-                popupDialog(Dialog_SetPassword1, "SetPassword",Idu_GetCurrWin());
+                popupDialog(Dialog_SetPassword1, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
                 xpgUpdateStage();
             }
         }
@@ -2204,7 +2207,7 @@ SWORD touchSprite_Radio(STXPGSPRITE * sprite, WORD x, WORD y)
                 memset(strEditPassword, 0, sizeof(strEditPassword));
                 strDialogTitle = getstr(Str_QingShuRuMiMa);
                 dialogOnClose = Dialog_CheckPassword_CloseHirePassword_OnInput;
-                popupDialog(Dialog_CheckPassword, "SetPassword",Idu_GetCurrWin());
+                popupDialog(Dialog_CheckPassword, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
                 xpgUpdateStage();
             }
             else
@@ -2216,7 +2219,7 @@ SWORD touchSprite_Radio(STXPGSPRITE * sprite, WORD x, WORD y)
                 memset(strEditPassword, 0, sizeof(strEditPassword));
                 strDialogTitle = getstr(Str_SheZhiZuJieMiMa);
                 dialogOnClose = Dialog_SetPassword_HirePassword_OnInput;
-                popupDialog(Dialog_SetPassword1, "SetPassword",Idu_GetCurrWin());
+                popupDialog(Dialog_SetPassword1, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
                 xpgUpdateStage();
             }
         }
@@ -2320,7 +2323,7 @@ static void uiEnterRecordList()
     	
 
     g_dwRecordListCurrPage = 0;                     // 设置当前为第0页
-    xpgPreactionAndGotoPage("Record");
+    xpgSearchtoPageWithAction("Record");
     xpgUpdateStage();
 }
 

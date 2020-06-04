@@ -190,7 +190,19 @@ typedef struct {
 //--g_dwMachineErrorFlag g_dwMachineErrorShow
 #define	MACHINE_ERROR_SENSOR										BIT0
 
-extern DWORD g_dwMachineErrorFlag,g_dwMachineErrorShow;
+//--g_dwMachineWarningFlag
+#define	WARNING_OUTSIDE_TEMP_HIGH									BIT0
+#define	WARNING_OUTSIDE_TEMP_LOW										BIT1
+#define	WARNING_INSIDE_TEMP_HIGH										BIT2
+#define	WARNING_INSIDE_TEMP_LOW											BIT3
+#define	WARNING_HUMIDITY															BIT4
+#define	WARNING_ATMOS_PRESSURE											BIT5
+#define	WARNING_ELECTRODE_LESS											BIT6
+#define	WARNING_BATTERY_LOW													BIT7
+#define	WARNING_NETSIGNAL_LOW												BIT8
+
+extern BYTE g_bKeyExcept;
+extern DWORD g_dwMachineErrorFlag,g_dwMachineErrorShow,g_dwMachineWarningFlag;
 
 
 SWORD TspiSendCmdPolling0xA4(BYTE bCmd);
@@ -219,6 +231,9 @@ void ShowOSDstring(void);
 
 SWORD Weld_CaptureFile(ST_IMGWIN *pWin);
 SWORD Weld_ReadFileWeldInfo(STREAM* handle,BYTE *pbTitle,STWELDSTATUS *pWeldStatus);
+void uiCb_CheckElectrodePos(void);
+void uiCb_DisableKeyInput(BYTE bKeyExcept);  //0xff -> skip all key
+void uiCb_EnableKeyInput(void);
 
 #endif
 

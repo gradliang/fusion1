@@ -23,6 +23,7 @@
 #include "filebrowser.h"
 #include "Icon.h"
 #include "ui_timer.h"
+#include "xpgFunc.h"
 
 #include "peripheral.h"
 
@@ -74,10 +75,8 @@ BYTE Sensor_GetPicMode(void)
 {
 	return st_bSensorMode;
 }
-
-BYTE g_bInCharge=0,g_bBatteryQuantity=60,g_bStandby=0,g_bLowPower=0,g_bLogoMix=0;
-SBYTE g_sbLogoStep=4;
-DWORD g_dwMachineErrorFlag=0,g_dwMachineErrorShow=0;
+BYTE g_bKeyExcept=0xff; //disable all
+DWORD g_dwMachineErrorFlag=0,g_dwMachineErrorShow=0,g_dwMachineWarningFlag=0;
 
 #if 1 //OPM
 //实时申请,前一个SEG为HEAD，HEAD内每个DWORD为有效SEG数
@@ -357,12 +356,12 @@ SWORD TSPI_Send(BYTE *pbDataBuf,DWORD dwLenth )
 
 
 		TSPI_Reset();
-		/*
+#if 0
 		if (swRet==PASS)
 			mpDebugPrintN("-O-");
 		else
 			mpDebugPrintN("-N-");
-			*/
+#endif
 		return swRet;
 }
 
@@ -5920,6 +5919,16 @@ void Proc_Weld_State_Fast()
 					}
 				}
 				#endif
+				WORD wbElectrodeTimes=(WORD)g_psSetupMenu->bElectrodeInfo[13]<<8|g_psSetupMenu->bElectrodeInfo[14];
+
+				if (wbElectrodeTimes)
+					wbElectrodeTimes--;
+				g_psSetupMenu->bElectrodeInfo[13]=wbElectrodeTimes>>8;
+				g_psSetupMenu->bElectrodeInfo[14]=wbElectrodeTimes;
+				if (wbElectrodeTimes<5)
+					g_dwMachineWarningFlag|=WARNING_ELECTRODE_LESS;
+				g_psSetupMenu->dwWorkTotalTimes++;
+				WriteSetupChg();
 			}
 			break;
 
@@ -6508,6 +6517,12 @@ void Proc_Weld_State()
 }
 #endif
 
+BYTE SensorActionBusy(void)
+{
+	if (st_dwProcState || st_dwGetCenterState)
+		return 1;
+	return 0;
+}
 void Proc_SensorData_State()
 {
 	ST_IMGWIN *pWin=(ST_IMGWIN *)&SensorInWin[0];
@@ -6680,16 +6695,22 @@ void TSPI_DataProc(void)
 	}
 	if (bChecksum!=pbTspiRxBuffer[st_dwTspiRxIndex-1])
 	{
-		mpDebugPrintN(" checksum error really %p data %p ",bChecksum,pbTspiRxBuffer[st_dwTspiRxIndex-1]);
+		//mpDebugPrint(" checksum error really %p data %p ",bChecksum,pbTspiRxBuffer[st_dwTspiRxIndex-1]);
+		mpDebugPrint("!!!");
 		return;
 	}
 	//接收成功
 	if (!(pbTspiRxBuffer[0]==0xbf && pbTspiRxBuffer[2]<0x03))
 		TspiSendSimpleInfo0xAF(0x01);
-	if (g_bStandby &&(pbTspiRxBuffer[0]==0xb1))
+	if (g_psUnsaveParam->bStandby &&(pbTspiRxBuffer[0]==0xb1))
 	{
 		TurnOnBackLight();
 		TimerToBacklightOff(5000);
+	}
+	if (g_bKeyExcept&&(pbTspiRxBuffer[0]==0xb1)&&(pbTspiRxBuffer[2]!=g_bKeyExcept))
+	{
+		MP_DEBUG("Skip key %d",pbTspiRxBuffer[2]);
+		return;
 	}
 	switch (pbTspiRxBuffer[0])
 	{
@@ -6801,7 +6822,7 @@ void TSPI_DataProc(void)
 							else
 							{
 								Idu_OsdErase();
-								xpgPreactionAndGotoPage("Main");
+								xpgSearchtoPageWithAction("Main");
 								xpgUpdateStage();
 							}
 						}
@@ -6841,7 +6862,7 @@ void TSPI_DataProc(void)
 						else
 						{
 							Idu_OsdErase();
-							xpgPreactionAndGotoPage("Main");
+							xpgSearchtoPageWithAction("Main");
 							xpgUpdateStage();
 						}
 						#endif
@@ -7023,14 +7044,20 @@ void TSPI_DataProc(void)
 					break;
 					
 					case 2:
-					DriveMotor(01,1,65000,10);
+					//DriveMotor(01,1,65000,10);
 					break;
 					
 					case 3:
+					#if 1
+					Idu_OsdErase();
+					xpgSearchtoPageWithAction("Main");
+					xpgUpdateStage();
+					#else
 					ResetMotor();
 					g_psSetupMenu->bBackGroundLevel[0]=0;
 					g_psSetupMenu->bBackGroundLevel[1]=0;
 					Ui_TimerProcAdd(1000, ScanBackgroundLevel);
+					#endif
 					break;
 					
 					case 4:
@@ -7236,8 +7263,45 @@ void TSPI_DataProc(void)
 
 		//温度压力电量环境亮度
 		case 0xb8:
-			if (dwLen>=11)
-				memcpy(&g_psUnsaveParam->bTemperatureInhome[0],&pbTspiRxBuffer[2],8);
+			if (dwLen>=10)
+			{
+				g_dwMachineWarningFlag &= 0xfffffc00;
+				if (pbTspiRxBuffer[2]!=g_psUnsaveParam->bTemperatureInhome[0])
+				{
+					index=pbTspiRxBuffer[2]&BIT7;
+					i=pbTspiRxBuffer[2]&0x7f;
+					if (index>0)
+						g_dwMachineWarningFlag|=WARNING_INSIDE_TEMP_LOW;
+					else if (!index && i>60)
+						g_dwMachineWarningFlag|=WARNING_INSIDE_TEMP_HIGH;
+				}
+				if (pbTspiRxBuffer[4]!=g_psUnsaveParam->bTemperatureOuthome[0])
+				{
+					index=pbTspiRxBuffer[4]&BIT7;
+					i=pbTspiRxBuffer[4]&0x7f;
+					if (index>0 && i>20)
+						g_dwMachineWarningFlag|=WARNING_OUTSIDE_TEMP_LOW;
+					else if (!index && i>60)
+						g_dwMachineWarningFlag|=WARNING_OUTSIDE_TEMP_HIGH;
+				}
+				if (pbTspiRxBuffer[6]!=g_psUnsaveParam->bHumidity)
+				{
+					if (pbTspiRxBuffer[6]>60)
+						g_dwMachineWarningFlag|=WARNING_HUMIDITY;
+				}
+				if (((WORD)pbTspiRxBuffer[7]<<8) |pbTspiRxBuffer[8] != g_psUnsaveParam->wPressure)
+				{
+					g_psUnsaveParam->wPressure=((WORD)pbTspiRxBuffer[7]<<8) |pbTspiRxBuffer[8];
+					if (g_psUnsaveParam->wPressure<50 || g_psUnsaveParam->wPressure>200)
+						g_dwMachineWarningFlag|=WARNING_ATMOS_PRESSURE;
+				}
+				//memset(&g_psUnsaveParam->bTemperatureInhome[0],0,8);
+				memcpy(&g_psUnsaveParam->bTemperatureInhome[0],&pbTspiRxBuffer[2],dwLen-3-2);
+				//MP_DEBUG(" %02x %02x %02x %02x ",g_psUnsaveParam->bTemperatureInhome[0],g_psUnsaveParam->bTemperatureInhome[1],g_psUnsaveParam->bTemperatureOuthome[0],g_psUnsaveParam->bTemperatureOuthome[1]);// wPressure 6900 0069 
+				MP_DEBUG("wPressure %02x %04x ",g_psUnsaveParam->bHumidity,g_psUnsaveParam->wPressure);// wPressure 6900 0069 
+				if ( g_pstXpgMovie->m_pstCurPage->m_dwHashKey == xpgHash("Main"))
+					xpgUpdateStage();
+			}
 			break;
 
 		//查询命令
@@ -7284,8 +7348,12 @@ void TSPI_DataProc(void)
 
 		//激活电击棒信息
 		case 0xbb:
-			if (dwLen>=18)
-				memcpy(&g_psSetupMenu->bElectrodeInfo[0],&pbTspiRxBuffer[2],15);
+			if (dwLen<=18)
+			{
+				memcpy(&g_psSetupMenu->bElectrodeInfo[0],&pbTspiRxBuffer[2],dwLen-3);
+				if (((WORD)g_psSetupMenu->bElectrodeInfo[13]<<8|g_psSetupMenu->bElectrodeInfo[14])<5)
+					g_dwMachineWarningFlag|=WARNING_ELECTRODE_LESS;
+			}
 			break;
 
 		//设备信息数据传输
@@ -7342,10 +7410,10 @@ void TSPI_DataProc(void)
 					}
 				break;
 				case 0x02:
-					g_bStandby=1;
+					g_psUnsaveParam->bStandby=1;
 				break;
 				case 0x03:
-					g_bStandby=0;
+					g_psUnsaveParam->bStandby=0;
 				break;
 			}
 			break;
@@ -7409,14 +7477,53 @@ void TSPI_DataProc(void)
 
 		//充电状态与电量
 		case 0xc7:
-			g_bInCharge=pbTspiRxBuffer[2];
-			if (!g_bInCharge)
+			g_psUnsaveParam->bChargeStatus=pbTspiRxBuffer[2];
+			if (!g_psUnsaveParam->bChargeStatus)
 			{
-				g_bBatteryQuantity=pbTspiRxBuffer[3];
-				if (g_bBatteryQuantity>100)
-					g_bBatteryQuantity=100;
-				if (g_bStandby)
+				if (g_psUnsaveParam->bBatteryQuantity !=pbTspiRxBuffer[3])
+				{
+					g_psUnsaveParam->bBatteryQuantity=pbTspiRxBuffer[3];
+					if (g_psUnsaveParam->bBatteryQuantity>100)
+						g_psUnsaveParam->bBatteryQuantity=100;
+					if ((g_dwMachineWarningFlag & WARNING_BATTERY_LOW)&&(g_psUnsaveParam->bBatteryQuantity>20)&&(dwHashKey == xpgHash(DIALOG_PAGE_NAME)))
+					{
+						g_dwMachineWarningFlag &= ~WARNING_BATTERY_LOW;
+						if (dialogOnClose == DialogCb_ExitLowPowerPopWarning)
+							DialogCb_ExitLowPowerPopWarning();
+					}
+					else if (!(g_dwMachineWarningFlag & WARNING_BATTERY_LOW) && g_psUnsaveParam->bBatteryQuantity<=20)
+					{
+							g_dwMachineWarningFlag |= WARNING_BATTERY_LOW;
+							if (!SensorActionBusy() && (dwHashKey != xpgHash(DIALOG_PAGE_NAME)))
+								xpgUpdateStage();
+					}
+					//g_psSetupMenu->bElectrodeInfo[13]=0x0b;
+					//g_psSetupMenu->bElectrodeInfo[14]=0xb8;
+					//WriteSetupChg();
+				}
+				if (g_psUnsaveParam->bStandby)
 					SendCmdPowerOff();
+			}
+			break;
+
+		//网络信号强度
+		case 0xc8:
+			if (g_psUnsaveParam->bNetSignal !=pbTspiRxBuffer[2])
+			{
+				//mpDebugPrint("signal %d",pbTspiRxBuffer[2]);
+				g_psUnsaveParam->bNetSignal=pbTspiRxBuffer[2];
+				if (!(g_dwMachineWarningFlag & WARNING_NETSIGNAL_LOW) && g_psUnsaveParam->bNetSignal<2)
+				{
+					g_dwMachineWarningFlag |= WARNING_NETSIGNAL_LOW;
+					if (!SensorActionBusy() && (dwHashKey != xpgHash(DIALOG_PAGE_NAME)))
+						xpgUpdateStage();
+				}
+				else if ((g_dwMachineWarningFlag & WARNING_NETSIGNAL_LOW) && g_psUnsaveParam->bNetSignal>=2)
+				{
+					g_dwMachineWarningFlag &= ~WARNING_NETSIGNAL_LOW;
+					if (dialogOnClose == DialogCb_ExitLowNetsignalPopWarning)
+						DialogCb_ExitLowNetsignalPopWarning();
+				}
 			}
 			break;
 
@@ -8277,90 +8384,6 @@ void WeldDataInit(void)
 	}
 	TimerCheckToFillReferWin(10);
 }
-
-//>------------UI CODE FUNCION-----------------------
-
-void uiCb_CheckInStandby(void)
-{
-//--Battery info
-	TspiSendCmdPolling0xA4(0x0b);
-	if (g_bStandby)
-	{
-		if (g_bInCharge)
-		{
-			g_bBatteryQuantity+=20;
-			if (g_bBatteryQuantity>=100)
-				g_bBatteryQuantity=0;
-		}
-		xpgUpdateStage();
-		Ui_TimerProcAdd(1000, uiCb_CheckInStandby);
-	}
-	else if (g_bLowPower)
-	{
-		if (!g_bInCharge && g_bBatteryQuantity < 10 )
-		{
-			if (g_bLowPower>9)
-				SendCmdPowerOff();
-			else if (g_bLowPower&0x01)
-				xpgUpdateStage();
-			else
-				mpClearWin(Idu_GetCurrWin());
-			g_bLowPower++;
-			Ui_TimerProcAdd(500, uiCb_CheckInStandby);
-		}
-		else
-		{
-			g_bLogoMix=0;
-			uiCb_CheckBattery();
-		}
-	}
-}
-
-void uiCb_CheckBattery(void)
-{
-	if (!g_bInCharge && g_bBatteryQuantity < 10 )
-	{
-		g_bLowPower=1;
-		xpgPreactionAndGotoPage("Charge");
-		uiCb_CheckInStandby();
-	}
-	else 
-	{
-			if (g_bBatteryQuantity<=100 && g_bLogoMix==128)
-			{
-				SystemClearStatus(SYS_STATUS_INIT);
-				//--check sensor
-				#if 1
-				if (sensor_NT99140_CheckID()!=PASS)
-				{
-					g_dwMachineErrorFlag|=MACHINE_ERROR_SENSOR;
-					g_dwMachineErrorShow|=MACHINE_ERROR_SENSOR;
-				}
-				#endif
-				//--goto main page
-				xpgPreactionAndGotoPage("Main");
-				xpgUpdateStage();
-				Timer_FirstEnterCamPreview();
-			}
-			else
-			{
-				if (g_bBatteryQuantity>100 && (!(g_bLogoMix&0x0f)))
-					TspiSendCmdPolling0xA4(0x0b);
-				if (g_bLogoMix>=128)
-				{
-					g_sbLogoStep=-4;
-					g_bLogoMix=128;
-				}
-				else if (!g_bLogoMix)
-					g_sbLogoStep=4;
-				g_bLogoMix+=g_sbLogoStep;
-				xpgUpdateStage();
-				Ui_TimerProcAdd(10, uiCb_CheckBattery);
-			}
-	}
-}
-
-//<------------UI CODE FUNCION-----------------------
 
 #endif
 #endif

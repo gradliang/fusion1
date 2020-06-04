@@ -8,6 +8,7 @@ extern DWORD g_dwRecordListCurrPage;
 
 void TouchCtrllerInit(void);
 void uiTouchMsgReceiver(void);
+void uiDispatchTouchSprite(WORD x1, WORD y1);
 
 void (*dialogOnClose)();
 

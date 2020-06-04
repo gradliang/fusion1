@@ -119,12 +119,17 @@ typedef struct {
     BYTE bRedPenHZ;
     BYTE bRedPenTimerEnable;
     WORD wRedPenTime;
-//温度压力电量环境亮度
+//温度压力环境亮度
     BYTE bTemperatureInhome[2];
     BYTE bTemperatureOuthome[2];
     BYTE bHumidity;
-    BYTE bPressure[2];
-    BYTE bBattery;
+    WORD wPressure; //pbTspiRxBuffer[8]|pbTspiRxBuffer[7],先发低位
+//电量
+    BYTE bChargeStatus;
+    BYTE bBatteryQuantity;
+    BYTE bStandby;
+//网络信号强度
+    BYTE bNetSignal;
 
 }ST_UNSAVE_PARAM;
 extern ST_UNSAVE_PARAM *g_psUnsaveParam;
@@ -211,6 +216,7 @@ typedef struct ST_SETUP_MENU_SETTING_VALUE
     BYTE bMADarry[6];            			//MAD 码
     BYTE bBackGroundLevel[2];            			//4  两个摄像头的背景亮度值
     BYTE bElectrodeInfo[15];            			//4  电击棒信息
+    DWORD dwWorkTotalTimes;            			//4  熔接总次数
     
 #endif
 

@@ -184,11 +184,15 @@ ST_IMGWIN *Idu_GetCacheWin_WithInit();
 ST_IMGWIN *Idu_GetCacheWin();
 void Free_CacheWin();
 void DrakWin(ST_IMGWIN* pWin, DWORD largeNum, DWORD smallNum);
-STXPGPAGE *xpgPreactionAndGotoPage(const char *name);
+STXPGPAGE *xpgSearchtoPageWithAction(const char *name);
 
 void xpgCb_AutoPowerOff(BYTE bEnable,DWORD dwTime);
 void xpgCb_EnterCamcoderPreview();
-
+void xpgCb_StopAllSensorWork();
+void AddAutoEnterPreview(void);
+void uiCb_CheckPopDialogAfterUpdatestage(void);
+void DialogCb_ExitLowPowerPopWarning(void);
+void DialogCb_ExitLowNetsignalPopWarning(void);
 
 #endif
 

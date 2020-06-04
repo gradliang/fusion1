@@ -10,8 +10,8 @@
 //--产品总开关
 //#define PRODUCT_ID									(PCBA_MAIN_BOARD_V10|PANEL_800x600|UI_SURFACE)
 //#define PRODUCT_ID									(PCBA_MAIN_BOARD_V11|PANEL_LVDS_1024x600|UI_SURFACE)
-#define PRODUCT_ID									(PCBA_MAIN_BOARD_V12|PANEL_800x480|UI_WELDING)
-//#define PRODUCT_ID									(PCBA_MAIN_BOARD_V20|PANEL_800x480|UI_WELDING)
+//#define PRODUCT_ID									(PCBA_MAIN_BOARD_V12|PANEL_800x480|UI_WELDING)
+#define PRODUCT_ID									(PCBA_MAIN_BOARD_V20|PANEL_800x480|UI_WELDING)
 
 
 //common function
@@ -838,6 +838,7 @@
 #define Dialog_Note_ElectrodeEnable_Path                      26          //4 激活电极棒方法
 #define Dialog_Note_ElectrodeEnable_PASS                      27          //4 激活电极棒PASS
 #define Dialog_Note_ElectrodeEnable_FAIL                      28          //4 激活电极棒FAIL
+#define Dialog_MachineWarning                      						29          //4 主界面出现的警告提示框
 
 
 
