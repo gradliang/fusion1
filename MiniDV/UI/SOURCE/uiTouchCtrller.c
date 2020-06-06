@@ -2128,9 +2128,10 @@ SWORD touchSprite_Radio(STXPGSPRITE * sprite, WORD x, WORD y)
     {
         if (dwSpriteId == 0)
         {
-            g_psSetupMenu->bCloudMode = !g_psSetupMenu->bCloudMode;
-            xpgUpdateStage();
-            WriteSetupChg();
+			g_psSetupMenu->bCloudMode = !g_psSetupMenu->bCloudMode;
+			TspiSendOnOffOrder0xA9(0x02, g_psSetupMenu->bCloudMode);
+			xpgUpdateStage();
+			WriteSetupChg();
         }
     }
     else if (dwHashKey == xpgHash("SetSleep"))

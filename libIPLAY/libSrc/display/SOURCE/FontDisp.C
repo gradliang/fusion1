@@ -82,7 +82,7 @@ struct _tagFontInfoData
 	LargeFontFastIndex_t * fastIdxTab;
 	DWORD		dwCurrFontID;	
 	WORD		wSpaceSize;
-	BYTE		bFlag;			//BIT 0 : 1 use to define Tab format,the define in global612.h
+	BYTE		bFlag;			//0->00-ff 1bit old font   1-> with fastIdxTab new font
 };
 typedef struct _tagFontInfoData FontInfo_t;
 static FontInfo_t idufontinfo = {0};

@@ -36,7 +36,7 @@
 extern BYTE *pbSensorWinBuffer;
 extern ST_IMGWIN SensorInWin[SENSOR_WIN_NUM];
 
-static BYTE  st_bRetryTimes=0,st_bAutoDischarge=0,st_bProcWinIndex=0,st_bCoverIsOpen=0;
+static BYTE  st_bRetryTimes=0,st_bAutoDischarge=0,st_bProcWinIndex=0;
 static DWORD st_dwGetCenterState = GET_CENTER_OFF;
 static DWORD st_dwProcState = SENSOR_IDLE;//SENSOR_FACE_POS1A;//SENSOR_IDLE; //BIT30->PAUSE
 DWORD g_dwProcWinFlag = 0;  // 用于拍照等WIN0_CAPTURE_FLAG
@@ -953,8 +953,6 @@ static BYTE st_bInProcWin=0,st_bBackupDisplayMode=0xff;//st_bBackupChanel=0xff,
  // BIT7->new fill wait init IPW  BIT6->first get data BIT5->get data end        BIT3->in fill down   BIT2->in FILL UP      BIT1->need fill down   BIT0->need FILL UP  0->not need fill
 static BYTE st_bNeedFillProcWin=0,st_bFillWinFlag=0; 
 static WORD st_wFiberWidth=0;
-
-BYTE g_bOPMonline=0;
 
 #if SENSOR_WIN_NUM
 //--初始化一个sensor win对应下的所有光纤相关信息参数
@@ -6598,6 +6596,20 @@ void TspiSendElectrodeInfo(void)
 	TSPI_PacketSend(bTxData,1);
 }
 
+//--开关指令
+//--bDevice : 0x01 整锁机 0x02 云端模式 0x03关机 0x04一键锁定（云端）0x05 本地光功率计状态 0x06 云端光功率计状态 0x07 智能背光状态
+//--bMode :BYTE bDevice
+SWORD  TspiSendOnOffOrder0xA9(BYTE bDevice,BYTE bMode)
+{
+	BYTE i,bTxData[8];
+
+	bTxData[0]=0xA9;
+	bTxData[1]=3+2;
+	bTxData[2] =bDevice;
+	bTxData[3] =bMode;
+	return TSPI_PacketSend(bTxData,1);
+}
+
 //--锁定信息
 void TspiSendLockInfo(void)
 {
@@ -6812,7 +6824,7 @@ void TSPI_DataProc(void)
 						else
 							st_bAFMotoIndex=5;
 						#elif TEST_PLANE||ALIGN_DEMO_MODE
-						if (st_bCoverIsOpen)
+						if (g_psUnsaveParam->bHollCover)
 						{
 							if (dwHashKey == xpgHash("Main") )
 							{
@@ -7104,10 +7116,10 @@ void TSPI_DataProc(void)
 		case 0xb3:
 			switch (pbTspiRxBuffer[2]>>4)
 			{
-				case 1:
+				case 1://4 霍尔盖子状态
 					if (pbTspiRxBuffer[2]&BIT0)// 盖子打开
 					{
-						st_bCoverIsOpen=1;
+						g_psUnsaveParam->bHollCover=1;
 						WeldStopAllAction();
 						// 马达复位
 						ResetMotor();
@@ -7115,26 +7127,19 @@ void TSPI_DataProc(void)
 					}
 					else
 					{
-						st_bCoverIsOpen=0;
+						g_psUnsaveParam->bHollCover=0;
 						//WeldModeSet(0);
 						//xpgCb_EnterCamcoderPreview();
 					}
 					break;
 
-				case 2: //加热盖子状态
-				break;
-
-				case 3:
-					if (pbTspiRxBuffer[2]&BIT0)
-					{
-						g_bOPMonline=1;
-					}
-					else
-					{
-						g_bOPMonline=0;
-					}
+				case 2: //4 加热盖子状态
+					g_psUnsaveParam->bHeatCover=(pbTspiRxBuffer[2]&BIT0);
 					break;
 
+				case 3: //4 云端OPM在线状态
+					g_psUnsaveParam->bCloudOPMonline=(pbTspiRxBuffer[2]&BIT0);
+					break;
 
 				default:
 					break;
@@ -7358,14 +7363,15 @@ void TSPI_DataProc(void)
 
 		//设备信息数据传输
 		case 0xbc:
-			if (dwLen>9)
+			if (dwLen>=9)
 			{
 				for (i=0;i<6;i++)
 				{
 					g_psSetupMenu->bMADarry[i]=pbTspiRxBuffer[2+i];
 				}
+				memcpy(&g_psSetupMenu->bMADarry[0],&pbTspiRxBuffer[2],6);
 				WriteSetupChg();
-				CheckAndWriteFile( DriveGet(DriveCurIdGet()),QRCODE_FILE_NAME,QRCODE_FILE_EXT,&pbTspiRxBuffer[8],dwLen-9);//NAND
+				//CheckAndWriteFile( DriveGet(SYS_DRV_ID),QRCODE_FILE_NAME,QRCODE_FILE_EXT,&pbTspiRxBuffer[8],dwLen-9);//NAND
 			}
 			break;
 

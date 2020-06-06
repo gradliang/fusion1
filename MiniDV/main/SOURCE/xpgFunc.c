@@ -1461,7 +1461,7 @@ void uiCb_CheckBattery(void)
 				xpgUpdateStage();
 				uiCb_EnableKeyInput();
 				Timer_FirstEnterCamPreview();
-				Ui_TimerProcAdd(1000, Timer_PollingBatteryStatus);
+				//Ui_TimerProcAdd(1000, Timer_PollingBatteryStatus);
 			}
 			else
 			{

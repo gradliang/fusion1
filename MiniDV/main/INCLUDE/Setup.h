@@ -130,6 +130,10 @@ typedef struct {
     BYTE bStandby;
 //ÍøÂçÐÅºÅÇ¿¶È
     BYTE bNetSignal;
+//¼ì²â×´Ì¬
+    BYTE bHollCover;
+    BYTE bHeatCover;
+    BYTE bCloudOPMonline;
 
 }ST_UNSAVE_PARAM;
 extern ST_UNSAVE_PARAM *g_psUnsaveParam;

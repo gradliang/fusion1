@@ -206,6 +206,58 @@ IMAGEFILE *ImagePlayer_DecodeFile(ST_SEARCH_INFO *pSearchInfo, BYTE *pbTarget, D
     return psImageFile;
 }
 
+SWORD ImageDecodeByHandle(STREAM *psHandle, ST_IMGWIN *pTrgWin)
+{
+    BYTE *pbSource,*TargetBuffer = NULL ;
+    DWORD dwSourceSize,dwWidth,dwHeight;
+    int   iErrorCode = FAIL;
+    IMAGEFILE *psImageFile = &stImageFile;
+
+    ImageReleaseAllBuffer();
+    if (psHandle == NULL)
+    {
+        MP_ALERT("%s: (psHandle == NULL) !!", __FUNCTION__);
+        return FAIL;
+    }
+    dwSourceSize = 256 * 1024;
+    pbSource = ImageAllocSourceBuffer(dwSourceSize + 32);
+
+    if (pbSource != NULL)
+    {
+        iErrorCode = ImageFile_DecodeFile(psImageFile, psHandle, pbSource, dwSourceSize, IMG_DECODE_PHOTO);
+    }
+    ImagePlayer_CloseFile();
+    if (iErrorCode)
+    {
+        MP_DEBUG1("-E- Image decode fail %d", iErrorCode);
+    }
+	else
+	{
+		dwWidth = Jpg_GetImageWidth(); //Jpg_GetTargetWidth by Tech 20091231 
+		dwHeight = Jpg_GetImageHeight();//Jpg_GetTargetHeight by Tech 20091231 
+		MP_DEBUG("Img size:w=%d  h=%d",dwWidth,dwHeight);
+		
+		if(dwWidth && dwHeight && (pTrgWin != 0)) 
+		{
+		    if (psImageFile->bNityDegree)
+		        TargetBuffer = (BYTE *)psImageFile->pbNityDegreeTarget;
+		    else
+		        TargetBuffer = (BYTE *)psImageFile->pbTarget;
+
+			mpWinInit(ImageGetDecodeWin() ,(DWORD *)TargetBuffer, dwHeight, ALIGN_CUT_16(dwWidth));
+		    g_sDecodeWin.dwOffset = (Img_GetCDU_DecodeWidth() << 1) ;
+			ImageDraw_FitToFull(ImageGetDecodeWin(), pTrgWin);
+			//ImageDraw_Rotate((ST_IMGWIN *)GetDecodeWin(),pTrgWin,ROTATE_DEGREE_90);
+			//ImageDraw_FitToHeight((ST_IMGWIN *)GetDecodeWin(), pTrgWin);	
+		}
+	}
+	ImageReleaseSourceBuffer();
+	ImageReleaseTargetBuffer();
+
+    return iErrorCode;
+}
+
+
 WORD Img_GetOriginalWidth()
 {
     return stImageFile.wRealTargetWidth;

@@ -1739,7 +1739,19 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
     }
     else if (dwHashKey == xpgHash("SetYun"))
     {
-        xpgDrawSprite(pWin, pstSprite, boClip);
+		DWORD dwFileSize;
+		STREAM* handle = (STREAM *)Test_OpenFileByNameForRead(SYS_DRV_ID,"qrcode","jpg",&dwFileSize);//DriveCurIdGet()
+		if (handle)
+		{
+			ST_IMGWIN stTmpWin;
+			mpWinInit(&stTmpWin ,NULL, pstSprite->m_wHeight, pstSprite->m_wWidth); 
+			stTmpWin.pdwStart=pWin->pdwStart+pstSprite->m_wPx/2+pstSprite->m_wPy*pWin->dwOffset/4;
+			stTmpWin.dwOffset=pWin->dwOffset;
+			ImageDecodeByHandle(handle,&stTmpWin);
+			FileClose(handle);
+		}
+		
+        //xpgDrawSprite(pWin, pstSprite, boClip);
     }
     else if(dwHashKey == xpgHash("RedLight"))
     {
@@ -3468,7 +3480,7 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         {
         	  char tmpbuf[16];
 
-            sprintf(tmpbuf, "%02x%02x%02x%02x%02x%02x", g_psSetupMenu->bMADarry[0],g_psSetupMenu->bMADarry[1],g_psSetupMenu->bMADarry[2]\
+            sprintf(tmpbuf, "%01x%02x%02x%02x%02x%02x", g_psSetupMenu->bMADarry[0],g_psSetupMenu->bMADarry[1],g_psSetupMenu->bMADarry[2]\
 							,g_psSetupMenu->bMADarry[3],g_psSetupMenu->bMADarry[4],g_psSetupMenu->bMADarry[5]);
             SetCurrIduFontID(FONT_ID_HeiTi19);
             //text = "13800138000";
@@ -3476,9 +3488,8 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         }
         else if (dwTextId == 2)
         {
-			 extern BYTE g_bOPMonline;
             SetCurrIduFontID(FONT_ID_HeiTi19);
-            if (g_psSetupMenu->bCloudMode && g_bOPMonline)
+            if (g_psSetupMenu->bCloudMode && g_psUnsaveParam->bCloudOPMonline)
                 text = getstr(Str_ZaiXian);
             else
                 text = "----";
@@ -5413,19 +5424,16 @@ SWORD xpgDrawSprite_Status(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
         xpgDirectDrawRoleOnWin(pWin, g_pstXpgMovie->m_pstObjRole[XPG_ROLE_STATUS_ICON_AUTOFUSION], rightX-24, 8, pstSprite, boClip);
         rightX -= 30;
     }
-    if (g_psSetupMenu->bCloudMode)
-    {
-        if (1)          // cloud connect
-        {
-            xpgDirectDrawRoleOnWin(pWin, g_pstXpgMovie->m_pstObjRole[XPG_ROLE_STATUS_ICON_CLOUD_MODE], rightX-24, 8, pstSprite, boClip);
-            rightX -= 30;
-        }
-        else            // cloud disconnect
-        {
-            xpgDirectDrawRoleOnWin(pWin, g_pstXpgMovie->m_pstObjRole[XPG_ROLE_STATUS_ICON_CLOUD_OFF], rightX-24, 8, pstSprite, boClip);
-            rightX -= 30;
-        }
-    }
+	if (g_psSetupMenu->bCloudMode)          // cloud connect
+	{
+		xpgDirectDrawRoleOnWin(pWin, g_pstXpgMovie->m_pstObjRole[XPG_ROLE_STATUS_ICON_CLOUD_MODE], rightX-24, 8, pstSprite, boClip);
+		rightX -= 30;
+	}
+	else            // cloud disconnect
+	{
+		xpgDirectDrawRoleOnWin(pWin, g_pstXpgMovie->m_pstObjRole[XPG_ROLE_STATUS_ICON_CLOUD_OFF], rightX-24, 8, pstSprite, boClip);
+		rightX -= 30;
+	}
     if (g_psSetupMenu->bAutoShutdown)
     {
         xpgDirectDrawRoleOnWin(pWin, g_pstXpgMovie->m_pstObjRole[XPG_ROLE_STATUS_ICON_AUTO_OFF], rightX-24, 8, pstSprite, boClip);

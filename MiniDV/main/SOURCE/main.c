@@ -191,13 +191,13 @@ static int ProcessAfterIsp(BYTE driveId)
 		
 	}
 	//---------- copy file to sys_drv ----------
-	#if 0
+	#if 1
 	DWORD *dwBuffer;
 	BYTE bFileType;
 	DWORD i, dwTotal;
 	ST_SEARCH_INFO* pSearchArr;
 	struct ST_FILE_BROWSER_TAG *psFileBrowser;
-	DWORD dwExtArray[] = {EXT_BMP, EXT_FNT, EXT_TAB, EXT_END, 0};
+	DWORD dwExtArray[] = {EXT_JPG,EXT_BMP, EXT_FNT, EXT_TAB, EXT_END, 0};//4  ¶þÎ¬ÂëÍ¼
 
 	psFileBrowser = &g_psSystemConfig->sFileBrowser;
 	g_psSystemConfig->dwCurrentOpMode = OP_MOVIE_MODE;
@@ -221,20 +221,19 @@ static int ProcessAfterIsp(BYTE driveId)
 	{
 		STREAM* pSrcHandle;
 		
-		mpDebugPrint("copy %d of %d", i+1, dwTotal);
+		mpDebugPrint("copy %d of %d %s", i+1, dwTotal,(pSearchArr+i)->bName);
 
 		pSrcHandle = FileListOpen(sDrv, pSearchArr + i);
 		ret = FileCopy(tDrv, pSrcHandle, (DWORD) dwBuffer, 512*1024);
+		FileClose(pSrcHandle);
 		if ( ret != FS_SUCCEED ) {
 			mpDebugPrint("copy file error, %d", ret);
 			return FAIL;
 		}
-		
-		FileClose(pSrcHandle);
 	}
 	ext_mem_free(dwBuffer);
 #endif
-	//if ( driveId == NAND )
+	if ( driveId == NAND )
 	{
 		if (ret = Fat32_Format(DriveGet(NAND), USER_DRV_LABEL) != PASS)
 			if (ret = Fat16_Format(DriveGet(NAND), USER_DRV_LABEL) != PASS)
