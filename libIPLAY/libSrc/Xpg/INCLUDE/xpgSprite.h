@@ -51,8 +51,8 @@ typedef struct {
 }XPGEXTRASPRITE;
 
 typedef struct {
-    WORD m_touchAreaX;
-    WORD m_touchAreaY;
+    SWORD m_touchAreaX;
+    SWORD m_touchAreaY;
     WORD m_touchAreaW;
     WORD m_touchAreaH;
     WORD m_boEnable;
@@ -64,8 +64,8 @@ typedef struct {
 	
     WORD m_wLayer;      ///< Layer
 	WORD m_wRole;         ///< Role
-    WORD m_wPx;         ///< Position of X
-    WORD m_wPy;		      ///< Position of Y
+    SWORD m_wPx;         ///< Position of X
+    SWORD m_wPy;		      ///< Position of Y
 	DWORD m_dwInk;        ///< Ink
     DWORD m_dwHashKey;  ///< Hash Key
     WORD m_dwType;      ///< Type
@@ -134,7 +134,7 @@ int xpgGetCurrDialogTypeId();
 ST_IMGWIN* xpgGetCurrDialogCacheWin();
 DWORD xpgGetCurrDialogBackPage();
 
-void xpgSpriteSetTouchArea (STXPGSPRITE * pstSprite, WORD startX, WORD startY, WORD width, WORD height);
+void xpgSpriteSetTouchArea (STXPGSPRITE * pstSprite, SWORD startX, SWORD startY, WORD width, WORD height);
 void xpgSpriteEnableTouch(STXPGSPRITE * pstSprite);
 void xpgSpriteDisableTouch(STXPGSPRITE * pstSprite);
 

@@ -227,19 +227,23 @@ void xpgUpdateStage()
         {
             MP_DEBUG("sprite %d type = %d, width=%d, height=%d, wCurFrame=%d", i, pstSprite->m_dwType, pstSprite->m_wWidth, pstSprite->m_wHeight, pstSprite->m_wCurFrame);
             swRet = (*drawSpriteFunctions[pstSprite->m_dwType]) (g_pXpgCanvasWin, pstSprite, 0);
-            //boXpgBusy = false;
+            if (pstSprite->m_dwHashKey)
+            {
+					if (pstSprite->m_dwHashKey==xpgHash("Touch0000"))
+					{
+			            xpgSpriteSetTouchArea(pstSprite, pstSprite->m_wPx, pstSprite->m_wPy , pstSprite->m_wWidth, pstSprite->m_wHeight);
+					}
+					else if (pstSprite->m_dwHashKey==xpgHash("Touch1111"))
+					{
+			            xpgSpriteSetTouchArea(pstSprite, pstSprite->m_wPx-pstSprite->m_wWidth, pstSprite->m_wPy-pstSprite->m_wHeight , pstSprite->m_wWidth*3, pstSprite->m_wHeight*3);
+					}
+					else if (pstSprite->m_dwHashKey==xpgHash("Touch0R11"))  // L R U D
+					{
+			            xpgSpriteSetTouchArea(pstSprite, pstSprite->m_wPx, pstSprite->m_wPy-pstSprite->m_wHeight , g_pXpgCanvasWin->wWidth-pstSprite->m_wPx, pstSprite->m_wHeight*3);
+					}
+            }
         }
 
-#if SC_USBDEVICE
-        if (SystemCheckUsbdPlugIn()) TaskYield();
-#endif
-//******************************************************************************
-// It makes after ThemeExit()'s page Main_Theme display break in sprite 1
-// why put Polling_Event() check here ? 
-// Temp set off - upgrade if find more evidence 
-        //if (Polling_Event())
-        //    break;
-//******************************************************************************      
     }
 
 #if SC_USBDEVICE

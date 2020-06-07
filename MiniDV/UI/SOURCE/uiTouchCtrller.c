@@ -2372,6 +2372,7 @@ void uiDispatchTouchSprite(WORD x1, WORD y1)
     STXPGTOUCHINFO * pstTouchInfo = NULL;
     BOOL match;
 
+	MP_DEBUG("%d, %d",  x1, y1);
 	xpgCb_AutoPowerOff(g_psSetupMenu->bAutoShutdown,g_psSetupMenu->wShutdownTime);
     if (pstMovie->m_dwSpriteCount == 0)
         return;
@@ -2411,7 +2412,7 @@ void uiDispatchTouchSprite(WORD x1, WORD y1)
                 //    dwLastTouchActionTime = GetSysTime();
 				if (!st_bTouchDown || ((pfunc->touchFlag& (ENABLE_SLIDE|ENABLE_REPEAT))&& (SystemGetElapsedTime(dwLastTouchActionTime) > 150)))
 				{
-					MP_ALERT("%d, %d",  x1, y1);
+					//MP_ALERT("%d, %d",  x1, y1);
 					pfunc->touchFunc (pstSprite, x1, y1);
 					dwLastTouchActionTime = GetSysTime();
 				}

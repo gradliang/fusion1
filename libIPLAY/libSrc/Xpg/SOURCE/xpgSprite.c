@@ -661,7 +661,7 @@ int xpgAddDialog(int dialogId, DWORD dwReturnPageIndex, ST_IMGWIN* backupWin)
 	if (backupWin !=NULL && backupWin->pdwStart !=NULL)
 	{
 		ImgWinInit(pCacheWin, NULL, backupWin->wHeight, backupWin->wWidth);
-		pCacheWin->pdwStart = ext_mem_malloc(backupWin->wWidth * backupWin->wHeight * 2);
+		pCacheWin->pdwStart = (DWORD *)ext_mem_malloc(backupWin->wWidth * backupWin->wHeight * 2);
 		mpCopyEqualWin(pCacheWin, backupWin);
 	}
 	
@@ -779,7 +779,7 @@ int xpgAddDialogSprite(WORD m_dwType, WORD m_dwTypeIndex, BYTE flag)
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-void xpgSpriteSetTouchArea (STXPGSPRITE * pstSprite, WORD startX, WORD startY, WORD width, WORD height) 
+void xpgSpriteSetTouchArea (STXPGSPRITE * pstSprite, SWORD startX, SWORD startY, WORD width, WORD height) 
 {
     if (pstSprite == NULL)
         return;

@@ -153,6 +153,7 @@ static void ui_Detect(void)
 #if ((TOUCH_CONTROLLER_ENABLE == ENABLE) && (TOUCH_CONTROLLER == TOUCH_PANEL_DRIVER_GT911)&& !TOUCH_DIRECT_TO_GUI)
 	TimerToKeyRelease();
 #endif
+TimerCheckPowerOff();
 }
 
 

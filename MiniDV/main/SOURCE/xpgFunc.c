@@ -1564,17 +1564,22 @@ void uiCb_CheckPopDialogAfterUpdatestage(void)
 
 
 //>------------TOUCH UI FUNCION-----------------------
-
+static DWORD st_dwPowerOff=0;
 void xpgCb_AutoPowerOff(BYTE bEnable,DWORD dwTime)
 {
-
 	if (bEnable)
-	{
-		Ui_TimerProcAdd(dwTime*60000, SendCmdPowerOff);
-	}
+		st_dwPowerOff=dwTime*60000;
 	else
+		st_dwPowerOff=0;
+}
+
+void TimerCheckPowerOff(void)
+{
+	if (st_dwPowerOff)
 	{
-		Ui_TimerProcRemove(SendCmdPowerOff);
+		st_dwPowerOff--;
+		if (!st_dwPowerOff)
+			SendCmdPowerOff();
 	}
 }
 
