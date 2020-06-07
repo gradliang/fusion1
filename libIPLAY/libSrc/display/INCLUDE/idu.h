@@ -49,6 +49,10 @@
 #define IDU_FRAME_END_A2                        BIT3
 #define IDU_FRAME_END_B2                        BIT4
 
+#define IDU_FONT_YUVCOLOR_DEFAULT_WHITE                       0xffff8080
+#define IDU_FONT_YUVCOLOR_BLACK                       						0x00008080
+#define IDU_FONT_YUVCOLOR_GREY                       						0xc0c08080
+
 #if (OSD_BIT_WIDTH == 8)//Mason 20080603, move from platform file,Wendy copy 20080916
 #define OSD_BIT_OFFSET  0
 #define OSD_MASK        0x7f
@@ -96,7 +100,7 @@ void Idu_ChgWin(ST_IMGWIN *);
 void Idu_ChgWinWaitFinish(ST_IMGWIN * ImgWin, BOOL needWaitFinish);
 void Idu_SetWinClipRegion(ST_IMGWIN *pWin, WORD wLeft, WORD wTop, WORD wRight, WORD wBottom);
 void Idu_ResetWinClipRegion(ST_IMGWIN *psWin);
-void Idu_SetFontColor(BYTE R, BYTE G, BYTE B);
+//void Idu_SetFontColor(BYTE R, BYTE G, BYTE B);
 //WORD Idu_PrintString(ST_IMGWIN *, BYTE *, WORD, WORD, BYTE, WORD);
 WORD Idu_PrintStringWithSize(ST_IMGWIN *, BYTE *, WORD, WORD, BYTE, WORD, WORD, BYTE);
 void Idu_Draw1BitBitmap(ST_IMGWIN *pWin, WORD x, WORD y, WORD w, WORD h, BYTE *pImgBuffer, BYTE bColor);
@@ -116,7 +120,7 @@ void Idu_SetImageGamma(void);
 WORD Idu_PrintStringCenter(ST_IMGWIN * trgWin, BYTE * string, WORD startX, WORD startY, BYTE UnicodeFlag, WORD wWidth);
 WORD Idu_PrintStringRight(ST_IMGWIN * trgWin, BYTE * string, WORD startX, WORD startY, BYTE UnicodeFlag);
 
-DWORD Idu_FontColorSet(BYTE R, BYTE G, BYTE B);
+void Idu_FontColorSet(BYTE R, BYTE G, BYTE B);
 
 ST_OSDWIN *Idu_GetOsdWin();
 void Idu_OsdErase();

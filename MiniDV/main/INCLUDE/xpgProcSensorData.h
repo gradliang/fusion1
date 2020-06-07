@@ -172,8 +172,8 @@ typedef struct {
 #define	OPM_SEGMEN_LEN												16
 
 
-#define QRCODE_FILE_NAME						"QRCODE"
-#define QRCODE_FILE_EXT						"JPG"
+//#define QRCODE_FILE_NAME						"qrcode"
+//#define QRCODE_FILE_EXT						"jpg"
 
 #define ABS(A)          ((A) < 0 ? (-A) : (A))
 

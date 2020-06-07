@@ -1326,24 +1326,24 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
                 if (dialogType == Dialog_CheckPassword|| dialogType == Dialog_PowerOnCheckHirePassword|| dialogType == Dialog_PowerOnCheckOpenPassword)
                 {
                     SetCurrIduFontID(FONT_ID_HeiTi16);
-                    Idu_FontColorSet(0x00, 0x00, 0x00);
+                    Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
                     Idu_PrintStringCenter(pWin, getstr(Str_WangJiMiMa), wX, wY + 18, 0, pstSprite->m_wWidth);
-                    Idu_FontColorSet(0xff, 0xff, 0xff);
+                    Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
                 }
                 else if (dialogType == Dialog_EditValue)
                 {
                     const char * text1 = getstr(Str_QueDing);
                     SetCurrIduFontID(FONT_ID_HeiTi19);
-                    Idu_FontColorSet(0,0,0);
+                    Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
                     Idu_PrintStringCenter(pWin, text1, wX, wY + 15, 0, pstSprite->m_wWidth);
-                    Idu_FontColorSet(0xff,0xff,0xff);
+                    Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
                 }
 				  else if (dialogType == Dialog_Electrode_Enable)
 				  {
                     SetCurrIduFontID(FONT_ID_HeiTi19);
-                    Idu_FontColorSet(0,0,0);
+                    Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
                     Idu_PrintStringCenter(pWin, "ENTER", wX, wY + 15, 0, pstSprite->m_wWidth);
-                    Idu_FontColorSet(0xff,0xff,0xff);
+                    Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
 				  }
             }
             else if (dwSpriteId == 11)
@@ -1693,7 +1693,7 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
                 Idu_PrintStringCenter(pWin, tmpText, startX, pstSprite->m_wPy, 0, width);
                 Idu_PaintWinArea(pWin, startX, pstSprite->m_wPy + LineYOffset, width, 2, lineColor);
             }
-            Idu_FontColorSet(0xff,0xff,0xff);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
             return PASS;
         }
         else if (dwSpriteId >= 11 && dwSpriteId <= 13)
@@ -1810,11 +1810,11 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
                 xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
 
             char tempstr[32];
-            Idu_FontColorSet(0,0,0);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
             SetCurrIduFontID(FONT_ID_HeiTi19);
             sprintf(tempstr, "%dmin", g_psUnsaveParam->wRedPenTime);
             Idu_PrintStringCenter(pWin, tempstr, pstSprite->m_wPx, pstSprite->m_wPy+4, 0, pstSprite->m_wWidth);
-            Idu_FontColorSet(255,255,255);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
         }
     }
     else if(dwHashKey == xpgHash("opm1") || dwHashKey == xpgHash("opm2") || dwHashKey == xpgHash("opm3") || dwHashKey == xpgHash("opm4"))
@@ -1828,17 +1828,17 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
                 text = getstr(Str_LocalOPM);
             else 
                 text = getstr(Str_CloudOPM);
-            Idu_FontColorSet(0,0,0);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
             SetCurrIduFontID(FONT_ID_HeiTi16);
             Idu_PrintStringCenter(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy+2, 0, pstSprite->m_wWidth);  
-            Idu_FontColorSet(255,255,255);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
         }
         else if (dwSpriteId == 2)
         {
             pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 2);
             if (pstMask)
                 xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
-            Idu_FontColorSet(255,255,255);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
             SetCurrIduFontID(FONT_ID_HeiTi16);
             if (dwHashKey == xpgHash("opm1"))
                 text = getstr(Str_LocalOPMCtrlPanel);
@@ -1936,10 +1936,10 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
                 text = getstr(Str_LocalOPM);
             else 
                 text = getstr(Str_CloudOPM);
-            Idu_FontColorSet(0,0,0);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
             SetCurrIduFontID(FONT_ID_HeiTi16);
             Idu_PrintStringCenter(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy+2, 0, pstSprite->m_wWidth);  
-            Idu_FontColorSet(255,255,255);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
         }
         else if (dwSpriteId == 2)
         {
@@ -2718,9 +2718,9 @@ SWORD xpgDrawSprite_Title(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BO
         if (pstMask)
         xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
         SetCurrIduFontID(FONT_ID_HeiTi19);
-        Idu_FontColorSet(0,0,0);
+        Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
         Idu_PrintStringCenter(pWin, keyboardBuffer, pstSprite->m_wPx + 55, pstSprite->m_wPy + 80, 0, 449);
-        Idu_FontColorSet(0xff,0xff,0xff);
+        Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
     }
 
     return PASS;
@@ -2949,7 +2949,7 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
     }
     else if (dwHashKey == xpgHash("FuncSet"))
     {
-        Idu_FontColorSet(0x00, 0x00, 0x00);
+        Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
         if (dwTextId < 12)
         {
             if (dwTextId == 0)
@@ -2986,11 +2986,11 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
             Idu_PaintWinArea(pWin, 290, 84, 470, 2, RGB2YUV(0,0,0));
         }
-        Idu_FontColorSet(0xff, 0xff, 0xff);
+        Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
     }
     else if (dwHashKey == xpgHash("FuncSet2"))
     {
-        Idu_FontColorSet(0x00, 0x00, 0x00);
+        Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
         if (dwTextId <= 5)
         {
             BYTE value = g_psSetupMenu->bCustomizeIcon[dwTextId];
@@ -3062,7 +3062,7 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         //else 
         //    SetCurrIduFontID(FONT_ID_HeiTi19);
         Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
-        Idu_FontColorSet(0xff, 0xff, 0xff);
+        Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
     }
     else if (dwHashKey == xpgHash("ToolBox"))
     {
@@ -3072,10 +3072,10 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             text = getstr(Str_GuangGongLvJi);
         else if (dwTextId == 2)
             text = getstr(Str_Str_DuanMianJianCeYi);
-        Idu_FontColorSet(0,0,0);
+        Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
         SetCurrIduFontID(FONT_ID_HeiTi19);
         Idu_PrintStringCenter(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 66);
-        Idu_FontColorSet(0xff,0xff,0xff);
+        Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
     }
     else if (dwHashKey == xpgHash("Manual_work"))
     {
@@ -3096,9 +3096,9 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         {
             sprintf(tempStr, "%d", 10);
             SetCurrIduFontID(FONT_ID_HeiTi16);
-            Idu_FontColorSet(0,0,0);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
             Idu_PrintStringCenter(pWin, tempStr, 4, 139, 0, 74);
-            Idu_FontColorSet(0xff,0xff,0xff);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
         }
         else if (dwTextId == 3)
         {
@@ -3110,9 +3110,9 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         {
             sprintf(tempStr, "%d", 100);
             SetCurrIduFontID(FONT_ID_HeiTi16);
-            Idu_FontColorSet(0,0,0);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
             Idu_PrintStringCenter(pWin, tempStr, 4, 190, 0, 74);
-            Idu_FontColorSet(0xff,0xff,0xff);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
         }
         else if (dwTextId == 5)
         {
@@ -3130,9 +3130,9 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         {
             sprintf(tempStr, "%d", 10);
             SetCurrIduFontID(FONT_ID_HeiTi16);
-            Idu_FontColorSet(0,0,0);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
             Idu_PrintStringCenter(pWin, tempStr, 722, 139, 0, 74);
-            Idu_FontColorSet(0xff,0xff,0xff);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
         }
         else if (dwTextId == 8)
         {
@@ -3144,9 +3144,9 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         {
             sprintf(tempStr, "%d", 100);
             SetCurrIduFontID(FONT_ID_HeiTi16);
-            Idu_FontColorSet(0,0,0);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
             Idu_PrintStringCenter(pWin, tempStr, 722, 190, 0, 74);
-            Idu_FontColorSet(0xff,0xff,0xff);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
         }
         else if (dwTextId == 10)
         {
@@ -3158,9 +3158,9 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         {
             sprintf(tempStr, "%d", 10);
             SetCurrIduFontID(FONT_ID_HeiTi16);
-            Idu_FontColorSet(0,0,0);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
             Idu_PrintStringCenter(pWin, tempStr, 212, 380, 0, 70);
-            Idu_FontColorSet(0xff,0xff,0xff);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
         }
         else if (dwTextId == 12)
         {
@@ -3172,9 +3172,9 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         {
             sprintf(tempStr, "%d", 100);
             SetCurrIduFontID(FONT_ID_HeiTi16);
-            Idu_FontColorSet(0,0,0);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
             Idu_PrintStringCenter(pWin, tempStr, 212, 406, 0, 70);
-            Idu_FontColorSet(0xff,0xff,0xff);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
         }
         else if (dwTextId == 14)
         {
@@ -3201,9 +3201,9 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         else
             return PASS;
         SetCurrIduFontID(FONT_ID_HeiTi16);
-        Idu_FontColorSet(0x00, 0x00, 0x00);
+        Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
         Idu_PrintStringRight(pWin, tmpbuf, pstSprite->m_wPx, pstSprite->m_wPy, 0);
-        Idu_FontColorSet(0xff, 0xff, 0xff);
+        Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
     }
     else if (dwHashKey == xpgHash("FusionSet2"))
     {
@@ -3225,9 +3225,9 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         else
             return PASS;
         SetCurrIduFontID(FONT_ID_HeiTi19);
-        Idu_FontColorSet(0x00, 0x00, 0x00);
+        Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
         Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
-        Idu_FontColorSet(0xff, 0xff, 0xff);
+        Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
     }
     else if (dwHashKey == xpgHash("FusionSet1"))
     {
@@ -3327,7 +3327,7 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         sprintf(tmpText, "%d", pstModeParam->fangDianJiaoZhengMuBiaoZhi);
         Idu_PrintStringCenter(pWin, tmpText, 644, 222 + JIANGE * 5, 0, 76);
         
-        Idu_FontColorSet(0xff,0xff,0xff);
+        Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
     }
     else if (dwHashKey == xpgHash("FusionModeSet"))
     {
@@ -3409,7 +3409,7 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
     else if (dwHashKey == xpgHash("SetTime"))
     {
         char tmpbuf[256];
-        Idu_FontColorSet(0x00, 0x00, 0x00);
+        Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
         if (dwTextId == 1)
         {
             ST_SYSTEM_TIME curTime;
@@ -3471,11 +3471,11 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             sprintf(tmpbuf, "%s >", text);
             Idu_PrintStringRight(pWin, tmpbuf, pstSprite->m_wPx, pstSprite->m_wPy, 0);
         }
-        Idu_FontColorSet(0xff, 0xff, 0xff);
+        Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
     }
     else if (dwHashKey == xpgHash("SetYun"))
     {
-        Idu_FontColorSet(0x00, 0x00, 0x00);
+        Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
         if (dwTextId == 1)
         {
         	  char tmpbuf[16];
@@ -3501,16 +3501,16 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             text = getstr(Str_SaoMiaoErWeiMa);
             Idu_PrintStringCenter(pWin, text, 288, pstSprite->m_wPy, 0, 470);
         }
-        Idu_FontColorSet(0xff, 0xff, 0xff);
+        Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
     }
     else if (dwHashKey == xpgHash("SetSleep"))
     {
         char tmpbuf[64];
-        Idu_FontColorSet(0x00, 0x00, 0x00);
+        Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
         if (dwTextId == 1)
         {
             if (g_psSetupMenu->bSmartBacklight)
-                Idu_FontColorSet(191, 191, 191);
+                Idu_SetFontYUV(IDU_FONT_YUVCOLOR_GREY);
             
             if (g_psSetupMenu->bSmartBacklight)
                 strcpy(tmpbuf, "AUTO >");
@@ -3529,7 +3529,7 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         else if (dwTextId == 3)
         {
             if (g_psSetupMenu->bAutoShutdown)
-                Idu_FontColorSet(191, 191, 191);
+                Idu_SetFontYUV(IDU_FONT_YUVCOLOR_GREY);
 
             if (g_psSetupMenu->bAutoShutdown)
                 sprintf(tmpbuf, "---");
@@ -3541,19 +3541,21 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
                 Idu_PrintStringRight(pWin, tmpbuf, pstSprite->m_wPx, pstSprite->m_wPy, 0);
             }
         }
-        Idu_FontColorSet(0xff, 0xff, 0xff);
+        Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
     }
     else if (dwHashKey == xpgHash("SetSound"))
     {
         char tmpbuf[64];
-        Idu_FontColorSet(0x00, 0x00, 0x00);
-        if (!g_psSetupMenu->bToundSoundEnable)
-            Idu_FontColorSet(191, 191, 191);
+        Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
         
         if (dwTextId == 1)
         {
+	        if (!g_psSetupMenu->bToundSoundEnable)
+	            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_GREY);
             if (!g_psSetupMenu->bToundSoundEnable)
+            {
                 strcpy(tmpbuf, "-- >");
+            }
             else 
             {
                 int volume;
@@ -3563,10 +3565,15 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
                     volume = 15;
                 sprintf(tmpbuf, "%d >", volume);
             }
+        }
+        else if (dwTextId == 2)
+        {
+                sprintf(tmpbuf, "%d >", g_psSetupMenu->bBrightness);
+        }
             SetCurrIduFontID(FONT_ID_HeiTi19);
             Idu_PrintStringRight(pWin, tmpbuf, pstSprite->m_wPx, pstSprite->m_wPy, 0);
-        }
-        Idu_FontColorSet(0xff, 0xff, 0xff);
+
+        Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
     }
     else if(dwHashKey == xpgHash("opmList1") || dwHashKey == xpgHash("opmList2"))
     {
@@ -3722,11 +3729,11 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             width = 100;
             height = 40;
             Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy, width, height, 0xffff8080);
-            Idu_FontColorSet(0,0,0);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
             sprintf(tmpbuf, "%d", dwDialogTempValue);
             SetCurrIduFontID(FONT_ID_HeiTi19);
             Idu_PrintStringCenter(pWin, tmpbuf, pstSprite->m_wPx, pstSprite->m_wPy + 6, 0, 100);
-            Idu_FontColorSet(0xff,0xff,0xff);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
         }
         else if (dialogType == Dialog_SetBrightness)
         {
@@ -3737,11 +3744,11 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             width = 220;
             height = 100;
             Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy, width, height, RGB2YUV(0, 0, 0));
-            Idu_FontColorSet(0xff,0xff,0xff);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
             sprintf(tmpbuf, "%d", dwDialogTempValue);
             SetCurrIduFontID(FONT_ID_ARIAL_36);
             Idu_PrintStringCenter(pWin, tmpbuf, pstSprite->m_wPx, pstSprite->m_wPy + 20, 0, width);
-            Idu_FontColorSet(0xff,0xff,0xff);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
         }
         else if (dialogType == Dialog_ShutdownTime)
         {
@@ -3752,11 +3759,11 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             width = 220;
             height = 100;
             Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy, width, height, RGB2YUV(0, 0, 0));
-            Idu_FontColorSet(0xff,0xff,0xff);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
             sprintf(tmpbuf, "%dmin", dwDialogTempValue);
             SetCurrIduFontID(FONT_ID_ARIAL_36);
             Idu_PrintStringCenter(pWin, tmpbuf, pstSprite->m_wPx, pstSprite->m_wPy + 20, 0, 220);
-            Idu_FontColorSet(0xff,0xff,0xff);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
         }
         else if (dialogType == Dialog_SetSound)
         {
@@ -3767,11 +3774,11 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             width = 220;
             height = 100;
             Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy, width, height, RGB2YUV(0, 0, 0));
-            Idu_FontColorSet(0xff,0xff,0xff);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
             sprintf(tmpbuf, "%d", dwDialogTempValue);
             SetCurrIduFontID(FONT_ID_ARIAL_36);
             Idu_PrintStringCenter(pWin, tmpbuf, pstSprite->m_wPx, pstSprite->m_wPy + 20, 0, width);
-            Idu_FontColorSet(0xff,0xff,0xff);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
         }
         else if (dialogType == Dialog_SetTime)
         {
@@ -3783,7 +3790,7 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             char tmpbuf[64];
             STXPGROLE * pstRole, *pstMask;
 
-            Idu_FontColorSet(0, 0, 0);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
             if (g_psSetupMenu->b24HourFormat)
             {
                 if (hour2 != 0)
@@ -3807,9 +3814,9 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
                 Idu_PaintWinArea(pWin, 270, 200, 100, 60, RGB2YUV(0,0,0));
                 SetCurrIduFontID(FONT_ID_HeiTi19);
                 sprintf(tmpbuf, "%d", hour2);
-                Idu_FontColorSet(0xff, 0xff, 0xff);
+                Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
                 Idu_PrintStringCenter(pWin, tmpbuf, 270, 220, 0, 100);
-                Idu_FontColorSet(0, 0, 0);
+                Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
                 if (hour2 != 23)
                 {
                     SetCurrIduFontID(FONT_ID_HeiTi19);
@@ -3832,9 +3839,9 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
                 Idu_PaintWinArea(pWin, 430, 200, 100, 60, RGB2YUV(0,0,0));
                 SetCurrIduFontID(FONT_ID_HeiTi19);
                 sprintf(tmpbuf, "%d", minute2);
-                Idu_FontColorSet(0xff, 0xff, 0xff);
+                Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
                 Idu_PrintStringCenter(pWin, tmpbuf, 430, 220, 0, 100);
-                Idu_FontColorSet(0, 0, 0);
+                Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
                 if (minute2 != 59)
                 {
                     SetCurrIduFontID(FONT_ID_HeiTi19);
@@ -3923,9 +3930,9 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
                 }
                 Idu_PaintWinArea(pWin, 190, 199, 100, 60, RGB2YUV(0,0,0));
                 SetCurrIduFontID(FONT_ID_HeiTi19);
-                Idu_FontColorSet(0xff, 0xff, 0xff);
+                Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
                 Idu_PrintStringCenter(pWin, hstr2, 190, 219, 0, 100);
-                Idu_FontColorSet(0x00, 0x00, 0x00);
+                Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
                 if (hstr3[0] != 0)
                 {
                     SetCurrIduFontID(FONT_ID_HeiTi19);
@@ -3945,9 +3952,9 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
                 }
                 Idu_PaintWinArea(pWin, 350, 199, 100, 60, RGB2YUV(0,0,0));
                 SetCurrIduFontID(FONT_ID_HeiTi19);
-                Idu_FontColorSet(0xff, 0xff, 0xff);
+                Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
                 Idu_PrintStringCenter(pWin, mstr2, 350, 219, 0, 100);
-                Idu_FontColorSet(0x00, 0x00, 0x00);
+                Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
                 if (mstr3[0] != 0)
                 {
                     SetCurrIduFontID(FONT_ID_HeiTi19);
@@ -3967,9 +3974,9 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
                 }
                 Idu_PaintWinArea(pWin, 510, 199, 100, 60, RGB2YUV(0,0,0));
                 SetCurrIduFontID(FONT_ID_HeiTi19);
-                Idu_FontColorSet(0xff, 0xff, 0xff);
+                Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
                 Idu_PrintStringCenter(pWin, apmstr2, 510, 219, 0, 100);
-                Idu_FontColorSet(0x00, 0x00, 0x00);
+                Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
                 if (apmstr3[0] != 0)
                 {
                     SetCurrIduFontID(FONT_ID_HeiTi19);
@@ -3989,7 +3996,7 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
                 SetCurrIduFontID(FONT_ID_HeiTi19);
                 Idu_PrintString(pWin, ":", 318, 223, 0, 0);
             }
-            Idu_FontColorSet(0xff, 0xff, 0xff);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
         }
         else if (dialogType == Dialog_SetDate)
         {
@@ -4014,7 +4021,7 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             sprintf(mstr2, "%d", month2);
             sprintf(dstr2, "%d", day2);
 
-            Idu_FontColorSet(0, 0, 0);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
             
             if (year2 > 2000)
             {
@@ -4059,9 +4066,9 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             }
             Idu_PaintWinArea(pWin, 190, 199, 100, 60, RGB2YUV(0,0,0));
             SetCurrIduFontID(FONT_ID_HeiTi19);
-            Idu_FontColorSet(0xff, 0xff, 0xff);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
             Idu_PrintStringCenter(pWin, ystr2, 190, 219, 0, 100);
-            Idu_FontColorSet(0x00, 0x00, 0x00);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
             if (ystr3[0] != 0)
             {
                 SetCurrIduFontID(FONT_ID_HeiTi16);
@@ -4081,9 +4088,9 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             }
             Idu_PaintWinArea(pWin, 350, 199, 100, 60, RGB2YUV(0,0,0));
             SetCurrIduFontID(FONT_ID_HeiTi19);
-            Idu_FontColorSet(0xff, 0xff, 0xff);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
             Idu_PrintStringCenter(pWin, mstr2, 350, 219, 0, 100);
-            Idu_FontColorSet(0x00, 0x00, 0x00);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
             if (mstr3[0] != 0)
             {
                 SetCurrIduFontID(FONT_ID_HeiTi16);
@@ -4103,9 +4110,9 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             }
             Idu_PaintWinArea(pWin, 510, 199, 100, 60, RGB2YUV(0,0,0));
             SetCurrIduFontID(FONT_ID_HeiTi19);
-            Idu_FontColorSet(0xff, 0xff, 0xff);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
             Idu_PrintStringCenter(pWin, dstr2, 510, 219, 0, 100);
-            Idu_FontColorSet(0x00, 0x00, 0x00);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
             if (dstr3[0] != 0)
             {
                 SetCurrIduFontID(FONT_ID_HeiTi16);
@@ -4126,12 +4133,12 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             Idu_PrintString(pWin, "/", 313, 217, 0, 0);
             Idu_PrintString(pWin, "/", 472, 217, 0, 0);
             
-            Idu_FontColorSet(0xff, 0xff, 0xff);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
         }
         else if (dialogType == Dialog_About)
         {
             char text1[128], text2[128];
-            Idu_FontColorSet(0x00, 0x00, 0x00);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
             if (dwTextId == 0)
             {
                 sprintf(text1, "%s:", getstr(Str_XingHao));
@@ -4160,12 +4167,12 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
                 Idu_PrintString(pWin, text1, 210, 306, 0, 0);
                 Idu_PrintStringRight(pWin, text2, 590, 306, 0);
             }
-            Idu_FontColorSet(0xff, 0xff, 0xff);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
         }
         else if (dialogType == Dialog_Times)
         {
             char text1[128], text2[128];
-            Idu_FontColorSet(0x00, 0x00, 0x00);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
             if (dwTextId == 0)
             {
                 sprintf(text1, "%s:", getstr(Str_XuLieHao));
@@ -4187,12 +4194,12 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
                 Idu_PrintString(pWin, text1, 210, 270, 0, 0);
                 Idu_PrintStringRight(pWin, text2, 590, 270, 0);
             }
-            Idu_FontColorSet(0xff, 0xff, 0xff);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
         }
         else if (dialogType == Dialog_TempInfo)
         {
             char text1[128], text2[128];
-            Idu_FontColorSet(0x00, 0x00, 0x00);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
             if (dwTextId == 0)
             {
                 sprintf(text1, "%s:", getstr(Str_HuanJingWenDu));
@@ -4221,12 +4228,12 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
                 Idu_PrintString(pWin, text1, 210, 306, 0, 0);
                 Idu_PrintStringRight(pWin, text2, 590, 306, 0);
             }
-            Idu_FontColorSet(0xff, 0xff, 0xff);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
         }
         else if (dialogType == Dialog_BatInfo)
         {
             char text1[128], text2[128];
-            Idu_FontColorSet(0x00, 0x00, 0x00);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
             if (dwTextId == 0)
             {
                 sprintf(text1, "%s:", getstr(Str_DianChiRongLiang));
@@ -4255,7 +4262,7 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
                 Idu_PrintString(pWin, text1, 210, 306, 0, 0);
                 Idu_PrintStringRight(pWin, text2, 590, 306, 0);
             }
-            Idu_FontColorSet(0xff, 0xff, 0xff);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
         }
         else if (dialogType == Dialog_SetPassword1 || dialogType == Dialog_SetPassword2 || dialogType == Dialog_CheckPassword\
 					|| dialogType == Dialog_PowerOnCheckHirePassword|| dialogType == Dialog_PowerOnCheckOpenPassword|| dialogType == Dialog_Electrode_Enable)
@@ -4264,7 +4271,7 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             char str[2];
             str[1] = 0;
             SetCurrIduFontID(FONT_ID_HeiTi19);
-            Idu_FontColorSet(0,0,0);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
             if (dwTextId == 0)
             {
                 x = 270;
@@ -4293,7 +4300,7 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
                 if (str[0] != 0)
                     Idu_PrintStringCenter(pWin, str, x, y+10, 0, w);
             }
-            Idu_FontColorSet(0xff,0xff,0xff);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
         }
         else if(dialogType == Dialog_Value)
         {
@@ -4302,13 +4309,13 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             if (dwTextId == 0)
             {
                 Idu_PaintWinArea(pWin, x, y, w, h, RGB2YUV(255,255,255));
-                Idu_FontColorSet(0,0,0);
+                Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
                 if (boDialogValueIsFloat)
                     sprintf(tmpbuf, "%d.%d", dwDialogTempValue>>6, dwDialogTempValue&0x3F);
                 else
                     sprintf(tmpbuf, "%d", dwDialogTempValue);
                 Idu_PrintString(pWin, tmpbuf, x + 6, y + 4, 0, 0);
-                Idu_FontColorSet(0xff,0xff,0xff);
+                Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
                 xpgSpriteSetTouchArea(pstSprite, x, y, w, h);
             }
         }
@@ -4316,7 +4323,7 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         {
             WORD x = 250, y = 108, w = 300, h = 50;
             SetCurrIduFontID(FONT_ID_HeiTi19);
-            Idu_FontColorSet(0,0,0);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
             if (dwTextId == 0)
             {
                 Idu_PaintWinArea(pWin, x, y, w, h, RGB2YUV(0xc9,0xc9,0xc9));
@@ -4324,13 +4331,13 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
                 if (strEditValue[0])
                     Idu_PrintStringCenter(pWin, strEditValue, x+8, y+10, 0, w - 20);
             }
-            Idu_FontColorSet(0xff,0xff,0xff);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
         }
 		else if (dialogType == Dialog_Note_ForgetHirePassword||dialogType == Dialog_Note_ForgetOpenPassword||dialogType == Dialog_Note_ElectrodeEnable_Path\
 			||dialogType == Dialog_Note_ElectrodeEnable_PASS||dialogType == Dialog_Note_ElectrodeEnable_FAIL)
 		{
 			SetCurrIduFontID(FONT_ID_HeiTi19);
-			Idu_FontColorSet(0,0,0);
+			Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
 			//DIALOG_DEFAULT_WIDTH
 			if (dialogType == Dialog_Note_ElectrodeEnable_Path)
 			{
@@ -4347,7 +4354,7 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
 			else
 				pStr=getstr(Str_Info_ForgetPassword);
 			Idu_PrintStringCenterNewLine(pWin, pStr, (pWin->wWidth/3)>>1, pWin->wHeight/2-IduFontGetMaxHeight(), 0, pWin->wWidth*2/3);
-			Idu_FontColorSet(0xff,0xff,0xff);
+			Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
 		}
     }
     
@@ -4419,9 +4426,9 @@ SWORD xpgDrawSprite_Selector(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite,
         if(dwSelectorId == 0)
             text = getstr(Str_YunDuanSheZhi);
         else if (dwSelectorId == 1)
-            text = getstr(Str_PingMuYuDaiJi);
-        else if (dwSelectorId == 2)
             text = getstr(Str_ShengYinSheZhi);
+        else if (dwSelectorId == 2)
+            text = getstr(Str_PingMuYuDaiJi);
         else if (dwSelectorId == 3)
             text = getstr(Str_ShiJianYuYuYan);
         else if (dwSelectorId == 4)
@@ -4434,9 +4441,9 @@ SWORD xpgDrawSprite_Selector(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite,
         if (dwHashKey == xpgHash("SetYun"))
             curPageType = 0;
         else if (dwHashKey == xpgHash("SetSleep"))
-            curPageType = 1;
-        else if (dwHashKey == xpgHash("SetSound"))
             curPageType = 2;
+        else if (dwHashKey == xpgHash("SetSound"))
+            curPageType = 1;
         else if (dwHashKey == xpgHash("SetTime"))
             curPageType = 3;
         else if (dwHashKey == xpgHash("SetPassword"))
@@ -4450,7 +4457,7 @@ SWORD xpgDrawSprite_Selector(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite,
         {
             xpgDrawSprite(pWin, pstSprite, boClip);
             SetCurrIduFontID(FONT_ID_HeiTi19);
-            Idu_FontColorSet(0xff, 0xff, 0xff);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
             Idu_PrintString(pWin, text, pstSprite->m_wPx + 20, pstSprite->m_wPy + 12, 0, 0);
             Idu_PrintString(pWin, ">", pstSprite->m_wPx + 220, pstSprite->m_wPy + 12, 0, 0);
         }
@@ -4460,7 +4467,7 @@ SWORD xpgDrawSprite_Selector(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite,
             Idu_PaintWinArea(pWin, pstSprite->m_wPx + pstSprite->m_wWidth - 2, pstSprite->m_wPy, 2, pstSprite->m_wHeight, RGB2YUV(0x2E, 0x2E, 0x2E));
             Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy, pstSprite->m_wWidth, 1, RGB2YUV(0x2E, 0x2E, 0x2E));
             Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + pstSprite->m_wHeight - 2, pstSprite->m_wWidth, 1, RGB2YUV(0x2E, 0x2E, 0x2E));
-            Idu_FontColorSet(0xff, 0xff, 0xff);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
             SetCurrIduFontID(FONT_ID_HeiTi19);
             Idu_PrintString(pWin, text, pstSprite->m_wPx + 20, pstSprite->m_wPy + 12, 0, 0);
             Idu_PrintString(pWin, ">", pstSprite->m_wPx + 220, pstSprite->m_wPy + 12, 0, 0);
@@ -4566,9 +4573,9 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             text = getstr(Str_YunDuanOPMZhuangTai);
         
         SetCurrIduFontID(FONT_ID_HeiTi19);
-        Idu_FontColorSet(0x00, 0x00, 0x00);
+        Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
         Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
-        Idu_FontColorSet(0xff, 0xff, 0xff);
+        Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
         Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + 38, 470, 2, RGB2YUV(0x2F, 0x2F, 0x2F));
     }
     else if (dwHashKey == xpgHash("SetSleep"))
@@ -4584,15 +4591,15 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             text = getstr(Str_GuanJiShiJian);
 
         SetCurrIduFontID(FONT_ID_HeiTi19);
-        Idu_FontColorSet(0x00, 0x00, 0x00);
+        Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
         if (g_psSetupMenu->bSmartBacklight && dwListId == 1) 
         {
-            Idu_FontColorSet(191, 191, 191);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_GREY);
             lineColor = RGB2YUV(191, 191, 191);
         }
         if (g_psSetupMenu->bAutoShutdown && dwListId == 3) 
         {
-            Idu_FontColorSet(191, 191, 191);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_GREY);
             lineColor = RGB2YUV(191, 191, 191);
         }
         
@@ -4611,7 +4618,7 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             SetCurrIduFontID(FONT_ID_HeiTi10);
             Idu_PrintString(pWin, text, pstSprite->m_wPx + 110, pstSprite->m_wPy + 12, 0, 0);
         }
-        Idu_FontColorSet(0xff, 0xff, 0xff);
+        Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
         
         if (dwListId == 1 || dwListId == 3)
         {
@@ -4627,20 +4634,22 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             text = getstr(Str_ChuPingShengYin);
         else if (dwListId == 1)
             text = getstr(Str_YinLiangTiaoJie);
+        else if (dwListId == 2)
+            text = getstr(Str_LiangDuTiaoJie);
         SetCurrIduFontID(FONT_ID_HeiTi19);
-        Idu_FontColorSet(0x00, 0x00, 0x00);
+        Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
         if (!g_psSetupMenu->bToundSoundEnable && dwListId == 1)
         {
-            Idu_FontColorSet(191, 191, 191);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_GREY);
             dwColor = RGB2YUV(191, 191, 191);
         }
         Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
-        Idu_FontColorSet(0xff, 0xff, 0xff);
+        Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
         Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + 38, 470, 2, dwColor);
-        if (dwListId == 1)
+        if (dwListId)
         {
             //Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy - 20, 470, 56, RGB2YUV(0xff, 0xff, 0x37));
-            xpgSpriteSetTouchArea(pstSprite, pstSprite->m_wPx, pstSprite->m_wPy - 20, 470, 56);
+            xpgSpriteSetTouchArea(pstSprite, pstSprite->m_wPx, pstSprite->m_wPy - pstSprite->m_wHeight, pWin->wWidth-pstSprite->m_wPx, pstSprite->m_wHeight*3);
         }
     }
     else if (dwHashKey == xpgHash("SetTime"))
@@ -4657,9 +4666,9 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             text = getstr(Str_XiTongYuYan);
         
         SetCurrIduFontID(FONT_ID_HeiTi19);
-        Idu_FontColorSet(0x00, 0x00, 0x00);
+        Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
         Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
-        Idu_FontColorSet(0xff, 0xff, 0xff);
+        Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
         if (dwListId < 5)
             Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + 38, 470, 2, RGB2YUV(0x2F, 0x2F, 0x2F));
 
@@ -4674,17 +4683,17 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         STXPGSPRITE * pstMask1;
         STXPGSPRITE * pstMask2;
         WORD lineWidth = 470; 
-        DWORD lineColor = RGB2YUV(0x00, 0x00, 0x00);
+        DWORD lineColor = IDU_FONT_YUVCOLOR_BLACK;
         DWORD textX = pstSprite->m_wPx;
-        Idu_FontColorSet(0x00,0x00,0x00);
+        Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
         if (dwListId == 0)
             text = getstr(Str_KaiJiMiMa);
         else if (dwListId == 1)
         {
             if (!g_psSetupMenu->bEnableOpenPassword)
             {
-                Idu_FontColorSet(191, 191, 191);
-                lineColor = RGB2YUV(191, 191, 191);
+                Idu_SetFontYUV(IDU_FONT_YUVCOLOR_GREY);
+                lineColor = IDU_FONT_YUVCOLOR_GREY;
             }
             text = getstr(Str_GengGaiKaiJiMiMa);
             Idu_PrintStringRight(pWin, ">", pstSprite->m_wPx + lineWidth, pstSprite->m_wPy, 0);
@@ -4697,8 +4706,8 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         {
             if (!g_psSetupMenu->bEnableHirePassword)
             {
-                Idu_FontColorSet(191, 191, 191);
-                lineColor = RGB2YUV(191, 191, 191);
+                Idu_SetFontYUV(IDU_FONT_YUVCOLOR_GREY);
+                lineColor = IDU_FONT_YUVCOLOR_GREY;
             }
             text = getstr(Str_GengGaiSuoDingMiMa);
             Idu_PrintStringRight(pWin, ">", pstSprite->m_wPx + lineWidth, pstSprite->m_wPy, 0);
@@ -4710,8 +4719,8 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             text = getstr(Str_SuoDingRiQi);
             if (g_psSetupMenu->bEnableHirePassword)
             {
-                Idu_FontColorSet(191,191,191);
-                lineColor = RGB2YUV(191, 191, 191);
+                Idu_SetFontYUV(IDU_FONT_YUVCOLOR_GREY);
+                lineColor = IDU_FONT_YUVCOLOR_GREY;
             }
             DWORD radioX = pstSprite->m_wPx;
             DWORD radioY = pstSprite->m_wPy + 4;
@@ -4737,8 +4746,8 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             text = getstr(Str_SuoDingRongJieCiShu);
             if (g_psSetupMenu->bEnableHirePassword)
             {
-                Idu_FontColorSet(130,130,130);
-                lineColor = RGB2YUV(130, 130, 130);
+                Idu_SetFontYUV(IDU_FONT_YUVCOLOR_GREY);
+                lineColor = IDU_FONT_YUVCOLOR_GREY;
             }
             DWORD radioX = pstSprite->m_wPx;
             DWORD radioY = pstSprite->m_wPy + 4;
@@ -4764,7 +4773,7 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         SetCurrIduFontID(FONT_ID_HeiTi19);
         Idu_PrintString(pWin, text, textX, pstSprite->m_wPy, 0, 0);
         Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + 38, lineWidth, 2, lineColor);
-        Idu_FontColorSet(0xff,0xff,0xff);
+        Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
 
     }
     else if (dwHashKey == xpgHash("SetUi"))
@@ -4799,9 +4808,9 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         xpgSpriteSetTouchArea(pstSprite, pstSprite->m_wPx, pstSprite->m_wPy - 14, 470, 50);
         
         SetCurrIduFontID(FONT_ID_HeiTi19);
-        Idu_FontColorSet(0x00, 0x00, 0x00);
+        Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
         Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
-        Idu_FontColorSet(0xff, 0xff, 0xff);
+        Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
         Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + 38, 470, 2, RGB2YUV(0x2F, 0x2F, 0x2F));
 
         char text1[128];
@@ -4834,9 +4843,9 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             sprintf(text1, "MT.000.01");
         }
         SetCurrIduFontID(FONT_ID_HeiTi19);
-        Idu_FontColorSet(0x00, 0x00, 0x00);
+        Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
         Idu_PrintStringRight(pWin, text1, pstSprite->m_wPx + 470, pstSprite->m_wPy, 0);
-        Idu_FontColorSet(0xff, 0xff, 0xff);
+        Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
     }
     else if (dwHashKey == xpgHash("User"))
     {
@@ -4942,9 +4951,9 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         }
         
         SetCurrIduFontID(FONT_ID_HeiTi19);
-        Idu_FontColorSet(0x00, 0x00, 0x00);
+        Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
         Idu_PrintString(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy, 0, 0);
-        Idu_FontColorSet(0xff, 0xff, 0xff);
+        Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
         Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + 42, 472, 2, RGB2YUV(0x37, 0x37, 0x37));
     }
     else if (dwHashKey == xpgHash("opmList1") || dwHashKey == xpgHash("opmList2") )
@@ -5185,9 +5194,9 @@ SWORD xpgDrawSprite_Dialog(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
             MakeMaskRole(&stMaskRole, XPG_ROLE_ICON_MASK_0, dialogW, dialogH);
             xpgRoleDrawMask(&stRole, pWin->pdwStart, dailogX, dialogY, pWin->wWidth, pWin->wHeight, &stMaskRole);
             SetCurrIduFontID(FONT_ID_HeiTi19);
-            Idu_FontColorSet(0, 0, 0);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
             Idu_PrintStringCenter(pWin, getstr(Str_LiangDuTiaoJie), dailogX, dialogY + 10, 0, dialogW);
-            Idu_FontColorSet(0xff, 0xff, 0xff);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
         }
         else if (dialogType == Dialog_ShutdownTime)
         {
@@ -5199,9 +5208,9 @@ SWORD xpgDrawSprite_Dialog(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
             MakeMaskRole(&stMaskRole, XPG_ROLE_ICON_MASK_0, dialogW, dialogH);
             xpgRoleDrawMask(&stRole, pWin->pdwStart, dailogX, dialogY, pWin->wWidth, pWin->wHeight, &stMaskRole);
             SetCurrIduFontID(FONT_ID_HeiTi19);
-            Idu_FontColorSet(0, 0, 0);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
             Idu_PrintStringCenter(pWin, getstr(Str_GuanJiShiJian), dailogX, dialogY + 10, 0, dialogW);
-            Idu_FontColorSet(0xff, 0xff, 0xff);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
         }
         else if (dialogType == Dialog_SetSound)
         {
@@ -5213,9 +5222,9 @@ SWORD xpgDrawSprite_Dialog(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
             MakeMaskRole(&stMaskRole, XPG_ROLE_ICON_MASK_0, dialogW, dialogH);
             xpgRoleDrawMask(&stRole, pWin->pdwStart, dailogX, dialogY, pWin->wWidth, pWin->wHeight, &stMaskRole);
             SetCurrIduFontID(FONT_ID_HeiTi19);
-            Idu_FontColorSet(0, 0, 0);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
             Idu_PrintStringCenter(pWin, getstr(Str_YinLiangTiaoJie), dailogX, dialogY + 10, 0, dialogW);
-            Idu_FontColorSet(0xff, 0xff, 0xff);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
         }
         else if (dialogType == Dialog_SetTime || dialogType == Dialog_SetDate)
         {
@@ -5227,13 +5236,13 @@ SWORD xpgDrawSprite_Dialog(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
             MakeMaskRole(&stMaskRole, XPG_ROLE_ICON_MASK_0, dialogW, dialogH);
             xpgRoleDrawMask(&stRole, pWin->pdwStart, dailogX, dialogY, pWin->wWidth, pWin->wHeight, &stMaskRole);
             SetCurrIduFontID(FONT_ID_HeiTi19);
-            Idu_FontColorSet(0, 0, 0);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
             if (dialogType == Dialog_SetTime)
                 text = getstr(Str_ShiJianSheZhi);
             else
                 text = getstr(Str_RiQiSheZhi);
             Idu_PrintStringCenter(pWin, text, dailogX, dialogY + 10, 0, dialogW);
-            Idu_FontColorSet(0xff, 0xff, 0xff);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
         }
         else if (dialogType == Dialog_SetDateFormat)
         {
@@ -5245,9 +5254,9 @@ SWORD xpgDrawSprite_Dialog(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
             MakeMaskRole(&stMaskRole, XPG_ROLE_ICON_MASK_0, dialogW, dialogH);
             xpgRoleDrawMask(&stRole, pWin->pdwStart, dailogX, dialogY, pWin->wWidth, pWin->wHeight, &stMaskRole);
             SetCurrIduFontID(FONT_ID_HeiTi19);
-            Idu_FontColorSet(0, 0, 0);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
             Idu_PrintStringCenter(pWin, getstr(Str_RiQiGeShi), dailogX, dialogY + 10, 0, dialogW);
-            Idu_FontColorSet(0xff, 0xff, 0xff);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
         }
         else if (dialogType == Dialog_SetLang)
         {
@@ -5259,9 +5268,9 @@ SWORD xpgDrawSprite_Dialog(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
             MakeMaskRole(&stMaskRole, XPG_ROLE_ICON_MASK_0, dialogW, dialogH);
             xpgRoleDrawMask(&stRole, pWin->pdwStart, dailogX, dialogY, pWin->wWidth, pWin->wHeight, &stMaskRole);
             SetCurrIduFontID(FONT_ID_HeiTi19);
-            Idu_FontColorSet(0, 0, 0);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
             Idu_PrintStringCenter(pWin, getstr(Str_XiTongYuYan), dailogX, dialogY + 10, 0, dialogW);
-            Idu_FontColorSet(0xff, 0xff, 0xff);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
         }
         else if (dialogType == Dialog_SetPassword1 || dialogType == Dialog_SetPassword2 || dialogType == Dialog_CheckPassword || dialogType == Dialog_EditValue\
 					|| dialogType == Dialog_PowerOnCheckHirePassword|| dialogType == Dialog_PowerOnCheckOpenPassword|| dialogType == Dialog_Electrode_Enable)
@@ -5284,9 +5293,9 @@ SWORD xpgDrawSprite_Dialog(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
             else if (dialogType == Dialog_BatInfo)
                 text = getstr(Str_DianChiXinXi);
              */
-            Idu_FontColorSet(0, 0, 0);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
             Idu_PrintStringCenter(pWin, strDialogTitle, dailogX, dialogY + 10, 0, dialogW);
-            Idu_FontColorSet(255, 255, 255);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
         }
         else if (dialogType == Dialog_Value)
         {
@@ -5318,9 +5327,9 @@ SWORD xpgDrawSprite_Dialog(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
                 text = getstr(Str_WenDuXinXi);
             else if (dialogType == Dialog_BatInfo)
                 text = getstr(Str_DianChiXinXi);
-            Idu_FontColorSet(0, 0, 0);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
             Idu_PrintStringCenter(pWin, text, dailogX, dialogY + 10, 0, dialogW);
-            Idu_FontColorSet(255, 255, 255);
+            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
         }
         else if (dialogType == Dialog_MainPageError||dialogType == Dialog_MachineWarning)
         {
@@ -5375,9 +5384,9 @@ SWORD xpgDrawSprite_Dialog(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
 				MakeMaskRole(&stMaskRole, XPG_ROLE_ICON_MASK_0, dialogW, dialogH);
 				xpgRoleDrawMask(&stRole, pWin->pdwStart, dailogX, dialogY, pWin->wWidth, pWin->wHeight, &stMaskRole);
 				SetCurrIduFontID(FONT_ID_HeiTi19);
-				Idu_FontColorSet(0, 0, 0);
+				Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
 				Idu_PrintStringCenter(pWin, strDialogTitle, dailogX, dialogY + 5, 0, dialogW);
-				Idu_FontColorSet(255, 255, 255);
+				Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
         }
     }
     else if (dwHashKey == xpgHash("User"))
@@ -5679,7 +5688,7 @@ static void showMainPageValue(int type, ST_IMGWIN * pWin, DWORD X, DWORD Y, int 
         const char * text;
         text = getstr(Str_Ci);
         SetCurrIduFontID(FONT_ID_HeiTi19);
-        Idu_SetFontColor(255, 255, 255);
+        Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
         Idu_PrintString(pWin, text, X + offset, Y + 20, 0, 0);
     }
     return;

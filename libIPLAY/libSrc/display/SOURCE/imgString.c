@@ -315,11 +315,12 @@ BYTE ImgPutChar(ST_IMGWIN *psWin, ST_FONT *sFont, WORD wData, BYTE MappingTable)
 		return ImgPutChar_GrayFont(psWin, sFont, wData, MappingTable);
 }
 
-DWORD g_dwSystemFontColor = 0xffff8080;
+DWORD g_dwSystemFontColor = IDU_FONT_YUVCOLOR_DEFAULT_WHITE;
 DWORD Idu_GetSystemFontColor()
 {
     return g_dwSystemFontColor;
 }
+#if 0
 BYTE bSystemFontColorRGB = 0; // 0 - not yet set
 BYTE bSystemFontColorR = 0;
 BYTE bSystemFontColorG = 0;
@@ -352,6 +353,7 @@ void Idu_SetFontColor(BYTE R, BYTE G, BYTE B)
     bSystemFontColorB = B;
 	g_dwSystemFontColor = RGB2YUV(R, G, B);
 }
+#endif
 
 void Idu_SetFontYUV(DWORD dwColor)
 {
@@ -360,11 +362,11 @@ void Idu_SetFontYUV(DWORD dwColor)
 	g_dwSystemFontColor = dwColor;
 }
 
-DWORD Idu_FontColorSet(BYTE R, BYTE G, BYTE B)
+void Idu_FontColorSet(BYTE R, BYTE G, BYTE B)
 {
     MP_DEBUG("%s", __func__);
     //mpDebugPrint("%s", __FUNCTION__);
-	return g_dwSystemFontColor = RGB2YUV(R, G, B);
+	g_dwSystemFontColor = RGB2YUV(R, G, B);
 }
 
 

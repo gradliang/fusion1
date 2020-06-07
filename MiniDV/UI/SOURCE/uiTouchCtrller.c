@@ -760,12 +760,12 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
                 dwDialogTempValue++;
             else if (dwIconId == 1)
             {
-                if (dwDialogTempValue) dwDialogTempValue--;
+                if (dwDialogTempValue>1) dwDialogTempValue--;
             }
             else
                 return 0;
-            if (dwDialogTempValue > 15)
-                dwDialogTempValue = 15;
+            if (dwDialogTempValue > 16)
+                dwDialogTempValue = 16;
             xpgUpdateStage();
         }
         else if (dialogType == Dialog_SetTime)
@@ -1389,7 +1389,10 @@ SWORD touchSprite_CloseIcon(STXPGSPRITE * sprite, WORD x, WORD y)
             if (g_psSetupMenu->bBrightness!= dwDialogTempValue)
             {
                 g_psSetupMenu->bBrightness = dwDialogTempValue;
+				if (g_psSetupMenu->bBrightness>100)
+					g_psSetupMenu->bBrightness=100;
                 boNeedWriteSetup = TRUE;
+			    TimerPwmEnable(3, 240000, g_psSetupMenu->bBrightness);
             }
             exitDialog();
             if (boNeedWriteSetup)
@@ -1664,40 +1667,34 @@ SWORD touchSprite_Selector(STXPGSPRITE * sprite, WORD x, WORD y)
         if (dwSelectorId == 0)
         {
             xpgSearchtoPageWithAction("SetYun");
-            xpgUpdateStage();
         }
         else if (dwSelectorId == 1)
         {
-            xpgSearchtoPageWithAction("SetSleep");
-            xpgUpdateStage();
+            xpgSearchtoPageWithAction("SetSound");
         }
         else if (dwSelectorId == 2)
         {
-            xpgSearchtoPageWithAction("SetSound");
-            xpgUpdateStage();
+            xpgSearchtoPageWithAction("SetSleep");
         }
         else if (dwSelectorId == 3)
         {
             xpgSearchtoPageWithAction("SetTime");
-            xpgUpdateStage();
         }
         else if (dwSelectorId == 4)
         {
             xpgSearchtoPageWithAction("SetPassword");
-            xpgUpdateStage();
         }
         else if (dwSelectorId == 5)
         {
             //xpgSearchtoPageWithAction("SetUi");
             xpgSearchtoPageWithAction("SetInfo");
-            xpgUpdateStage();
         }
         //else if (dwSelectorId == 6)
         //{
         //    xpgSearchtoPageWithAction("SetInfo");
         //    xpgUpdateStage();
         //}
-        
+           xpgUpdateStage();
     }
     else if (dwHashKey == xpgHash("FusionSet1") ||
         dwHashKey == xpgHash("FusionSet2") ||
@@ -1860,10 +1857,7 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
         }
         else if (dwSpriteId == 3 && !g_psSetupMenu->bAutoShutdown)
         {
-            Free_CacheWin();
-            Idu_GetCacheWin_WithInit();
-            DrakWin(Idu_GetCacheWin(), 2, 1);
-            mpCopyEqualWin(Idu_GetCurrWin(), Idu_GetCacheWin());
+            DrakWin(Idu_GetCurrWin(), 2, 1);
             dwDialogTempValue = g_psSetupMenu->wShutdownTime;
             popupDialog(Dialog_ShutdownTime, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
             xpgUpdateStage();
@@ -1871,14 +1865,18 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
     }
     else if (dwHashKey == xpgHash("SetSound"))
     {
-        if (dwSpriteId == 1 && !g_psSetupMenu->bToundSoundEnable)
+        if (dwSpriteId == 1 && g_psSetupMenu->bToundSoundEnable)
         {
-            Free_CacheWin();
-            Idu_GetCacheWin_WithInit();
-            DrakWin(Idu_GetCacheWin(), 2, 1);
-            mpCopyEqualWin(Idu_GetCurrWin(), Idu_GetCacheWin());
+            DrakWin(Idu_GetCurrWin(), 2, 1);
             dwDialogTempValue = g_psSetupMenu->bVolume;
             popupDialog(Dialog_SetSound, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
+            xpgUpdateStage();
+        }
+        else if (dwSpriteId == 2)
+        {
+            DrakWin(Idu_GetCurrWin(), 2, 1);
+            dwDialogTempValue = g_psSetupMenu->bBrightness;
+            popupDialog(Dialog_SetBrightness, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
             xpgUpdateStage();
         }
     }
@@ -1886,10 +1884,7 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
     {
         if (dwSpriteId == 1)
         {
-            Free_CacheWin();
-            Idu_GetCacheWin_WithInit();
-            DrakWin(Idu_GetCacheWin(), 2, 1);
-            mpCopyEqualWin(Idu_GetCurrWin(), Idu_GetCacheWin());
+            DrakWin(Idu_GetCurrWin(), 2, 1);
             //////////////////////////
             ST_SYSTEM_TIME curTime;
             SystemTimeGet(&curTime);
@@ -1899,10 +1894,7 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
         }
         else if (dwSpriteId == 2)
         {
-            Free_CacheWin();
-            Idu_GetCacheWin_WithInit();
-            DrakWin(Idu_GetCacheWin(), 2, 1);
-            mpCopyEqualWin(Idu_GetCurrWin(), Idu_GetCacheWin());
+            DrakWin(Idu_GetCurrWin(), 2, 1);
             //////////////////////////
             ST_SYSTEM_TIME curTime;
             SystemTimeGet(&curTime);
