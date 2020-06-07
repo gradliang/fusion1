@@ -65,7 +65,9 @@ void uiTouchMsgReceiver(void)
 	{
 		if (data.reserved==TC_DOWN)
 		{
-			uiDispatchTouchSprite(data.x1, data.y1);
+			if (!CheckAndTurnOnBackLight())
+				uiDispatchTouchSprite(data.x1, data.y1);
+			UiCb_CheckSleepAndShut();
 			st_bTouchDown=1;
 		}
 		else //if (data.reserved==TC_UP)
@@ -727,11 +729,11 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
         else if (dialogType == Dialog_ShutdownTime)
         {
             if (dwIconId == 0)
-                dwDialogTempValue += 10;
+                dwDialogTempValue += 5;
             else if (dwIconId == 1)
             {
-                if (dwDialogTempValue >= 20)
-                    dwDialogTempValue -= 10;
+                if (dwDialogTempValue > 5)
+                    dwDialogTempValue -= 5;
             }
             else if (dwIconId == 2)
             {
@@ -740,7 +742,35 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
                 {
                     g_psSetupMenu->wShutdownTime = dwDialogTempValue;
                     boNeedWriteSetup = TRUE;
-                    xpgCb_AutoPowerOff(g_psSetupMenu->bAutoShutdown,g_psSetupMenu->wShutdownTime);
+                }
+                exitDialog();
+                if (boNeedWriteSetup)
+                    WriteSetupChg();
+            }
+            else if (dwIconId == 3)
+            {
+                exitDialog();
+            }
+            else
+                return 0;
+            xpgUpdateStage();
+        }
+        else if (dialogType == Dialog_SleepTime)
+        {
+            if (dwIconId == 0)
+                dwDialogTempValue ++;
+            else if (dwIconId == 1)
+            {
+                if (dwDialogTempValue >1)
+                    dwDialogTempValue --;
+            }
+            else if (dwIconId == 2)
+            {
+                boNeedWriteSetup = FALSE;
+                if (g_psSetupMenu->bSleepTime != dwDialogTempValue)
+                {
+                    g_psSetupMenu->bSleepTime = dwDialogTempValue;
+                    boNeedWriteSetup = TRUE;
                 }
                 exitDialog();
                 if (boNeedWriteSetup)
@@ -1400,15 +1430,11 @@ SWORD touchSprite_CloseIcon(STXPGSPRITE * sprite, WORD x, WORD y)
         }
         else if (dialogType == Dialog_ShutdownTime)
         {
-            if (g_psSetupMenu->wShutdownTime != dwDialogTempValue)
-            {
-                g_psSetupMenu->wShutdownTime = dwDialogTempValue;
-                boNeedWriteSetup = TRUE;
-                xpgCb_AutoPowerOff(g_psSetupMenu->bAutoShutdown,g_psSetupMenu->wShutdownTime);
-            }
             exitDialog();
-            if (boNeedWriteSetup)
-                WriteSetupChg();
+        }
+        else if (dialogType == Dialog_ShutdownTime)
+        {
+            exitDialog();
         }
         else if (dialogType == Dialog_SetSound)
         {
@@ -1845,19 +1871,18 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
     }
     else if (dwHashKey == xpgHash("SetSleep"))
     {
-        if (dwSpriteId == 1 && !g_psSetupMenu->bSmartBacklight)
-        {
-            Free_CacheWin();
-            Idu_GetCacheWin_WithInit();
-            DrakWin(Idu_GetCacheWin(), 2, 1);
-            mpCopyEqualWin(Idu_GetCurrWin(), Idu_GetCacheWin());
-            dwDialogTempValue = g_psSetupMenu->bBrightness;
-            popupDialog(Dialog_SetBrightness, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
-            xpgUpdateStage();
-        }
-        else if (dwSpriteId == 3 && !g_psSetupMenu->bAutoShutdown)
+        if (dwSpriteId == 1 && g_psSetupMenu->bLowPowerMode)
         {
             DrakWin(Idu_GetCurrWin(), 2, 1);
+	        strDialogTitle = getstr(Str_SleepTime);
+            dwDialogTempValue = g_psSetupMenu->bSleepTime;
+            popupDialog(Dialog_SleepTime, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
+            xpgUpdateStage();
+        }
+        else if (dwSpriteId == 3 && g_psSetupMenu->bAutoShutdown)
+        {
+            DrakWin(Idu_GetCurrWin(), 2, 1);
+	        strDialogTitle = getstr(Str_GuanJiShiJian);
             dwDialogTempValue = g_psSetupMenu->wShutdownTime;
             popupDialog(Dialog_ShutdownTime, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
             xpgUpdateStage();
@@ -2130,7 +2155,7 @@ SWORD touchSprite_Radio(STXPGSPRITE * sprite, WORD x, WORD y)
     {
         if (dwSpriteId == 0)
         {
-            g_psSetupMenu->bSmartBacklight = !g_psSetupMenu->bSmartBacklight;
+            g_psSetupMenu->bLowPowerMode = !g_psSetupMenu->bLowPowerMode;
             xpgUpdateStage();
             WriteSetupChg();
         }
@@ -2139,7 +2164,6 @@ SWORD touchSprite_Radio(STXPGSPRITE * sprite, WORD x, WORD y)
             g_psSetupMenu->bAutoShutdown = !g_psSetupMenu->bAutoShutdown;
             xpgUpdateStage();
             WriteSetupChg();
-			xpgCb_AutoPowerOff(g_psSetupMenu->bAutoShutdown,g_psSetupMenu->wShutdownTime);
         }
     }
     else if (dwHashKey == xpgHash("SetSound"))
@@ -2372,8 +2396,7 @@ void uiDispatchTouchSprite(WORD x1, WORD y1)
     STXPGTOUCHINFO * pstTouchInfo = NULL;
     BOOL match;
 
-	MP_DEBUG("%d, %d",  x1, y1);
-	xpgCb_AutoPowerOff(g_psSetupMenu->bAutoShutdown,g_psSetupMenu->wShutdownTime);
+	mpDebugPrint("%d, %d",  x1, y1);
     if (pstMovie->m_dwSpriteCount == 0)
         return;
 

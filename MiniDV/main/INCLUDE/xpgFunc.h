@@ -186,7 +186,7 @@ void Free_CacheWin();
 void DrakWin(ST_IMGWIN* pWin, DWORD largeNum, DWORD smallNum);
 STXPGPAGE *xpgSearchtoPageWithAction(const char *name);
 
-void xpgCb_AutoPowerOff(BYTE bEnable,DWORD dwTime);
+void UiCb_CheckSleepAndShut();
 void xpgCb_EnterCamcoderPreview();
 void xpgCb_StopAllSensorWork();
 void AddAutoEnterPreview(void);

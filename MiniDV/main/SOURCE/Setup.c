@@ -111,7 +111,8 @@ void GetDefaultSetupMenuValue(void)
     g_psSetupMenu->b24HourFormat = 1;
     //g_psSetupMenu->bDataFormatMMDDYYYY = 0;
     //g_psSetupMenu->bSmartBacklight = 0;
-    //g_psSetupMenu->bAutoShutdown = 0;
+    g_psSetupMenu->bSleepTime = 1;
+    g_psSetupMenu->bAutoShutdown = 10;
     //g_psSetupMenu->bToundSoundEnable = 0;
     //g_psSetupMenu->bLanguage = 0;
     //g_psSetupMenu->bUserMode = 0;
@@ -385,7 +386,7 @@ SWORD  SetupSendSmartBacklight(void)
 	bTxData[0]=0xA9;
 	bTxData[1]=3+2;
 	bTxData[2]=0x07;
-	bTxData[3]=g_psSetupMenu->bSmartBacklight;
+	bTxData[3]=g_psSetupMenu->bLowPowerMode;
 	return TSPI_PacketSend(bTxData,0);
 }
 

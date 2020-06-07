@@ -978,8 +978,8 @@ SWORD xpgGotoPageWithAction(DWORD dwPage)  //Mason 20060619  //From Athena
     else
         g_isDialogPage = 0;
  */
- 	if (xpgGetCurrDialogTypeId())
-		xpgDeleteAllDialog();
+// 	if (xpgGetCurrDialogTypeId())  //多级对话框无效
+//		xpgDeleteAllDialog();
 #endif
 #if  (PRODUCT_UI==UI_WELDING)
 	if (g_pstXpgMovie->m_pstCurPage->m_dwHashKey == xpgHash("Auto_work") || g_pstXpgMovie->m_pstCurPage->m_dwHashKey == xpgHash("Manual_work"))
@@ -1542,6 +1542,8 @@ void uiCb_CheckPopDialogAfterUpdatestage(void)
 			if (g_dwMachineWarningFlag&WARNING_BATTERY_LOW)
 			{
 	            DrakWin(Idu_GetCurrWin(), 2, 1);
+				UiCb_CheckSleepAndShut();
+				CheckAndTurnOnBackLight();
 	            //strDialogTitle = NULL;
 	            dialogOnClose = DialogCb_ExitLowPowerPopWarning;
 	            popupDialog(Dialog_MachineWarning, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
@@ -1564,13 +1566,18 @@ void uiCb_CheckPopDialogAfterUpdatestage(void)
 
 
 //>------------TOUCH UI FUNCION-----------------------
-static DWORD st_dwPowerOff=0;
-void xpgCb_AutoPowerOff(BYTE bEnable,DWORD dwTime)
+static DWORD st_dwPowerOff=0,st_dwSleep=0;
+void UiCb_CheckSleepAndShut(void)
 {
-	if (bEnable)
-		st_dwPowerOff=dwTime*60000;
+	if (g_psSetupMenu->bAutoShutdown)
+		st_dwPowerOff=g_psSetupMenu->wShutdownTime*2500;
 	else
 		st_dwPowerOff=0;
+	if (g_psSetupMenu->bLowPowerMode)
+		st_dwSleep=g_psSetupMenu->bSleepTime*2500; // 1000->24s
+	else
+		st_dwSleep=0;
+		
 }
 
 void TimerCheckPowerOff(void)
@@ -1581,6 +1588,13 @@ void TimerCheckPowerOff(void)
 		if (!st_dwPowerOff)
 			SendCmdPowerOff();
 	}
+	if (st_dwSleep)
+	{
+		st_dwSleep--;
+		if (!st_dwSleep)
+			TurnOffBackLight();
+	}
+
 }
 
 //<------------TOUCH UI FUNCION-----------------------

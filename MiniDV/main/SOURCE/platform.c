@@ -7,6 +7,7 @@
 #include "ui.h"
 #include "Peripheral.h"
 
+static BYTE st_bBackLightOn=0;
 SWORD PlatformInit()
 {
     MP_DEBUG("%s", __func__);
@@ -44,6 +45,7 @@ void TurnOnBackLight(void)
     MP_DEBUG("%s", __func__);
 
     SetGPIOValue(GPIO_BL_CTRL, 1); // Platform_MP663_DV.h, #define GPIO_BL_CTRL GPIO_NULL
+    st_bBackLightOn=1;
 }
 
 
@@ -52,6 +54,17 @@ void TurnOffBackLight(void)
     MP_DEBUG("%s", __func__);
 
     SetGPIOValue(GPIO_BL_CTRL, 0); // Platform_MP663_DV.h, #define GPIO_BL_CTRL GPIO_NULL
+    st_bBackLightOn=0;
+}
+
+BYTE CheckAndTurnOnBackLight(void)
+{
+	if (!st_bBackLightOn)
+	{
+		TurnOnBackLight();
+		return 1;
+	}
+	return 0;
 }
 
 void TimerToBacklightOff(DWORD dwTime)

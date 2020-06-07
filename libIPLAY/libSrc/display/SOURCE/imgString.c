@@ -494,6 +494,40 @@ WORD Idu_GetStringWidth(BYTE *string, BYTE UnicodeFlag)
     
 }
 
+WORD Idu_PrintStringLeftNewLine(ST_IMGWIN * trgWin, BYTE * string, WORD startX, WORD startY, BYTE UnicodeFlag, WORD wWidth)
+{
+    WORD wLen;
+    int pos=0,pos1;
+	BYTE *pbBuffer=NULL,*pbStr=string;
+	
+    if (wWidth <= 8)
+        return Idu_PrintString(trgWin, string, startX, startY, UnicodeFlag, 0);
+	wWidth-=8;
+	startX+=4;
+	pos=0;
+	pbBuffer = (BYTE *) ext_mem_malloc((Str_Length(string,UnicodeFlag)+4)<<1);
+	while (1)
+	{
+		wLen=Str_Length(&pbStr[pos],UnicodeFlag);
+		if (wLen<=0)
+			break;
+		pos1 = Idu_GetStrPosByWidth(&pbStr[pos], UnicodeFlag,wWidth);
+		if (pos1<=0)
+			break;
+		memcpy(pbBuffer,&pbStr[pos],pos1);
+		pbBuffer[pos1]=0;
+		pbBuffer[pos1+1]=0;
+		Idu_PrintString(trgWin, pbBuffer, startX, startY, UnicodeFlag, wWidth);
+		if (wLen<=pos1)
+			break;
+		pos+=pos1;
+		startY+=IduFontGetMaxHeight();
+	}
+
+	if (pbBuffer)
+		ext_mem_free(pbBuffer);
+}
+
 WORD Idu_PrintStringCenterNewLine(ST_IMGWIN * trgWin, BYTE * string, WORD startX, WORD startY, BYTE UnicodeFlag, WORD wWidth)
 {
     WORD wStrWidth,wLen;

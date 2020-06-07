@@ -45,7 +45,7 @@ enum xpgStringId {
 	Str_YunDuanOPMZhuangTai,	//  35
 	Str_ZaiXian,				//  36
 	Str_SaoMiaoErWeiMa,			//  37
-	Str_ZhiNengBeiGuang,		//   38
+	Str_LowPowerMode,		//   38
 	Str_YiFenZhongWuCaoZuo,	//39
 	Str_LiangDuTiaoJie,			//   40
 	Str_ZiDongGuanJi,			//   41
@@ -202,7 +202,7 @@ enum xpgStringId {
 	Str_SuoDingRiQi,				//   192
 	Str_WangJiMiMa,					//   193
 	Str_QueDing,					//   194
-	Str_ZhiNengBeiGuang_DESC,		//   195
+	Str_LowPowerMode_DESC,		//   195
 	Str_ZiDongGuanJi_DESC,			//   196
 	Str_ClickCanSetupFunction,		//   197
 	Str_Display_CanChoose6Icons,    //   198
@@ -230,7 +230,8 @@ enum xpgStringId {
 	Str_Warning_ElectrodeLess,      //   220
 	Str_Warning_LowPower,      //   221
 	Str_Warning_LowNetsignal,      //   222
-	
+	Str_SleepTime,			//   223
+
 	Str_MAX_ID,
 };
 

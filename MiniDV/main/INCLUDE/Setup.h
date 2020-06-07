@@ -199,8 +199,9 @@ typedef struct ST_SETUP_MENU_SETTING_VALUE
     WORD wShutdownTime;                 // 关机时间
     BYTE b24HourFormat;                 // 24 小时格式的时间
     BYTE bDataFormatMMDDYYYY;           // 是否MMDDYYYY格式的日期
-    BYTE bSmartBacklight;               // 智能背光
-    BYTE bAutoShutdown;                 // 自动关机
+    BYTE bLowPowerMode;               // 低电模式
+    BYTE bSleepTime;                 // 关屏时间  UNIT:min
+    BYTE bAutoShutdown;                 // 自动关机UNIT:min
     BYTE bToundSoundEnable;             // 触屏声音
     BYTE bLanguage;                     // 语言
     BYTE bUserMode;                     // 用户模式

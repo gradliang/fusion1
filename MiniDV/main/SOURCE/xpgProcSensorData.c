@@ -6727,7 +6727,9 @@ void TSPI_DataProc(void)
 	switch (pbTspiRxBuffer[0])
 	{
 		case 0xb1:
-			xpgCb_AutoPowerOff(g_psSetupMenu->bAutoShutdown,g_psSetupMenu->wShutdownTime);
+			UiCb_CheckSleepAndShut();
+			if (CheckAndTurnOnBackLight())
+				return;
 			if (pbTspiRxBuffer[3]==1) //4 短按
 			{
 				switch (pbTspiRxBuffer[2])
@@ -7119,6 +7121,8 @@ void TSPI_DataProc(void)
 				case 1://4 霍尔盖子状态
 					if (pbTspiRxBuffer[2]&BIT0)// 盖子打开
 					{
+						UiCb_CheckSleepAndShut();
+						CheckAndTurnOnBackLight();
 						g_psUnsaveParam->bHollCover=1;
 						WeldStopAllAction();
 						// 马达复位
@@ -7377,14 +7381,6 @@ void TSPI_DataProc(void)
 
 		//环境亮度
 		case 0xbd:
-			if (g_psSetupMenu->bSmartBacklight)
-			{
-				if (pbTspiRxBuffer[2] && pbTspiRxBuffer[2]<6)
-				{
-					BYTE bPwmArry[5]={10,30,50,70,90};
-					TimerPwmEnable(2, 240000, bPwmArry[pbTspiRxBuffer[2]-1]);
-				}
-			}
 			break;
 
 		//加热数据
@@ -7484,7 +7480,12 @@ void TSPI_DataProc(void)
 		//充电状态与电量
 		case 0xc7:
 			g_psUnsaveParam->bChargeStatus=pbTspiRxBuffer[2];
-			if (!g_psUnsaveParam->bChargeStatus)
+			if (g_psUnsaveParam->bChargeStatus)
+			{
+				UiCb_CheckSleepAndShut();
+				CheckAndTurnOnBackLight();
+			}
+			else
 			{
 				if (g_psUnsaveParam->bBatteryQuantity !=pbTspiRxBuffer[3])
 				{
@@ -8375,7 +8376,7 @@ void WeldDataInit(void)
 	*/
 	MP_DEBUG("wElectrodePos %d",g_psSetupMenu->wElectrodePos[0]);
 	//WriteSetupChg();
-	xpgCb_AutoPowerOff(g_psSetupMenu->bAutoShutdown,g_psSetupMenu->wShutdownTime);
+	UiCb_CheckSleepAndShut();
 
 	//ResetMotor();
 	//g_psSetupMenu->bBackGroundLevel[0]=0;
