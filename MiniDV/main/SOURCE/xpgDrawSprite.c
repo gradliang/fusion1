@@ -121,9 +121,7 @@ int popupDialog(int dialogType, DWORD dwReturnPageIndex, ST_IMGWIN* pWin_Backgro
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
     
 #if  (PRODUCT_UI==UI_WELDING)
-	if (pWin_Background==NULL || pWin_Background->pdwStart==NULL)
-		pWin_Background=Idu_GetCurrWin();
-    xpgAddDialog(dialogType, dwReturnPageIndex, pWin_Background);
+    xpgAddDialog(dialogType, dwReturnPageIndex,pWin_Background);
     mpDebugPrint("dialogType = %d, dwReturnPageIndex = %d", dialogType, dwReturnPageIndex);
     
     if (dialogType == Dialog_ReSuGuan)
@@ -345,7 +343,7 @@ int popupDialog(int dialogType, DWORD dwReturnPageIndex, ST_IMGWIN* pWin_Backgro
         xpgAddDialogSprite(SPRITE_TYPE_ICON, 11, 0);
     }
     else if (dialogType == Dialog_Note_ForgetHirePassword||dialogType == Dialog_Note_ForgetOpenPassword||dialogType == Dialog_Note_ElectrodeEnable_Path\
-			||dialogType == Dialog_Note_ElectrodeEnable_PASS||dialogType == Dialog_Note_ElectrodeEnable_FAIL)
+			||dialogType == Dialog_Note_ElectrodeEnable_PASS||dialogType == Dialog_Note_ElectrodeEnable_FAIL||dialogType == Dialog_ShutdownRemain)
     {
         xpgAddDialogSprite(SPRITE_TYPE_DIALOG, 0, 0);
         xpgAddDialogSprite(SPRITE_TYPE_CLOSE_ICON, 0, 0);
@@ -2895,7 +2893,7 @@ SWORD xpgDrawSprite_CloseIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite
 			xpgRoleDrawMask(pstRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, pstMask);
         }
         else if (dialogType == Dialog_Note_ForgetHirePassword||dialogType == Dialog_Note_ForgetOpenPassword||dialogType == Dialog_Note_ElectrodeEnable_Path\
-			||dialogType == Dialog_Note_ElectrodeEnable_PASS||dialogType == Dialog_Note_ElectrodeEnable_FAIL)
+			||dialogType == Dialog_Note_ElectrodeEnable_PASS||dialogType == Dialog_Note_ElectrodeEnable_FAIL||dialogType == Dialog_ShutdownRemain)
         {
             pstSprite->m_wPx = (pWin->wWidth+pWin->wWidth*2/3)/2-50;//DIALOG_DEFAULT_WIDTH
             pstSprite->m_wPy = pWin->wHeight/6+4;
@@ -4330,26 +4328,33 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
         }
 		else if (dialogType == Dialog_Note_ForgetHirePassword||dialogType == Dialog_Note_ForgetOpenPassword||dialogType == Dialog_Note_ElectrodeEnable_Path\
-			||dialogType == Dialog_Note_ElectrodeEnable_PASS||dialogType == Dialog_Note_ElectrodeEnable_FAIL)
+			||dialogType == Dialog_Note_ElectrodeEnable_PASS||dialogType == Dialog_Note_ElectrodeEnable_FAIL||dialogType == Dialog_ShutdownRemain)
 		{
+			char tempStr[10];
 			SetCurrIduFontID(FONT_ID_HeiTi19);
 			Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
-			//DIALOG_DEFAULT_WIDTH
 			if (dialogType == Dialog_Note_ElectrodeEnable_Path)
 			{
-				char tempStr[10];
               sprintf(tempStr, "%04d", g_wElectrodeRandomCode);
               Idu_PrintStringCenter(pWin, tempStr, (pWin->wWidth/3)>>1, pWin->wHeight/2-IduFontGetMaxHeight()*2, 0, pWin->wWidth*2/3);
-			}
-			if (dialogType == Dialog_Note_ElectrodeEnable_Path)
 				pStr=getstr(Str_Note_GetElectrodeEnableCode);
+			}
 			else if (dialogType == Dialog_Note_ElectrodeEnable_PASS)
 				pStr=getstr(Str_ElectrodeEnablePass);
 			else if (dialogType == Dialog_Note_ElectrodeEnable_FAIL)
 				pStr=getstr(Str_ElectrodeEnableFail);
+			else if (dialogType == Dialog_ShutdownRemain)
+			{
+				extern DWORD g_dwPowerOff;
+
+				sprintf(tempStr, "%d", g_dwPowerOff/41);
+				SetCurrIduFontID(FONT_ID_ARIAL_36);
+				Idu_PrintString(pWin, tempStr, pWin->wWidth/2-20, pWin->wHeight>>1, 0, 0);
+			}
 			else
 				pStr=getstr(Str_Info_ForgetPassword);
-			Idu_PrintStringCenterNewLine(pWin, pStr, (pWin->wWidth/3)>>1, pWin->wHeight/2-IduFontGetMaxHeight(), 0, pWin->wWidth*2/3);
+			if (pStr)
+				Idu_PrintStringCenterNewLine(pWin, pStr, (pWin->wWidth/3)>>1, pWin->wHeight/2-IduFontGetMaxHeight(), 0, pWin->wWidth*2/3);
 			Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
 		}
     }
@@ -5362,7 +5367,7 @@ SWORD xpgDrawSprite_Dialog(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
 				}
         }
         else if (dialogType == Dialog_Note_ForgetHirePassword||dialogType == Dialog_Note_ForgetOpenPassword||dialogType == Dialog_Note_ElectrodeEnable_Path\
-			||dialogType == Dialog_Note_ElectrodeEnable_PASS||dialogType == Dialog_Note_ElectrodeEnable_FAIL)
+			||dialogType == Dialog_Note_ElectrodeEnable_PASS||dialogType == Dialog_Note_ElectrodeEnable_FAIL||dialogType == Dialog_ShutdownRemain)
         {
 				dialogW = pWin->wWidth*2/3;//DIALOG_DEFAULT_WIDTH
 				dialogH = pWin->wHeight*2/3;

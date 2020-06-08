@@ -8322,6 +8322,7 @@ void WeldStopAllAction(void)
 	}
 	st_bAutoDischarge=0;
 	st_wDischargeTimeSet=0;
+	StopAllMoto();
 }
 
 void WeldDataInit(void)

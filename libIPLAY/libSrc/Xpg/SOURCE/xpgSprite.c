@@ -636,9 +636,11 @@ XPGEXTRASPRITE* getCurDialogExtraSpriteList()
     return pstCurDialogInfo->spriteList;
 }
 
-int xpgAddDialog(int dialogId, DWORD dwReturnPageIndex, ST_IMGWIN* backupWin)
+int xpgAddDialog(int dialogId, DWORD dwReturnPageIndex,ST_IMGWIN* backupWin)
 {
     DWORD curDialogIndex;
+	ST_IMGWIN*pCacheWin ,*pLastCacheWin ;
+	
     if (dialogCount >= 3)
     {
         mpDebugPrint("Dialog count too large, have exist %d dialogs. ", dialogCount);
@@ -650,19 +652,29 @@ int xpgAddDialog(int dialogId, DWORD dwReturnPageIndex, ST_IMGWIN* backupWin)
     pstCurDialogInfo->spriteCount = 0;
     pstCurDialogInfo->dwReturnPageIndex= dwReturnPageIndex;
 
-	ST_IMGWIN *pCacheWin = &pstCurDialogInfo->backupWin;
+	pCacheWin = &pstCurDialogInfo->backupWin;
 
-    if (pCacheWin->pdwStart != NULL)
+    if (curDialogIndex==0  && pCacheWin->pdwStart != NULL)
     {
         ext_mem_free(pCacheWin->pdwStart);
 		pCacheWin->pdwStart = NULL;
     }
 
-	if (backupWin !=NULL && backupWin->pdwStart !=NULL)
+	if (dialogCount>0)//4 使用上一层对话框低图
+	{
+	    XPGDIALOGSTACK * pstLastDialogInfo = &dialogStacks[dialogCount-1];
+			
+		pLastCacheWin = &pstLastDialogInfo->backupWin;
+		ImgWinInit(pCacheWin, NULL, pLastCacheWin->wHeight, pLastCacheWin->wWidth);
+		pCacheWin->pdwStart = pLastCacheWin->pdwStart;
+	}
+	else
 	{
 		ImgWinInit(pCacheWin, NULL, backupWin->wHeight, backupWin->wWidth);
 		pCacheWin->pdwStart = (DWORD *)ext_mem_malloc(backupWin->wWidth * backupWin->wHeight * 2);
 		mpCopyEqualWin(pCacheWin, backupWin);
+		if (backupWin==(ST_IMGWIN*)Idu_GetCurrWin())
+			DrakWin(pCacheWin, 2, 1);
 	}
 	
     dialogCount++;
@@ -680,7 +692,7 @@ int xpgDeleteDialog()
         curDialogIndex = dialogCount - 1;
         pstCurDialogInfo = &dialogStacks[curDialogIndex];
         ST_IMGWIN *pCacheWin = &pstCurDialogInfo->backupWin;
-        if (pCacheWin->pdwStart != NULL)
+        if (curDialogIndex==0 && pCacheWin->pdwStart != NULL)
         {
             ext_mem_free(pCacheWin->pdwStart);
     		pCacheWin->pdwStart = NULL;
@@ -702,7 +714,7 @@ int xpgDeleteAllDialog()
     for (i = 0; i < DIALOG_STACK_SIZE; i++)
     {
         pstCurDialogInfo = &dialogStacks[i];
-        if (pstCurDialogInfo->backupWin.pdwStart != NULL)
+        if (i==0 && pstCurDialogInfo->backupWin.pdwStart != NULL)
         {
             ext_mem_free(pstCurDialogInfo->backupWin.pdwStart);
             pstCurDialogInfo->backupWin.pdwStart = NULL;

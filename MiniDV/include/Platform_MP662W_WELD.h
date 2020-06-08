@@ -840,6 +840,7 @@
 #define Dialog_Note_ElectrodeEnable_FAIL                      28          //4 激活电极棒FAIL
 #define Dialog_MachineWarning                      						29          //4 主界面出现的警告提示框
 #define Dialog_SleepTime                 										30           // 关机时间对话框
+#define Dialog_ShutdownRemain                 							31           //4 倒计时1分钟关机
 
 
 

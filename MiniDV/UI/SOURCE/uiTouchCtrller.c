@@ -1873,7 +1873,7 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
     {
         if (dwSpriteId == 1 && g_psSetupMenu->bLowPowerMode)
         {
-            DrakWin(Idu_GetCurrWin(), 2, 1);
+            //DrakWin(Idu_GetCurrWin(), 2, 1);
 	        strDialogTitle = getstr(Str_SleepTime);
             dwDialogTempValue = g_psSetupMenu->bSleepTime;
             popupDialog(Dialog_SleepTime, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
@@ -1881,7 +1881,7 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
         }
         else if (dwSpriteId == 3 && g_psSetupMenu->bAutoShutdown)
         {
-            DrakWin(Idu_GetCurrWin(), 2, 1);
+            //DrakWin(Idu_GetCurrWin(), 2, 1);
 	        strDialogTitle = getstr(Str_GuanJiShiJian);
             dwDialogTempValue = g_psSetupMenu->wShutdownTime;
             popupDialog(Dialog_ShutdownTime, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
@@ -1892,14 +1892,14 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
     {
         if (dwSpriteId == 1 && g_psSetupMenu->bToundSoundEnable)
         {
-            DrakWin(Idu_GetCurrWin(), 2, 1);
+            //DrakWin(Idu_GetCurrWin(), 2, 1);
             dwDialogTempValue = g_psSetupMenu->bVolume;
             popupDialog(Dialog_SetSound, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
             xpgUpdateStage();
         }
         else if (dwSpriteId == 2)
         {
-            DrakWin(Idu_GetCurrWin(), 2, 1);
+            //DrakWin(Idu_GetCurrWin(), 2, 1);
             dwDialogTempValue = g_psSetupMenu->bBrightness;
             popupDialog(Dialog_SetBrightness, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
             xpgUpdateStage();
@@ -1909,7 +1909,7 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
     {
         if (dwSpriteId == 1)
         {
-            DrakWin(Idu_GetCurrWin(), 2, 1);
+            //DrakWin(Idu_GetCurrWin(), 2, 1);
             //////////////////////////
             ST_SYSTEM_TIME curTime;
             SystemTimeGet(&curTime);
@@ -1930,19 +1930,19 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
         }
         else if (dwSpriteId == 3)
         {
-            Free_CacheWin();
-            Idu_GetCacheWin_WithInit();
-            DrakWin(Idu_GetCacheWin(), 2, 1);
-            mpCopyEqualWin(Idu_GetCurrWin(), Idu_GetCacheWin());
+            //Free_CacheWin();
+            //Idu_GetCacheWin_WithInit();
+            //DrakWin(Idu_GetCacheWin(), 2, 1);
+            //mpCopyEqualWin(Idu_GetCurrWin(), Idu_GetCacheWin());
             popupDialog(Dialog_SetDateFormat, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
             xpgUpdateStage();
         }
         else if (dwSpriteId == 4)
         {
-            Free_CacheWin();
-            Idu_GetCacheWin_WithInit();
-            DrakWin(Idu_GetCacheWin(), 2, 1);
-            mpCopyEqualWin(Idu_GetCurrWin(), Idu_GetCacheWin());
+            //Free_CacheWin();
+            //Idu_GetCacheWin_WithInit();
+            //DrakWin(Idu_GetCacheWin(), 2, 1);
+            //mpCopyEqualWin(Idu_GetCurrWin(), Idu_GetCacheWin());
             popupDialog(Dialog_SetLang, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
             xpgUpdateStage();
         }
@@ -1951,10 +1951,10 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
     {
         if (dwSpriteId == 1)
         {
-            Free_CacheWin();
-            Idu_GetCacheWin_WithInit();
-            DrakWin(Idu_GetCacheWin(), 2, 1);
-            mpCopyEqualWin(Idu_GetCurrWin(), Idu_GetCacheWin());
+            //Free_CacheWin();
+            //Idu_GetCacheWin_WithInit();
+            //DrakWin(Idu_GetCacheWin(), 2, 1);
+            //mpCopyEqualWin(Idu_GetCurrWin(), Idu_GetCacheWin());
             memset(strEditPassword, 0, sizeof(strEditPassword));
             strDialogTitle = getstr(Str_QingShuRuMiMa);
             dialogOnClose = Dialog_CheckPassword_ChangeBootPassword_OnInput;
@@ -1963,10 +1963,10 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
         }
         else if (dwSpriteId == 4)
         {
-            Free_CacheWin();
-            Idu_GetCacheWin_WithInit();
-            DrakWin(Idu_GetCacheWin(), 2, 1);
-            mpCopyEqualWin(Idu_GetCurrWin(), Idu_GetCacheWin());
+            //Free_CacheWin();
+            //Idu_GetCacheWin_WithInit();
+            //DrakWin(Idu_GetCacheWin(), 2, 1);
+            //mpCopyEqualWin(Idu_GetCurrWin(), Idu_GetCacheWin());
             memset(strEditPassword, 0, sizeof(strEditPassword));
             strDialogTitle = getstr(Str_QingShuRuMiMa);
             dialogOnClose = Dialog_CheckPassword_ChangeHirePassword_OnInput;
@@ -1975,10 +1975,10 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
         }
         else if (dwSpriteId == 5)
         {
-            Free_CacheWin();
-            Idu_GetCacheWin_WithInit();
-            DrakWin(Idu_GetCacheWin(), 2, 1);
-            mpCopyEqualWin(Idu_GetCurrWin(), Idu_GetCacheWin());
+            //Free_CacheWin();
+            //Idu_GetCacheWin_WithInit();
+            //DrakWin(Idu_GetCacheWin(), 2, 1);
+            //mpCopyEqualWin(Idu_GetCurrWin(), Idu_GetCacheWin());
             ////////////////
             strDialogTitle = getstr(Str_SuoDingRiQi);
             dialogOnClose = Dialog_SetValue_SuoDingRongJieRiQi;
@@ -1988,10 +1988,10 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
         }
         else if (dwSpriteId == 6)
         {
-            Free_CacheWin();
-            Idu_GetCacheWin_WithInit();
-            DrakWin(Idu_GetCacheWin(), 2, 1);
-            mpCopyEqualWin(Idu_GetCurrWin(), Idu_GetCacheWin());
+            //Free_CacheWin();
+            //Idu_GetCacheWin_WithInit();
+            //DrakWin(Idu_GetCacheWin(), 2, 1);
+            //mpCopyEqualWin(Idu_GetCurrWin(), Idu_GetCacheWin());
             ////////////////
             strDialogTitle = getstr(Str_SuoDingRongJieCiShu);
             dialogOnClose = Dialog_SetValue_SuoDingRongJieCiShu;
@@ -2005,37 +2005,37 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
     {
         if (dwSpriteId == 0)
         {
-            Free_CacheWin();
-            Idu_GetCacheWin_WithInit();
-            DrakWin(Idu_GetCacheWin(), 2, 1);
-            mpCopyEqualWin(Idu_GetCurrWin(), Idu_GetCacheWin());
+            //Free_CacheWin();
+            //Idu_GetCacheWin_WithInit();
+            //DrakWin(Idu_GetCacheWin(), 2, 1);
+            //mpCopyEqualWin(Idu_GetCurrWin(), Idu_GetCacheWin());
             popupDialog(Dialog_About, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
             xpgUpdateStage();
         }
         else if (dwSpriteId == 1)
         {
-            Free_CacheWin();
-            Idu_GetCacheWin_WithInit();
-            DrakWin(Idu_GetCacheWin(), 2, 1);
-            mpCopyEqualWin(Idu_GetCurrWin(), Idu_GetCacheWin());
+            //Free_CacheWin();
+            //Idu_GetCacheWin_WithInit();
+            //DrakWin(Idu_GetCacheWin(), 2, 1);
+            //mpCopyEqualWin(Idu_GetCurrWin(), Idu_GetCacheWin());
             popupDialog(Dialog_Times, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
             xpgUpdateStage();
         }
         else if (dwSpriteId == 2)
         {
-            Free_CacheWin();
-            Idu_GetCacheWin_WithInit();
-            DrakWin(Idu_GetCacheWin(), 2, 1);
-            mpCopyEqualWin(Idu_GetCurrWin(), Idu_GetCacheWin());
+            //Free_CacheWin();
+            //Idu_GetCacheWin_WithInit();
+            //DrakWin(Idu_GetCacheWin(), 2, 1);
+            //mpCopyEqualWin(Idu_GetCurrWin(), Idu_GetCacheWin());
             popupDialog(Dialog_TempInfo, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
             xpgUpdateStage();
         }
         else if (dwSpriteId == 3)
         {
-            Free_CacheWin();
-            Idu_GetCacheWin_WithInit();
-            DrakWin(Idu_GetCacheWin(), 2, 1);
-            mpCopyEqualWin(Idu_GetCurrWin(), Idu_GetCacheWin());
+            //Free_CacheWin();
+            //Idu_GetCacheWin_WithInit();
+            //DrakWin(Idu_GetCacheWin(), 2, 1);
+            //mpCopyEqualWin(Idu_GetCurrWin(), Idu_GetCacheWin());
             popupDialog(Dialog_BatInfo, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
             xpgUpdateStage();
         }
@@ -2190,10 +2190,10 @@ SWORD touchSprite_Radio(STXPGSPRITE * sprite, WORD x, WORD y)
         {
             if (g_psSetupMenu->bEnableOpenPassword)
             {
-                Free_CacheWin();
-                Idu_GetCacheWin_WithInit();
-                DrakWin(Idu_GetCacheWin(), 2, 1);
-                mpCopyEqualWin(Idu_GetCurrWin(), Idu_GetCacheWin());
+                //Free_CacheWin();
+                //Idu_GetCacheWin_WithInit();
+                //DrakWin(Idu_GetCacheWin(), 2, 1);
+                //mpCopyEqualWin(Idu_GetCurrWin(), Idu_GetCacheWin());
                 memset(strEditPassword, 0, sizeof(strEditPassword));
                 strDialogTitle = getstr(Str_QingShuRuMiMa);
                 dialogOnClose = Dialog_CheckPassword_CloseBootPassword_OnInput;
@@ -2202,10 +2202,10 @@ SWORD touchSprite_Radio(STXPGSPRITE * sprite, WORD x, WORD y)
             }
             else 
             {
-                Free_CacheWin();
-                Idu_GetCacheWin_WithInit();
-                DrakWin(Idu_GetCacheWin(), 2, 1);
-                mpCopyEqualWin(Idu_GetCurrWin(), Idu_GetCacheWin());
+                //Free_CacheWin();
+                //Idu_GetCacheWin_WithInit();
+                //DrakWin(Idu_GetCacheWin(), 2, 1);
+                //mpCopyEqualWin(Idu_GetCurrWin(), Idu_GetCacheWin());
                 memset(strEditPassword, 0, sizeof(strEditPassword));
                 strDialogTitle = getstr(Str_SheZhiKaiJiMiMa);
                 dialogOnClose = Dialog_SetPassword_BootPassword_OnInput;
@@ -2217,10 +2217,10 @@ SWORD touchSprite_Radio(STXPGSPRITE * sprite, WORD x, WORD y)
         {
             if (g_psSetupMenu->bEnableHirePassword)
             {
-                Free_CacheWin();
-                Idu_GetCacheWin_WithInit();
-                DrakWin(Idu_GetCacheWin(), 2, 1);
-                mpCopyEqualWin(Idu_GetCurrWin(), Idu_GetCacheWin());
+                //Free_CacheWin();
+                //Idu_GetCacheWin_WithInit();
+                //DrakWin(Idu_GetCacheWin(), 2, 1);
+                //mpCopyEqualWin(Idu_GetCurrWin(), Idu_GetCacheWin());
                 memset(strEditPassword, 0, sizeof(strEditPassword));
                 strDialogTitle = getstr(Str_QingShuRuMiMa);
                 dialogOnClose = Dialog_CheckPassword_CloseHirePassword_OnInput;
@@ -2229,10 +2229,10 @@ SWORD touchSprite_Radio(STXPGSPRITE * sprite, WORD x, WORD y)
             }
             else
             {
-                Free_CacheWin();
-                Idu_GetCacheWin_WithInit();
-                DrakWin(Idu_GetCacheWin(), 2, 1);
-                mpCopyEqualWin(Idu_GetCurrWin(), Idu_GetCacheWin());
+                //Free_CacheWin();
+                //Idu_GetCacheWin_WithInit();
+                //DrakWin(Idu_GetCacheWin(), 2, 1);
+                //mpCopyEqualWin(Idu_GetCurrWin(), Idu_GetCacheWin());
                 memset(strEditPassword, 0, sizeof(strEditPassword));
                 strDialogTitle = getstr(Str_SheZhiZuJieMiMa);
                 dialogOnClose = Dialog_SetPassword_HirePassword_OnInput;

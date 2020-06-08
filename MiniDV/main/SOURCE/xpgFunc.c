@@ -491,8 +491,8 @@ void DrakWin(ST_IMGWIN* pWin, DWORD largeNum, DWORD smallNum)
 		pbPixel=(BYTE *)((DWORD *)pWin->pdwStart+j*(pWin->dwOffset>>2));
 		for (i = 0; i < wW; i+=4) 
 		{
-			pbPixel[i]>>=5;
-			pbPixel[i+1]>>=5;
+			pbPixel[i]>>=4;
+			pbPixel[i+1]>>=4;
 		}
 	}
 #else
@@ -704,6 +704,10 @@ void xpgStopAllAction()
 //    RemoveTimerProc(UpdateClock);
 //    UpdateClock();
 #endif
+#if (PRODUCT_UI==UI_WELDING)
+	WeldStopAllAction();
+#endif
+
 }
 
 void xpgGotoNewPageInit(BYTE bCurPage,BYTE bNewPage)
@@ -1496,7 +1500,7 @@ void uiCb_CheckPopDialogAfterUpdatestage(void)
 	{
 		if (g_dwMachineErrorFlag&g_dwMachineErrorShow)
 		{
-            DrakWin(Idu_GetCurrWin(), 2, 1);
+            //DrakWin(Idu_GetCurrWin(), 2, 1);
             //strDialogTitle = NULL;
             dialogOnClose = DialogCb_ExitMainPagePopError;
             popupDialog(Dialog_MainPageError, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
@@ -1504,9 +1508,9 @@ void uiCb_CheckPopDialogAfterUpdatestage(void)
 		}
 		else if (g_bPowerOnCheckPassword&&(g_psSetupMenu->bEnableHirePassword||g_psSetupMenu->bEnableOpenPassword))
 		{
-			Idu_GetCacheWin_WithInit();
-			DrakWin(Idu_GetCurrWin(), 2, 1);
-			mpCopyEqualWin(Idu_GetCacheWin(), Idu_GetCurrWin());
+			//Idu_GetCacheWin_WithInit();
+			//DrakWin(Idu_GetCurrWin(), 2, 1);
+			//mpCopyEqualWin(Idu_GetCacheWin(), Idu_GetCurrWin());
 			memset(strEditPassword, 0, sizeof(strEditPassword));
 			if (g_psSetupMenu->bEnableHirePassword)
 			{
@@ -1529,7 +1533,7 @@ void uiCb_CheckPopDialogAfterUpdatestage(void)
 			Ui_TimerProcAdd(1000, Timer_GetTemperature);
 			if (g_dwMachineWarningFlag)
 			{
-	            DrakWin(Idu_GetCurrWin(), 2, 1);
+	            //DrakWin(Idu_GetCurrWin(), 2, 1);
 	            //strDialogTitle = NULL;
 	            dialogOnClose = DialogCb_ExitMainPagePopWarning;
 	            popupDialog(Dialog_MachineWarning, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
@@ -1541,7 +1545,7 @@ void uiCb_CheckPopDialogAfterUpdatestage(void)
 	{
 			if (g_dwMachineWarningFlag&WARNING_BATTERY_LOW)
 			{
-	            DrakWin(Idu_GetCurrWin(), 2, 1);
+	            //DrakWin(Idu_GetCurrWin(), 2, 1);
 				UiCb_CheckSleepAndShut();
 				CheckAndTurnOnBackLight();
 	            //strDialogTitle = NULL;
@@ -1551,7 +1555,7 @@ void uiCb_CheckPopDialogAfterUpdatestage(void)
 			}
 			else if (g_dwMachineWarningFlag&WARNING_NETSIGNAL_LOW)
 			{
-	            DrakWin(Idu_GetCurrWin(), 2, 1);
+	            //DrakWin(Idu_GetCurrWin(), 2, 1);
 	            //strDialogTitle = NULL;
 	            dialogOnClose = DialogCb_ExitLowNetsignalPopWarning;
 	            popupDialog(Dialog_MachineWarning, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
@@ -1566,13 +1570,19 @@ void uiCb_CheckPopDialogAfterUpdatestage(void)
 
 
 //>------------TOUCH UI FUNCION-----------------------
-static DWORD st_dwPowerOff=0,st_dwSleep=0;
+DWORD g_dwPowerOff=0;
+static DWORD st_dwSleep=0;
 void UiCb_CheckSleepAndShut(void)
 {
+	if ( g_dwPowerOff && g_dwPowerOff<=2460 && xpgGetCurrDialogTypeId()==Dialog_ShutdownRemain)
+	{
+		exitDialog();
+	}
 	if (g_psSetupMenu->bAutoShutdown)
-		st_dwPowerOff=g_psSetupMenu->wShutdownTime*2500;
+		g_dwPowerOff=g_psSetupMenu->wShutdownTime*2500;
 	else
-		st_dwPowerOff=0;
+		g_dwPowerOff=0;
+
 	if (g_psSetupMenu->bLowPowerMode)
 		st_dwSleep=g_psSetupMenu->bSleepTime*2500; // 1000->24s
 	else
@@ -1582,11 +1592,28 @@ void UiCb_CheckSleepAndShut(void)
 
 void TimerCheckPowerOff(void)
 {
-	if (st_dwPowerOff)
+	if (g_dwPowerOff)
 	{
-		st_dwPowerOff--;
-		if (!st_dwPowerOff)
-			SendCmdPowerOff();
+		g_dwPowerOff--;
+		if (g_dwPowerOff<=2460)// 2460
+		{
+			if (g_dwPowerOff==2460)
+			{
+				xpgStopAllAction();
+				CheckAndTurnOnBackLight();
+		       strDialogTitle = getstr(Str_ZiDongGuanJi);
+				dialogOnClose = exitDialog;
+				popupDialog(Dialog_ShutdownRemain, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
+				Ui_TimerProcAdd(0, xpgUpdateStage);
+			}
+			else if (g_dwPowerOff%41 == 0)
+			{
+				Ui_TimerProcAdd(0, xpgUpdateStage);
+			}
+			
+			if (!g_dwPowerOff)
+				SendCmdPowerOff();
+		}
 	}
 	if (st_dwSleep)
 	{
