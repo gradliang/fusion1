@@ -769,7 +769,7 @@ CheckAutoSleepOrAutoOff();
 if (g_psUnsaveParam->bStandby)
 	Ui_TimerProcAdd(1000, uiCb_CheckInStandby);
 else if (SystemGetStatus(SYS_STATUS_INIT))
-	Ui_TimerProcAdd(10, uiCb_CheckBattery);
+	Ui_TimerProcAdd(100, uiCb_CheckBattery);
 else
 #endif
 	Timer_FirstEnterCamPreview();
@@ -1224,14 +1224,6 @@ static SWORD SystemInit(void)
 #if TSPI_ENBALE
 	TSPI_Init();
 #endif
-#if (PRODUCT_UI==UI_WELDING)
-//CPU初始化完成
-	TspiSendSimpleInfo0xAF(0x04);
-//--Battery info
-	TspiSendCmdPolling0xA4(0x0b);
-//--standby or power on
-	TspiSendCmdPolling0xA4(0x0c);
-#endif
     FileSystemInit();
 
     Ui_TimerProcInit();
@@ -1253,6 +1245,14 @@ static SWORD SystemInit(void)
 
 #if (ISP_FUNC_ENABLE && (BOOTUP_TYPE == BOOTUP_TYPE_NAND))
 	  checkNandIspRegion(AP_TAG);
+#endif
+#if (PRODUCT_UI==UI_WELDING)
+//CPU初始化完成
+	TspiSendSimpleInfo0xAF(0x04);
+//--Battery info
+	TspiSendCmdPolling0xA4(0x0b);
+//--standby or power on
+	TspiSendCmdPolling0xA4(0x0c);
 #endif
 
     //////////////////////////////////////////////////////////////////

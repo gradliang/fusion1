@@ -491,8 +491,8 @@ void DrakWin(ST_IMGWIN* pWin, DWORD largeNum, DWORD smallNum)
 		pbPixel=(BYTE *)((DWORD *)pWin->pdwStart+j*(pWin->dwOffset>>2));
 		for (i = 0; i < wW; i+=4) 
 		{
-			pbPixel[i]>>=4;
-			pbPixel[i+1]>>=4;
+			pbPixel[i]>>=2;
+			pbPixel[i+1]>>=2;
 		}
 	}
 #else
@@ -1432,6 +1432,7 @@ void uiCb_CheckInStandby(void)
 		else
 		{
 			g_bLogoMix=0;
+			xpgSearchtoPageWithAction("Logo");
 			uiCb_CheckBattery();
 		}
 	}

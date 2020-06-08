@@ -33,6 +33,7 @@ ST_UNSAVE_PARAM *g_psUnsaveParam = &g_sUnsaveParam;
 void ResetUnsaveparam(void)
 {
 	memset(&g_sUnsaveParam,0, sizeof(g_sUnsaveParam));
+	g_psUnsaveParam->bBatteryQuantity=100;
 }
 
 //--下面三个函数要对应增加或改动

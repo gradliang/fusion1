@@ -963,15 +963,22 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
         {
             if (dwIconId == 0)
             {
-                g_psSetupMenu->bDataFormatMMDDYYYY = 0;
-                xpgUpdateStage();
-                WriteSetupChg();
+                dwDialogTempValue = 0;
+					xpgUpdateStage();
             }
             else if (dwIconId == 1)
             {
-                g_psSetupMenu->bDataFormatMMDDYYYY = 1;
-                xpgUpdateStage();
-                WriteSetupChg();
+                dwDialogTempValue = 1;
+					xpgUpdateStage();
+            }
+            else if (dwIconId == 6||dwIconId == 7)
+            {
+            		if (dwIconId == 6 && g_psSetupMenu->bDataFormatMMDDYYYY!=dwDialogTempValue)
+            		{
+						g_psSetupMenu->bDataFormatMMDDYYYY=dwDialogTempValue;
+						WriteSetupChg();
+            		}
+		            exitDialog();
             }
         }
         else if (dialogType == Dialog_SetLang)
@@ -1919,7 +1926,7 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
         }
         else if (dwSpriteId == 2)
         {
-            DrakWin(Idu_GetCurrWin(), 2, 1);
+            //DrakWin(Idu_GetCurrWin(), 2, 1);
             //////////////////////////
             ST_SYSTEM_TIME curTime;
             SystemTimeGet(&curTime);
@@ -1934,6 +1941,7 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
             //Idu_GetCacheWin_WithInit();
             //DrakWin(Idu_GetCacheWin(), 2, 1);
             //mpCopyEqualWin(Idu_GetCurrWin(), Idu_GetCacheWin());
+            dwDialogTempValue=g_psSetupMenu->bDataFormatMMDDYYYY;
             popupDialog(Dialog_SetDateFormat, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
             xpgUpdateStage();
         }
@@ -2111,11 +2119,11 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
 		{
 			case 5:
 				g_wElectrodeRandomCode=GetSysTime()%10000;
-            strDialogTitle = getstr(Str_Input_ElectrodeEnableCode);
-            memset(strEditPassword, 0, sizeof(strEditPassword));
-            dialogOnClose = exitDialog;
-            popupDialog(Dialog_Electrode_Enable, (STXPGPAGE *)xpgMovieSearchPage("Main")->m_wIndex,Idu_GetCacheWin());
-            xpgUpdateStage();
+				strDialogTitle = getstr(Str_Input_ElectrodeEnableCode);
+				memset(strEditPassword, 0, sizeof(strEditPassword));
+				dialogOnClose = exitDialog;
+				popupDialog(Dialog_Electrode_Enable, (STXPGPAGE *)xpgMovieSearchPage("Main")->m_wIndex,Idu_GetCacheWin());
+				xpgUpdateStage();
 				break;
 
 			default:
