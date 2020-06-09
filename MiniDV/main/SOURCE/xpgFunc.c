@@ -1338,6 +1338,7 @@ void DialogCb_ExitMainPagePopHireWord(void)
 	 else
 	 {
 	 	//SendCmdPowerOff();
+			memset(strEditPassword, 0, sizeof(strEditPassword));
 			strDialogTitle = getstr(Str_Note);
 			dialogOnClose = exitDialog;
 			popupDialog(Dialog_Note_ForgetHirePassword, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCacheWin());
@@ -1359,11 +1360,13 @@ void DialogCb_ExitMainPagePopOpenWord(void)
 	 }
 	 else
 	 {
-	 	//SendCmdPowerOff();
+			memset(strEditPassword, 0, sizeof(strEditPassword));
 			strDialogTitle = getstr(Str_Note);
 			dialogOnClose = exitDialog;
 			popupDialog(Dialog_Note_ForgetOpenPassword, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCacheWin());
 			xpgUpdateStage();
+			xpgDelay(5000);
+	 		SendCmdPowerOff();
 	 }
 }
 
@@ -1507,6 +1510,7 @@ void uiCb_CheckPopDialogAfterUpdatestage(void)
             popupDialog(Dialog_MainPageError, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
             xpgUpdateStage();
 		}
+		#if 1
 		else if (g_bPowerOnCheckPassword&&(g_psSetupMenu->bEnableHirePassword||g_psSetupMenu->bEnableOpenPassword))
 		{
 			//Idu_GetCacheWin_WithInit();
@@ -1517,16 +1521,17 @@ void uiCb_CheckPopDialogAfterUpdatestage(void)
 			{
 				strDialogTitle = getstr(Str_ShuRuZhuJieMiMa);
 				dialogOnClose = DialogCb_ExitMainPagePopHireWord;
-				popupDialog(Dialog_PowerOnCheckHirePassword, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCacheWin());
+				popupDialog(Dialog_PowerOnCheckHirePassword, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
 			}
 			else
 			{
 				strDialogTitle = getstr(Str_ShuRuKaiJiMiMa);
 				dialogOnClose = DialogCb_ExitMainPagePopOpenWord;
-				popupDialog(Dialog_PowerOnCheckOpenPassword, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCacheWin());
+				popupDialog(Dialog_PowerOnCheckOpenPassword, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
 			}
 			xpgUpdateStage();
 		}
+		#endif
 		else
 		{
 			g_dwMachineErrorShow=0;

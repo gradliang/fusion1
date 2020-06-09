@@ -592,6 +592,7 @@ typedef struct {
     //char            backToPage[32];
 	DWORD dwReturnPageIndex;
     ST_IMGWIN       backupWin;
+	BYTE *pstrDialogTitle;
 }XPGDIALOGSTACK;
 
 #define DIALOG_STACK_SIZE           3
@@ -636,6 +637,7 @@ XPGEXTRASPRITE* getCurDialogExtraSpriteList()
     return pstCurDialogInfo->spriteList;
 }
 
+extern char * strDialogTitle;
 int xpgAddDialog(int dialogId, DWORD dwReturnPageIndex,ST_IMGWIN* backupWin)
 {
     DWORD curDialogIndex;
@@ -651,6 +653,7 @@ int xpgAddDialog(int dialogId, DWORD dwReturnPageIndex,ST_IMGWIN* backupWin)
     pstCurDialogInfo->dailogId = dialogId;
     pstCurDialogInfo->spriteCount = 0;
     pstCurDialogInfo->dwReturnPageIndex= dwReturnPageIndex;
+	pstCurDialogInfo->pstrDialogTitle=strDialogTitle;
 
 	pCacheWin = &pstCurDialogInfo->backupWin;
 
@@ -664,11 +667,12 @@ int xpgAddDialog(int dialogId, DWORD dwReturnPageIndex,ST_IMGWIN* backupWin)
 	{
 	    XPGDIALOGSTACK * pstLastDialogInfo = &dialogStacks[dialogCount-1];
 			
-		pLastCacheWin = &pstLastDialogInfo->backupWin;
-		ImgWinInit(pCacheWin, NULL, pLastCacheWin->wHeight, pLastCacheWin->wWidth);
-		pCacheWin->pdwStart = pLastCacheWin->pdwStart;
+		//pLastCacheWin = &pstLastDialogInfo->backupWin;
+		//ImgWinInit(pCacheWin, NULL, pLastCacheWin->wHeight, pLastCacheWin->wWidth);
+		//pCacheWin->pdwStart = pLastCacheWin->pdwStart;
+		memcpy((BYTE *)&pstCurDialogInfo->backupWin,(BYTE *)&pstLastDialogInfo->backupWin,sizeof(ST_IMGWIN));
 	}
-	else
+	else if (backupWin  && backupWin->pdwStart != NULL)
 	{
 		ImgWinInit(pCacheWin, NULL, backupWin->wHeight, backupWin->wWidth);
 		pCacheWin->pdwStart = (DWORD *)ext_mem_malloc(backupWin->wWidth * backupWin->wHeight * 2);
@@ -699,9 +703,27 @@ int xpgDeleteDialog()
         }
         
         dialogCount --;
+		if (dialogCount)
+		{
+	        curDialogIndex = dialogCount - 1;
+	        pstCurDialogInfo = &dialogStacks[curDialogIndex];
+			strDialogTitle=pstCurDialogInfo->pstrDialogTitle;
+		}
+    	mpDebugPrint("xpgDeleteDialog OK, dialogCount = %d", dialogCount);
     }
-    mpDebugPrint("xpgDeleteDialog OK, dialogCount = %d", dialogCount);
     return PASS;
+}
+
+int xpgDeleteLastDialog(void)
+{
+    if (dialogCount > 1)
+    {
+		memcpy((BYTE *)&dialogStacks[dialogCount - 2],(BYTE *)&dialogStacks[dialogCount - 1],sizeof(XPGDIALOGSTACK));
+        dialogCount --;
+	    mpDebugPrint("xpgDeleteLastDialog OK, dialogCount = %d", dialogCount);
+	    return PASS;
+    }
+    return FAIL;
 }
 
 int xpgDeleteAllDialog()
@@ -759,6 +781,17 @@ DWORD xpgGetCurrDialogBackPage()
     return pstCurDialogInfo->dwReturnPageIndex;
 }
 
+DWORD xpgGetFirstDialogBackPage()
+{
+    DWORD curDialogIndex;
+    XPGDIALOGSTACK * pstCurDialogInfo;
+    
+    if (dialogCount == 0 || dialogCount > DIALOG_STACK_SIZE)
+        return 0;
+    curDialogIndex = 0;
+    pstCurDialogInfo = &dialogStacks[curDialogIndex];
+    return pstCurDialogInfo->dwReturnPageIndex;
+}
 
 int xpgAddDialogSprite(WORD m_dwType, WORD m_dwTypeIndex, BYTE flag)
 {

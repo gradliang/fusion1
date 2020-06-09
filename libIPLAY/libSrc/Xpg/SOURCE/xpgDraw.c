@@ -209,8 +209,13 @@ void xpgUpdateStage()
         return;
     }
 #endif
-
-
+/*
+	if (g_boNeedRepaint&XPG_REPAINT_IGNORE)
+	{
+		g_boNeedRepaint&= ~XPG_REPAINT_IGNORE;
+		return;
+	}
+*/
     pstMovie->m_bUpdateStage = true;
     pstMovie->m_boClip = false;
     g_pXpgCanvasWin = Idu_GetNextWin();

@@ -351,6 +351,11 @@ int popupDialog(int dialogType, DWORD dwReturnPageIndex, ST_IMGWIN* pWin_Backgro
         xpgAddDialogSprite(SPRITE_TYPE_CLOSE_ICON, 0, 0);
         xpgAddDialogSprite(SPRITE_TYPE_TEXT, 0, 0);
     }
+    else if (dialogType == Dialog_Note_Reinput||dialogType == Dialog_Note_PasswordError||dialogType == Dialog_Note_ChangeBootWordPASS||dialogType == Dialog_Note_ChangeHireWordPASS)
+    {
+        xpgAddDialogSprite(SPRITE_TYPE_DIALOG, 0, 0);
+        xpgAddDialogSprite(SPRITE_TYPE_TEXT, 0, 0);
+    }
     
     xpgSearchtoPageWithAction(DIALOG_PAGE_NAME);
 #endif
@@ -4356,7 +4361,8 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
         }
 		else if (dialogType == Dialog_Note_ForgetHirePassword||dialogType == Dialog_Note_ForgetOpenPassword||dialogType == Dialog_Note_ElectrodeEnable_Path\
-			||dialogType == Dialog_Note_ElectrodeEnable_PASS||dialogType == Dialog_Note_ElectrodeEnable_FAIL||dialogType == Dialog_ShutdownRemain)
+			||dialogType == Dialog_Note_ElectrodeEnable_PASS||dialogType == Dialog_Note_ElectrodeEnable_FAIL||dialogType == Dialog_ShutdownRemain\
+			||dialogType == Dialog_Note_Reinput||dialogType == Dialog_Note_PasswordError||dialogType == Dialog_Note_ChangeBootWordPASS||dialogType == Dialog_Note_ChangeHireWordPASS)
 		{
 			char tempStr[10];
 			SetCurrIduFontID(FONT_ID_HeiTi19);
@@ -4379,7 +4385,15 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
 				SetCurrIduFontID(FONT_ID_ARIAL_36);
 				Idu_PrintString(pWin, tempStr, pWin->wWidth/2-20, pWin->wHeight>>1, 0, 0);
 			}
-			else
+			else if (dialogType == Dialog_Note_Reinput)
+				pStr=getstr(Str_Note_Reinput);
+			else if (dialogType == Dialog_Note_PasswordError)
+				pStr=getstr(Str_Password_Error);
+			else if (dialogType == Dialog_Note_ChangeBootWordPASS)
+				pStr=getstr(Str_Note_ChangeBootWordOk);
+			else if (dialogType == Dialog_Note_ChangeHireWordPASS)
+				pStr=getstr(Str_Note_ChangeHireWordOk);
+			else //if (dialogType == Dialog_Note_ForgetHirePassword||dialogType == Dialog_Note_ForgetOpenPassword)
 				pStr=getstr(Str_Info_ForgetPassword);
 			if (pStr)
 				Idu_PrintStringCenterNewLine(pWin, pStr, (pWin->wWidth/3)>>1, pWin->wHeight/2-IduFontGetMaxHeight(), 0, pWin->wWidth*2/3);
@@ -5395,7 +5409,8 @@ SWORD xpgDrawSprite_Dialog(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
 				}
         }
         else if (dialogType == Dialog_Note_ForgetHirePassword||dialogType == Dialog_Note_ForgetOpenPassword||dialogType == Dialog_Note_ElectrodeEnable_Path\
-			||dialogType == Dialog_Note_ElectrodeEnable_PASS||dialogType == Dialog_Note_ElectrodeEnable_FAIL||dialogType == Dialog_ShutdownRemain)
+			||dialogType == Dialog_Note_ElectrodeEnable_PASS||dialogType == Dialog_Note_ElectrodeEnable_FAIL||dialogType == Dialog_ShutdownRemain\
+			||dialogType == Dialog_Note_Reinput||dialogType == Dialog_Note_PasswordError||dialogType == Dialog_Note_ChangeBootWordPASS||dialogType == Dialog_Note_ChangeHireWordPASS)
         {
 				dialogW = pWin->wWidth*2/3;//DIALOG_DEFAULT_WIDTH
 				dialogH = pWin->wHeight*2/3;

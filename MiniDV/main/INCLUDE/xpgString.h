@@ -231,6 +231,9 @@ enum xpgStringId {
 	Str_Warning_LowPower,      //   221
 	Str_Warning_LowNetsignal,      //   222
 	Str_SleepTime,			//   223
+	Str_Note_Reinput,			//   224
+	Str_Note_ChangeBootWordOk,			//   225
+	Str_Note_ChangeHireWordOk,			//   226
 
 	Str_MAX_ID,
 };

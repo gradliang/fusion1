@@ -1022,10 +1022,10 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
                         else if (dialogType == Dialog_SetPassword1)
                         {
                             strcpy(password1, strEditPassword);
-                            exitDialog();
+                            //exitDialog();
                             memset(strEditPassword, 0, sizeof(strEditPassword));
                             strDialogTitle = getstr(Str_ZaiQueRenMiMa);
-                            popupDialog(Dialog_SetPassword2, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
+                            popupDialog(Dialog_SetPassword2, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());//xpgGetCurrDialogBackPage()
                             xpgUpdateStage();
                         }
                         else if (dialogType == Dialog_SetPassword2)
@@ -1038,7 +1038,14 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
                             }
                             else
                             {
-                                exitDialog();
+	                            exitDialog();
+	                            memset(strEditPassword, 0, sizeof(strEditPassword));
+									strDialogTitle = getstr(Str_Note);
+									uiCb_DisableKeyInput(0xff);
+									popupDialog(Dialog_Note_Reinput, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
+									xpgUpdateStage();
+									Ui_TimerProcAdd(2000, uiCb_EnableKeyInput);
+									Ui_TimerProcAdd(2000, exitDialog);
                             }
                         }
 							else if (dialogType == Dialog_Electrode_Enable)
@@ -1063,9 +1070,17 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
                     }
                 }
             }
-            else if (dwIconId == 10)
+            else if (dwIconId == 10)  // forget
             {
-                if (dialogType == Dialog_PowerOnCheckHirePassword|| dialogType == Dialog_PowerOnCheckOpenPassword)
+					if (dialogType == Dialog_CheckPassword)
+					{
+						strDialogTitle = getstr(Str_Note);
+						dialogOnClose = exitDialog;
+						popupDialog(Dialog_Note_ForgetOpenPassword, xpgGetCurrDialogBackPage(),Idu_GetCurrWin());
+						xpgDeleteLastDialog();
+						xpgUpdateStage();
+					}
+                else if (dialogType == Dialog_PowerOnCheckHirePassword|| dialogType == Dialog_PowerOnCheckOpenPassword)
                 {
 						strDialogTitle = getstr(Str_Note);
 						dialogOnClose = exitDialog;
@@ -1403,6 +1418,47 @@ SWORD touchSprite_CloseIcon(STXPGSPRITE * sprite, WORD x, WORD y)
     else if (dwHashKey == xpgHash(DIALOG_PAGE_NAME))
     {
         int dialogType = xpgGetCurrDialogTypeId();
+
+#if 1
+        if (dialogType == Dialog_ReSuGuan)
+        {
+            if (g_psSetupMenu->bReSuGuanSheZhi != dwDialogTempValue)
+            {
+                g_psSetupMenu->bReSuGuanSheZhi = dwDialogTempValue;
+                boNeedWriteSetup = TRUE;
+            }
+        }
+        else if (dialogType == Dialog_SetBrightness)
+        {
+            if (g_psSetupMenu->bBrightness!= dwDialogTempValue)
+            {
+                g_psSetupMenu->bBrightness = dwDialogTempValue;
+				if (g_psSetupMenu->bBrightness>100)
+					g_psSetupMenu->bBrightness=100;
+                boNeedWriteSetup = TRUE;
+			    TimerPwmEnable(3, 240000, g_psSetupMenu->bBrightness);
+            }
+        }
+        else if (dialogType == Dialog_SetSound)
+        {
+            if (g_psSetupMenu->bVolume!= dwDialogTempValue)
+            {
+                g_psSetupMenu->bVolume = dwDialogTempValue;
+                boNeedWriteSetup = TRUE;
+            }
+        }
+		else if (dialogType == Dialog_SetPassword2)
+		{
+			DWORD dwPageIndex = xpgGetFirstDialogBackPage();
+
+			xpgDeleteAllDialog();
+			if (dwPageIndex != 0)
+				xpgGotoPageWithAction(dwPageIndex);
+		}
+        exitDialog();
+        if (boNeedWriteSetup)
+            WriteSetupChg();
+#else
         if (dialogType == Dialog_ReSuGuan)
         {
             if (g_psSetupMenu->bReSuGuanSheZhi != dwDialogTempValue)
@@ -1470,7 +1526,8 @@ SWORD touchSprite_CloseIcon(STXPGSPRITE * sprite, WORD x, WORD y)
         {
             exitDialog();
         }
-        else if (dialogType == Dialog_SetPassword1 || dialogType == Dialog_SetPassword2 || dialogType == Dialog_CheckPassword)
+        else if (dialogType == Dialog_SetPassword1 || dialogType == Dialog_SetPassword2 || dialogType == Dialog_CheckPassword\
+					|| dialogType == Dialog_PowerOnCheckHirePassword|| dialogType == Dialog_PowerOnCheckOpenPassword)
         {
             exitDialog();
         }
@@ -1486,6 +1543,7 @@ SWORD touchSprite_CloseIcon(STXPGSPRITE * sprite, WORD x, WORD y)
         {
                 dialogOnClose();
         }
+#endif
     }
     return 0;
 }
@@ -1510,60 +1568,157 @@ static void Dialog_JiaReShiJian_OnClose()
 
 static void Dialog_CheckPassword_CloseBootPassword_OnInput()
 {
+	//DWORD dwPageIndex = xpgGetCurrDialogBackPage();
+
     mpDebugPrint("%s()", __FUNCTION__);
-    g_psSetupMenu->bEnableOpenPassword = 0;
-    memset(g_psSetupMenu->srtOpenPassword, 0, sizeof(g_psSetupMenu->srtOpenPassword));
-    exitDialog();
-    WriteSetupChg();
+	 if (0 == strcmp(g_psSetupMenu->srtOpenPassword, strEditPassword))
+	 {
+	    g_psSetupMenu->bEnableOpenPassword = 0;
+	    memset(g_psSetupMenu->srtOpenPassword, 0, sizeof(g_psSetupMenu->srtOpenPassword));
+	    WriteSetupChg();
+	    exitDialog();
+	 }
+	 else
+	 {
+	    memset(strEditPassword, 0, sizeof(strEditPassword));
+		strDialogTitle = getstr(Str_Note);
+		uiCb_DisableKeyInput(0xff);
+		popupDialog(Dialog_Note_PasswordError, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
+		xpgUpdateStage();
+		Ui_TimerProcAdd(2000, uiCb_EnableKeyInput);
+		Ui_TimerProcAdd(2000, exitDialog);
+	 }
 }
 
 static void Dialog_CheckPassword_ChangeBootPassword_OnInput()
 {
-    exitDialog();
-    xpgUpdateStage();
-    memset(strEditPassword, 0, sizeof(strEditPassword));
-    strDialogTitle = getstr(Str_SheZhiKaiJiMiMa);
-    dialogOnClose = Dialog_SetPassword_BootPassword_OnInput;
-    popupDialog(Dialog_SetPassword1, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
-    xpgUpdateStage();
+	DWORD dwPageIndex = xpgGetCurrDialogBackPage();
+
+	 if (0 == strcmp(g_psSetupMenu->srtOpenPassword, strEditPassword))
+	 {
+		
+	    //xpgDeleteDialog();
+	    memset(strEditPassword, 0, sizeof(strEditPassword));
+	    strDialogTitle = getstr(Str_SheZhiKaiJiMiMa);
+	    dialogOnClose = Dialog_SetPassword_BootPassword_OnInput;
+	    popupDialog(Dialog_SetPassword1, dwPageIndex,Idu_GetCurrWin());
+		xpgDeleteLastDialog();
+	 }
+	 else
+	 {
+	    memset(strEditPassword, 0, sizeof(strEditPassword));
+		strDialogTitle = getstr(Str_Note);
+		uiCb_DisableKeyInput(0xff);
+		popupDialog(Dialog_Note_PasswordError, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
+		Ui_TimerProcAdd(2000, uiCb_EnableKeyInput);
+		Ui_TimerProcAdd(2000, exitDialog);
+	 }
+	  xpgUpdateStage();
 }
 
 static void Dialog_CheckPassword_CloseHirePassword_OnInput()
 {
+	DWORD dwPageIndex = xpgGetCurrDialogBackPage();
+
     mpDebugPrint("%s()", __FUNCTION__);
-    g_psSetupMenu->bEnableHirePassword = 0;
-    memset(g_psSetupMenu->strHirePassword, 0, sizeof(g_psSetupMenu->strHirePassword));
-    exitDialog();
-    WriteSetupChg();
+	 if (0 == strcmp(g_psSetupMenu->strHirePassword, strEditPassword))
+	 {
+	    g_psSetupMenu->bEnableHirePassword = 0;
+	    memset(g_psSetupMenu->strHirePassword, 0, sizeof(g_psSetupMenu->strHirePassword));
+	    WriteSetupChg();
+	    exitDialog();
+	 }
+	 else
+	 {
+	    memset(strEditPassword, 0, sizeof(strEditPassword));
+		strDialogTitle = getstr(Str_Note);
+		uiCb_DisableKeyInput(0xff);
+		popupDialog(Dialog_Note_PasswordError, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
+		xpgUpdateStage();
+		Ui_TimerProcAdd(2000, uiCb_EnableKeyInput);
+		Ui_TimerProcAdd(2000, exitDialog);
+	 }
 }
 
 static void Dialog_CheckPassword_ChangeHirePassword_OnInput()
 {
-    exitDialog();
-    xpgUpdateStage();
-    memset(strEditPassword, 0, sizeof(strEditPassword));
-    strDialogTitle = getstr(Str_SheZhiZuJieMiMa);
-    dialogOnClose = Dialog_SetPassword_HirePassword_OnInput;
-    popupDialog(Dialog_SetPassword1, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
+	DWORD dwPageIndex = xpgGetCurrDialogBackPage();
+
+	 if (0 == strcmp(g_psSetupMenu->strHirePassword, strEditPassword))
+	 {
+	    //xpgDeleteDialog();
+	    memset(strEditPassword, 0, sizeof(strEditPassword));
+	    strDialogTitle = getstr(Str_SheZhiZuJieMiMa);
+	    dialogOnClose = Dialog_SetPassword_HirePassword_OnInput;
+	    popupDialog(Dialog_SetPassword1, dwPageIndex,Idu_GetCurrWin());
+		xpgDeleteLastDialog();
+	 }
+	 else
+	 {
+	    memset(strEditPassword, 0, sizeof(strEditPassword));
+		strDialogTitle = getstr(Str_Note);
+		uiCb_DisableKeyInput(0xff);
+		popupDialog(Dialog_Note_PasswordError, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
+		Ui_TimerProcAdd(2000, uiCb_EnableKeyInput);
+		Ui_TimerProcAdd(2000, exitDialog);
+	 }
     xpgUpdateStage();
 }
 
 static void Dialog_SetPassword_BootPassword_OnInput()
 {
+    DWORD dwPageIndex = xpgGetFirstDialogBackPage();
+	BYTE bEnable=g_psSetupMenu->bEnableOpenPassword;
+
     mpDebugPrint("%s()", __FUNCTION__);
     g_psSetupMenu->bEnableOpenPassword = 1;
     strcpy(g_psSetupMenu->srtOpenPassword, strEditPassword);
-    exitDialog();
     WriteSetupChg();
+    if (bEnable)
+    {
+		strDialogTitle = getstr(Str_Note);
+		uiCb_DisableKeyInput(0xff);
+		popupDialog(Dialog_Note_ChangeBootWordPASS, dwPageIndex,Idu_GetCurrWin());
+		xpgDeleteLastDialog();
+		xpgDeleteLastDialog();
+		Ui_TimerProcAdd(2000, uiCb_EnableKeyInput);
+		Ui_TimerProcAdd(2000, exitDialog);
+    }
+	else
+	{
+	    xpgDeleteAllDialog();
+			if (dwPageIndex != 0)
+	        xpgGotoPageWithAction(dwPageIndex);
+	}
+    xpgUpdateStage();
 }
 
 static void Dialog_SetPassword_HirePassword_OnInput()
 {
+    DWORD dwPageIndex = xpgGetFirstDialogBackPage();
+	BYTE bEnable=g_psSetupMenu->bEnableHirePassword;
+
     mpDebugPrint("%s()", __FUNCTION__);
     g_psSetupMenu->bEnableHirePassword = 1;
     strcpy(g_psSetupMenu->strHirePassword, strEditPassword);
-    exitDialog();
     WriteSetupChg();
+    if (bEnable)
+    {
+		strDialogTitle = getstr(Str_Note);
+		uiCb_DisableKeyInput(0xff);
+		popupDialog(Dialog_Note_ChangeHireWordPASS, dwPageIndex,Idu_GetCurrWin());
+		xpgDeleteLastDialog();
+		xpgDeleteLastDialog();
+		Ui_TimerProcAdd(2000, uiCb_EnableKeyInput);
+		Ui_TimerProcAdd(2000, exitDialog);
+    }
+	else
+	{
+	    xpgDeleteAllDialog();
+			if (dwPageIndex != 0)
+	        xpgGotoPageWithAction(dwPageIndex);
+	}
+    xpgUpdateStage();
 }
 
 static void Dialog_SetValue_SuoDingRongJieCiShu()
@@ -1957,7 +2112,7 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
     }
     else if (dwHashKey == xpgHash("SetPassword"))
     {
-        if (dwSpriteId == 1)
+        if (dwSpriteId == 1 && g_psSetupMenu->bEnableOpenPassword)//4 更改开机密码
         {
             //Free_CacheWin();
             //Idu_GetCacheWin_WithInit();
@@ -1969,7 +2124,7 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
             popupDialog(Dialog_CheckPassword, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
             xpgUpdateStage();
         }
-        else if (dwSpriteId == 4)
+        else if (dwSpriteId == 4&& g_psSetupMenu->bEnableHirePassword)
         {
             //Free_CacheWin();
             //Idu_GetCacheWin_WithInit();
@@ -1981,7 +2136,7 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
             popupDialog(Dialog_CheckPassword, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
             xpgUpdateStage();
         }
-        else if (dwSpriteId == 5)
+        else if (dwSpriteId == 5 && !g_psSetupMenu->bEnableHirePassword)
         {
             //Free_CacheWin();
             //Idu_GetCacheWin_WithInit();
@@ -1994,7 +2149,7 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
             popupDialog(Dialog_SetDate, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
             xpgUpdateStage();
         }
-        else if (dwSpriteId == 6)
+        else if (dwSpriteId == 6 && !g_psSetupMenu->bEnableHirePassword)
         {
             //Free_CacheWin();
             //Idu_GetCacheWin_WithInit();

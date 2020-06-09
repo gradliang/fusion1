@@ -841,7 +841,10 @@
 #define Dialog_MachineWarning                      						29          //4 主界面出现的警告提示框
 #define Dialog_SleepTime                 										30           // 关机时间对话框
 #define Dialog_ShutdownRemain                 							31           //4 倒计时1分钟关机
-
+#define Dialog_Note_Reinput                      								32          //4 输入不一致，请重新输入！
+#define Dialog_Note_PasswordError                      				33          //4 密码输入错误
+#define Dialog_Note_ChangeBootWordPASS                      	34          //4 修改开机密码OK
+#define Dialog_Note_ChangeHireWordPASS                      	35          //4 修改租借密码OK
 
 
 

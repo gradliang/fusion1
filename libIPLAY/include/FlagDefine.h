@@ -685,6 +685,7 @@ We're currently using three types of setup menu, description as below:
 #define XPG_REPAINT_ALL             1 // g_boNeedRepaint = true
 #define XPG_REPAINT_LIST            2 // in xpgBrowser.c, xpgMenuListSetIndex()
 #define XPG_REPAINT_NOLIST          3 // xpgDrawSprite_List don't update
+//#define XPG_REPAINT_IGNORE          0x80 // skip one time xpgupdate
 
 
 //Non XPG mode
