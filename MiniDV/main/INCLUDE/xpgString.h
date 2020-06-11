@@ -236,6 +236,7 @@ enum xpgStringId {
 	Str_Note_ChangeHireWordOk,			//   226
 	Str_Note_MakeDate,			//   227
 	Str_Note_MaoHao,			//   228
+	Str_Error_SystemLocked,			//   229
 
 	Str_MAX_ID,
 };

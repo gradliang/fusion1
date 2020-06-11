@@ -188,7 +188,8 @@ typedef struct {
 
 //----UI
 //--g_dwMachineErrorFlag g_dwMachineErrorShow
-#define	MACHINE_ERROR_SENSOR										BIT0
+#define	MACHINE_ERROR_LOCKED										BIT0
+#define	MACHINE_ERROR_SENSOR										BIT1
 
 //--g_dwMachineWarningFlag
 #define	WARNING_OUTSIDE_TEMP_HIGH									BIT0

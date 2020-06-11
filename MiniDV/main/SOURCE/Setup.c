@@ -121,7 +121,7 @@ void GetDefaultSetupMenuValue(void)
     //g_psSetupMenu->bEnableHirePassword = 0;
     //memset(g_psSetupMenu->srtOpenPassword, 0, 8);
     //memset(g_psSetupMenu->strHirePassword, 0, 8);
-    //g_psSetupMenu->bLockDateMode = 0;
+    //g_psSetupMenu->bMachineLockMode = 0;
     g_psSetupMenu->wLockDateYear = 2020;
     g_psSetupMenu->bLockDateMonth = 10;
     g_psSetupMenu->bLockDateDay = 1;

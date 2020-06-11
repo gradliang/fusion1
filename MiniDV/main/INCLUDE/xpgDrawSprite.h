@@ -58,7 +58,7 @@ SWORD xpgDrawSprite_RepeatIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprit
 SWORD xpgDrawSprite_HomeStatus(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOOL boClip);    // type30
 
 
-int popupDialog(int dialogType, DWORD dwReturnPageIndex, ST_IMGWIN* pWin_Background);
+int popupDialog(int dialogType, WORD wReturnPageIndex, ST_IMGWIN* pWin_Background);
 void exitDialog();
 
 

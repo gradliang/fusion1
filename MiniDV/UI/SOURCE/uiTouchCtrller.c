@@ -891,7 +891,7 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
             }
             else if (dwIconId == 1)
             {
-                if (year2 < 2050)
+                if (year2 < 2556)
                 {
                     year2 ++;
                     dwDialogTempValue = (year2 << 16) | (month2 << 8) | day2;
@@ -1268,7 +1268,7 @@ SWORD touchSprite_RepeatIcon(STXPGSPRITE * sprite, WORD x, WORD y)
             }
             else if (dwIconId == 1)
             {
-                if (year2 < 2050)
+                if (year2 < 2556)
                 {
                     year2 ++;
                     dwDialogTempValue = (year2 << 16) | (month2 << 8) | day2;
@@ -1420,7 +1420,7 @@ SWORD touchSprite_CloseIcon(STXPGSPRITE * sprite, WORD x, WORD y)
         int dialogType = xpgGetCurrDialogTypeId();
 
 #if 1
-        if (dialogType == Dialog_MachineWarning && dialogOnClose != NULL)
+        if ((dialogType == Dialog_MainPageError||dialogType == Dialog_MachineWarning) && dialogOnClose != NULL)
         {
             dialogOnClose();
 			return PASS;
@@ -1729,7 +1729,7 @@ static void Dialog_SetPassword_HirePassword_OnInput()
 static void Dialog_SetValue_SuoDingRongJieCiShu()
 {
     g_psSetupMenu->wLockedTimes = dwDialogTempValue;
-    g_psSetupMenu->bLockDateMode = 0;
+    g_psSetupMenu->bMachineLockMode = BIT1;
     exitDialog();
     WriteSetupChg();
 }
@@ -1739,7 +1739,7 @@ static void Dialog_SetValue_SuoDingRongJieRiQi()
     g_psSetupMenu->wLockDateYear = dwDialogTempValue >> 16;;
     g_psSetupMenu->bLockDateMonth = (dwDialogTempValue >> 8) & 0xff;
     g_psSetupMenu->bLockDateDay = dwDialogTempValue & 0xff;   
-    g_psSetupMenu->bLockDateMode = 1;
+    g_psSetupMenu->bMachineLockMode = BIT0;
     exitDialog();
     WriteSetupChg();
 }

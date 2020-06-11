@@ -1299,7 +1299,16 @@ void Timer_FirstEnterCamPreview()
 //>------------DIALOG CALLBACK
 void DialogCb_ExitMainPagePopError(void)
 {
-	g_dwMachineErrorShow=0;
+	DWORD i;
+
+	for (i=BIT0;i<BIT31;i<<=1)
+	{
+		if (g_dwMachineErrorShow&i)
+		{
+			g_dwMachineErrorShow&=~i;
+			break;
+		}
+	}
 	exitDialog();
 }
 void DialogCb_ExitMainPagePopWarning(void)
@@ -1409,6 +1418,28 @@ void uiCb_EnableKeyInput(void)
 }
 BYTE g_bLowPower=0,g_bLogoMix=0;
 SBYTE g_sbLogoStep=4;
+
+BYTE uiCb_CheckSystemLocked(void)
+{
+	ST_SYSTEM_TIME stLockTime;
+	DWORD dwLockCnt;
+
+	if (!g_psSetupMenu->bEnableHirePassword)
+		return 0;
+	stLockTime.u16Year=g_psSetupMenu->wLockDateYear;
+	stLockTime.u08Month=g_psSetupMenu->bLockDateMonth;
+	stLockTime.u08Day=g_psSetupMenu->bLockDateDay;
+	stLockTime.u08Hour=24;
+	stLockTime.u08Minute=0;
+	stLockTime.u08Second=0;
+	dwLockCnt=SystemTimeDateToSecConv(&stLockTime);
+	if ((g_psSetupMenu->bMachineLockMode==0xff)||((g_psSetupMenu->bMachineLockMode&BIT0)&&(dwLockCnt>=RTC_ReadCount()))\
+		||((g_psSetupMenu->bMachineLockMode&BIT1)&&(g_psSetupMenu->wLockedTimes==0)))
+		return 1;
+
+	return 0;
+}
+
 void uiCb_CheckInStandby(void)
 {
 //--Battery info
@@ -1459,6 +1490,14 @@ void uiCb_CheckBattery(void)
 			if (g_psUnsaveParam->bBatteryQuantity<=100 && g_bLogoMix==128)
 			{
 				SystemClearStatus(SYS_STATUS_INIT);
+				/****************CHECK ERROR*****************/
+				//--租借
+				if (uiCb_CheckSystemLocked())
+				{
+					g_dwMachineErrorFlag|=MACHINE_ERROR_LOCKED;
+					g_dwMachineErrorShow|=MACHINE_ERROR_LOCKED;
+				}
+				
 				//--check sensor
 				#if 1
 				if (sensor_NT99140_CheckID()!=PASS)
@@ -1466,6 +1505,7 @@ void uiCb_CheckBattery(void)
 					g_dwMachineErrorFlag|=MACHINE_ERROR_SENSOR;
 					g_dwMachineErrorShow|=MACHINE_ERROR_SENSOR;
 				}
+				/****************CHECK WARNING*****************/
 				//--电极棒剩余可用次数
 				if (g_psSetupMenu->wElectrodeRemainTimes<5)
 					g_dwMachineWarningFlag|=WARNING_ELECTRODE_LESS;
@@ -1508,6 +1548,16 @@ BYTE uiCb_CheckWeldError(void)
 		popupDialog(Dialog_MachineWarning, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
 		xpgUpdateStage();
 		return 1;
+	}
+	else if (uiCb_CheckSystemLocked())
+	{
+			g_dwMachineErrorFlag|=MACHINE_ERROR_LOCKED;
+			g_dwMachineErrorShow|=MACHINE_ERROR_LOCKED;
+          //DrakWin(Idu_GetCurrWin(), 2, 1);
+          //strDialogTitle = NULL;
+          dialogOnClose = DialogCb_ExitMainPagePopError;
+          popupDialog(Dialog_MainPageError, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
+          xpgUpdateStage();
 	}
 
 	return 0;

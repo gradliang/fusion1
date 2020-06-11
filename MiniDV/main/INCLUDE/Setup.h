@@ -123,6 +123,8 @@ typedef struct {
     BYTE bTemperatureInhome[2];
     BYTE bTemperatureOuthome[2];
     BYTE bHumidity;
+	//--最高字节在前（Big-Endian） 最低字节在前（Small-Endian）
+	//--pbTspiRxBuffer[8]|pbTspiRxBuffer[7],先发低位->小端存储：较低的有效字节存放在较低的存储器地址，较高的字节存放在较高的存储器地
     WORD wPressure; //pbTspiRxBuffer[8]|pbTspiRxBuffer[7],先发低位->小端存储：较低的有效字节存放在较低的存储器地址，较高的字节存放在较高的存储器地
 //电量
     BYTE bChargeStatus;
@@ -209,14 +211,14 @@ typedef struct ST_SETUP_MENU_SETTING_VALUE
     BYTE bEnableHirePassword;           // 开启租借密码
     char srtOpenPassword[8];            // 开机密码  
     char strHirePassword[8];            // 租借密码  
-    BYTE bLockDateMode;                 // 使用锁定日期的模式(为0时表示使用锁定次数的模式)
+    BYTE bMachineLockMode;                 //4 锁定模式:BIT0->锁定日期  BIT1 ->锁定次数 
     WORD wLockDateYear;                 // 使用锁定日期--年
     BYTE bLockDateMonth;                // 使用锁定日期--月
     BYTE bLockDateDay;                  // 使用锁定日期--日
     WORD wLockedTimes;                  // 锁定熔接次数
     WORD wUsedTimes;                  // 熔接次数
-    BYTE bHireTime[3];           			//4 租借时间
-    BYTE bLocked;                     		//4 远程锁定
+    //BYTE bHireTime[3];           			//4 租借时间
+    //BYTE bLocked;                     		//4 远程锁定
     SDWORD sdwRtcOffset;                  //4 本地时间与云端时间差异
     BYTE bMADarry[6];            			//MAD 码
     BYTE bBackGroundLevel[2];            			//4  两个摄像头的背景亮度值

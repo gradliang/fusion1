@@ -102,13 +102,19 @@ BYTE *OpmGetbuffer(BYTE bMode) //bMode
 	if (bMode==0x02)
 	{
 		if (st_pOpmLocalBuf==NULL)
-			st_pOpmLocalBuf = (BYTE *)ext_mem_malloc((OPM_SEGMEN_NUM+1)*OPM_SEGMEN_LEN);
+		{
+			st_pOpmLocalBuf = (BYTE *)ext_mem_malloc(ALIGN_32(OPM_SEGMEN_NUM*OPM_SEGMEN_LEN+1));
+			memset(st_pOpmLocalBuf,0,ALIGN_32(OPM_SEGMEN_NUM*OPM_SEGMEN_LEN+1));
+		}
 		return st_pOpmLocalBuf;
 	}
 	else if (bMode==0x04)
 	{
 		if (st_pOpmCloudBuf==NULL)
-			st_pOpmCloudBuf = (BYTE *)ext_mem_malloc((OPM_SEGMEN_NUM+1)*OPM_SEGMEN_LEN);
+		{
+			st_pOpmCloudBuf = (BYTE *)ext_mem_malloc(ALIGN_32(OPM_SEGMEN_NUM*OPM_SEGMEN_LEN+1));
+			memset(st_pOpmCloudBuf,0,ALIGN_32(OPM_SEGMEN_NUM*OPM_SEGMEN_LEN+1));
+		}
 		return st_pOpmCloudBuf;
 	}
 
@@ -6613,19 +6619,19 @@ void TspiSendLockInfo(void)
 
 	bTxData[0]=0xaa;
 	bTxData[1]=3+4;
-	if ( g_psSetupMenu->wLockedTimes)
+	if (g_psSetupMenu->bMachineLockMode&BIT1)
 	{
 		bTxData[2]=2;
-		bTxData[3]=g_psSetupMenu->wLockedTimes>>8;
-		bTxData[4]=g_psSetupMenu->wLockedTimes&0x00ff;
+		bTxData[3]=g_psSetupMenu->wLockedTimes&0x00ff;
+		bTxData[4]=g_psSetupMenu->wLockedTimes>>8;
 		bTxData[5]=0;
 	}
 	else
 	{
 		bTxData[2]=1;
-		bTxData[3]=g_psSetupMenu->bHireTime[0];
-		bTxData[4]=g_psSetupMenu->bHireTime[1];
-		bTxData[5]=g_psSetupMenu->bHireTime[2];
+		bTxData[3]=g_psSetupMenu->wLockDateYear-2000;
+		bTxData[4]=g_psSetupMenu->bLockDateMonth;
+		bTxData[5]=g_psSetupMenu->bLockDateDay;
 	}
 	TSPI_PacketSend(bTxData,1);
 }
@@ -7211,7 +7217,7 @@ void TSPI_DataProc(void)
 			if (pbTspiRxBuffer[2]==0x02)
 			{
 				//MCU可接收的最长指令长度
-				st_dwTspiTxMaxLen=((DWORD)pbTspiRxBuffer[3]<<24)|((DWORD)pbTspiRxBuffer[4]<<16)|((DWORD)pbTspiRxBuffer[5]<<8)|((DWORD)pbTspiRxBuffer[6]);
+				memcpy((BYTE *)&st_dwTspiTxMaxLen,&pbTspiRxBuffer[3],4);
 			}
 			break;
 		//AF镜头
@@ -7230,7 +7236,7 @@ void TSPI_DataProc(void)
 				if (pbTspiRxBuffer[2]==1)//4  查询熔接记录
 				{
 					BYTE pbData[30];
-					WORD wIndex=((WORD)pbTspiRxBuffer[3]<<8)|pbTspiRxBuffer[4];
+					WORD wIndex=((WORD)pbTspiRxBuffer[4]<<8)|pbTspiRxBuffer[3];
 					DWORD dwRtc;
 					STWELDSTATUS WeldStatus;
 					ST_SYSTEM_TIME time;
@@ -7261,7 +7267,7 @@ void TSPI_DataProc(void)
 				}
 				else if (pbTspiRxBuffer[2]==2)//4  查询熔接图片  
 				{
-					Weld_SendFileInit(((WORD)pbTspiRxBuffer[3]<<8)|pbTspiRxBuffer[4]);
+					Weld_SendFileInit(((WORD)pbTspiRxBuffer[4]<<8)|pbTspiRxBuffer[3]);
 				}
 			}
 			break;
@@ -7294,9 +7300,9 @@ void TSPI_DataProc(void)
 					if (pbTspiRxBuffer[6]>60)
 						g_dwMachineWarningFlag|=WARNING_HUMIDITY;
 				}
-				if (((WORD)pbTspiRxBuffer[7]<<8) |pbTspiRxBuffer[8] != g_psUnsaveParam->wPressure)
+				if ((((WORD)pbTspiRxBuffer[8]<<8) |pbTspiRxBuffer[7]) != g_psUnsaveParam->wPressure)
 				{
-					g_psUnsaveParam->wPressure=((WORD)pbTspiRxBuffer[7]<<8) |pbTspiRxBuffer[8];
+					g_psUnsaveParam->wPressure=((WORD)pbTspiRxBuffer[8]<<8) |pbTspiRxBuffer[7];
 					if (g_psUnsaveParam->wPressure<50 || g_psUnsaveParam->wPressure>200)
 						g_dwMachineWarningFlag|=WARNING_ATMOS_PRESSURE;
 				}
@@ -7333,16 +7339,20 @@ void TSPI_DataProc(void)
 			switch (pbTspiRxBuffer[2])
 			{
 				case 0x00:
+					g_psSetupMenu->bMachineLockMode=0;
+					break;
 				case 0x01:
-					g_psSetupMenu->bLocked=pbTspiRxBuffer[2];
+					g_psSetupMenu->bMachineLockMode=0xff;
 					break;
 				case 0x02:
-					g_psSetupMenu->bHireTime[0]=pbTspiRxBuffer[3];
-					g_psSetupMenu->bHireTime[1]=pbTspiRxBuffer[4];
-					g_psSetupMenu->bHireTime[2]=pbTspiRxBuffer[5];
+					g_psSetupMenu->bMachineLockMode|=BIT0;
+					g_psSetupMenu->wLockDateYear=2000+pbTspiRxBuffer[3];
+					g_psSetupMenu->bLockDateMonth=pbTspiRxBuffer[4];
+					g_psSetupMenu->bLockDateDay=pbTspiRxBuffer[5];
 					break;
 				case 0x03:
-					g_psSetupMenu->wLockedTimes=((WORD)pbTspiRxBuffer[3]<<8)|pbTspiRxBuffer[4];
+					g_psSetupMenu->bMachineLockMode|=BIT1;
+					g_psSetupMenu->wLockedTimes=((WORD)pbTspiRxBuffer[4]<<8)|pbTspiRxBuffer[3];
 					break;
 
 				default:
@@ -7363,10 +7373,6 @@ void TSPI_DataProc(void)
 		case 0xbc:
 			if (dwLen>=9)
 			{
-				for (i=0;i<6;i++)
-				{
-					g_psSetupMenu->bMADarry[i]=pbTspiRxBuffer[2+i];
-				}
 				memcpy(&g_psSetupMenu->bMADarry[0],&pbTspiRxBuffer[2],6);
 				WriteSetupChg();
 				//CheckAndWriteFile( DriveGet(SYS_DRV_ID),QRCODE_FILE_NAME,QRCODE_FILE_EXT,&pbTspiRxBuffer[8],dwLen-9);//NAND
@@ -7425,7 +7431,7 @@ void TSPI_DataProc(void)
 				if (*pdwBuffer<OPM_SEGMEN_NUM)
 				{
 					*pdwBuffer=*pdwBuffer+1;
-					pbBuffer+=*pdwBuffer*OPM_SEGMEN_LEN;
+					pbBuffer+=(*pdwBuffer-1)*OPM_SEGMEN_LEN+1;
 					memcpy(pbBuffer,&pbTspiRxBuffer[3],14);
 				}
 			}
@@ -7448,7 +7454,7 @@ void TSPI_DataProc(void)
 
 		//开机新密码
 		case 0xc5:
-			dwTmpData=(pbTspiRxBuffer[2]<<8)|pbTspiRxBuffer[3];
+			dwTmpData=(pbTspiRxBuffer[3]<<8)|pbTspiRxBuffer[2];
 			g_psSetupMenu->srtOpenPassword[0]= '0' + (dwTmpData%10000)/1000;
 			g_psSetupMenu->srtOpenPassword[1]= '0' + (dwTmpData%1000)/100;
 			g_psSetupMenu->srtOpenPassword[2]= '0' + (dwTmpData%100)/10;

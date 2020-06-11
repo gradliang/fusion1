@@ -116,13 +116,13 @@ static DWORD asideColor;
 //---------------------------------------------------------------------------
 // Dialog
 //---------------------------------------------------------------------------
-int popupDialog(int dialogType, DWORD dwReturnPageIndex, ST_IMGWIN* pWin_Background)
+int popupDialog(int dialogType, WORD wReturnPageIndex, ST_IMGWIN* pWin_Background)
 {
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
     
 #if  (PRODUCT_UI==UI_WELDING)
-    xpgAddDialog(dialogType, dwReturnPageIndex,pWin_Background);
-    mpDebugPrint("dialogType = %d, dwReturnPageIndex = %d", dialogType, dwReturnPageIndex);
+    xpgAddDialog(dialogType, wReturnPageIndex,pWin_Background);
+    mpDebugPrint("dialogType = %d, wReturnPageIndex = %d", dialogType, wReturnPageIndex);
     
     if (dialogType == Dialog_ReSuGuan)
     {
@@ -3512,8 +3512,8 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         {
         	  char tmpbuf[16];
 
-            sprintf(tmpbuf, "%01x%02x%02x%02x%02x%02x", g_psSetupMenu->bMADarry[0],g_psSetupMenu->bMADarry[1],g_psSetupMenu->bMADarry[2]\
-							,g_psSetupMenu->bMADarry[3],g_psSetupMenu->bMADarry[4],g_psSetupMenu->bMADarry[5]);
+            sprintf(tmpbuf, "%01x%02x%02x%02x%02x%02x", g_psSetupMenu->bMADarry[5],g_psSetupMenu->bMADarry[4],g_psSetupMenu->bMADarry[3]\
+							,g_psSetupMenu->bMADarry[2],g_psSetupMenu->bMADarry[1],g_psSetupMenu->bMADarry[0]);
             SetCurrIduFontID(FONT_ID_HeiTi19);
             //text = "13800138000";
             Idu_PrintStringRight(pWin, tmpbuf, pstSprite->m_wPx, pstSprite->m_wPy, 0);
@@ -4055,7 +4055,7 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
                 year1 = year2 - 1;
                 sprintf(ystr1, "%04d", year1);
             }
-            if (year2 < 2050)
+            if (year2 < 2556)
             {
                 year3 = year2 + 1;
                 sprintf(ystr3, "%04d", year3);
@@ -4191,8 +4191,8 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             {
                 sprintf(text1, "%s%s", getstr(Str_MAD),getstr(Str_Note_MaoHao));
                 Idu_PrintString(pWin, text1, 210, 306, 0, 0);
-	            sprintf(text1, "%01x%02x%02x%02x%02x%02x", g_psSetupMenu->bMADarry[0],g_psSetupMenu->bMADarry[1],g_psSetupMenu->bMADarry[2]\
-								,g_psSetupMenu->bMADarry[3],g_psSetupMenu->bMADarry[4],g_psSetupMenu->bMADarry[5]);
+	            sprintf(text1, "%01x%02x%02x%02x%02x%02x", g_psSetupMenu->bMADarry[5],g_psSetupMenu->bMADarry[4],g_psSetupMenu->bMADarry[3]\
+								,g_psSetupMenu->bMADarry[2],g_psSetupMenu->bMADarry[1],g_psSetupMenu->bMADarry[0]);
                 Idu_PrintStringRight(pWin, text1, 590, 306, 0);
             }
             Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
@@ -4767,7 +4767,7 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             pstMask2 = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 2);
             if (pstMask1 && pstMask2)
                 xpgRoleDrawMask(pstMask1->m_pstRole, pWin->pdwStart, radioX, radioY, pWin->wWidth, pWin->wHeight, pstMask2->m_pstRole);
-            if (g_psSetupMenu->bLockDateMode != 0)
+            if (g_psSetupMenu->bMachineLockMode&BIT0)
             {
                 pstMask1 = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, g_psSetupMenu->bEnableHirePassword ? 6 : 3);
                 pstMask2 = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 4);
@@ -4794,7 +4794,7 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             pstMask2 = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 2);
             if (pstMask1 && pstMask2)
                 xpgRoleDrawMask(pstMask1->m_pstRole, pWin->pdwStart, radioX, radioY, pWin->wWidth, pWin->wHeight, pstMask2->m_pstRole);
-            if (g_psSetupMenu->bLockDateMode == 0)
+            if (g_psSetupMenu->bMachineLockMode&BIT1)
             {
                 pstMask1 = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, g_psSetupMenu->bEnableHirePassword ? 6 : 3);
                 pstMask2 = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 4);
@@ -5392,7 +5392,9 @@ SWORD xpgDrawSprite_Dialog(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
 				SetCurrIduFontID(FONT_ID_HeiTi19);
 				if (g_dwMachineErrorFlag&g_dwMachineErrorShow)
 				{
-					if (g_dwMachineErrorFlag&g_dwMachineErrorShow&MACHINE_ERROR_SENSOR)
+					if (g_dwMachineErrorFlag&MACHINE_ERROR_LOCKED)
+						Idu_PrintStringCenter(pWin, getstr(Str_Error_SystemLocked), dailogX, dialogY + dialogH/2+10, 0, dialogW);
+					else if (g_dwMachineErrorFlag&MACHINE_ERROR_SENSOR)
 						Idu_PrintStringCenter(pWin, getstr(Str_SheXiangTouGuZhang), dailogX, dialogY + dialogH/2+10, 0, dialogW);
 				}
 				else if (g_dwMachineWarningFlag)
