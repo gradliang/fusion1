@@ -5917,13 +5917,9 @@ void Proc_Weld_State_Fast()
 					}
 				}
 				#endif
-				WORD wbElectrodeTimes=(WORD)g_psSetupMenu->bElectrodeInfo[13]<<8|g_psSetupMenu->bElectrodeInfo[14];
-
-				if (wbElectrodeTimes)
-					wbElectrodeTimes--;
-				g_psSetupMenu->bElectrodeInfo[13]=wbElectrodeTimes>>8;
-				g_psSetupMenu->bElectrodeInfo[14]=wbElectrodeTimes;
-				if (wbElectrodeTimes<5)
+				if (g_psSetupMenu->wElectrodeRemainTimes)
+					g_psSetupMenu->wElectrodeRemainTimes--;
+				if (g_psSetupMenu->wElectrodeRemainTimes<5)
 					g_dwMachineWarningFlag|=WARNING_ELECTRODE_LESS;
 				g_psSetupMenu->dwWorkTotalTimes++;
 				WriteSetupChg();
@@ -6592,7 +6588,7 @@ void TspiSendElectrodeInfo(void)
 
 	bTxData[0]=0xa8;
 	bTxData[1]=3+15;
-	memcpy(&bTxData[2],&g_psSetupMenu->bElectrodeInfo[0],15);
+	memcpy(&bTxData[2],&g_psSetupMenu->bElectrodeInfo[0],11);
 	TSPI_PacketSend(bTxData,1);
 }
 
@@ -7357,11 +7353,9 @@ void TSPI_DataProc(void)
 
 		//激活电击棒信息
 		case 0xbb:
-			if (dwLen<=18)
+			if (dwLen<=14)
 			{
 				memcpy(&g_psSetupMenu->bElectrodeInfo[0],&pbTspiRxBuffer[2],dwLen-3);
-				if (((WORD)g_psSetupMenu->bElectrodeInfo[13]<<8|g_psSetupMenu->bElectrodeInfo[14])<5)
-					g_dwMachineWarningFlag|=WARNING_ELECTRODE_LESS;
 			}
 			break;
 
@@ -7504,9 +7498,6 @@ void TSPI_DataProc(void)
 							if (!SensorActionBusy() && (dwHashKey != xpgHash(DIALOG_PAGE_NAME)))
 								xpgUpdateStage();
 					}
-					//g_psSetupMenu->bElectrodeInfo[13]=0x0b;
-					//g_psSetupMenu->bElectrodeInfo[14]=0xb8;
-					//WriteSetupChg();
 				}
 				if (g_psUnsaveParam->bStandby)
 					SendCmdPowerOff();

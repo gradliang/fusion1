@@ -1148,7 +1148,12 @@ void xpgCb_EnterCamcoderPreview()
 			return;
        }
 #endif
-
+#if (PRODUCT_UI==UI_WELDING)
+		if (uiCb_CheckWeldError())
+		{
+			return;
+		}
+#endif
 #if USBOTG_WEB_CAM
     WHICH_OTG eWhichOtg = WEBCAM_USB_PORT;
 	if (UsbOtgHostConnectStatusGet(eWhichOtg))
@@ -1461,6 +1466,9 @@ void uiCb_CheckBattery(void)
 					g_dwMachineErrorFlag|=MACHINE_ERROR_SENSOR;
 					g_dwMachineErrorShow|=MACHINE_ERROR_SENSOR;
 				}
+				//--电极棒剩余可用次数
+				if (g_psSetupMenu->wElectrodeRemainTimes<5)
+					g_dwMachineWarningFlag|=WARNING_ELECTRODE_LESS;
 				//--查询网络信号强度
 				TspiSendCmdPolling0xA4(0x0d);
 				#endif
@@ -1487,6 +1495,22 @@ void uiCb_CheckBattery(void)
 				Ui_TimerProcAdd(10, uiCb_CheckBattery);
 			}
 	}
+}
+
+BYTE uiCb_CheckWeldError(void)
+{
+	
+	if (g_psSetupMenu->wElectrodeRemainTimes==0)
+	{
+		g_dwMachineWarningFlag|=WARNING_ELECTRODE_LESS;
+		//strDialogTitle = NULL;
+		dialogOnClose = exitDialog;
+		popupDialog(Dialog_MachineWarning, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
+		xpgUpdateStage();
+		return 1;
+	}
+
+	return 0;
 }
 
 void uiCb_CheckElectrodePos(void)
@@ -1569,8 +1593,6 @@ void uiCb_CheckPopDialogAfterUpdatestage(void)
 			}
 	}
 }
-
-
 
 //<------------UI CODE FUNCION-----------------------
 

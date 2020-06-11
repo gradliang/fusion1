@@ -129,8 +129,9 @@ void GetDefaultSetupMenuValue(void)
     //g_psSetupMenu->sdwRtcOffset = 0;
     //memset(g_psSetupMenu->bMADarry, 0, 6);
     //memset(g_psSetupMenu->bBackGroundLevel, 0, 2);
-    //memset(g_psSetupMenu->bElectrodeInfo, 0, 15);
+    //memset(g_psSetupMenu->bElectrodeInfo, 0, 9);
    // g_psSetupMenu->dwWorkTotalTimes = 0;
+    g_psSetupMenu->wElectrodeRemainTimes = 3000;
     
 #endif	
 }

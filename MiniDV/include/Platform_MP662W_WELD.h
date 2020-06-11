@@ -94,8 +94,10 @@
 #endif
 
 
-#define	PRODUCT_MODEL           "Mini-DV "
-#define	SVN_VERSION             "10841" 
+//#define	PRODUCT_MODEL           "Mini-DV "
+//#define	SVN_VERSION             "10841" 
+#define	PRODUCT_MAIN_VER           		1
+#define	PRODUCT_SUB_VER           		0
 
 //#define Support_EPD
 

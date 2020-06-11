@@ -157,8 +157,8 @@ BYTE *Str_English[String_NULL+1]=
 	"Cancel!",                          // 145
 	"RedEyesRemove",                    // 146
 	"FaceDetection",                    // 147
-	PRODUCT_MODEL,                      // 148
-	PRODUCT_FW_VERSION,                 // 149
+	//PRODUCT_MODEL,                      // 148
+	//PRODUCT_FW_VERSION,                 // 149
 	"MyFavor",                          // 150
 	"MyFavor1 AddFile",                 // 151
 	"MyFavor2 AddFile",                 // 152

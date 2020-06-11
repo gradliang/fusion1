@@ -123,7 +123,7 @@ typedef struct {
     BYTE bTemperatureInhome[2];
     BYTE bTemperatureOuthome[2];
     BYTE bHumidity;
-    WORD wPressure; //pbTspiRxBuffer[8]|pbTspiRxBuffer[7],先发低位
+    WORD wPressure; //pbTspiRxBuffer[8]|pbTspiRxBuffer[7],先发低位->小端存储：较低的有效字节存放在较低的存储器地址，较高的字节存放在较高的存储器地
 //电量
     BYTE bChargeStatus;
     BYTE bBatteryQuantity;
@@ -220,9 +220,12 @@ typedef struct ST_SETUP_MENU_SETTING_VALUE
     SDWORD sdwRtcOffset;                  //4 本地时间与云端时间差异
     BYTE bMADarry[6];            			//MAD 码
     BYTE bBackGroundLevel[2];            			//4  两个摄像头的背景亮度值
-    BYTE bElectrodeInfo[15];            			//4  电击棒信息
+    BYTE bElectrodeInfo[9];            			//4  序列号与激活日期 6+3
+    WORD wElectrodeRemainTimes;            			//4  电击棒剩余次数
     DWORD dwWorkTotalTimes;            			//4  熔接总次数
-    
+    BYTE bMcuLocalVer[2];            			//4  MCU软件本地版本号
+    BYTE bMcuServerVer[2];            			//4  MCU软件服务器端版本号
+    BYTE bCpuServerVer[2];            			//4  CPU软件服务器端版本号
 #endif
 
     //BYTE bReserved[1];

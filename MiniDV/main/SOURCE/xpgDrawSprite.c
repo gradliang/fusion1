@@ -4164,62 +4164,66 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         }
         else if (dialogType == Dialog_About)
         {
-            char text1[128], text2[128];
+            char text1[128];
             Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
             if (dwTextId == 0)
             {
-                sprintf(text1, "%s:", getstr(Str_XingHao));
-                sprintf(text2, "%s", "K5");
+                sprintf(text1, "%s%s", getstr(Str_XingHao),getstr(Str_Note_MaoHao));
                 Idu_PrintString(pWin, text1, 210, 198, 0, 0);
-                Idu_PrintStringRight(pWin, text2, 590, 198, 0);
+                sprintf(text1, "%s", "K5");
+                Idu_PrintStringRight(pWin, text1, 590, 198, 0);
             }
             else if (dwTextId == 1)
             {
-                sprintf(text1, "%s:", getstr(Str_ZhiZaoShang));
-                sprintf(text2, "%s", getstr(Str_GongSiMing));
+                sprintf(text1, "%s%s", getstr(Str_ZhiZaoShang),getstr(Str_Note_MaoHao));
                 Idu_PrintString(pWin, text1, 210, 234, 0, 0);
-                Idu_PrintStringRight(pWin, text2, 590, 234, 0);
+                sprintf(text1, "%s", getstr(Str_GongSiMing));
+                Idu_PrintStringRight(pWin, text1, 590, 234, 0);
             }
             else if (dwTextId == 2)
             {
-                sprintf(text1, "%s:", getstr(Str_BanBen));
-                sprintf(text2, "%s", "11.0.01");
+                sprintf(text1, "%s%s", getstr(Str_Note_MakeDate),getstr(Str_Note_MaoHao));
                 Idu_PrintString(pWin, text1, 210, 270, 0, 0);
-                Idu_PrintStringRight(pWin, text2, 590, 270, 0);
+                sprintf(text1, "%s", "2020/8/8");
+                Idu_PrintStringRight(pWin, text1, 590, 270, 0);
             }
             else if (dwTextId == 3)
             {
-                sprintf(text1, "%s:", getstr(Str_XuLieHao));
-                sprintf(text2, "%s", "matengfx2018");
+                sprintf(text1, "%s%s", getstr(Str_MAD),getstr(Str_Note_MaoHao));
                 Idu_PrintString(pWin, text1, 210, 306, 0, 0);
-                Idu_PrintStringRight(pWin, text2, 590, 306, 0);
+	            sprintf(text1, "%01x%02x%02x%02x%02x%02x", g_psSetupMenu->bMADarry[0],g_psSetupMenu->bMADarry[1],g_psSetupMenu->bMADarry[2]\
+								,g_psSetupMenu->bMADarry[3],g_psSetupMenu->bMADarry[4],g_psSetupMenu->bMADarry[5]);
+                Idu_PrintStringRight(pWin, text1, 590, 306, 0);
             }
             Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
         }
         else if (dialogType == Dialog_Times)
         {
-            char text1[128], text2[128];
+            char text1[128];
             Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
             if (dwTextId == 0)
             {
-                sprintf(text1, "%s:", getstr(Str_XuLieHao));
-                sprintf(text2, "%s", "DJ201809080001");
+                sprintf(text1, "%s%s", getstr(Str_XuLieHao),getstr(Str_Note_MaoHao));
                 Idu_PrintString(pWin, text1, 210, 198, 0, 0);
-                Idu_PrintStringRight(pWin, text2, 590, 198, 0);
+                sprintf(text1, "%01d%01d%01d%01d%01d%01d%01d%01d%01d%01d%01d%01d", g_psSetupMenu->bElectrodeInfo[5]>>4,g_psSetupMenu->bElectrodeInfo[5]&0x0f\
+									, g_psSetupMenu->bElectrodeInfo[4]>>4,g_psSetupMenu->bElectrodeInfo[4]&0x0f, g_psSetupMenu->bElectrodeInfo[3]>>4,g_psSetupMenu->bElectrodeInfo[3]&0x0f\
+									, g_psSetupMenu->bElectrodeInfo[2]>>4,g_psSetupMenu->bElectrodeInfo[2]&0x0f, g_psSetupMenu->bElectrodeInfo[1]>>4,g_psSetupMenu->bElectrodeInfo[1]&0x0f\
+									, g_psSetupMenu->bElectrodeInfo[0]>>4,g_psSetupMenu->bElectrodeInfo[0]&0x0f);
+                Idu_PrintStringRight(pWin, text1, 590, 198, 0);
             }
             else if (dwTextId == 1)
             {
-                sprintf(text1, "%s:", getstr(Str_JiHuoRiQi));
-                sprintf(text2, "%d%s%d%s%d%s", 2018, getstr(Str_Year), 8, getstr(Str_Month), 8, getstr(Str_Day));
+                sprintf(text1, "%s%s", getstr(Str_JiHuoRiQi),getstr(Str_Note_MaoHao));
                 Idu_PrintString(pWin, text1, 210, 234, 0, 0);
-                Idu_PrintStringRight(pWin, text2, 590, 234, 0);
+                sprintf(text1, "%04d/%d/%d", 2000+g_psSetupMenu->bElectrodeInfo[6],g_psSetupMenu->bElectrodeInfo[7],g_psSetupMenu->bElectrodeInfo[8]);
+                Idu_PrintStringRight(pWin, text1, 590, 234, 0);
             }
             else if (dwTextId == 2)
             {
-                sprintf(text1, "%s:", getstr(Str_ShengYuCiShu));
-                sprintf(text2, "%d", 2800);
+                sprintf(text1, "%s%s", getstr(Str_ShengYuCiShu),getstr(Str_Note_MaoHao));
                 Idu_PrintString(pWin, text1, 210, 270, 0, 0);
-                Idu_PrintStringRight(pWin, text2, 590, 270, 0);
+                sprintf(text1, "%d", g_psSetupMenu->wElectrodeRemainTimes);
+                Idu_PrintStringRight(pWin, text1, 590, 270, 0);
             }
             Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
         }
@@ -4229,28 +4233,28 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
             if (dwTextId == 0)
             {
-                sprintf(text1, "%s:", getstr(Str_HuanJingWenDu));
+                sprintf(text1, "%s%s", getstr(Str_HuanJingWenDu),getstr(Str_Note_MaoHao));
                 sprintf(text2, "%d%s", 28, getstr(Str_DuC));
                 Idu_PrintString(pWin, text1, 210, 198, 0, 0);
                 Idu_PrintStringRight(pWin, text2, 590, 198, 0);
             }
             else if (dwTextId == 1)
             {
-                sprintf(text1, "%s:", getstr(Str_NeiBuWenDu));
+                sprintf(text1, "%s%s", getstr(Str_NeiBuWenDu),getstr(Str_Note_MaoHao));
                 sprintf(text2, "%d%s", 30, getstr(Str_DuC));
                 Idu_PrintString(pWin, text1, 210, 234, 0, 0);
                 Idu_PrintStringRight(pWin, text2, 590, 234, 0);
             }
             else if (dwTextId == 2)
             {
-                sprintf(text1, "%s:", getstr(Str_HuanJingShiDu));
+                sprintf(text1, "%s%s", getstr(Str_HuanJingShiDu),getstr(Str_Note_MaoHao));
                 sprintf(text2, "%d%%", 60);
                 Idu_PrintString(pWin, text1, 210, 270, 0, 0);
                 Idu_PrintStringRight(pWin, text2, 590, 270, 0);
             }
             else if (dwTextId == 3)
             {
-                sprintf(text1, "%s:", getstr(Str_QiYa));
+                sprintf(text1, "%s%s", getstr(Str_QiYa),getstr(Str_Note_MaoHao));
                 sprintf(text2, "%dkPa", 101);
                 Idu_PrintString(pWin, text1, 210, 306, 0, 0);
                 Idu_PrintStringRight(pWin, text2, 590, 306, 0);
@@ -4851,31 +4855,38 @@ SWORD xpgDrawSprite_List(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         char text1[128];
         if (dwListId == 0)
         {
-            sprintf(text1, "%s:%s", getstr(Str_XingHao), "K5");
+            sprintf(text1, "%s:%s", getstr(Str_XingHao), "K5 >");
         }
         else if (dwListId == 1)
         {
-            sprintf(text1, "%s:%d", getstr(Str_ShengYuCiShu), 2800);
+            sprintf(text1, "%s:%d >", getstr(Str_ShengYuCiShu), g_psSetupMenu->wElectrodeRemainTimes);
         }
         else if (dwListId == 2)
-        {
-            sprintf(text1, "%s:%d%s", getstr(Str_NeiBuWenDu), 30, getstr(Str_DuC));
+        {		
+			int iData;
+			if (g_psUnsaveParam->bTemperatureInhome[0]&BIT7)
+				iData=-(g_psUnsaveParam->bTemperatureInhome[0]&0x3f);
+			else
+				iData=(g_psUnsaveParam->bTemperatureInhome[0]&0x3f);
+            sprintf(text1, "%s:%d%s >", getstr(Str_NeiBuWenDu), iData, getstr(Str_DuC));
         }
+				/*
         else if (dwListId == 3)
         {
             sprintf(text1, "%s:%d%%", getstr(Str_DianChiRongLiang), 100);
         }
-        else if (dwListId == 4)
+        */
+        else if (dwListId == 3)
         {
             sprintf(text1, "%d%s", 200, getstr(Str_Ci));
         }
+        else if (dwListId == 4)
+        {
+            sprintf(text1, "%d.%d",g_psSetupMenu->bMcuLocalVer[0],g_psSetupMenu->bMcuLocalVer[1]);
+        }
         else if (dwListId == 5)
         {
-            sprintf(text1, "110.00.01");
-        }
-        else if (dwListId == 6)
-        {
-            sprintf(text1, "MT.000.01");
+            sprintf(text1, "%d.%d",PRODUCT_MAIN_VER,PRODUCT_SUB_VER);
         }
         SetCurrIduFontID(FONT_ID_HeiTi19);
         Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
@@ -5740,7 +5751,6 @@ SWORD xpgDrawSprite_HomeStatus(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprit
     {
         xpgDrawSprite(pWin, pstSprite, boClip);
         ///// ÎÂ¶È value 1
-        g_psUnsaveParam->bTemperatureInhome[0]=0x8F;
 		if (g_psUnsaveParam->bTemperatureInhome[0]&BIT7)
 			iData=-(g_psUnsaveParam->bTemperatureInhome[0]&0x3f);
 		else
@@ -5757,8 +5767,7 @@ SWORD xpgDrawSprite_HomeStatus(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprit
         ////  
         showMainPageValue(VALUE_TYPE_PRESSURE, pWin, 453, 178, g_psUnsaveParam->wPressure, 0, (g_psUnsaveParam->wPressure<50) ||(g_psUnsaveParam->wPressure>200));
         ////  
-        wData=((WORD)g_psSetupMenu->bElectrodeInfo[13]<<8|g_psSetupMenu->bElectrodeInfo[14]);
-        showMainPageValue(VALUE_TYPE_TIMES, pWin, 240, 270, wData, 0, wData<5);
+        showMainPageValue(VALUE_TYPE_TIMES, pWin, 240, 270, g_psSetupMenu->wElectrodeRemainTimes, 0, g_psSetupMenu->wElectrodeRemainTimes<5);
         ////  
         showMainPageValue(VALUE_TYPE_TIMES, pWin, 450, 270, g_psSetupMenu->dwWorkTotalTimes, 0, FALSE);
     }

@@ -1420,7 +1420,12 @@ SWORD touchSprite_CloseIcon(STXPGSPRITE * sprite, WORD x, WORD y)
         int dialogType = xpgGetCurrDialogTypeId();
 
 #if 1
-        if (dialogType == Dialog_ReSuGuan)
+        if (dialogType == Dialog_MachineWarning && dialogOnClose != NULL)
+        {
+            dialogOnClose();
+			return PASS;
+        }
+        else if (dialogType == Dialog_ReSuGuan)
         {
             if (g_psSetupMenu->bReSuGuanSheZhi != dwDialogTempValue)
             {
@@ -2193,6 +2198,7 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
             popupDialog(Dialog_TempInfo, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
             xpgUpdateStage();
         }
+		/*
         else if (dwSpriteId == 3)
         {
             //Free_CacheWin();
@@ -2202,6 +2208,7 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
             popupDialog(Dialog_BatInfo, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
             xpgUpdateStage();
         }
+        */
     }
     else if (dwHashKey == xpgHash("opmList1") || dwHashKey == xpgHash("opmList2"))
     {

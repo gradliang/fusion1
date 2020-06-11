@@ -193,6 +193,7 @@ void AddAutoEnterPreview(void);
 void uiCb_CheckPopDialogAfterUpdatestage(void);
 void DialogCb_ExitLowPowerPopWarning(void);
 void DialogCb_ExitLowNetsignalPopWarning(void);
+BYTE uiCb_CheckWeldError(void);
 
 #endif
 
