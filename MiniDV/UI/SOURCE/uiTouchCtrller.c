@@ -135,7 +135,7 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
 {
     BOOL boNeedWriteSetup = FALSE;
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
-    DWORD dwIconId = sprite->m_dwTypeIndex;
+    DWORD dwIconId = sprite->m_dwTypeIndex,i;
     mpDebugPrint("touchSprite_Icon  %d", dwIconId);
     
     if (dwHashKey == xpgHash("Main"))
@@ -1051,10 +1051,24 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
 							else if (dialogType == Dialog_Electrode_Enable)
 							{
 								WORD wInputCode=(strEditPassword[0]-'0')*1000+(strEditPassword[1]-'0')*100+(strEditPassword[2]-'0')*10+(strEditPassword[3]-'0');
+
+								//随机码是十进制4位，生成的激活码也是十进制4位，电极棒序列号可以是十进制10到14位,但建议或是说目前默认是10位(年4位 月2位 序号4位)
+								//typedef unsigned short      WORD; // 2bytes
+								
+								//WORD g_wElectrodeRandomCode  //提供的随机码
+								//BYTE g_psSetupMenu->bElectrodeInfo[6] //电击棒序列号
+								WORD wCheckCode=0; //要生成的校验码
+
+								for (i=0;i<6;i++)
+									wCheckCode+=g_psSetupMenu->bElectrodeInfo[i];
+								wCheckCode ^= g_wElectrodeRandomCode;
+								wCheckCode+=0x16;
+								wCheckCode %=10000;
+
 								strDialogTitle = getstr(Str_Note);
 								dialogOnClose = exitDialog;
 								uiCb_DisableKeyInput(0xff);
-								if (g_wElectrodeRandomCode==wInputCode)
+								if (wCheckCode==wInputCode)
 								{
 									popupDialog(Dialog_Note_ElectrodeEnable_PASS, (STXPGPAGE *)xpgMovieSearchPage("Main")->m_wIndex,Idu_GetCacheWin());
 									Ui_TimerProcAdd(3000, uiCb_CheckElectrodePos);
