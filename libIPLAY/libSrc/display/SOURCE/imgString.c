@@ -585,6 +585,28 @@ WORD Idu_PrintStringCenter(ST_IMGWIN * trgWin, BYTE * string, WORD startX, WORD 
     return Idu_PrintString(trgWin, string, (WORD)newX, startY, UnicodeFlag, 0);
 }
 
+WORD Idu_PrintStringCenterWH(ST_IMGWIN * trgWin, BYTE * string, WORD startX, WORD startY, BYTE UnicodeFlag, WORD wWidth,WORD wHeight)
+{
+    WORD wStrWidth;
+    int offsetx;
+    int newX;
+    if (wWidth == 0)
+        return Idu_PrintString(trgWin, string, startX, startY, UnicodeFlag, 0);
+
+    wStrWidth = Idu_GetStringWidth(string, UnicodeFlag);
+    //mpDebugPrint("wStrWidth = %d", wStrWidth);
+    
+    offsetx = wWidth - wStrWidth;
+    offsetx /= 2;
+    newX = startX + offsetx;
+    if (newX < 0)
+        newX = 0;
+	if (wHeight>IduFontGetMaxHeight())
+		startY+=(wHeight-IduFontGetMaxHeight())/2;
+
+    return Idu_PrintString(trgWin, string, (WORD)newX, startY, UnicodeFlag, 0);
+}
+
 WORD Idu_PrintStringRight(ST_IMGWIN * trgWin, BYTE * string, WORD startX, WORD startY, BYTE UnicodeFlag)
 {
     int newX;

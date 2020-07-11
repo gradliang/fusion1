@@ -1372,6 +1372,7 @@ SWORD touchSprite_BackIcon(STXPGSPRITE * sprite, WORD x, WORD y)
         dwHashKey == xpgHash("SetTime") ||
         dwHashKey == xpgHash("SetPassword") ||
         dwHashKey == xpgHash("SetUi") ||
+        dwHashKey == xpgHash("Upgrade") ||
         dwHashKey == xpgHash("SetInfo") ||
         dwHashKey == xpgHash("Record") || 
         dwHashKey == xpgHash("RedLight") || 
@@ -1869,6 +1870,7 @@ SWORD touchSprite_Selector(STXPGSPRITE * sprite, WORD x, WORD y)
         dwHashKey == xpgHash("SetTime") ||
         dwHashKey == xpgHash("SetPassword") ||
         dwHashKey == xpgHash("SetUi") ||
+        dwHashKey == xpgHash("Upgrade") ||
         dwHashKey == xpgHash("SetInfo"))
     {
         if (dwSelectorId == 0)
@@ -1896,11 +1898,11 @@ SWORD touchSprite_Selector(STXPGSPRITE * sprite, WORD x, WORD y)
             //xpgSearchtoPageWithAction("SetUi");
             xpgSearchtoPageWithAction("SetInfo");
         }
-        //else if (dwSelectorId == 6)
-        //{
-        //    xpgSearchtoPageWithAction("SetInfo");
+        else if (dwSelectorId == 6)
+        {
+            xpgSearchtoPageWithAction("Upgrade");
         //    xpgUpdateStage();
-        //}
+        }
            xpgUpdateStage();
     }
     else if (dwHashKey == xpgHash("FusionSet1") ||
@@ -2181,6 +2183,13 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
             boDialogValueIsFloat = 0;
             popupDialog(Dialog_EditValue, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
             xpgUpdateStage();
+        }
+    }
+    else if (dwHashKey == xpgHash("Upgrade"))
+    {
+        if (dwSpriteId == 1)
+        {
+					mpDebugPrint("Upgrade list1 data=%d",g_psUnsaveParam->bDetectNewVersion);
         }
     }
     else if (dwHashKey == xpgHash("SetInfo"))
@@ -2471,6 +2480,43 @@ SWORD touchSprite_Scroll(STXPGSPRITE * sprite, WORD x, WORD y)
     }
 }
 
+
+SWORD touchSprite_TextColorBar(STXPGSPRITE * pstSprite, WORD x, WORD y)
+{
+    DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
+
+    if (dwHashKey == xpgHash("Upgrade"))
+    {
+			if (!g_psUnsaveParam->bDetectNewVersion)
+			{
+					TspiSendCmdPolling0xA4(0x0e);
+					g_psUnsaveParam->bDetectNewVersion=0x88;
+			}
+			else if (g_psUnsaveParam->bDetectNewVersion&0x88)
+			{
+					dwDialogTempValue=0;
+					strDialogTitle = getstr(Str_Note);
+					popupDialog(Dialog_YESNO_Upgrade, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
+			}
+			xpgUpdateStage();
+    }
+    else if (dwHashKey == xpgHash(DIALOG_PAGE_NAME))
+    {
+		int dialogType = xpgGetCurrDialogTypeId();
+
+        if (dialogType == Dialog_YESNO_Upgrade)
+        {
+            if (pstSprite->m_dwTypeIndex)
+            {
+                exitDialog();
+            }
+            else
+            {
+            }
+        }
+    }
+}
+
 static void uiEnterRecordList()
 {
     DWORD i = 0;
@@ -2569,6 +2615,8 @@ TouchSpriteFunction touchSpriteFunctions[] = {
     {0,             NULL},                           // type27
     {0,             NULL},                           // type28
     {ENABLE_REPEAT,             touchSprite_RepeatIcon},                           // type29
+    {0,             NULL},                           // type30
+    {0,             touchSprite_TextColorBar},              // type31
 };
 
 
@@ -2580,7 +2628,7 @@ void uiDispatchTouchSprite(WORD x1, WORD y1)
     STXPGTOUCHINFO * pstTouchInfo = NULL;
     BOOL match;
 
-	mpDebugPrint("%d, %d",  x1, y1);
+	//mpDebugPrint("%d, %d",  x1, y1);
     if (pstMovie->m_dwSpriteCount == 0)
         return;
 

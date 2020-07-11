@@ -237,6 +237,19 @@ enum xpgStringId {
 	Str_Note_MakeDate,			//   227
 	Str_Note_MaoHao,			//   228
 	Str_Error_SystemLocked,			//   229
+	Str_Firmware_upgrade,			//   230
+	Str_Cur_Version,			//   231
+	Str_NeednotUpgrade,			//   232
+	Str_HaveNewVersion,			//   233
+	Str_PressInstall,			//   234
+	Str_IfUpgrade,			//   235
+	Str_NewVersion,			//   236
+	Str_Installing,			//   237
+	Str_Rebooting,			//   238
+	Str_PressToGetNewVersion,			//   239
+	Str_PollingVersion,			//   240
+	Str_Yes,			//   241
+	Str_No,			//   242
 
 	Str_MAX_ID,
 };

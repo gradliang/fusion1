@@ -46,7 +46,7 @@ DWORD RGB2YUV(BYTE R, BYTE G, BYTE B)
 
   return (Y << 24) | (Y << 16) | (Cb << 8) | Cr;
 }
-
+#if 0
 DWORD RGB2YVU(BYTE R, BYTE G, BYTE B) //yycrcb  for cbcr swap
 {
 	DWORD Y, Cb, Cr;
@@ -57,7 +57,7 @@ DWORD RGB2YVU(BYTE R, BYTE G, BYTE B) //yycrcb  for cbcr swap
 
 	return (Y << 24) | (Y << 16) | (Cr << 8) | Cb;
 }
-
+#endif
 DWORD RGB2RGB888(BYTE R, BYTE G, BYTE B)
 {
 	BYTE Temp;

@@ -234,15 +234,19 @@ void xpgUpdateStage()
             swRet = (*drawSpriteFunctions[pstSprite->m_dwType]) (g_pXpgCanvasWin, pstSprite, 0);
             if (pstSprite->m_dwHashKey)
             {
-					if (pstSprite->m_dwHashKey==xpgHash("Touch0000"))
+					if (pstSprite->m_dwHashKey==xpgHash("Touch0000"))//4  设置触摸区域为SPRITE区域
 					{
 			            xpgSpriteSetTouchArea(pstSprite, pstSprite->m_wPx, pstSprite->m_wPy , pstSprite->m_wWidth, pstSprite->m_wHeight);
 					}
-					else if (pstSprite->m_dwHashKey==xpgHash("Touch1111"))
+					else if (pstSprite->m_dwHashKey==xpgHash("Touch1111"))//4  设置触摸区域上下左右各增加一倍
 					{
 			            xpgSpriteSetTouchArea(pstSprite, pstSprite->m_wPx-pstSprite->m_wWidth, pstSprite->m_wPy-pstSprite->m_wHeight , pstSprite->m_wWidth*3, pstSprite->m_wHeight*3);
 					}
-					else if (pstSprite->m_dwHashKey==xpgHash("Touch0R11"))  // L R U D
+					else if (pstSprite->m_dwHashKey==xpgHash("Touch0011"))//4  
+					{
+			            xpgSpriteSetTouchArea(pstSprite, pstSprite->m_wPx, pstSprite->m_wPy-pstSprite->m_wHeight , pstSprite->m_wWidth, pstSprite->m_wHeight*3);
+					}
+					else if (pstSprite->m_dwHashKey==xpgHash("Touch0R11"))  //4 L R U D 触摸区域延长到显示区域的左右上下边
 					{
 			            xpgSpriteSetTouchArea(pstSprite, pstSprite->m_wPx, pstSprite->m_wPy-pstSprite->m_wHeight , g_pXpgCanvasWin->wWidth-pstSprite->m_wPx, pstSprite->m_wHeight*3);
 					}

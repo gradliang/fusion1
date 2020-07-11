@@ -38,6 +38,7 @@ type27=Frame
 type28=Role
 type29=RepeatIcon
 type30=HomeStatus
+type31=TextColorBar
 
 [ACTION]
 ;//Main Menu

@@ -56,6 +56,7 @@ SWORD xpgDrawSprite_Scroll(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
 SWORD xpgDrawSprite_Frame(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOOL boClip);         // type27
 SWORD xpgDrawSprite_RepeatIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOOL boClip);          // type29
 SWORD xpgDrawSprite_HomeStatus(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOOL boClip);    // type30
+SWORD xpgDrawSprite_TextColorBar(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOOL boClip);    // type31
 
 
 int popupDialog(int dialogType, WORD wReturnPageIndex, ST_IMGWIN* pWin_Background);

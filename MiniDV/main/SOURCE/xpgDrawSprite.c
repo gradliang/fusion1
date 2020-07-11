@@ -240,6 +240,13 @@ int popupDialog(int dialogType, WORD wReturnPageIndex, ST_IMGWIN* pWin_Backgroun
         xpgAddDialogSprite(SPRITE_TYPE_LIGHT_ICON, 7, 0);
         */
     }
+    else if (dialogType == Dialog_YESNO_Upgrade)
+    {
+        xpgAddDialogSprite(SPRITE_TYPE_DIALOG, 0, 0);
+        xpgAddDialogSprite(SPRITE_TYPE_TEXT, 0, 0);
+        xpgAddDialogSprite(SPRITE_TYPE_TextColorBar, 0, 0);
+        xpgAddDialogSprite(SPRITE_TYPE_TextColorBar, 1, 0);
+    }
     else if (dialogType == Dialog_About)
     {
         xpgAddDialogSprite(SPRITE_TYPE_DIALOG, 0, 0);
@@ -410,6 +417,7 @@ SWORD(*drawSpriteFunctions[]) (ST_IMGWIN *, STXPGSPRITE *, BOOL) =
 	xpgDrawSprite_Null,		        //type28
 	xpgDrawSprite_RepeatIcon,		        //type29
 	xpgDrawSprite_HomeStatus,           //type30
+	xpgDrawSprite_TextColorBar,           //type31
 #endif
 };
 
@@ -744,6 +752,7 @@ SWORD xpgDrawSprite_Background(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprit
         dwHashKey == xpgHash("SetTime") ||
         dwHashKey == xpgHash("SetPassword") ||
         dwHashKey == xpgHash("SetUi") ||
+        dwHashKey == xpgHash("Upgrade") ||
         dwHashKey == xpgHash("SetInfo") ||
         dwHashKey == xpgHash("FusionSet1") ||
         dwHashKey == xpgHash("FusionSet2") ||
@@ -2687,6 +2696,7 @@ SWORD xpgDrawSprite_Title(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BO
              dwHashKey == xpgHash("SetTime") ||
              dwHashKey == xpgHash("SetPassword") ||
              dwHashKey == xpgHash("SetUi") ||
+             dwHashKey == xpgHash("Upgrade") ||
              dwHashKey == xpgHash("SetInfo") )
     {
         //Idu_PaintWinArea(pWin, 0, 0, pWin->wWidth, 40, RGB2YUV(0x0B, 0x0C, 0x0E));
@@ -2769,6 +2779,7 @@ SWORD xpgDrawSprite_Aside(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BO
         dwHashKey == xpgHash("SetTime") ||
         dwHashKey == xpgHash("SetPassword") ||
         dwHashKey == xpgHash("SetUi") ||
+        dwHashKey == xpgHash("Upgrade") ||
         dwHashKey == xpgHash("SetInfo") ||
         dwHashKey == xpgHash("FusionSet1") ||
         dwHashKey == xpgHash("FusionSet2") ||
@@ -4403,6 +4414,18 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
 				Idu_PrintStringCenterNewLine(pWin, pStr, (pWin->wWidth/3)>>1, pWin->wHeight/2-IduFontGetMaxHeight(), 0, pWin->wWidth*2/3);
 			Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
 		}
+		else if (dialogType == Dialog_YESNO_Upgrade)
+		{
+			BYTE bString[64];
+			
+			sprintf(bString, "%s(V%d.%d.%d.%d)?",getstr(Str_IfUpgrade),g_psUnsaveParam->wCpuNewVersion>>8,g_psUnsaveParam->wCpuNewVersion&0xff,g_psUnsaveParam->wMcuNewVersion>>8,g_psUnsaveParam->wMcuNewVersion&0xff);
+			pStr=&bString[0];
+
+			SetCurrIduFontID(FONT_ID_HeiTi19);
+			Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
+			Idu_PrintStringCenterNewLine(pWin, pStr, curDialogLeft+curDialogWidth/8, curDialogTop+curDialogHeight/2-IduFontGetMaxHeight(), 0, curDialogWidth*3/4);
+			Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
+		}
     }
     
     return PASS;
@@ -4464,9 +4487,10 @@ SWORD xpgDrawSprite_Selector(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite,
             dwHashKey == xpgHash("SetTime") ||
             dwHashKey == xpgHash("SetPassword") ||
             dwHashKey == xpgHash("SetUi") ||
+            dwHashKey == xpgHash("Upgrade") ||
             dwHashKey == xpgHash("SetInfo"))
     {
-        if (dwSelectorId >= 6)
+        if (dwSelectorId > 6)
             return PASS;
         
         DWORD curPageType;
@@ -4480,10 +4504,10 @@ SWORD xpgDrawSprite_Selector(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite,
             text = getstr(Str_ShiJianYuYuYan);
         else if (dwSelectorId == 4)
             text = getstr(Str_MiMaSheZhi);
-        //else if (dwSelectorId == 5)
-        //    text = getstr(Str_JieMianFengGe);
-        else //if (dwSelectorId == 6)
+        else if (dwSelectorId == 5)
             text = getstr(Str_XiTongXinXi);
+        else //if (dwSelectorId == 6)
+            text = getstr(Str_Firmware_upgrade);
 
         if (dwHashKey == xpgHash("SetYun"))
             curPageType = 0;
@@ -4497,16 +4521,16 @@ SWORD xpgDrawSprite_Selector(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite,
             curPageType = 4;
         //else if (dwHashKey == xpgHash("SetUi"))
         //    curPageType = 5;
-        else //if (dwHashKey == xpgHash("SetInfo"))
+        else if (dwHashKey == xpgHash("SetInfo"))
             curPageType = 5; // 6;
+        else if (dwHashKey == xpgHash("Upgrade"))
+            curPageType = 6;
         
+        SetCurrIduFontID(FONT_ID_HeiTi19);
+        Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
         if (dwSelectorId == curPageType)
         {
             xpgDrawSprite(pWin, pstSprite, boClip);
-            SetCurrIduFontID(FONT_ID_HeiTi19);
-            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
-            Idu_PrintString(pWin, text, pstSprite->m_wPx + 20, pstSprite->m_wPy + 12, 0, 0);
-            Idu_PrintString(pWin, ">", pstSprite->m_wPx + 220, pstSprite->m_wPy + 12, 0, 0);
         }
         else
         {
@@ -4514,12 +4538,10 @@ SWORD xpgDrawSprite_Selector(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite,
             Idu_PaintWinArea(pWin, pstSprite->m_wPx + pstSprite->m_wWidth - 2, pstSprite->m_wPy, 2, pstSprite->m_wHeight, RGB2YUV(0x2E, 0x2E, 0x2E));
             Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy, pstSprite->m_wWidth, 1, RGB2YUV(0x2E, 0x2E, 0x2E));
             Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + pstSprite->m_wHeight - 2, pstSprite->m_wWidth, 1, RGB2YUV(0x2E, 0x2E, 0x2E));
-            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
-            SetCurrIduFontID(FONT_ID_HeiTi19);
-            Idu_PrintString(pWin, text, pstSprite->m_wPx + 20, pstSprite->m_wPy + 12, 0, 0);
-            Idu_PrintString(pWin, ">", pstSprite->m_wPx + 220, pstSprite->m_wPy + 12, 0, 0);
             //xpgSpriteEnableTouch(pstSprite);
         }
+        Idu_PrintString(pWin, text, pstSprite->m_wPx + 20, pstSprite->m_wPy + 12, 0, 0);
+        Idu_PrintString(pWin, ">", pstSprite->m_wPx + 220, pstSprite->m_wPy + 12, 0, 0);
     }
     else if (dwHashKey == xpgHash("FusionSet1") ||
              dwHashKey == xpgHash("FusionSet2") ||
@@ -5068,7 +5090,7 @@ void MakeDialogColorRole(STXPGROLE * pstRole, WORD width, WORD height,DWORD dwCo
     mpWinInit(&win, pstRole->m_pRawImage, pstRole->m_wHeight, pstRole->m_wWidth);
     Idu_PaintWinArea(&win, 0, 0, win.wWidth, win.wHeight, dwColor);
 }
-
+/*
 void MakeDialogRoleNew(STXPGROLE * pstRole, WORD width, WORD height)
 {
     DWORD dwSize;
@@ -5099,12 +5121,12 @@ void MakeDialogRoleNew(STXPGROLE * pstRole, WORD width, WORD height)
     Idu_PaintWinArea(pWin, 0, 0, pWin->wWidth, 50, RGB2YUV(255, 192, 0));
     Idu_PaintWinArea(pWin, 0, 50, pWin->wWidth, pstRole->m_wHeight - 50, RGB2YUV(0xff, 0xff, 0xff));
     
-    return;
 }
-
+*/
 void MakeDialogRole(STXPGROLE * pstRole, WORD width, WORD height)
 {
-    DWORD dwSize;
+	WORD wTitleHeight;
+    DWORD dwSize,dwTitleColor,dwBodyColor;
     ST_IMGWIN win;
     ST_IMGWIN * pWin;
     
@@ -5117,7 +5139,19 @@ void MakeDialogRole(STXPGROLE * pstRole, WORD width, WORD height)
     pstRole->m_wHeight = height;
     if (pstRole->m_wHeight < 41)
         pstRole->m_wHeight = 41;
-    
+	if (pstRole->m_wHeight>240)
+	{
+		wTitleHeight=50;
+		dwTitleColor=0xbcbc15af;//RGB2YUV(255, 192, 0);
+		dwBodyColor=0xffff8080;
+	}
+	else
+	{
+		wTitleHeight=40;
+		dwTitleColor=RGB2YUV(0x28, 0x29, 0x2D);
+		dwBodyColor=RGB2YUV(0x1C, 0x1D, 0x21);
+	    mpDebugPrint("dwTitleColor=%p dwBodyColor=%p", dwTitleColor,dwBodyColor);
+	}
     dwSize = ALIGN_16(pstRole->m_wWidth) * ALIGN_16(pstRole->m_wHeight) * 2 + 256;
 
     pstRole->m_pRawImage = (BYTE *) ext_mem_malloc(dwSize);
@@ -5129,10 +5163,8 @@ void MakeDialogRole(STXPGROLE * pstRole, WORD width, WORD height)
     mpWinInit(&win, pstRole->m_pRawImage, pstRole->m_wHeight, pstRole->m_wWidth);
     pWin = &win;
 
-    Idu_PaintWinArea(pWin, 0, 0, pWin->wWidth, 40, RGB2YVU(0x28, 0x29, 0x2D));
-    Idu_PaintWinArea(pWin, 0, 40, pWin->wWidth, pstRole->m_wHeight - 40, RGB2YVU(0x1C, 0x1D, 0x21));
-    
-    return;
+    Idu_PaintWinArea(pWin, 0, 0, pWin->wWidth, wTitleHeight, dwTitleColor);//RGB2YVU(0x28, 0x29, 0x2D)
+    Idu_PaintWinArea(pWin, 0, wTitleHeight, pWin->wWidth, pstRole->m_wHeight - wTitleHeight, dwBodyColor);//RGB2YVU(0x1C, 0x1D, 0x21)
 }
 
 
@@ -5144,7 +5176,13 @@ void MakeMaskRole(STXPGROLE * pstMaskRole, int maskRoleIndex, WORD width, WORD h
     WORD iconWidth;
     WORD iconHeight;
     WORD corner;
-    
+	STXPGROLE * pstRole = g_pstXpgMovie->m_pstObjRole[maskRoleIndex];
+
+	#if 1
+	iconWidth = pstRole->m_wWidth;
+	iconHeight = pstRole->m_wHeight;
+	corner = iconHeight>>1;
+	#else
     if (maskRoleIndex == XPG_ROLE_ICON_MASK_0)
     {
         iconWidth = 70;
@@ -5155,9 +5193,10 @@ void MakeMaskRole(STXPGROLE * pstMaskRole, int maskRoleIndex, WORD width, WORD h
     {
         return;
     }
+	#endif
     
-    pdwStart1 = (DWORD*) ext_mem_malloc((iconHeight) * (iconWidth*2) * 2);
-    mpWinInit(&win1, pdwStart1, iconHeight, iconWidth * 2);
+    pdwStart1 = (DWORD*) ext_mem_malloc((iconHeight) * ALIGN_16(iconWidth<<1) <<1);
+    mpWinInit(&win1, pdwStart1, iconHeight, ALIGN_16(iconWidth <<1));
     pWin1 = &win1;
     xpgDirectDrawRoleOnWin(pWin1, g_pstXpgMovie->m_pstObjRole[maskRoleIndex], 0, 0, NULL, 0);
 
@@ -5169,7 +5208,7 @@ void MakeMaskRole(STXPGROLE * pstMaskRole, int maskRoleIndex, WORD width, WORD h
         width ++;
     
     pdwStart2 = (DWORD*) ext_mem_malloc(ALIGN_16(width) * height * 2);
-    mpWinInit(&win2, pdwStart2, height, ALIGN_16(width));
+    mpWinInit(&win2, pdwStart2, height, width);
     pWin2 = &win2;
     mpPaintWin(pWin2, 0xffff8080);
 
@@ -5186,11 +5225,52 @@ void MakeMaskRole(STXPGROLE * pstMaskRole, int maskRoleIndex, WORD width, WORD h
     pstMaskRole->m_wWidth = width;
     pstMaskRole->m_wHeight = height;
     pstMaskRole->m_pRawImage = (BYTE *)pdwStart2;
-    pstMaskRole->m_wRawWidth = ALIGN_16(pstMaskRole->m_wWidth);
+    pstMaskRole->m_wRawWidth = pstMaskRole->m_wWidth;
 
-    return;
 }
 
+
+void DrawRoundIcon(ST_IMGWIN * pWin,int maskRoleIndex,WORD wX,WORD wY,WORD wW,WORD wH,DWORD dwYUVcolor)
+{
+	STXPGROLE  stRole, stMaskRole;
+
+	MakeDialogColorRole(&stRole, wW,wH,dwYUVcolor);
+	MakeMaskRole(&stMaskRole, maskRoleIndex, wW,wH);
+	xpgRoleDrawMask(&stRole, pWin->pdwStart, wX,wY, pWin->wWidth, pWin->wHeight, &stMaskRole);
+	if (stRole.m_pRawImage)
+	{
+		ext_mem_freeEx(stRole.m_pRawImage, __FILE__, __LINE__);
+		stRole.m_pRawImage=NULL;
+	}
+	if (stMaskRole.m_pRawImage)
+	{
+		ext_mem_freeEx(stMaskRole.m_pRawImage, __FILE__, __LINE__);
+		stMaskRole.m_pRawImage=NULL;
+	}
+}
+
+void DrawRoundDialog(ST_IMGWIN * pWin,int maskRoleIndex,WORD wX,WORD wY,WORD wW,WORD wH)
+{
+	STXPGROLE  stRole, stMaskRole;
+
+	curDialogWidth = wW;
+	curDialogHeight = wH;
+	curDialogLeft = wX;
+	curDialogTop = wY;
+	MakeDialogRole(&stRole, wW, wH);
+	MakeMaskRole(&stMaskRole, maskRoleIndex, wW, wH);
+	xpgRoleDrawMask(&stRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, &stMaskRole);
+	if (stRole.m_pRawImage)
+	{
+		ext_mem_freeEx(stRole.m_pRawImage, __FILE__, __LINE__);
+		stRole.m_pRawImage=NULL;
+	}
+	if (stMaskRole.m_pRawImage)
+	{
+		ext_mem_freeEx(stMaskRole.m_pRawImage, __FILE__, __LINE__);
+		stMaskRole.m_pRawImage=NULL;
+	}
+}
 
 SWORD xpgDrawSprite_Dialog(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOOL boClip)
 {
@@ -5208,37 +5288,31 @@ SWORD xpgDrawSprite_Dialog(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
         int dialogType = xpgGetCurrDialogTypeId();
         if (dialogType == Dialog_ReSuGuan)
         {
-            dialogW = 350;
-            dialogH = 182;
-            dailogX = (pWin->wWidth - dialogW) / 2;
-            dialogY = (pWin->wHeight - dialogH) / 2;
-            MakeDialogRole(&stRole, dialogW, dialogH);
-            MakeMaskRole(&stMaskRole, XPG_ROLE_ICON_MASK_0, dialogW, dialogH);
-            xpgRoleDrawMask(&stRole, pWin->pdwStart, dailogX, dialogY, pWin->wWidth, pWin->wHeight, &stMaskRole);
-            SetCurrIduFontID(FONT_ID_HeiTi19);
-            Idu_PrintStringCenter(pWin, getstr(Str_ReSuGuanSheZhi), dailogX, dialogY + 5, 0, dialogW);
+			dialogW = 350;
+			dialogH = 182;
+			dailogX=(pWin->wWidth - dialogW)>>1;
+			dialogY=(pWin->wHeight - dialogH)>>1;
+			DrawRoundDialog(pWin,XPG_ROLE_ICON_MASK_0,dailogX,dialogY,dialogW,dialogH);
+			SetCurrIduFontID(FONT_ID_HeiTi19);
+			Idu_PrintStringCenter(pWin, getstr(Str_ReSuGuanSheZhi), dailogX, dialogY + 5, 0, dialogW);
         }
         else if (dialogType == Dialog_ModifyNumber)
         {
             dialogW = 350;
             dialogH = 150;
-            dailogX = (pWin->wWidth - dialogW) / 2;
-            dialogY = (pWin->wHeight - dialogH) / 2;
-            MakeDialogRole(&stRole, dialogW, dialogH);
-            MakeMaskRole(&stMaskRole, XPG_ROLE_ICON_MASK_0, dialogW, dialogH);
-            xpgRoleDrawMask(&stRole, pWin->pdwStart, dailogX, dialogY, pWin->wWidth, pWin->wHeight, &stMaskRole);
+			dailogX=(pWin->wWidth - dialogW)>>1;
+			dialogY=(pWin->wHeight - dialogH)>>1;
+			DrawRoundDialog(pWin,XPG_ROLE_ICON_MASK_0,dailogX,dialogY,dialogW,dialogH);
             SetCurrIduFontID(FONT_ID_HeiTi19);
             Idu_PrintStringCenter(pWin, getstr(Str_ReSuGuanSheZhi), dailogX, dialogY + 5, 0, dialogW);
         }
         else if (dialogType == Dialog_SetBrightness)
         {
-            curDialogWidth = dialogW = 560;
-            curDialogHeight = dialogH = 300;
-            curDialogLeft = dailogX = (pWin->wWidth - dialogW) / 2;
-            curDialogTop = dialogY = (pWin->wHeight - dialogH) / 2;
-            MakeDialogRoleNew(&stRole, dialogW, dialogH);
-            MakeMaskRole(&stMaskRole, XPG_ROLE_ICON_MASK_0, dialogW, dialogH);
-            xpgRoleDrawMask(&stRole, pWin->pdwStart, dailogX, dialogY, pWin->wWidth, pWin->wHeight, &stMaskRole);
+            dialogW = 560;
+            dialogH = 300;
+			dailogX=(pWin->wWidth - dialogW)>>1;
+			dialogY=(pWin->wHeight - dialogH)>>1;
+			DrawRoundDialog(pWin,XPG_ROLE_ICON_MASK_0,dailogX,dialogY,dialogW,dialogH);
             SetCurrIduFontID(FONT_ID_HeiTi19);
             Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
             Idu_PrintStringCenter(pWin, getstr(Str_LiangDuTiaoJie), dailogX, dialogY + 10, 0, dialogW);
@@ -5246,13 +5320,11 @@ SWORD xpgDrawSprite_Dialog(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
         }
         else if (dialogType == Dialog_ShutdownTime||dialogType == Dialog_SleepTime)
         {
-            curDialogWidth = dialogW = 560;
-            curDialogHeight = dialogH = 320;
-            curDialogLeft = dailogX = (pWin->wWidth - dialogW) / 2;
-            curDialogTop = dialogY = (pWin->wHeight - dialogH) / 2;
-            MakeDialogRoleNew(&stRole, dialogW, dialogH);
-            MakeMaskRole(&stMaskRole, XPG_ROLE_ICON_MASK_0, dialogW, dialogH);
-            xpgRoleDrawMask(&stRole, pWin->pdwStart, dailogX, dialogY, pWin->wWidth, pWin->wHeight, &stMaskRole);
+            dialogW = 560;
+            dialogH = 320;
+			dailogX=(pWin->wWidth - dialogW)>>1;
+			dialogY=(pWin->wHeight - dialogH)>>1;
+			DrawRoundDialog(pWin,XPG_ROLE_ICON_MASK_0,dailogX,dialogY,dialogW,dialogH);
             SetCurrIduFontID(FONT_ID_HeiTi19);
             Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
             Idu_PrintStringCenter(pWin, strDialogTitle, dailogX, dialogY + 10, 0, dialogW);
@@ -5260,13 +5332,11 @@ SWORD xpgDrawSprite_Dialog(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
         }
         else if (dialogType == Dialog_SetSound)
         {
-            curDialogWidth = dialogW = 560;
-            curDialogHeight = dialogH = 300;
-            curDialogLeft = dailogX = (pWin->wWidth - dialogW) / 2;
-            curDialogTop = dialogY = (pWin->wHeight - dialogH) / 2;
-            MakeDialogRoleNew(&stRole, dialogW, dialogH);
-            MakeMaskRole(&stMaskRole, XPG_ROLE_ICON_MASK_0, dialogW, dialogH);
-            xpgRoleDrawMask(&stRole, pWin->pdwStart, dailogX, dialogY, pWin->wWidth, pWin->wHeight, &stMaskRole);
+            dialogW = 560;
+            dialogH = 300;
+			dailogX=(pWin->wWidth - dialogW)>>1;
+			dialogY=(pWin->wHeight - dialogH)>>1;
+			DrawRoundDialog(pWin,XPG_ROLE_ICON_MASK_0,dailogX,dialogY,dialogW,dialogH);
             SetCurrIduFontID(FONT_ID_HeiTi19);
             Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
             Idu_PrintStringCenter(pWin, getstr(Str_YinLiangTiaoJie), dailogX, dialogY + 10, 0, dialogW);
@@ -5274,13 +5344,11 @@ SWORD xpgDrawSprite_Dialog(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
         }
         else if (dialogType == Dialog_SetTime || dialogType == Dialog_SetDate)
         {
-            curDialogWidth = dialogW = 560;
-            curDialogHeight = dialogH = 415;
-            curDialogLeft = dailogX = (pWin->wWidth - dialogW) / 2;
-            curDialogTop = dialogY = (pWin->wHeight - dialogH) / 2;
-            MakeDialogRoleNew(&stRole, dialogW, dialogH);
-            MakeMaskRole(&stMaskRole, XPG_ROLE_ICON_MASK_0, dialogW, dialogH);
-            xpgRoleDrawMask(&stRole, pWin->pdwStart, dailogX, dialogY, pWin->wWidth, pWin->wHeight, &stMaskRole);
+            dialogW = 560;
+            dialogH = 415;
+			dailogX=(pWin->wWidth - dialogW)>>1;
+			dialogY=(pWin->wHeight - dialogH)>>1;
+			DrawRoundDialog(pWin,XPG_ROLE_ICON_MASK_0,dailogX,dialogY,dialogW,dialogH);
             SetCurrIduFontID(FONT_ID_HeiTi19);
             Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
             if (dialogType == Dialog_SetTime)
@@ -5292,13 +5360,11 @@ SWORD xpgDrawSprite_Dialog(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
         }
         else if (dialogType == Dialog_SetDateFormat)
         {
-            curDialogWidth = dialogW = 560;
-            curDialogHeight = dialogH = 380;
-            curDialogLeft = dailogX = (pWin->wWidth - dialogW) / 2;
-            curDialogTop = dialogY = (pWin->wHeight - dialogH) / 2;
-            MakeDialogRoleNew(&stRole, dialogW, dialogH);
-            MakeMaskRole(&stMaskRole, XPG_ROLE_ICON_MASK_0, dialogW, dialogH);
-            xpgRoleDrawMask(&stRole, pWin->pdwStart, dailogX, dialogY, pWin->wWidth, pWin->wHeight, &stMaskRole);
+            dialogW = 560;
+            dialogH = 380;
+			dailogX=(pWin->wWidth - dialogW)>>1;
+			dialogY=(pWin->wHeight - dialogH)>>1;
+			DrawRoundDialog(pWin,XPG_ROLE_ICON_MASK_0,dailogX,dialogY,dialogW,dialogH);
             SetCurrIduFontID(FONT_ID_HeiTi19);
             Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
             Idu_PrintStringCenter(pWin, getstr(Str_RiQiGeShi), dailogX, dialogY + 10, 0, dialogW);
@@ -5306,29 +5372,37 @@ SWORD xpgDrawSprite_Dialog(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
         }
         else if (dialogType == Dialog_SetLang)
         {
-            curDialogWidth = dialogW = 560;
-            curDialogHeight = dialogH = 380;
-            curDialogLeft = dailogX = (pWin->wWidth - dialogW) / 2;
-            curDialogTop = dialogY = (pWin->wHeight - dialogH) / 2;
-            MakeDialogRoleNew(&stRole, dialogW, dialogH);
-            MakeMaskRole(&stMaskRole, XPG_ROLE_ICON_MASK_0, dialogW, dialogH);
-            xpgRoleDrawMask(&stRole, pWin->pdwStart, dailogX, dialogY, pWin->wWidth, pWin->wHeight, &stMaskRole);
+            dialogW = 560;
+            dialogH = 380;
+			dailogX=(pWin->wWidth - dialogW)>>1;
+			dialogY=(pWin->wHeight - dialogH)>>1;
+			DrawRoundDialog(pWin,XPG_ROLE_ICON_MASK_0,dailogX,dialogY,dialogW,dialogH);
             SetCurrIduFontID(FONT_ID_HeiTi19);
             Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
             Idu_PrintStringCenter(pWin, getstr(Str_XiTongYuYan), dailogX, dialogY + 10, 0, dialogW);
             Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
         }
+        else if (dialogType == Dialog_YESNO_Upgrade)
+        {
+				dialogW = 560;
+				dialogH = 380;
+				dailogX=(pWin->wWidth - dialogW)>>1;
+				dialogY=(pWin->wHeight - dialogH)>>1;
+				DrawRoundDialog(pWin,XPG_ROLE_ICON_MASK_0,dailogX,dialogY,dialogW,dialogH);
+				SetCurrIduFontID(FONT_ID_HeiTi19);
+				Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
+				Idu_PrintStringCenter(pWin, strDialogTitle, dailogX, dialogY + 10, 0, dialogW);
+				Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
+        }
         else if (dialogType == Dialog_SetPassword1 || dialogType == Dialog_SetPassword2 || dialogType == Dialog_CheckPassword || dialogType == Dialog_EditValue\
 					|| dialogType == Dialog_PowerOnCheckHirePassword|| dialogType == Dialog_PowerOnCheckOpenPassword|| dialogType == Dialog_Electrode_Enable)
         {
-            curDialogWidth = dialogW = 360;
-            curDialogHeight = dialogH = 420;
-            curDialogLeft = dailogX = (pWin->wWidth - dialogW) / 2;
-            curDialogTop = dialogY = (pWin->wHeight - dialogH) / 2;
-            MakeDialogRoleNew(&stRole, dialogW, dialogH);
-            MakeMaskRole(&stMaskRole, XPG_ROLE_ICON_MASK_0, dialogW, dialogH);
-            xpgRoleDrawMask(&stRole, pWin->pdwStart, dailogX, dialogY, pWin->wWidth, pWin->wHeight, &stMaskRole);
-            SetCurrIduFontID(FONT_ID_HeiTi19);
+				dialogW = 360;
+				dialogH = 420;
+			dailogX=(pWin->wWidth - dialogW)>>1;
+			dialogY=(pWin->wHeight - dialogH)>>1;
+			DrawRoundDialog(pWin,XPG_ROLE_ICON_MASK_0,dailogX,dialogY,dialogW,dialogH);
+				SetCurrIduFontID(FONT_ID_HeiTi19);
 				/*
             if (dialogType == Dialog_About)
                 text = getstr(Str_GuanYuBenJi);
@@ -5347,23 +5421,19 @@ SWORD xpgDrawSprite_Dialog(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
         {
             dialogW = 350;
             dialogH = 180;
-            dailogX = (pWin->wWidth - dialogW) / 2;
-            dialogY = (pWin->wHeight - dialogH) / 2;
-            MakeDialogRole(&stRole, dialogW, dialogH);
-            MakeMaskRole(&stMaskRole, XPG_ROLE_ICON_MASK_0, dialogW, dialogH);
-            xpgRoleDrawMask(&stRole, pWin->pdwStart, dailogX, dialogY, pWin->wWidth, pWin->wHeight, &stMaskRole);
+			dailogX=(pWin->wWidth - dialogW)>>1;
+			dialogY=(pWin->wHeight - dialogH)>>1;
+			DrawRoundDialog(pWin,XPG_ROLE_ICON_MASK_0,dailogX,dialogY,dialogW,dialogH);
             SetCurrIduFontID(FONT_ID_HeiTi19);
             Idu_PrintStringCenter(pWin, strDialogTitle, dailogX, dialogY + 5, 0, dialogW);
         }
         else if (dialogType == Dialog_About || dialogType == Dialog_Times || dialogType == Dialog_TempInfo || dialogType == Dialog_BatInfo)
         {
-            curDialogWidth = dialogW = 560;
-            curDialogHeight = dialogH = 300;
-            curDialogLeft = dailogX = (pWin->wWidth - dialogW) / 2;
-            curDialogTop = dialogY = (pWin->wHeight - dialogH) / 2;
-            MakeDialogRoleNew(&stRole, dialogW, dialogH);
-            MakeMaskRole(&stMaskRole, XPG_ROLE_ICON_MASK_0, dialogW, dialogH);
-            xpgRoleDrawMask(&stRole, pWin->pdwStart, dailogX, dialogY, pWin->wWidth, pWin->wHeight, &stMaskRole);
+            dialogW = 560;
+            dialogH = 300;
+			dailogX=(pWin->wWidth - dialogW)>>1;
+			dialogY=(pWin->wHeight - dialogH)>>1;
+			DrawRoundDialog(pWin,XPG_ROLE_ICON_MASK_0,dailogX,dialogY,dialogW,dialogH);
             SetCurrIduFontID(FONT_ID_HeiTi19);
             if (dialogType == Dialog_About)
                 text = getstr(Str_GuanYuBenJi);
@@ -5383,10 +5453,10 @@ SWORD xpgDrawSprite_Dialog(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
 				dialogH = 300;//pstRole->m_wHeight;
 				dailogX = (pWin->wWidth - dialogW) / 2;
 				dialogY = (pWin->wHeight - dialogH) / 2;
-		       MakeDialogColorRole(&stRole, dialogW, dialogH,RGB2YUV(0xf9,0x59,0x5a));
-        		//MakeDialogRoleNew(&stRole, dialogW, dialogH);
-		        MakeMaskRole(&stMaskRole, XPG_ROLE_ICON_MASK_0, dialogW, dialogH);
-		        xpgRoleDrawMask(&stRole, pWin->pdwStart, dailogX, dialogY, pWin->wWidth, pWin->wHeight, &stMaskRole);
+		       //MakeDialogColorRole(&stRole, dialogW, dialogH,RGB2YUV(0xf9,0x59,0x5a));
+		       // MakeMaskRole(&stMaskRole, XPG_ROLE_ICON_MASK_0, dialogW, dialogH);
+		       // xpgRoleDrawMask(&stRole, pWin->pdwStart, dailogX, dialogY, pWin->wWidth, pWin->wHeight, &stMaskRole);
+				DrawRoundIcon(pWin,XPG_ROLE_ICON_MASK_0,dailogX, dialogY,dialogW, dialogH,RGB2YUV(0xf9,0x59,0x5a));
 			 	pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_MAIN_ERROR_ICON];
 				xpgDirectDrawRoleOnWin(pWin, pstRole,dailogX+(dialogW-pstRole->m_wWidth)/2, dialogY+40, NULL, boClip);
 				SetCurrIduFontID(FONT_ID_HeiTi19);
@@ -5427,11 +5497,9 @@ SWORD xpgDrawSprite_Dialog(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
         {
 				dialogW = pWin->wWidth*2/3;//DIALOG_DEFAULT_WIDTH
 				dialogH = pWin->wHeight*2/3;
-				dailogX = (pWin->wWidth - dialogW) / 2;
-				dialogY = (pWin->wHeight - dialogH) / 2;
-				MakeDialogRoleNew(&stRole, dialogW, dialogH);
-				MakeMaskRole(&stMaskRole, XPG_ROLE_ICON_MASK_0, dialogW, dialogH);
-				xpgRoleDrawMask(&stRole, pWin->pdwStart, dailogX, dialogY, pWin->wWidth, pWin->wHeight, &stMaskRole);
+			dailogX=(pWin->wWidth - dialogW)>>1;
+			dialogY=(pWin->wHeight - dialogH)>>1;
+			DrawRoundDialog(pWin,XPG_ROLE_ICON_MASK_0,dailogX,dialogY,dialogW,dialogH);
 				SetCurrIduFontID(FONT_ID_HeiTi19);
 				Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
 				Idu_PrintStringCenter(pWin, strDialogTitle, dailogX, dialogY + 5, 0, dialogW);
@@ -5440,19 +5508,13 @@ SWORD xpgDrawSprite_Dialog(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
     }
     else if (dwHashKey == xpgHash("User"))
     {
-        MakeDialogRoleNew(&stRole, 400, 440);
-        MakeMaskRole(&stMaskRole, XPG_ROLE_ICON_MASK_0, 400, 440);
-        xpgRoleDrawMask(&stRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, &stMaskRole);
-        
+			DrawRoundDialog(pWin,XPG_ROLE_ICON_MASK_0,pstSprite->m_wPx, pstSprite->m_wPy,400,440);
         SetCurrIduFontID(FONT_ID_HeiTi19);
         Idu_PrintStringCenter(pWin, getstr(Str_YongHuWeiHu), pstSprite->m_wPx, pstSprite->m_wPy + 5, 0, pstSprite->m_wWidth);
     }
     else if (dwHashKey == xpgHash("ToolBox"))
     {
-        MakeDialogRoleNew(&stRole, 560, 300);
-        MakeMaskRole(&stMaskRole, XPG_ROLE_ICON_MASK_0, 560, 300);
-        xpgRoleDrawMask(&stRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, &stMaskRole);
-
+			DrawRoundDialog(pWin,XPG_ROLE_ICON_MASK_0,pstSprite->m_wPx, pstSprite->m_wPy,560,300);
         SetCurrIduFontID(FONT_ID_HeiTi19);
         Idu_PrintStringCenter(pWin, getstr(Str_GongJuXiang), pstSprite->m_wPx, pstSprite->m_wPy + 5, 0, pstSprite->m_wWidth);
     }
@@ -5820,6 +5882,87 @@ SWORD xpgDrawSprite_Frame(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BO
     
     return PASS;
 }
+
+SWORD xpgDrawSprite_TextColorBar(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOOL boClip)
+{
+	DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey,dwYUVcolor=0;
+	BYTE bString[64],*pStr=&bString[0];
+
+	//mpDebugPrint("xpgDrawSprite_TextColorBar w=%d h=%d",pstSprite->m_wWidth,pstSprite->m_wHeight);
+	if (dwHashKey == xpgHash(DIALOG_PAGE_NAME))
+	{
+		int dialogType = xpgGetCurrDialogTypeId();
+
+		pstSprite->m_wPx = 0;
+		pstSprite->m_wPy = 310;
+		pstSprite->m_wWidth = 180;
+		pstSprite->m_wHeight = 50;
+		dwYUVcolor=0x00008080;
+		if (dialogType==Dialog_YESNO_Upgrade)
+		{
+			if (pstSprite->m_dwTypeIndex == 0)
+			{
+				pstSprite->m_wPx = 194;
+				pStr=getstr(Str_Yes);
+			}
+			else if (pstSprite->m_dwTypeIndex == 1)
+			{
+				pstSprite->m_wPx = 426;
+				pStr=getstr(Str_No);
+			}
+			if (dwDialogTempValue==pstSprite->m_dwTypeIndex)
+				dwYUVcolor=RGB2YUV(0x37,0x9d,0xff);
+		}
+  		xpgSpriteEnableTouch(pstSprite);
+	}
+	else if (dwHashKey == xpgHash("Upgrade"))
+    {
+        if (pstSprite->m_dwTypeIndex == 0)
+        {
+	        Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
+            sprintf(bString, "%sV%d.%d.%d.%d", getstr(Str_Cur_Version),PRODUCT_MAIN_VER,PRODUCT_SUB_VER,g_psUnsaveParam->wMcuCurVersion>>8,g_psUnsaveParam->wMcuCurVersion&0xff);
+        }
+        else if (pstSprite->m_dwTypeIndex == 1)
+        {
+			switch (g_psUnsaveParam->bDetectNewVersion)
+			{
+				case 0:
+					pStr=getstr(Str_PressToGetNewVersion);
+					dwYUVcolor=RGB2YUV(0x37,0x9d,0xff);
+					break;
+
+				case 1:
+					pStr=getstr(Str_PollingVersion);
+					dwYUVcolor=RGB2YUV(0x53,0x54,0x56);
+					break;
+
+				case 2:
+					pStr=getstr(Str_NeednotUpgrade);
+					dwYUVcolor=RGB2YUV(0x53,0x54,0x56);
+					break;
+
+				default:
+					dwYUVcolor=RGB2YUV(0x37,0x9d,0xff);
+					sprintf(bString, "%s(V%d.%d.%d.%d),%s",getstr(Str_HaveNewVersion),g_psUnsaveParam->wCpuNewVersion>>8,g_psUnsaveParam->wCpuNewVersion&0xff,g_psUnsaveParam->wMcuNewVersion>>8,g_psUnsaveParam->wMcuNewVersion&0xff,getstr(Str_HaveNewVersion));
+					break;
+			}
+        }
+        
+    }
+
+		if (dwYUVcolor)
+			DrawRoundIcon(pWin,XPG_ROLE_MASK_70x25,pstSprite->m_wPx,pstSprite->m_wPy,pstSprite->m_wWidth,pstSprite->m_wHeight,dwYUVcolor);
+		if (pStr)
+		{
+	        SetCurrIduFontID(FONT_ID_HeiTi19);
+	        Idu_PrintStringCenterWH(pWin, pStr, pstSprite->m_wPx, pstSprite->m_wPy, 0, pstSprite->m_wWidth,pstSprite->m_wHeight);
+	        Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
+		}
+    
+    return PASS;
+}
+
+
 #endif
 
 

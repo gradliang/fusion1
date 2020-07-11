@@ -789,7 +789,7 @@
 #define XPG_ROLE_STATUS_ICON_SMART_BL       81 //no use
 #define XPG_ROLE_MAIN_ERROR_ICON       					82
 #define XPG_ROLE_CLOSE_ICON_NEW_MASK       		83
-
+#define XPG_ROLE_MASK_70x25       							84
 
 
 
@@ -805,6 +805,7 @@
 #define SPRITE_TYPE_FRAME                  		27
 #define SPRITE_TYPE_ROLE                 		28
 #define SPRITE_TYPE_REPEATICON          29
+#define SPRITE_TYPE_TextColorBar          31
 
 //xpg page define
 
@@ -847,6 +848,7 @@
 #define Dialog_Note_PasswordError                      				33          //4 密码输入错误
 #define Dialog_Note_ChangeBootWordPASS                      	34          //4 修改开机密码OK
 #define Dialog_Note_ChangeHireWordPASS                      	35          //4 修改租借密码OK
+#define Dialog_YESNO_Upgrade                      						36          //4 是否下载安装新版本
 
 
 

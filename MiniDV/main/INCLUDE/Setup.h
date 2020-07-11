@@ -136,6 +136,11 @@ typedef struct {
     BYTE bHollCover;
     BYTE bHeatCover;
     BYTE bCloudOPMonline;
+//软件版本
+    BYTE bDetectNewVersion; // 0->IDLE 1->查询 2->无更新  0x8x->表示CPU有更新 0xx8表示MCU有更新
+    WORD wMcuCurVersion;
+    WORD wMcuNewVersion;
+    WORD wCpuNewVersion;
 
 }ST_UNSAVE_PARAM;
 extern ST_UNSAVE_PARAM *g_psUnsaveParam;

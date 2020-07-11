@@ -39,7 +39,7 @@ int mpx_setjmp(jmp_buf env)
 
 //================================================
 //System depedent functions
-#ifdef PC_DEVELOPMENT
+#if 0//def PC_DEVELOPMENT
 
 const char* ttf_file_name = "C:\\Font_1.ttf";
 
