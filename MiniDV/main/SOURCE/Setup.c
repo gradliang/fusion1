@@ -40,6 +40,7 @@ void ResetUnsaveparam(void)
 void GetDefaultSetupMenuValue(void)
 {
     MP_DEBUG("%s() ", __FUNCTION__);
+	DWORD i;
 
 	memset(&g_sSetupMenu,0, sizeof(g_sSetupMenu));
 
@@ -96,18 +97,13 @@ void GetDefaultSetupMenuValue(void)
     //g_psSetupMenu->bRongJieZhiLiang = 0;
     g_psSetupMenu->bDuiXianFangShi = 1;
     //g_psSetupMenu->bPingXianFangShi = 0;
-    //g_psSetupMenu->bCurrFusionMode = 0;
-    initModeParamDefault(&(g_psSetupMenu->SM));
-    initModeParamDefault(&(g_psSetupMenu->MM));
-    initModeParamDefault(&(g_psSetupMenu->DS));
-    initModeParamDefault(&(g_psSetupMenu->NZ));
-    initModeParamDefault(&(g_psSetupMenu->BIF));
-    initModeParamDefault(&(g_psSetupMenu->CZ1));
-    initModeParamDefault(&(g_psSetupMenu->CZ2));
-    initModeParamDefault(&(g_psSetupMenu->AUTO));
-    //g_psSetupMenu->bReSuGuanSheZhi = 0;
-    g_psSetupMenu->wJiaReWenDu = 50;
-    g_psSetupMenu->wJiaReShiJian = 12;
+    g_psSetupMenu->bCurrFusionMode = 7;
+	MODEPARAM * pstModeParam=&(g_psSetupMenu->SM);
+    for (i=0;i<WELD_FIBER_PRAR_TOTAL;i++)
+	    initModeParamDefault(pstModeParam+i,i);
+    g_psSetupMenu->bReSuGuanSheZhi = 0;
+    g_psSetupMenu->wJiaReWenDu = ReSuGuan[g_psSetupMenu->bReSuGuanSheZhi].bTempreature;
+    g_psSetupMenu->wJiaReShiJian = ReSuGuan[g_psSetupMenu->bReSuGuanSheZhi].bTime;
     g_psSetupMenu->wShutdownTime = 10;
     g_psSetupMenu->b24HourFormat = 1;
     //g_psSetupMenu->bDataFormatMMDDYYYY = 0;
@@ -554,6 +550,15 @@ static DWORD    dwAllocedSlot = 0;
 #define RECORD_TABLE_EXT        "sys"
 #define RECORD_FLAG             0x8864E423
 
+HEATPARAM ReSuGuan[5]=
+{
+	{110,10},
+	{120,20},
+	{130,30},
+	{140,40},
+	{150,50},
+};
+
 int LoadRecordFromFile()
 {
     DRIVE *sysDrv;
@@ -828,10 +833,10 @@ int initRecordDummyData()
 }
 
 
-void initModeParamDefault(MODEPARAM * pstModeParam)
+void initModeParamDefault(MODEPARAM * pstModeParam,BYTE bIndex)
 {
     pstModeParam->fangDianZhongXin = 323;
-    pstModeParam->rongJieDianYa = 1010;
+    pstModeParam->rongJieDianYa = 1010+bIndex*10;
     pstModeParam->yuRongDianYa = 10;
     pstModeParam->chuChenDianYa = 120;
     pstModeParam->rongJieChongDieLiang = 26;

@@ -114,6 +114,18 @@ typedef struct {
 }MODEPARAM;
 
 typedef struct {
+    DWORD    dwValueMin;
+    DWORD    dwValueData;
+    DWORD    dwValueMax;
+}DIALOGVALUE;
+
+typedef struct {
+    BYTE    bTempreature;
+    BYTE    bTime;
+}HEATPARAM;
+extern HEATPARAM ReSuGuan[5];
+
+typedef struct {
 //红光笔
     BYTE bRedPenEnable;
     BYTE bRedPenHZ;
@@ -200,6 +212,10 @@ typedef struct ST_SETUP_MENU_SETTING_VALUE
     MODEPARAM  CZ1;                     // CZ1模式参数
     MODEPARAM  CZ2;                     // CZ2模式参数
     MODEPARAM  AUTO;                    // AUTO模式参数
+    MODEPARAM  SET1;                    // SET1模式参数
+    MODEPARAM  SET2;                    // SET2模式参数
+    MODEPARAM  SET3;                    // SET3模式参数
+    MODEPARAM  SET4;                    // SET4模式参数
     BYTE bReSuGuanSheZhi;               // 热塑管设置
     WORD wJiaReWenDu;                   // 加热温度
     WORD wJiaReShiJian;                 // 加热时间
@@ -279,7 +295,7 @@ void InitRecord(STRECORD* pstRecord, WORD year, BYTE month, BYTE day, BYTE hour,
 
 
 int initRecordDummyData();      // Jia Shu Ju
-void initModeParamDefault(MODEPARAM *);
+void initModeParamDefault(MODEPARAM * pstModeParam,BYTE bIndex);
 
 void SetupSendFlagSet(DWORD dwFlag);
 void SetupSendFlagClear(DWORD dwFlag);

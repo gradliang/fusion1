@@ -38,6 +38,10 @@
 //#define		VAUTO_PLAY_VIDEO									1
 #define		PROC_SENSOR_DATA_MODE					0
 #define		IPW_FAST_MODE										1
+
+#define		WELD_FIBER_PRAR_TOTAL					12 //4 总熔接模式
+
+
 #endif
 
 //#define FILE_IN_RESOURCE										1
@@ -849,6 +853,7 @@
 #define Dialog_Note_ChangeBootWordPASS                      	34          //4 修改开机密码OK
 #define Dialog_Note_ChangeHireWordPASS                      	35          //4 修改租借密码OK
 #define Dialog_YESNO_Upgrade                      						36          //4 是否下载安装新版本
+#define Dialog_Hot_Mode                      									37          //4 加热模式
 
 
 

@@ -20,7 +20,7 @@
 
 
 extern MODEPARAM tempModeParam;
-extern DWORD dwDialogTempValue;
+extern DIALOGVALUE dwDialogValue;
 extern BOOL  boDialogValueIsFloat;
 extern char strEditPassword[8];
 extern char strEditValue[32];
