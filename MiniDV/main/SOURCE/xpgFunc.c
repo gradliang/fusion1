@@ -987,9 +987,14 @@ SWORD xpgGotoPageWithAction(DWORD dwPage)  //Mason 20060619  //From Athena
 #endif
 #if  (PRODUCT_UI==UI_WELDING)
 	if (g_pstXpgMovie->m_pstCurPage->m_dwHashKey == xpgHash("Auto_work") || g_pstXpgMovie->m_pstCurPage->m_dwHashKey == xpgHash("Manual_work"))
+	{
 		xpgCb_StopAllSensorWork();
+		Idu_OsdErase();
+	}
 	if (g_pstXpgMovie->m_pstCurPage->m_dwHashKey == xpgHash("Main"))
+	{
 		Ui_TimerProcRemove(xpgCb_EnterCamcoderPreview);
+	}
 #endif
 
 	//mpDebugPrint("---------xpgSearchtoPageWithAction :%s-> %d",name,pstPage->m_wIndex);
@@ -1015,7 +1020,7 @@ STXPGPAGE *xpgSearchtoPageWithAction(const char *name)
         MP_ALERT("%s: XPG page name [%s] not found !", __FUNCTION__, name);
         return NULL;
     }
-	if (xpgGotoPage(pstPage->m_wIndex)!=PASS)
+	if (xpgGotoPageWithAction(pstPage->m_wIndex)!=PASS)
 		return NULL;
 
     return pstPage;
@@ -1668,6 +1673,24 @@ void UiCb_CheckSleepAndShut(void)
 		
 }
 
+void PopShutDownDialog(void)
+{
+		DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
+		
+		xpgStopAllAction();
+		 if (dwHashKey == xpgHash("Auto_work") || dwHashKey == xpgHash("Manual_work"))
+		 {
+				Idu_OsdErase();
+				xpgSearchtoPageWithAction("Main");
+				xpgUpdateStage();
+		 }
+		CheckAndTurnOnBackLight();
+       strDialogTitle = getstr(Str_ZiDongGuanJi);
+		dialogOnClose = exitDialog;
+		popupDialog(Dialog_ShutdownRemain, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
+		Ui_TimerProcAdd(0, xpgUpdateStage);
+}
+
 void TimerCheckPowerOff(void)
 {
 	if (g_dwPowerOff)
@@ -1677,12 +1700,7 @@ void TimerCheckPowerOff(void)
 		{
 			if (g_dwPowerOff==2460)
 			{
-				xpgStopAllAction();
-				CheckAndTurnOnBackLight();
-		       strDialogTitle = getstr(Str_ZiDongGuanJi);
-				dialogOnClose = exitDialog;
-				popupDialog(Dialog_ShutdownRemain, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
-				Ui_TimerProcAdd(0, xpgUpdateStage);
+				Ui_TimerProcAdd(0, PopShutDownDialog);
 			}
 			else if (g_dwPowerOff%41 == 0)
 			{

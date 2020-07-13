@@ -249,6 +249,8 @@ typedef struct ST_SETUP_MENU_SETTING_VALUE
     BYTE bMcuLocalVer[2];            			//4  MCU软件本地版本号
     BYTE bMcuServerVer[2];            			//4  MCU软件服务器端版本号
     BYTE bCpuServerVer[2];            			//4  CPU软件服务器端版本号
+    char bSensorWinOffsetX;							//4 熔接界面摄像头水平偏移
+	char bSensorWinOffsetY;	 						//4 熔接界面摄像头垂直偏移
 #endif
 
     //BYTE bReserved[1];

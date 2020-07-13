@@ -79,18 +79,8 @@ void GetDefaultSetupMenuValue(void)
     g_psSetupMenu->bCustomizeIcon[3] = 11;
     g_psSetupMenu->bCustomizeIcon[4] = 4;
     g_psSetupMenu->bCustomizeIcon[5] = 5;
-    g_psSetupMenu->bFunctionIconEnable[0] = 1;
-    g_psSetupMenu->bFunctionIconEnable[1] = 1;
-    g_psSetupMenu->bFunctionIconEnable[2] = 1;
-    g_psSetupMenu->bFunctionIconEnable[3] = 1;
-    g_psSetupMenu->bFunctionIconEnable[4] = 1;
-    g_psSetupMenu->bFunctionIconEnable[5] = 1;
-    g_psSetupMenu->bFunctionIconEnable[6] = 1;
-    g_psSetupMenu->bFunctionIconEnable[7] = 1;
-    g_psSetupMenu->bFunctionIconEnable[8] = 1;
-    g_psSetupMenu->bFunctionIconEnable[9] = 1;
-    g_psSetupMenu->bFunctionIconEnable[10] = 1;
-    g_psSetupMenu->bFunctionIconEnable[11] = 1;
+    for (i=0;i<12;i++)
+    	g_psSetupMenu->bFunctionIconEnable[i] = 0;
 	g_psSetupMenu->bVolume=8;
     //g_psSetupMenu->bPreHotEnable = 0;
     g_psSetupMenu->bHotUpMode = SETUP_MENU_HOT_UP_MODE_AUTO;
@@ -128,7 +118,8 @@ void GetDefaultSetupMenuValue(void)
     //memset(g_psSetupMenu->bElectrodeInfo, 0, 9);
    // g_psSetupMenu->dwWorkTotalTimes = 0;
     g_psSetupMenu->wElectrodeRemainTimes = 3000;
-    
+	g_psSetupMenu->bSensorWinOffsetX=12;
+	g_psSetupMenu->bSensorWinOffsetY=15;
 #endif	
 }
 

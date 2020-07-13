@@ -200,7 +200,14 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
     }
     else if (dwHashKey == xpgHash("FuncSet"))
     {
-		g_psSetupMenu->bFunctionIconEnable[dwIconId] = !g_psSetupMenu->bFunctionIconEnable[dwIconId];
+		if (dwIconId==FUNCTION_ID_LAMP)
+		{
+			g_psSetupMenu->bFunctionIconEnable[dwIconId]++;
+			if (g_psSetupMenu->bFunctionIconEnable[dwIconId]>=3)
+				g_psSetupMenu->bFunctionIconEnable[dwIconId]=0;
+		}
+		else
+			g_psSetupMenu->bFunctionIconEnable[dwIconId] = !g_psSetupMenu->bFunctionIconEnable[dwIconId];
         xpgUpdateStage();
         WriteSetupChg();
     }
@@ -240,26 +247,35 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
                 }
             }
             g_psSetupMenu->bCustomizeIcon[foundIdx] = nowIdx;
-            g_psSetupMenu->bFunctionIconEnable[foundIdx] = 1;
             WriteSetupChg();
         }
         xpgUpdateStage();
     }
     else if (dwHashKey == xpgHash("Auto_work"))
     {
-        if (dwIconId <= 5)
+        if (dwIconId < 6)
         {
-            if (g_psSetupMenu->bCustomizeIcon[dwIconId] < 0)
+			char sbIconId=g_psSetupMenu->bCustomizeIcon[dwIconId];
+            if (sbIconId < 0)
             {
 					st_bGoSetupFrom=1;
                 xpgSearchtoPageWithAction("FuncSet2");
                 xpgUpdateStage();
                 return 0;
             }
-            g_psSetupMenu->bFunctionIconEnable[dwIconId] = !g_psSetupMenu->bFunctionIconEnable[dwIconId];
+            //g_psSetupMenu->bFunctionIconEnable[dwIconId] = !g_psSetupMenu->bFunctionIconEnable[dwIconId];
+			if (sbIconId==FUNCTION_ID_LAMP)
+			{
+				g_psSetupMenu->bFunctionIconEnable[sbIconId]++;
+				if (g_psSetupMenu->bFunctionIconEnable[sbIconId]>=3)
+					g_psSetupMenu->bFunctionIconEnable[sbIconId]=0;
+			}
+			else
+				g_psSetupMenu->bFunctionIconEnable[sbIconId] = !g_psSetupMenu->bFunctionIconEnable[sbIconId];
             //xpgUpdateStage();
-            xpgSpriteRedraw(Idu_GetCurrWin(),SPRITE_TYPE_LIGHT_ICON, dwIconId);
-            xpgSpriteRedraw(Idu_GetCurrWin(),SPRITE_TYPE_DARK_ICON,  dwIconId);
+            //xpgSpriteRedraw(Idu_GetCurrWin(),SPRITE_TYPE_LIGHT_ICON, dwIconId);
+            //xpgSpriteRedraw(Idu_GetCurrWin(),SPRITE_TYPE_DARK_ICON,  dwIconId);
+            xpgSpriteRedraw(Idu_GetCurrWin(),SPRITE_TYPE_ICON,  dwIconId);
             WriteSetupChg();
         }
         else if (dwIconId == 6)

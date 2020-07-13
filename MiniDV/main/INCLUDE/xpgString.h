@@ -250,6 +250,7 @@ enum xpgStringId {
 	Str_PollingVersion,			//   240
 	Str_Yes,			//   241
 	Str_No,			//   242
+	Str_ZhaoMingDeng,			//   243
 
 	Str_MAX_ID,
 };

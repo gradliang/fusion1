@@ -953,7 +953,7 @@ _OPEN_END:
 #if (PRODUCT_UI==UI_WELDING)
 extern WORD SensorWindow_PosX,SensorWindow_PosY,SensorWindow_Width,SensorWindow_Height;
 extern BYTE g_bDisplayMode;
-extern DWORD g_dwDisplayOffset;
+extern DWORD g_dwWinStartOffset[2];
 
 static BYTE st_bInProcWin=0,st_bBackupDisplayMode=0xff;//st_bBackupChanel=0xff,
  // BIT7->new fill wait init IPW  BIT6->first get data BIT5->get data end        BIT3->in fill down   BIT2->in FILL UP      BIT1->need fill down   BIT0->need FILL UP  0->not need fill
@@ -7614,15 +7614,20 @@ void ProcIpwIsr(DWORD dwRegValue)
 			st_bNeedFillProcWin &=0xfd;//FILL_WIN_DOWN
 			ipu->Ipu_reg_A3 = ((DWORD) SensorInWin[1].pdwStart| 0xA0000000);	
 			//ipu->Ipu_reg_A3 = ((DWORD) ((ST_IMGWIN *)Idu_GetCurrWin())->pdwStart| 0xA0000000);	
-			//ipu->Ipu_reg_F2 = ((DWORD) pDstWin->pdwStart| 0xA0000000)+g_dwDisplayOffset;
+			//ipu->Ipu_reg_F2 = ((DWORD) pDstWin->pdwStart| 0xA0000000)+g_dwWinStartOffset;
 		}
 		#if 1
 		if (g_bDisplayMode==1)
-			ipu->Ipu_reg_F2 = ((DWORD) pDstWin->pdwStart| 0xA0000000)+g_dwDisplayOffset;
+			ipu->Ipu_reg_F2 = ((DWORD) pDstWin->pdwStart| 0xA0000000)+g_dwWinStartOffset[1];
+		else // (g_bDisplayMode==0)
+			ipu->Ipu_reg_F2 = ((DWORD) ((ST_IMGWIN *)Idu_GetNextWin())->pdwStart| 0xA0000000);
+		#else
+		if (g_bDisplayMode==1)
+			ipu->Ipu_reg_F2 = ((DWORD) pDstWin->pdwStart| 0xA0000000)+g_dwWinStartOffset;
 		else if (g_bDisplayMode==2)
-			ipu->Ipu_reg_F2 = ((DWORD) pDstWin->pdwStart| 0xA0000000)+g_dwDisplayOffset+pDstWin->dwOffset*SensorWindow_Height;
+			ipu->Ipu_reg_F2 = ((DWORD) pDstWin->pdwStart| 0xA0000000)+g_dwWinStartOffset+pDstWin->dwOffset*SensorWindow_Height;
 		else if (g_bDisplayMode==3)
-			ipu->Ipu_reg_F2 = ((DWORD) pDstWin->pdwStart| 0xA0000000)+g_dwDisplayOffset+(SensorWindow_Width<<1);
+			ipu->Ipu_reg_F2 = ((DWORD) pDstWin->pdwStart| 0xA0000000)+g_dwWinStartOffset+(SensorWindow_Width<<1);
 		else // (g_bDisplayMode==0)
 			ipu->Ipu_reg_F2 = ((DWORD) ((ST_IMGWIN *)Idu_GetNextWin())->pdwStart| 0xA0000000);
 		#endif
@@ -7641,7 +7646,7 @@ void ProcIpwIsr(DWORD dwRegValue)
 		if (g_bDisplayMode==1)
 			ipu->Ipu_reg_F2 = ((DWORD) ((ST_IMGWIN *)Idu_GetNextWin())->pdwStart| 0xA0000000);
 		else
-			ipu->Ipu_reg_F2 = ((DWORD) pDstWin->pdwStart| 0xA0000000)+g_dwDisplayOffset;
+			ipu->Ipu_reg_F2 = ((DWORD) pDstWin->pdwStart| 0xA0000000)+g_dwWinStartOffset[0];
 		#endif
 	}
 
@@ -7799,7 +7804,7 @@ void DisplaySensorOnCurrWin( BYTE bIpw2)
 	}
 	else //if (st_bDispOff && (ipu->Ipu_reg_10A>>16)==pDstWin->wHeight)
 	{
-		*pIpwAddr = ((DWORD) pDstWin->pdwStart| 0xA0000000)+g_dwDisplayOffset;
+		*pIpwAddr = ((DWORD) pDstWin->pdwStart| 0xA0000000)+g_dwWinStartOffset[0];
 		//st_bDispOff=0;
 	}
 
@@ -7931,7 +7936,7 @@ void DisplaySensorIpw2Data(void)
 	{
 		Idu_ChgWin(Idu_GetNextWin());
 		pDstWin=(ST_IMGWIN *)Idu_GetNextWin();
-		ipu->Ipu_reg_F2 = ((DWORD) pDstWin->pdwStart| 0xA0000000)+g_dwDisplayOffset;
+		ipu->Ipu_reg_F2 = ((DWORD) pDstWin->pdwStart| 0xA0000000)+g_dwWinStartOffset[0];
 	}
 
 }
@@ -8030,7 +8035,7 @@ void CacheSensorData( BYTE bIpw2)
 			}
 			else
 			{
-				ipu->Ipu_reg_F2 = ((DWORD)((ST_IMGWIN *)Idu_GetCurrWin()->pdwStart)| 0xA0000000)+g_dwDisplayOffset;
+				ipu->Ipu_reg_F2 = ((DWORD)((ST_IMGWIN *)Idu_GetCurrWin()->pdwStart)| 0xA0000000)+g_dwWinStartOffset;
 			}
 			ipu->Ipu_reg_A3 = ((DWORD)((ST_IMGWIN *)Idu_GetNextWin()->pdwStart)| 0xA0000000);	
 			#endif

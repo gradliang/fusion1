@@ -251,6 +251,7 @@ static const BYTE* xpgString_SChinese[] =
 	"查询中......",						//   240
 	"是",						//   241
 	"否",						//   242
+	"照明灯",						//   243
 
 };
 

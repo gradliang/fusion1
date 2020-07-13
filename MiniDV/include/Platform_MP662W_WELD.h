@@ -37,7 +37,7 @@
 #define		TEST_TWO_LED										0 //4  测试照射光纤的两个LED灯的亮度
 //#define		VAUTO_PLAY_VIDEO									1
 #define		PROC_SENSOR_DATA_MODE					0
-#define		IPW_FAST_MODE										1
+#define		IPW_FAST_MODE										1 //4  在ISR里同时快速处理两个IPW的数据 
 
 #define		WELD_FIBER_PRAR_TOTAL					12 //4 总熔接模式
 
@@ -794,6 +794,7 @@
 #define XPG_ROLE_MAIN_ERROR_ICON       					82
 #define XPG_ROLE_CLOSE_ICON_NEW_MASK       		83
 #define XPG_ROLE_MASK_70x25       							84
+#define XPG_ROLE_LAMP_AUTO       								85
 
 
 
@@ -813,8 +814,8 @@
 
 //xpg page define
 
-
-
+//功能配置界面ICON的序号
+#define FUNCTION_ID_LAMP                        	5           //4 照明灯
 
 // dialog define
 #define Dialog_Toast                        1           // 文字弹出

@@ -12,6 +12,7 @@
 #include "sensor.h"
 #include "peripheral.h"
 #include "xpg.h"
+#include "../../../../MiniDV/main/include/setup.h"
 
 //#include "../../SpyCamera/main/include/ui_timer.h"
 
@@ -36,6 +37,7 @@ extern BYTE SensorWindow_setFlag ;
 extern WORD SensorWindow_PosX;
 extern WORD SensorWindow_PosY;
 
+static void Set_Ipw1(void);
 static void Set_Ipw2(void);
 
 #if ((CHIP_VER_MSB == CHIP_VER_650) || (CHIP_VER_MSB == CHIP_VER_660))
@@ -99,9 +101,9 @@ void Sensor_Channel_Set(BYTE bChannel)
 //--st_bCurChannel:0->channel 0  1->channel 1
 BYTE st_bCurChannel=0;
 
-// 0-> display sensor 1   1->sensor 2     2-> 1(up)+2(down)  3->1(left)+2(right) 
+// g_bDisplayMode:0-> display sensor 1   1->sensor 2     2-> 1(up)+2(down)  3->1(left)+2(right) 
 BYTE g_bDisplayMode=0x82;// 0x80
-DWORD g_dwDisplayOffset=0;
+DWORD g_dwWinStartOffset[2]={0,0};//0->left or up win   1->down or right win
 
 void Sensor_DisplayWindow_Set()
 {
@@ -137,6 +139,7 @@ void Sensor_DisplayWindow_Set()
 	}
 
 #else
+#if 0
 	 if (dwHashKey == xpgHash("Manual_work"))
 	 {
 		switch (g_bDisplayMode)
@@ -163,24 +166,39 @@ void Sensor_DisplayWindow_Set()
 		}
 	 }
 	 else
-	 {
+#endif
+	 {/*
+		TITLE:40
+		OSD	:30
+				:300
+		OSD	:30
+		FUNC:80
+
+	 */
+	 	
 		switch (g_bDisplayMode)
 		{
 			case 0:
 				//Sensor_Channel_Set(0);
-				API_SetSensorWindow(0, 24, pDstWin->wWidth, pDstWin->wHeight-100);
+				API_SetSensorWindow(g_psSetupMenu->bSensorWinOffsetX, 40+g_psSetupMenu->bSensorWinOffsetY, pDstWin->wWidth-24, pDstWin->wHeight-150); //40+80+30
+				g_dwWinStartOffset[0]=pDstWin->dwOffset* SensorWindow_PosY  + (SensorWindow_PosX <<1);
 				break;
 
 			case 1:
 				//Sensor_Channel_Set(1);
-				API_SetSensorWindow(0, 24, pDstWin->wWidth, pDstWin->wHeight-100);
+				API_SetSensorWindow(24-g_psSetupMenu->bSensorWinOffsetX, 70+g_psSetupMenu->bSensorWinOffsetY, pDstWin->wWidth-24, pDstWin->wHeight-150);
+				g_dwWinStartOffset[1]=pDstWin->dwOffset* SensorWindow_PosY  + (SensorWindow_PosX <<1);
 				break;
 
 			case 2:
-				API_SetSensorWindow(0, 24, pDstWin->wWidth, (pDstWin->wHeight-100)>>1);
+				API_SetSensorWindow(g_psSetupMenu->bSensorWinOffsetX, 12, pDstWin->wWidth-24, (pDstWin->wHeight-150)>>1);
+				g_dwWinStartOffset[0]=pDstWin->dwOffset* SensorWindow_PosY  + (SensorWindow_PosX <<1);
+				g_dwWinStartOffset[1]=pDstWin->dwOffset* (70+150)  + (24-SensorWindow_PosX)*2;
 				break;
 			case 3:
-				API_SetSensorWindow(0, 24, pDstWin->wWidth>>1, pDstWin->wHeight-100);
+				API_SetSensorWindow(12, 40+g_psSetupMenu->bSensorWinOffsetY, (pDstWin->wWidth-24)>>1, pDstWin->wHeight-150);
+				g_dwWinStartOffset[0]=pDstWin->dwOffset* SensorWindow_PosY  + (SensorWindow_PosX <<1);
+				g_dwWinStartOffset[1]=pDstWin->dwOffset* (70-SensorWindow_PosY)  + (SensorWindow_PosX <<1)+pDstWin->wWidth;
 				break;
 
 			default:
@@ -189,6 +207,7 @@ void Sensor_DisplayWindow_Set()
 	 }
 #endif
 }
+
 void Sensor_DisplayMode_Set()
 {
 	//mpDebugPrint("bNewMode=%p",g_bDisplayMode);
@@ -782,7 +801,7 @@ static void Set_Ipw2(void)
 	ipu->Ipu_reg_F1 = (SrcWidth - DisplayWin_W)<<1;
 
 	ipu->Ipu_reg_F2 = ((DWORD) pWin->pdwStart| 0xA0000000)+DisplayWinStartAddr;
-	g_dwDisplayOffset=DisplayWinStartAddr;
+	//g_dwWinStartOffset=DisplayWinStartAddr;
 }
 
 static void Local_HW_StopIPW1(void)

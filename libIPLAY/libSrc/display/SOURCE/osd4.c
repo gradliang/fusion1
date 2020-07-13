@@ -154,7 +154,7 @@ void Idu_OsdPaintArea(WORD startX, WORD startY, WORD SizeX, WORD SizeY, BYTE b_P
 	}
 #endif
 }
-
+/*
 void Idu_OsdPaintVColorBar()
 {
     MP_ALERT("%s", __func__);
@@ -168,6 +168,6 @@ void Idu_OsdPaintVColorBar()
         Idu_OsdPaintArea(i*w, 0, w, h, i);
     }
  }
- 
+ */
 #endif//#if (OSD_BIT_WIDTH == 4)
 

@@ -1448,7 +1448,9 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         pstRoleMask = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_ICON_MASK_0];
         if ( dwSpriteId < 12 )
         {
-            if (g_psSetupMenu->bFunctionIconEnable[dwSpriteId])
+			if (dwSpriteId==FUNCTION_ID_LAMP && g_psSetupMenu->bFunctionIconEnable[dwSpriteId]==2)
+                pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_LAMP_AUTO];
+            else if (g_psSetupMenu->bFunctionIconEnable[dwSpriteId])
                 pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_ICON_YJR_ON + dwSpriteId];
             else
                 pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_ICON_YJR_OFF + dwSpriteId];
@@ -1458,13 +1460,21 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
     else if (dwHashKey == xpgHash("FuncSet2"))
     {
         STXPGSPRITE * tinyIcon = NULL, * tinyMask = NULL;
+		char sbIconId=g_psSetupMenu->bCustomizeIcon[dwSpriteId];
+		
 		pstRoleMask = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_ICON_MASK_0];
         tinyMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 2);
         if (dwSpriteId < 6)
         {
-            if (g_psSetupMenu->bCustomizeIcon[dwSpriteId] >= 0)
+            if (sbIconId>= 0)
             {
-                pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_ICON_YJR_ON + g_psSetupMenu->bCustomizeIcon[dwSpriteId]];
+               // pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_ICON_YJR_ON + g_psSetupMenu->bCustomizeIcon[dwSpriteId]];
+				if (sbIconId==FUNCTION_ID_LAMP && g_psSetupMenu->bFunctionIconEnable[sbIconId]==2)
+	                pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_LAMP_AUTO];
+	            else if (g_psSetupMenu->bFunctionIconEnable[sbIconId])
+	                pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_ICON_YJR_ON + sbIconId];
+	            else
+	                pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_ICON_YJR_OFF + sbIconId];
                 tinyIcon = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 3);
             }
             else
@@ -1474,7 +1484,14 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         }
         else if (dwSpriteId >= 6 && dwSpriteId < 18)
         {
-            pstRole = pstSprite->m_pstRole;
+            //pstRole = pstSprite->m_pstRole;
+            sbIconId=dwSpriteId-6;
+				if (sbIconId==FUNCTION_ID_LAMP && g_psSetupMenu->bFunctionIconEnable[sbIconId]==2)
+	                pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_LAMP_AUTO];
+	            else if (g_psSetupMenu->bFunctionIconEnable[sbIconId])
+	                pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_ICON_YJR_ON + sbIconId];
+	            else
+	                pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_ICON_YJR_OFF + sbIconId];
             tinyIcon = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 4);
         }
         else
@@ -1541,13 +1558,24 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
     }
     else if (dwHashKey == xpgHash("Auto_work"))
     {
-        if ( dwSpriteId<6 && g_psSetupMenu->bCustomizeIcon[dwSpriteId]>=0)
+        if ( dwSpriteId<6)
         {
-				pstRoleMask = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_ICON_MASK_0];
-				if (g_psSetupMenu->bFunctionIconEnable[dwSpriteId] )
-                pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_ICON_YJR_ON+g_psSetupMenu->bCustomizeIcon[dwSpriteId]];
+				char sbIconId=g_psSetupMenu->bCustomizeIcon[dwSpriteId];
+
+			if (sbIconId<0)
+			{
+				pstRole=pstSprite->m_pstRole;
+			}
+			else
+			{
+				if (sbIconId==FUNCTION_ID_LAMP && g_psSetupMenu->bFunctionIconEnable[sbIconId]==2)
+	                pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_LAMP_AUTO];
+				else if (g_psSetupMenu->bFunctionIconEnable[sbIconId] )
+                pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_ICON_YJR_ON+sbIconId];
 				else
-                pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_ICON_YJR_OFF+g_psSetupMenu->bCustomizeIcon[dwSpriteId]];
+                pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_ICON_YJR_OFF+sbIconId];
+			}
+			pstRoleMask = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_ICON_MASK_0];
         	xpgRoleDrawMask(pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstRoleMask);
         }
 		else
@@ -3027,8 +3055,8 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
                 text = getstr(Str_ZiDongDuiJiao);
             else if (dwTextId == 4)
                 text = getstr(Str_JiaoDuJianCe);
-            else if (dwTextId == 5)
-                text = getstr(Str_FangDianJiaoZheng);
+            else if (dwTextId == FUNCTION_ID_LAMP)
+                text = getstr(Str_ZhaoMingDeng);//Str_FangDianJiaoZheng
             else if (dwTextId == 6)
                 text = getstr(Str_HuiChenJianCe);
             else if (dwTextId == 7)
@@ -3066,11 +3094,11 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             else if (value == 2)
                 text = getstr(Str_DuanMianJianCe);
             else if (value == 3)
-                text = getstr(Str_ZiDongGuanJi);
+                text = getstr(Str_ZiDongDuiJiao);
             else if (value == 4)
                 text = getstr(Str_JiaoDuJianCe);
-            else if (value == 5)
-                text = getstr(Str_FangDianJiaoZheng);
+            else if (value == FUNCTION_ID_LAMP)
+                text = getstr(Str_ZhaoMingDeng);
             else if (value == 6)
                 text = getstr(Str_HuiChenJianCe);
             else if (value == 7)
@@ -3095,11 +3123,11 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             else if (dwTextId == 8)
                 text = getstr(Str_DuanMianJianCe);
             else if (dwTextId == 9)
-                text = getstr(Str_ZiDongGuanJi);
+                text = getstr(Str_ZiDongDuiJiao);
             else if (dwTextId == 10)
                 text = getstr(Str_JiaoDuJianCe);
-            else if (dwTextId == 11)
-                text = getstr(Str_FangDianJiaoZheng);
+            else if (dwTextId == 6+FUNCTION_ID_LAMP)
+                text = getstr(Str_ZhaoMingDeng);
             else if (dwTextId == 12)
                 text = getstr(Str_HuiChenJianCe);
             else if (dwTextId == 13)
@@ -5888,12 +5916,38 @@ SWORD xpgDrawSprite_HomeStatus(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprit
     }
     return PASS;
 }
-
+// for osd bar
 SWORD xpgDrawSprite_Frame(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOOL boClip)
 {
     STXPGSPRITE *pstMask = NULL;
     DWORD dwSpriteId = pstSprite->m_dwTypeIndex;
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
+
+
+	//(dwHashKey == xpgHash("Auto_work"))
+	switch (pstSprite->m_dwTypeIndex)
+	{
+		case 0:
+			Idu_OsdPaintArea(0,0, 24, pWin->wHeight, OSD_COLOR_BLACK);
+			break;
+
+		case 1:
+			Idu_OsdPaintArea(776,0, 24, pWin->wHeight, OSD_COLOR_BLACK);
+			break;
+
+		case 2:
+			Idu_OsdPaintArea(pstSprite->m_wPx,pstSprite->m_wPy, pWin->wWidth-pstSprite->m_wPx*2, 30, OSD_COLOR_BLUE);
+			break;
+
+		case 3:
+			Idu_OsdPaintArea(pstSprite->m_wPx,pstSprite->m_wPy, pWin->wWidth-pstSprite->m_wPx*2, 30, OSD_COLOR_BLUE);
+			break;
+
+		default:
+			break;
+	}
+
+#if 0
     if (dwHashKey == xpgHash("Manual_work"))
     {
         if (dwSpriteId == 0)
@@ -5930,7 +5984,7 @@ SWORD xpgDrawSprite_Frame(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BO
             Idu_PaintWinArea(pWin, 0, 400, pWin->wWidth, 80, RGB2YUV(0x1F, 0x21, 0x26));
         }
     }
-    
+#endif
     return PASS;
 }
 

@@ -332,7 +332,7 @@ void xpgRoleMixOnWin(ST_IMGWIN * pWin, STXPGROLE * pstRole, DWORD px, DWORD py, 
 void xpgRoleDrawMask(STXPGROLE * pstRole, void *pTarget, DWORD px, DWORD py, DWORD dwScrWd,
 							DWORD dwScrHt, STXPGROLE * pstMaskRole)
 {
-	register DWORD *pdwScreenBuffer = (DWORD *) pTarget;
+ register DWORD *pdwScreenBuffer = (DWORD *) ((DWORD)pTarget|0xA0000000);
 #if XPG_USE_YUV444	
 	BYTE * pbScreenBuf = (BYTE *) pdwScreenBuffer;
 	BYTE * pbScreen;
@@ -367,13 +367,14 @@ void xpgRoleDrawMask(STXPGROLE * pstRole, void *pTarget, DWORD px, DWORD py, DWO
 		MP_DEBUG("xpgRoleDrawMask null");
 		return;
 	}
+    // mpDebugPrint("pstRole->m_wRawWidth=%d,pstMaskRole->m_wRawWidth=%d", pstRole->m_wRawWidth, pstMaskRole->m_wRawWidth);
 
-	pdwSourceBuffer = (DWORD *) pstRole->m_pRawImage;
-	pdwMaskBuffer = (DWORD *) pstMaskRole->m_pRawImage;
+	pdwSourceBuffer = (DWORD *) ((DWORD)pstRole->m_pRawImage|0xA0000000);//(DWORD *) pstRole->m_pRawImage;
+	pdwMaskBuffer = (DWORD *) ((DWORD)pstMaskRole->m_pRawImage|0xA0000000);//(DWORD *) pstMaskRole->m_pRawImage;
 
 	//if (px & 1)	px++; //fengrs 06/04 marked for icon redraw with a darkline at right side
 	if ((DWORD)pdwMaskBuffer & 3) {
-		MP_DEBUG("pdwSourceBuffer & 3");
+		MP_DEBUG("pdwMaskBuffer & 3");
 	}
 	if ((DWORD)pdwSourceBuffer & 3) {
 		MP_DEBUG("pdwSourceBuffer & 3");
@@ -395,51 +396,17 @@ void xpgRoleDrawMask(STXPGROLE * pstRole, void *pTarget, DWORD px, DWORD py, DWO
 	register DWORD cy0, cy1, cb, cr;
 	register DWORD c, cDst;
 	register WORD cy;
-	for (y = py; y < bottom; y++) {
-#if XPG_USE_YUV444
-        DWORD cSrc;
-        DWORD dwScreenOffset = dwScrWd * 3; // 800 * 3 = 2400 bytes
-        j = (y * dwScrWd * 3) + (px * 3);
-        pbScreen = pbScreenBuf + j;
-        //mpDebugPrint("y=%d, j=pbScreen=0x%X", y, pbScreen);
-#else	
+	for (y = py; y < bottom; y++) 
+	{
 		j = ((y * dwScrWd) >> 1) + (px >> 1);
-#endif		
 		k = (((y - py) * pstRole->m_wRawWidth) >> 1);  //m_wRawWidth is align 16
-		for (x = px; x < right; x += 2, j++, k++) {
+		for (x = px; x < right; x += 2, j++, k++) 
+		{
 			c = *(pdwMaskBuffer + k);
 			if ((c & 0xffff0000) == 0) continue; // skip black pixel
 
 			cy0 = YYCbCr_Y0(c);
 			cy1 = YYCbCr_Y1(c);
-#if XPG_USE_YUV444
-            
-            if (cy0 > 0xfa && cy1 > 0xfa)
-            {
-				//*(pdwScreenBuffer + j) = *(pdwSourceBuffer + k);
-				cSrc = *(pdwSourceBuffer + k);
-	                   
-               *(pbScreen+x*3+0) = YYCbCr_Y0(cSrc);
-               *(pbScreen+x*3+1) = YYCbCr_Cb(cSrc);
-               *(pbScreen+x*3+2) = YYCbCr_Cr(cSrc);
-               *(pbScreen+x*3+3) = YYCbCr_Y1(cSrc);
-               *(pbScreen+x*3+4) = YYCbCr_Cb(cSrc);
-               *(pbScreen+x*3+5) = YYCbCr_Cr(cSrc);
-			}				
-			else {
-				cDst = *(pdwScreenBuffer + j);
-				c = *(pdwSourceBuffer + k);
-
-				cy = (cy0 + cy1) >> 1;
-				cb = (YYCbCr_Cb(c) * cy + YYCbCr_Cb(cDst) * (256 - cy)) >> 8;
-				cr = (YYCbCr_Cr(c) * cy + YYCbCr_Cr(cDst) * (256 - cy)) >> 8;
-
-				cy0 = (YYCbCr_Y0(c) * cy0 + YYCbCr_Y0(cDst) * (256 - cy0)) >> 8;
-				cy1 = (YYCbCr_Y1(c) * cy1 + YYCbCr_Y1(cDst) * (256 - cy1)) >> 8;
-				cDst = ((cy0 & 0xff) << 24) | ((cy1 & 0xff) << 16) | ((cb & 0xff) << 8) | (cr & 0xff);
-				*(pdwScreenBuffer + j) = cDst;
-			} 
-#else
 			if (cy0 > 0xfa && cy1 > 0xfa)
 				*(pdwScreenBuffer + j) = *(pdwSourceBuffer + k);
 			else {
@@ -455,7 +422,6 @@ void xpgRoleDrawMask(STXPGROLE * pstRole, void *pTarget, DWORD px, DWORD py, DWO
 				cDst = ((cy0 & 0xff) << 24) | ((cy1 & 0xff) << 16) | ((cb & 0xff) << 8) | (cr & 0xff);
 				*(pdwScreenBuffer + j) = cDst;
 			}
-#endif			
 		}
 	}
 
