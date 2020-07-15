@@ -61,16 +61,6 @@ enum {
     SENSER_TOTAL,
 };
 
-
-typedef struct {
-    BYTE        bFiberMode;
-    BYTE        wFiberL;
-    BYTE        wFiberR;
-    BYTE        bFiberLoss;
-    BYTE        bResult;
-}STWELDSTATUS;
-
-
 #define		FIBER_EDGE_LEVEL					0x10 //4   从背景到光纤的 黑白边界亮度值
 #define		X_START										8       //4 x轴起始扫描点
 #define		X_STEP											16       //4 快速横向查找步长，必须为4的倍数，一个单位为半个像素
@@ -231,7 +221,7 @@ void  PutAdjOsdString();
 void ShowOSDstring(void);
 
 SWORD Weld_CaptureFile(ST_IMGWIN *pWin);
-SWORD Weld_ReadFileWeldInfo(STREAM* handle,BYTE *pbTitle,STWELDSTATUS *pWeldStatus);
+SWORD Weld_ReadFileWeldInfo(STREAM* handle,STRECORD *pRecordData);
 void uiCb_CheckElectrodePos(void);
 void uiCb_DisableKeyInput(BYTE bKeyExcept);  //0xff -> skip all key
 void uiCb_EnableKeyInput(void);

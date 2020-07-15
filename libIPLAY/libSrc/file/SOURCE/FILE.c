@@ -84,7 +84,7 @@ static DWORD HandleCounter;		// counter of opened files
 static const SBYTE badFatPat[] = "/\\<>|\":*?";	/* not allowed in FAT pattern , expect symbol "." */
 const SBYTE ReplaceGlyph[] = "+,;=[]."; //add 0x2E ('.') here. Note: WinHex reports as error of directory entry if 0x2E is in 8.3 filename fileds.
 
-static FILE_SORTING_BASIS_TYPE  g_CurFileSortingBasis = FILE_SORTING_BY_83SHORT_NAME;//FILE_SORTING_BY_83SHORT_NAME_REVERSE;//FILE_SORTING_BY_83SHORT_NAME;
+static FILE_SORTING_BASIS_TYPE  g_CurFileSortingBasis = FILE_SORTING_BY_83SHORT_NAME_REVERSE;//FILE_SORTING_BY_83SHORT_NAME_REVERSE;//FILE_SORTING_BY_83SHORT_NAME;
 
 #if (SONY_DCF_ENABLE)
 /* pre-defined DCF display order for DCF objects:
@@ -7110,7 +7110,7 @@ L_start_scanning:
                         return FS_SCAN_FAIL;
                     }
 
-                    if ((dwExtension == pdwExtArray[i]) || (pdwExtArray[i] == EXT_ALL))
+                    if (((dwExtension == pdwExtArray[i]) || (pdwExtArray[i] == EXT_ALL))&& Weld_CheckTimeByFileName(&sDrv->Node->Name[0]))
                     {
                         psSearchInfo = &working_FileList[dwCount];
                         //copy cluster and cluster offset

@@ -2014,6 +2014,274 @@ L_post_delete_process:
 }
 
 
+///
+///@ingroup FILE_BROWSER
+///@brief   Delete all media files in the file list of current GUI operation mode on the current drive. \n
+///         If Folder GUI is enabled, folder entries in the file list of current GUI operation mode with all content within the directories are also deleted.
+///
+///@param   None.
+///
+///@retval  FS_SUCCEED        Delete successfully. \n\n
+///@retval  FAIL              Delete unsuccessfully. \n\n
+///@retval  FILE_NOT_FOUND    Delete unsuccessfully due to file not found. \n\n
+///@retval  INVALID_DRIVE     Delete unsuccessfully due to the DRIVE handle of current drive is NULL. \n\n
+///@retval  DISK_READ_ONLY    Delete unsuccessfully due to the target drive is read-only.
+///
+SWORD FileBrowserDeleteAllFile(void)
+{
+    ST_SYSTEM_CONFIG *psSysConfig = g_psSystemConfig;
+    struct ST_FILE_BROWSER_TAG *psFileBrowser = &psSysConfig->sFileBrowser;
+    ST_SEARCH_INFO *pSearchInfo;
+    BYTE bDriveId = psSysConfig->sStorage.dwCurStorageId;
+    STREAM *sHandle;
+    DWORD dwIntex, dwMaxIntex, i;
+    SWORD swRet = FS_SUCCEED;
+    BYTE TypeFlag;
+    DRIVE *pCurDrive = FileBrowserGetCurDrive();
+
+
+    if (pCurDrive == NULL)
+    {
+        MP_ALERT("%s: Error! NULL drive handle !", __FUNCTION__);
+        return INVALID_DRIVE;
+    }
+
+    if (! SystemCardPresentCheck(pCurDrive->DrvIndex))
+    {
+        MP_ALERT("%s: Card not present !", __FUNCTION__);
+        return INVALID_DRIVE;
+    }
+
+    /* check Read-Only flag by underlying Mcard layer info => physical lock latch or Mcard layer lock */
+    if (SystemGetFlagReadOnly(bDriveId))
+    {
+        MP_ALERT("%s: -E- The drive is Read-Only (in Mcard layer) !", __FUNCTION__);
+        //SystemSetErrEvent(ERR_WRITE_PROTECT);
+        return DISK_READ_ONLY;
+    }
+
+    /* check Read-Only flag by file system layer => logical or controlled by S/W */
+    if (pCurDrive->Flag.ReadOnly)
+    {
+        MP_ALERT("%s: -E- The drive is Read-Only (controlled in file system layer) !", __FUNCTION__);
+    #if EXFAT_ENABLE
+        if (pCurDrive->Flag.FsType == FS_TYPE_exFAT)
+        {
+            MP_DEBUG("%s: The drive is exFAT file system.", __FUNCTION__);
+        }
+    #endif
+        //SystemSetErrEvent(ERR_WRITE_PROTECT);
+        return DISK_READ_ONLY;
+    }
+
+    if (psFileBrowser->dwFileListCount[psSysConfig->dwCurrentOpMode])
+    {
+        pSearchInfo = (ST_SEARCH_INFO *) ((ST_SEARCH_INFO *) psFileBrowser->dwFileListAddress[psSysConfig->dwCurrentOpMode]);
+#if EXFAT_ENABLE
+        if (pSearchInfo->FsType == FS_TYPE_exFAT)
+        {
+	#if EXFAT_WRITE_ENABLE
+            MP_ALERT("%s: To-Do: how to process exFAT Write operations ??", __FUNCTION__);
+            //SystemSetErrEvent(ERR_WRITE_PROTECT);
+            return FAIL; //not supported yet
+	#else
+            MP_ALERT("%s: -I- exFAT Write operations are not supported !", __FUNCTION__);
+            //SystemSetErrEvent(ERR_WRITE_PROTECT);
+            return DISK_READ_ONLY;
+	#endif
+        }
+#endif
+    }
+
+    TypeFlag = FileBrowserGetCurFileType();
+
+    if (psSysConfig->dwCurrentOpMode == OP_IMAGE_MODE)
+    {
+        for (i = 0; i < psFileBrowser->dwFileListCount[psSysConfig->dwCurrentOpMode]; i++)
+        {
+            psFileBrowser->dwFileListIndex[psSysConfig->dwCurrentOpMode] = i;
+            pSearchInfo = ((ST_SEARCH_INFO *) psFileBrowser->dwFileListAddress[psSysConfig->dwCurrentOpMode]) + i;
+            if (pSearchInfo == NULL)
+            {
+                swRet = FAIL;
+                break;
+            }
+            if (pSearchInfo->bParameter & SEARCH_INFO_CHANGE_PATH) // for use bParameter record invalid file
+            {
+                //pSearchInfo++;
+
+                if (fbrowser_xpgUpdateIconAniFuncPtr)
+                    fbrowser_xpgUpdateIconAniFuncPtr();
+
+                continue;
+            }
+
+            //Update_Thumb_In_Copy_Delete(pSearchInfo);
+
+            if (pSearchInfo->bParameter & SEARCH_INFO_FOLDER)
+            {
+                if (TypeFlag == FILE_OP_TYPE_FOLDER)
+                    swRet = DeleteDir(pCurDrive);
+                else
+                    swRet = FS_SUCCEED;
+            }
+            else
+            {
+#if (SONY_DCF_ENABLE)
+                /* if the file list entry is a DCF essential object, process its corresponding DCF associated objects */
+                DWORD file_list_index;
+                if (Check_If_FileListEntry_In_DCF_Objs_Set(pSearchInfo, &file_list_index) == TRUE)
+                {
+                    BYTE  pri_name_buffer[9];
+                    MpMemCopy(pri_name_buffer, (BYTE *) pSearchInfo->bName, 8);
+                    pri_name_buffer[8] = 0;
+
+                    /* delete the DCF essential object */
+                    sHandle = FileListOpen(pCurDrive, pSearchInfo);
+                    if (sHandle == NULL)
+                    {
+                        swRet = FILE_NOT_FOUND;
+                        break;
+                    }
+                    swRet = DeleteFile(sHandle);  /* DeleteFile() invokes FileClose() internally */
+
+                    /* search current directory for files having same primary filename as the DCF essential objects */
+                    if (DirFirst(pCurDrive) == FS_SUCCEED)
+                    {
+                        while (1)
+                        {
+                            if (! SystemCardPresentCheck(pCurDrive->DrvIndex))
+                                break;
+
+                            if (pCurDrive->Flag.FsType != FS_TYPE_exFAT)
+                            {
+                                if ((pCurDrive->Node->Attribute & FDB_ARCHIVE) && (StringNCompare08_CaseInsensitive((BYTE *) pCurDrive->Node->Name, pri_name_buffer, 8) == E_COMPARE_EQUAL))
+                                {
+                                    sHandle = FileOpen(pCurDrive);
+                                    DeleteFile(sHandle);  /* DeleteFile() invokes FileClose() internally */
+                                }
+                            }
+                    #if EXFAT_ENABLE
+                            else
+                            {
+                            /* To-Do: must re-work this code in exFAT case, because exFAT DirEntry definitions changed */
+                            #if 0
+                                if ((pCurDrive->Node->Attribute & FDB_ARCHIVE) && (StringNCompare08_CaseInsensitive((BYTE *) pCurDrive->Node->Name, pri_name_buffer, 8) == E_COMPARE_EQUAL))
+                                {
+                                    sHandle = FileOpen(pCurDrive);
+                                    DeleteFile(sHandle);  /* DeleteFile() invokes FileClose() internally */
+                                }
+                            #endif
+                            }
+                    #endif
+
+                            if (DirNext(pCurDrive) != FS_SUCCEED)
+                                break;
+                        }
+
+                        continue; /* continue the outside for-loop for next file list entry */
+                    }
+                }
+#endif
+
+                sHandle = FileListOpen(pCurDrive, pSearchInfo);
+                if (sHandle == NULL)
+                {
+                    swRet = FILE_NOT_FOUND;
+                    break;
+                }
+                swRet = DeleteFile(sHandle);  /* DeleteFile() invokes FileClose() internally */
+            }
+
+            if (((i % 4) == 1) && (swRet == FS_SUCCEED))
+            {
+                if (fbrowser_xpgUpdateIconAniFuncPtr)
+                    fbrowser_xpgUpdateIconAniFuncPtr();
+            }
+
+            //pSearchInfo++;
+
+            if (fbrowser_xpgUpdateIconAniFuncPtr)
+                fbrowser_xpgUpdateIconAniFuncPtr();
+        }
+    }
+    else
+    {
+        for (i = 0; i < psFileBrowser->dwFileListCount[psSysConfig->dwCurrentOpMode]; i++)
+        {
+            psFileBrowser->dwFileListIndex[psSysConfig->dwCurrentOpMode] = i;
+            pSearchInfo = ((ST_SEARCH_INFO *) psFileBrowser->dwFileListAddress[psSysConfig->dwCurrentOpMode]) + i;
+            if (pSearchInfo == NULL)
+            {
+                swRet = FAIL;
+                break;
+            }
+            if (pSearchInfo->bParameter & SEARCH_INFO_CHANGE_PATH) // for use bParameter record invalid file
+            {
+                pSearchInfo++;
+
+                if (fbrowser_xpgUpdateIconAniFuncPtr)
+                    fbrowser_xpgUpdateIconAniFuncPtr();
+
+                continue;
+            }
+
+            //Update_Thumb_In_Copy_Delete(pSearchInfo);
+
+            if (pSearchInfo->bParameter & SEARCH_INFO_FOLDER)
+                swRet = DeleteDir(pCurDrive);
+            else
+            {
+                sHandle = FileListOpen(pCurDrive, pSearchInfo);
+                if (sHandle == NULL)
+                {
+                    swRet = FILE_NOT_FOUND;
+                    break;
+                }
+                swRet = DeleteFile(sHandle);  /* DeleteFile() invokes FileClose() internally */
+            }
+
+            if (((i % 4) == 1) && (swRet == FS_SUCCEED))
+            {
+                if (fbrowser_xpgUpdateIconAniFuncPtr)
+                    fbrowser_xpgUpdateIconAniFuncPtr();
+            }
+        }
+    }
+    if (swRet == END_OF_DIR)
+        swRet = FS_SUCCEED;
+
+    //if (swRet == FS_SUCCEED)
+    {
+        if (swRet == FS_SUCCEED)
+        {
+            if (fbrowser_xpgUpdateIconAniFuncPtr)
+                fbrowser_xpgUpdateIconAniFuncPtr();
+        }
+
+        if (pCurDrive->DrvIndex != NULL_DRIVE)
+        {
+            FileBrowserResetFileList();
+            if (!SystemCardPresentCheck(pCurDrive->DrvIndex))
+                return FAIL;
+
+            if (SEARCH_TYPE == GLOBAL_SEARCH)
+                DirReset(pCurDrive); /* back to beginning of root directory */
+            else
+                FirstNode(pCurDrive); /* back to beginning of current directory */
+
+            FileBrowserScanFileList(SEARCH_TYPE);
+        }
+
+        if (swRet == FS_SUCCEED)
+        {
+            if (fbrowser_xpgUpdateIconAniFuncPtr)
+                fbrowser_xpgUpdateIconAniFuncPtr();
+        }
+    }
+
+    return swRet;
+}
 
 #if Make_TESTCONSOLE
 MPX_KMODAPI_SET(FileBrowserListAllFileName);

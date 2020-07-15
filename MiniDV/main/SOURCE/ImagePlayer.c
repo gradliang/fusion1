@@ -341,8 +341,8 @@ void ImageScaleFromJPEGTarget(ST_IMGWIN * pWin, BYTE * pbTargetBuf)
     MP_DEBUG("%s()", __FUNCTION__);
     mpClearWin(pWin);
         //ImageDraw_FitToWidth(&g_sDecodeWin, pWin);
-        //ImageDraw_FitToFull(&g_sDecodeWin, pWin);
-        ImageDraw_FitToOrigin(&g_sDecodeWin, pWin);
+        ImageDraw_FitToFull(&g_sDecodeWin, pWin);
+        //ImageDraw_FitToOrigin(&g_sDecodeWin, pWin);
 }
 
 

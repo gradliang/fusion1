@@ -531,16 +531,6 @@ void SendUnsaveParam(void)
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-
-static STRECORD **pstRecordList = NULL;
-static DWORD    dwRecordTotal = 0;
-static DWORD    dwAllocedSlot = 0;
-#define  RECORD_INC_COUNT       200
-#define RECORD_TABLE_PATH_1     "record1"
-#define RECORD_TABLE_EXT        "sys"
-#define RECORD_FLAG             0x8864E423
-
 HEATPARAM ReSuGuan[5]=
 {
 	{110,10},
@@ -550,6 +540,17 @@ HEATPARAM ReSuGuan[5]=
 	{150,50},
 };
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+static STRECORD **pstRecordList = NULL;
+static DWORD    dwRecordTotal = 0;
+static DWORD    dwAllocedSlot = 0;
+#define  RECORD_INC_COUNT       200
+//#define RECORD_TABLE_PATH_1     "record1"
+//#define RECORD_TABLE_EXT        "sys"
+//#define RECORD_FLAG             0x8864E423
+
+#if 0
 int LoadRecordFromFile()
 {
     DRIVE *sysDrv;
@@ -711,7 +712,7 @@ _OPEN_END:
 
     return retVal;
 }
-
+#endif
 void AddRecord(STRECORD* pstRecord)
 {
     //mpDebugPrint("AddRecord");
@@ -777,7 +778,7 @@ void ClearAllRecord()
     }
     dwRecordTotal = 0;
 }
-
+#if 0
 void InitRecord(STRECORD* pstRecord, WORD year, BYTE month, BYTE day, BYTE hour, BYTE minute, BYTE second, DWORD bLoss, BYTE * recordName, BYTE* fileName)
 {
     pstRecord->bYear = year;
@@ -822,7 +823,13 @@ int initRecordDummyData()
     InitRecord(&record, 19, 12, 29, 1, 59, 59, (0<<6) | 1, "REC 13", "aaa.jpg");
     AddRecord(&record);
 }
+#endif
 
+void SystemDataInit(void)
+{
+	g_WeldRecordPage.bMode=0;
+	Weld_ReadAllRecord();
+}
 
 void initModeParamDefault(MODEPARAM * pstModeParam,BYTE bIndex)
 {

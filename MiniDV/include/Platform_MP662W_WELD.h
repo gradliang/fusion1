@@ -728,7 +728,7 @@
 #define XPG_ROLE_TEXT_WHITE_0              10 //10-19
 
 #define XPG_ROLE_BACKGROUND_0               0
-#define XPG_ROLE_ICON_MASK_0                1
+#define XPG_ROLE_ICON_MASK_0                1 //  70*70
 #define XPG_ROLE_SMALL_BUTTON_MASK          2
 #define XPG_ROLE_SMALL_BUTTON_ICON          3
 #define XPG_ROLE_SMALL_BUTTON_LIGHT         4
@@ -764,7 +764,7 @@
 #define XPG_ROLE_KEYBOARD_RIGHT_MASK        34
 #define XPG_ROLE_BUTTON_OK_ICON             35
 #define XPG_ROLE_BUTTON_CANCEL_ICON         36
-#define XPG_ROLE_BUTTON_MASK                37
+#define XPG_ROLE_BUTTON_MASK                37 //  90*30
 
 #define XPG_ROLE_ICON_YJR_OFF               38
 #define XPG_ROLE_ICON_OPM_OFF               49
@@ -855,6 +855,8 @@
 #define Dialog_Note_ChangeHireWordPASS                      	35          //4 修改租借密码OK
 #define Dialog_YESNO_Upgrade                      						36          //4 是否下载安装新版本
 #define Dialog_Hot_Mode                      									37          //4 加热模式
+#define Dialog_Note_ClearAll                      							38          //4 是否清空熔接记录
+#define Dialog_Record_Detail                      							39          //4 熔接记录照片
 
 
 

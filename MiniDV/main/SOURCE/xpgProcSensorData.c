@@ -8,7 +8,6 @@
 #include "global612.h"
 #include "mpTrace.h"
 #include "xpg.h"
-#include "xpgProcSensorData.h"
 #include "os.h"
 #include "display.h"
 #include "devio.h"
@@ -18,14 +17,15 @@
 #include "filebrowser.h"
 #include "imageplayer.h"
 #include "mpapi.h"
+#include "peripheral.h"
 
 #include "Setup.h"
 #include "filebrowser.h"
 #include "Icon.h"
 #include "ui_timer.h"
 #include "xpgFunc.h"
+#include "xpgProcSensorData.h"
 
-#include "peripheral.h"
 
 //#define DEBUG_POS(...)                   DONOTHING
 #define DEBUG_POS                   		mpDebugPrint
@@ -54,8 +54,7 @@ static WORD st_wDiachargeRunTime=0,st_wDischargeTimeSet=0; // st_wDischargeTimeS
 static WORD st_wMotorSpeed[FIBER_WINDOW_NUM]={0,0,0,0};//4  -- 2pixel所需要的脉冲数
 static BYTE st_bFiberBlackLevel[SENSER_TOTAL]={0xff,0xff};
 
-static STWELDSTATUS st_WeldStatus;
-
+static STRECORD st_CurWeldRecordData;
 #if TEST_PLANE||ALIGN_DEMO_MODE
 #define MAX_ADJ_NUM					9
 #define MOTO_ADJ_NUM				6
@@ -624,10 +623,20 @@ SWORD Weld_CaptureFile(ST_IMGWIN *pWin)
 			{
 				pbBuf[4+i]=(HEAD_INFO>>((3-i)<<3))&0xff;
 			}
-			//--标题 (11bytes):BYTE 8-17   BYTE18=0
+			//--record 26 bytes
+			ST_SYSTEM_TIME stSystemTime;
+			SystemTimeGet(&stSystemTime);
+			st_CurWeldRecordData.bYear=stSystemTime.u16Year-2000;//BEGIN_YEAR;
+			st_CurWeldRecordData.bMonth=stSystemTime.u08Month;
+			st_CurWeldRecordData.bDay=stSystemTime.u08Day;
+			st_CurWeldRecordData.bHour=stSystemTime.u08Hour;
+			st_CurWeldRecordData.bMinute=stSystemTime.u08Minute;
+			st_CurWeldRecordData.bSecond=stSystemTime.u08Second;
+			mp_sprintf(st_CurWeldRecordData.bRecordName,"%04d%02d%02d%02d", stSystemTime.u16Year,stSystemTime.u08Month,stSystemTime.u08Day,stSystemTime.u08Hour);
 
+			st_CurWeldRecordData.bResult=1;
 			//--status (5bytes): BYTE19-23
-			memcpy(&pbBuf[19],(BYTE *)&st_WeldStatus,sizeof (st_WeldStatus));
+			memcpy(&pbBuf[8],(BYTE *)&st_CurWeldRecordData,sizeof (STRECORD));
 			FileWrite(handle, (BYTE *) JpegBuf, IMG_size+WELD_FILE_INFO_LENTH);
 			FileClose(handle);
 			mpDebugPrint("----- %s:ok! %d/%d", __FUNCTION__,IMG_size,IMG_size+WELD_FILE_INFO_LENTH);
@@ -639,6 +648,7 @@ SWORD Weld_CaptureFile(ST_IMGWIN *pWin)
 			ext_mem_free(JpegBuf);
 			JpegBuf = NULL;
 		}
+		Weld_ReadAllRecord();
 
 		return swRet;
 	}
@@ -646,12 +656,13 @@ SWORD Weld_CaptureFile(ST_IMGWIN *pWin)
     return FAIL;
 }
 
-SWORD Weld_ReadFileWeldInfo(STREAM* handle,BYTE *pbTitle,STWELDSTATUS *pWeldStatus)
+SWORD Weld_ReadFileWeldInfo(STREAM* handle,STRECORD *pRecordData)
 {
 	ST_SEARCH_INFO *pSearchInfo;
 	DRIVE *pCurDrive;
 	DWORD dwFileSize,dwLen,dwFlag0,dwFlag1;
 	BYTE *pbBuf=NULL,bHandleNull=0;
+	SWORD swRet=FAIL;
 
 	if (handle==NULL)
 	{
@@ -683,13 +694,41 @@ SWORD Weld_ReadFileWeldInfo(STREAM* handle,BYTE *pbTitle,STWELDSTATUS *pWeldStat
 	memcpy(&dwFlag0,&pbBuf[0],4);
 	memcpy(&dwFlag1,&pbBuf[4],4);
 	mpDebugPrint("read tag %x %x filesize %d",dwFlag0,dwFlag1,dwFileSize);
-	memcpy(pbTitle,&pbBuf[8],11);
-	memcpy(pWeldStatus,&pbBuf[19],sizeof (STWELDSTATUS));
+	if (dwFlag0==HEAD_EXT  && dwFlag1==HEAD_INFO)
+	{
+		memcpy(pRecordData,&pbBuf[8],sizeof(STRECORD)-4); // except dwfileindex
+		swRet=PASS;
+	}
 	if (pbBuf)
 		ext_mem_free(pbBuf);
 	if (bHandleNull)
 		FileClose(handle);
+	return swRet;
 }
+
+DWORD Weld_ReadAllRecord()
+{
+    DWORD i = 0;
+    DWORD total;
+    STRECORD recordData;
+
+	g_psSystemConfig->dwCurrentOpMode = OP_IMAGE_MODE;
+    FileBrowserResetFileList(); /* reset old file list first */
+    FileBrowserScanFileList(SEARCH_TYPE);
+    total = FileBrowserGetTotalFile();
+
+    ClearAllRecord();
+    for (i = 0; i < total; i++)
+    {
+        FileListSetCurIndex(i);
+        if (Weld_ReadFileWeldInfo(NULL, &recordData)==PASS)
+        {
+			AddRecord(&recordData);
+			recordData.dwFileIndex=i;
+        }
+    }
+}
+
 
 static BYTE *st_pbBuf=NULL;
 static DWORD st_dwSendFileLen=0,st_dwSendFileIndex=0;
@@ -780,9 +819,29 @@ SWORD Weld_FileNameToTime(DWORD dwFileIndex,DWORD *pdwRtcCnt)
 	{
 		if (pSearchInfo->bName[i]<0x41 || pSearchInfo->bName[i]>=0x51)
 			return FAIL;
-		*pdwRtcCnt|=((DWORD)(pSearchInfo->bName[i]-0x41)<<(i<<2));
+		*pdwRtcCnt|=(((DWORD)(pSearchInfo->bName[i]-0x41))<<(i<<2));
 	}
 	return PASS;
+}
+
+BYTE Weld_CheckTimeByFileName(BYTE *pbName)
+{
+	ST_SEARCH_INFO *pSearchInfo;
+	DWORD i,dwFileRtcCnt=0,dwCurRtcCnt,dwDistance;
+
+	if (!g_WeldRecordPage.bMode) //day
+		return TRUE;
+	for (i=0;i<8;i++)
+	{
+		if (pbName[i]<0x41 || pbName[i]>=0x51)
+			return FALSE;
+		dwFileRtcCnt|=(((DWORD)(pbName[i]-0x41))<<(i<<2));
+	}
+	dwDistance=g_WeldRecordPage.bMode*86400;
+	dwCurRtcCnt=RTC_ReadCount();
+	if (dwFileRtcCnt<dwCurRtcCnt && dwFileRtcCnt+dwDistance>dwCurRtcCnt)
+		return TRUE;
+	return FALSE;
 }
 
 #if 0
@@ -5934,6 +5993,8 @@ void Proc_Weld_State_Fast()
 
 		case SENSOR_GET_LOSS:
 			mpDebugPrint("SENSOR_GET_LOSS");
+			memset((BYTE *)&st_CurWeldRecordData,0,sizeof (st_CurWeldRecordData));
+			st_CurWeldRecordData.bResult=1;
 			st_dwProcState++;
 			EventSet(UI_EVENT, EVENT_PROC_DATA);
 			break;
@@ -5941,9 +6002,10 @@ void Proc_Weld_State_Fast()
 
 		case SENSOR_RPOC_END:
 			mpDebugPrint("SENSOR_RPOC_END");
+			TimerToReleaseAllHold();
 			TspiSendSimpleInfo0xAF(0x03);
 			st_dwProcState=SENSOR_IDLE;
-			TimerToReleaseAllHold();
+			g_dwProcWinFlag|=WIN0_CAPTURE_FLAG;
 			break;
 
 		case SENSOR_IDLE:
@@ -6541,20 +6603,10 @@ void Proc_SensorData_State()
 
 	if (g_dwProcWinFlag&WIN0_CAPTURE_FLAG)
 	{
-		memset((BYTE *)&st_WeldStatus,0,sizeof (st_WeldStatus));
-		//Weld_CaptureFile((ST_IMGWIN *)&SensorInWin[0]);
-		Weld_CaptureFile((ST_IMGWIN *)Idu_GetCurrWin());
+		Weld_CaptureFile((ST_IMGWIN *)&SensorInWin[0]);
+		//Weld_CaptureFile((ST_IMGWIN *)Idu_GetCurrWin());
 		g_dwProcWinFlag&=~WIN0_CAPTURE_FLAG;
 
-		//--test code
-		#if 0
-		BYTE pbTitle[12];
-		STWELDSTATUS WeldStatus;
-		FileBrowserResetFileList(); /* reset old file list first */
-		FileBrowserScanFileList(SEARCH_TYPE);
-		FileListSetCurIndex(FileBrowserGetTotalFile()-1);
-		Weld_ReadFileWeldInfo(NULL,pbTitle,&WeldStatus);
-		#endif
 	}
 
 #if ALIGN_FAST_MODE
@@ -7056,7 +7108,9 @@ void TSPI_DataProc(void)
 				switch (pbTspiRxBuffer[2])
 				{
 					case 1:
+					memset((BYTE *)&st_CurWeldRecordData,0,sizeof (st_CurWeldRecordData));
 					g_dwProcWinFlag|=WIN0_CAPTURE_FLAG;
+					SetFillProcWinFlag();
 					break;
 					
 					case 2:
@@ -7236,32 +7290,30 @@ void TSPI_DataProc(void)
 				if (pbTspiRxBuffer[2]==1)//4  查询熔接记录
 				{
 					BYTE pbData[30];
-					WORD wIndex=((WORD)pbTspiRxBuffer[4]<<8)|pbTspiRxBuffer[3];
-					DWORD dwRtc;
-					STWELDSTATUS WeldStatus;
-					ST_SYSTEM_TIME time;
+					DWORD dwIndex=(((DWORD)pbTspiRxBuffer[6])<<24)|(((DWORD)pbTspiRxBuffer[5])<<16)|(((DWORD)pbTspiRxBuffer[4])<<8)|pbTspiRxBuffer[3];
+					STRECORD * pr;
 
-					if (wIndex<FileBrowserGetTotalFile())
+					if (dwIndex<GetRecordTotal())
 					{
-						FileListSetCurIndex(wIndex);
-						Weld_ReadFileWeldInfo(NULL,&pbData[9],(STWELDSTATUS *)&pbData[20]);
+						memset(pbData,0,30);
 						//--head
 						pbData[0]=0xa6;
 						pbData[1]=3+23;
-						pbData[2]=wIndex;
-						//--time 3-8
-						if (Weld_FileNameToTime(wIndex,&dwRtc)!=PASS)
-							dwRtc=0;
-    					SystemTimeSecToDateConv(dwRtc, &time);
-						pbData[3]=time.u16Year-2000;
-						pbData[4]=time.u08Month;
-						pbData[5]=time.u08Day;
-						pbData[6]=time.u08Hour;
-						pbData[7]=time.u08Minute;
-						pbData[8]=time.u08Second;
-						//--titel 9-19
-						pbData[19]=0;
-						//--WeldStatus 20-24
+						pbData[2]=pbTspiRxBuffer[3];
+						pbData[3]=pbTspiRxBuffer[4];
+						pbData[4]=pbTspiRxBuffer[5];
+						pbData[5]=pbTspiRxBuffer[6];
+						
+						pr = GetRecord(dwIndex);
+						if (pr)
+						{
+							//FileListSetCurIndex(pr->dwFileIndex);
+						//--record
+							memcpy(&pbData[6],&pr->bYear,sizeof(STRECORD)-4);
+							//Weld_ReadFileWeldInfo(NULL,&pbData[6]);
+						}
+						
+
 						TSPI_PacketSend(pbData,0);
 					}
 				}

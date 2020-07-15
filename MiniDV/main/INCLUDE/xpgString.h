@@ -141,7 +141,7 @@ enum xpgStringId {
 	Str_QieGeJiaoDuShangXian,		//   131
 	Str_FangDianJiaoDuShangXian,	//   132
 	Str_FangDianJiaoZhengMuBiaoZhi,	//   133
-	Str_Du,							//   134
+	Str_DuChinese,							//   134
 	Str_ShuZhiXiuGai,				//   135
 	Str_RongJieZhiLiang,			//   136
 	Str_DuiXianFangShi,				//   137
@@ -251,6 +251,14 @@ enum xpgStringId {
 	Str_Yes,			//   241
 	Str_No,			//   242
 	Str_ZhaoMingDeng,			//   243
+	Str_DianJiChaKan,			//   244
+	Str_IfClearAll,			//   245
+	Str_Mode,			//   246
+	Str_Loss,			//   247
+	Str_Du,			//   248
+	Str_Result,			//   249
+	Str_WeldOk,			//   250
+	Str_WeldFail,			//   251
 
 	Str_MAX_ID,
 };

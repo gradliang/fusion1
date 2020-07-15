@@ -788,8 +788,8 @@ else
     //g_bXpgStatus = XPG_MODE_MODESEL;
     //SetMotionDetectionEnable(1);
 
-    initRecordDummyData();
-
+  //  initRecordDummyData();
+	SystemDataInit();
 
     while (1)
     {

@@ -238,7 +238,7 @@ void xpgUpdateStage()
 					{
 			            xpgSpriteSetTouchArea(pstSprite, pstSprite->m_wPx, pstSprite->m_wPy , pstSprite->m_wWidth, pstSprite->m_wHeight);
 					}
-					else if (pstSprite->m_dwHashKey==xpgHash("Touch1111"))//4  设置触摸区域上下左右各增加一倍
+					else if (pstSprite->m_dwHashKey==xpgHash("Touch1111"))//4  设置触摸区域左右上下各增加一倍
 					{
 			            xpgSpriteSetTouchArea(pstSprite, pstSprite->m_wPx-pstSprite->m_wWidth, pstSprite->m_wPy-pstSprite->m_wHeight , pstSprite->m_wWidth*3, pstSprite->m_wHeight*3);
 					}

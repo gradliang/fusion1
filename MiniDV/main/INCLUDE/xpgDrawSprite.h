@@ -57,6 +57,7 @@ SWORD xpgDrawSprite_Frame(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BO
 SWORD xpgDrawSprite_RepeatIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOOL boClip);          // type29
 SWORD xpgDrawSprite_HomeStatus(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOOL boClip);    // type30
 SWORD xpgDrawSprite_TextColorBar(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOOL boClip);    // type31
+void DrawRoundIcon(ST_IMGWIN * pWin,int maskRoleIndex,WORD wX,WORD wY,WORD wW,WORD wH,DWORD dwYUVcolor);
 
 
 int popupDialog(int dialogType, WORD wReturnPageIndex, ST_IMGWIN* pWin_Background);
@@ -84,7 +85,7 @@ extern OPMDATAITEM * localOpmData;
 extern OPMDATAITEM * cloudOpmData;
 
 //////////////////////////////////////////////////////
-#define KEYBOARD_BUFFER_SIZE    128
+#define KEYBOARD_BUFFER_SIZE    64
 extern char keyboardBuffer[];
 extern const char * keyboardTitle;
 extern BOOL boCapsLock;

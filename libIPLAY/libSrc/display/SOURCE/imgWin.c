@@ -846,7 +846,7 @@ void Idu_PaintWinArea(ST_IMGWIN * ImgWin, WORD x, WORD y, WORD w, WORD h, DWORD 
 
 	if (ImgWin == NULL || ImgWin->pdwStart == NULL)
 		return;
-	if(w <= 1 || h <= 1)
+	if(w <= 1 || h < 1)
 		return;
 	if(w > ImgWin->wWidth || h > ImgWin->wHeight)
 		return;

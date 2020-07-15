@@ -23,11 +23,11 @@ static ST_TC_DRIVER st_TcDriver;
 #endif
 DWORD dwLastTouchActionTime = 0;
 static BYTE st_bTouchDown=0;// 0->touch release 1->Touch on   
-
-static void uiEnterRecordList();
-DWORD g_dwRecordListCurrPage = 0;
 static BYTE st_bGoSetupFrom=0;// 0->from main   1->for work pgage    strSetupBackPageName[24] = {0};
 
+extern SWORD(*drawSpriteFunctions[]) (ST_IMGWIN *, STXPGSPRITE *, BOOL);
+
+static void uiEnterRecordList();
 static void Dialog_JiaReWenDu_OnClose();
 static void Dialog_JiaReShiJian_OnClose();
 static void Dialog__OnClose();
@@ -618,6 +618,41 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
         xpgSearchtoPageWithAction("opm2");
         xpgUpdateStage();
     }
+    else if (dwHashKey == xpgHash("Record"))
+    {
+			STRECORD * pr;
+			DWORD dwCurIndex;
+			BYTE bListMain=sprite->m_dwTypeIndex/10-1,ListSub=sprite->m_dwTypeIndex%10;
+
+			//mpDebugPrint("dwTextId= %d bListMain=%d ListSub=%d",dwTextId,bListMain,ListSub);
+			if (!g_WeldRecordPage.dwTotalData)
+				return PASS;
+			dwCurIndex =  PAGE_RECORD_SIZE * g_WeldRecordPage.wCurPage + bListMain;
+			if (dwCurIndex>g_WeldRecordPage.dwTotalData-1)
+				return PASS;
+
+			pr = GetRecord(dwCurIndex);
+			if (pr == NULL)
+				return PASS;
+			if (ListSub==1)
+			{
+					BYTE bData[30];
+
+					memset(bData,0,30);
+					//--head
+					bData[0]=0xa6;
+					bData[1]=3+23;
+					bData[2]=dwCurIndex&0xff;
+					bData[3]=(dwCurIndex>>8)&0xff;
+					bData[4]=(dwCurIndex>>16)&0xff;
+					bData[5]=(dwCurIndex>>24)&0xff;
+					
+					pr = GetRecord(dwCurIndex);
+					if (pr)
+						memcpy(&bData[6],&pr->bYear,sizeof(STRECORD)-4);
+					TSPI_PacketSend(bData,0);
+			}
+    }
     else if(dwHashKey == xpgHash("Keyboard") )
     {
         dwKeyID = dwIconId;
@@ -1092,12 +1127,12 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
 								uiCb_DisableKeyInput(0xff);
 								if (wCheckCode==wInputCode)
 								{
-									popupDialog(Dialog_Note_ElectrodeEnable_PASS, (STXPGPAGE *)xpgMovieSearchPage("Main")->m_wIndex,Idu_GetCacheWin());
+									popupDialog(Dialog_Note_ElectrodeEnable_PASS, ((STXPGPAGE *)xpgMovieSearchPage("Main"))->m_wIndex,Idu_GetCacheWin());
 									Ui_TimerProcAdd(3000, uiCb_CheckElectrodePos);
 								}
 								else
 								{
-									popupDialog(Dialog_Note_ElectrodeEnable_FAIL, (STXPGPAGE *)xpgMovieSearchPage("Main")->m_wIndex,Idu_GetCacheWin());
+									popupDialog(Dialog_Note_ElectrodeEnable_FAIL, ((STXPGPAGE *)xpgMovieSearchPage("Main"))->m_wIndex,Idu_GetCacheWin());
 									Ui_TimerProcAdd(3000, uiCb_EnableKeyInput);
 									Ui_TimerProcAdd(3000, exitDialog);
 								}
@@ -1444,13 +1479,17 @@ SWORD touchSprite_CloseIcon(STXPGSPRITE * sprite, WORD x, WORD y)
 {
     BOOL boNeedWriteSetup = FALSE;
     mpDebugPrint("touchSprite_CloseIcon  %d", sprite->m_dwTypeIndex);
-    
+
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
     if (dwHashKey == xpgHash("User") || 
         dwHashKey == xpgHash("ToolBox"))
     {
         xpgSearchtoPageWithAction("Main");
         xpgUpdateStage();
+    }
+    else if (dwHashKey == xpgHash("Keyboard") )
+    {
+		keyboardGoBack(FALSE);
     }
     else if (dwHashKey == xpgHash(DIALOG_PAGE_NAME))
     {
@@ -1893,6 +1932,35 @@ SWORD touchSprite_Text(STXPGSPRITE * sprite, WORD x, WORD y)
             }
         }
     }
+    else if (dwHashKey == xpgHash("Record"))
+    {
+			STRECORD * pr;
+			DWORD iCurIndex;
+			BYTE bListMain=sprite->m_dwTypeIndex/10-1,ListSub=sprite->m_dwTypeIndex%10;
+
+			//mpDebugPrint("dwTextId= %d bListMain=%d ListSub=%d",dwTextId,bListMain,ListSub);
+			if (!g_WeldRecordPage.dwTotalData)
+				return PASS;
+			iCurIndex =  PAGE_RECORD_SIZE * g_WeldRecordPage.wCurPage + bListMain;
+			if (iCurIndex>g_WeldRecordPage.dwTotalData-1)
+				return PASS;
+
+			pr = GetRecord(iCurIndex);
+			if (pr == NULL)
+				return PASS;
+			if (ListSub==1)
+			{
+				startEditFusionRecordName(pr);
+			}
+			else if (ListSub==3)
+			{
+					//strDialogTitle = getstr(Str_Note);
+					g_WeldRecordPage.dwCurIndex=iCurIndex;
+					popupDialog(Dialog_Record_Detail, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
+					xpgUpdateStage();
+			}
+    }
+
     return 0;
 }
 
@@ -2037,8 +2105,8 @@ static void fusionRecordKeyboardBack(BOOL boEnter)
 {
     if (boEnter)
     {
-        strncpy(editingFusionDataItem->bRecordName, keyboardBuffer, sizeof(editingFusionDataItem->bRecordName) - 1);
-        editingFusionDataItem->bRecordName[sizeof(editingFusionDataItem->bRecordName) - 1] = 0;
+        strncpy(editingFusionDataItem->bRecordName, keyboardBuffer, WELD_RECORD_TITLE_LENTH - 1);
+        editingFusionDataItem->bRecordName[WELD_RECORD_TITLE_LENTH- 1] = 0;
     }
     Free_CacheWin();
     xpgSearchtoPageWithAction("Record");
@@ -2047,8 +2115,8 @@ static void fusionRecordKeyboardBack(BOOL boEnter)
 
 void startEditFusionRecordName(STRECORD * pr)
 {
-    strncpy(keyboardBuffer, pr->bRecordName, KEYBOARD_BUFFER_SIZE);
-    keyboardBuffer[KEYBOARD_BUFFER_SIZE - 1] = 0;
+    strncpy(keyboardBuffer, pr->bRecordName, WELD_RECORD_TITLE_LENTH);
+    keyboardBuffer[WELD_RECORD_TITLE_LENTH - 1] = 0;
     editingFusionDataItem = pr;
     keyboardGoBack = fusionRecordKeyboardBack;
     
@@ -2328,34 +2396,6 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
         startEditOpmRecordName(xpgPageName, curItem);
         
     }
-    else if (dwHashKey == xpgHash("Record"))
-    {
-        char tmpbuff[128];
-        DWORD dwListId = dwSpriteId;
-        STRECORD * pr;
-        int iCurIndex;
-        DWORD dwCurPageStart = 0;
-        DWORD dwTotal = GetRecordTotal();
-        DWORD dwPageTotal = dwTotal / PAGE_RECORD_SIZE;
-        if (dwTotal % PAGE_RECORD_SIZE)
-            dwPageTotal++;
-        
-        if (g_dwRecordListCurrPage >= dwPageTotal)
-            g_dwRecordListCurrPage = dwPageTotal - 1;
-        
-        dwCurPageStart = PAGE_RECORD_SIZE * g_dwRecordListCurrPage;
-        dwCurPageStart = dwTotal - 1 - dwCurPageStart;                  // Fan Guo Lai
-
-        iCurIndex =  dwCurPageStart - dwListId;
-        if (iCurIndex < 0)
-            return PASS;
-
-        pr = GetRecord((DWORD)iCurIndex);
-        if (pr == NULL)
-            return PASS;
-        // if (PAGE_RECORD_SIZE * g_dwRecordListCurrPage+dwSpriteId <FileBrowserGetTotalFile())
-        startEditFusionRecordName(pr);
-    }
     else if (dwHashKey == xpgHash("User"))
     {
         if (g_psSetupMenu->bUserMode != dwSpriteId)
@@ -2371,7 +2411,7 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
 				strDialogTitle = getstr(Str_Input_ElectrodeEnableCode);
 				memset(strEditPassword, 0, sizeof(strEditPassword));
 				dialogOnClose = exitDialog;
-				popupDialog(Dialog_Electrode_Enable, (STXPGPAGE *)xpgMovieSearchPage("Main")->m_wIndex,Idu_GetCacheWin());
+				popupDialog(Dialog_Electrode_Enable, ((STXPGPAGE *)xpgMovieSearchPage("Main"))->m_wIndex,Idu_GetCacheWin());
 				xpgUpdateStage();
 				break;
 
@@ -2548,7 +2588,9 @@ SWORD touchSprite_Scroll(STXPGSPRITE * sprite, WORD x, WORD y)
 SWORD touchSprite_TextColorBar(STXPGSPRITE * pstSprite, WORD x, WORD y)
 {
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
+		STXPGSPRITE * pstTmpSprite;
 
+	mpDebugPrint("touchSprite_TextColorBar  %d", pstSprite->m_dwTypeIndex);
     if (dwHashKey == xpgHash("Upgrade"))
     {
 			if (!g_psUnsaveParam->bDetectNewVersion)
@@ -2564,6 +2606,65 @@ SWORD touchSprite_TextColorBar(STXPGSPRITE * pstSprite, WORD x, WORD y)
 			}
 			xpgUpdateStage();
     }
+    else if (dwHashKey == xpgHash("Record"))
+    {
+			switch (pstSprite->m_dwTypeIndex)
+			{
+				case 0:
+					strDialogTitle = getstr(Str_Note);
+					popupDialog(Dialog_Note_ClearAll, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCurrWin());
+					xpgUpdateStage();
+					break;
+
+				case 1:
+					g_WeldRecordPage.bMode=3;
+					uiEnterRecordList();
+					break;
+				case 2:
+					g_WeldRecordPage.bMode=7;
+					uiEnterRecordList();
+					break;
+				case 3:
+					g_WeldRecordPage.bMode=0;
+					uiEnterRecordList();
+					break;
+
+				case 4:
+					g_WeldRecordPage.wCurPage=0;
+					xpgUpdateStage();
+					break;
+
+				case 5:
+					pstTmpSprite = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_TextColorBar, pstSprite->m_dwTypeIndex);
+					if (pstTmpSprite)
+						 (*drawSpriteFunctions[pstTmpSprite->m_dwType]) (Idu_GetCurrWin(), pstTmpSprite, 1);
+					if (g_WeldRecordPage.wCurPage)
+					{
+						g_WeldRecordPage.wCurPage--;
+					}
+					xpgUpdateStage();
+					break;
+
+				case 6:
+					pstTmpSprite = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_TextColorBar, pstSprite->m_dwTypeIndex);
+					if (pstTmpSprite)
+						 (*drawSpriteFunctions[pstTmpSprite->m_dwType]) (Idu_GetCurrWin(), pstTmpSprite, 1);
+					if (g_WeldRecordPage.wCurPage+1<g_WeldRecordPage.wTotalPage)
+					{
+						g_WeldRecordPage.wCurPage++;
+					}
+					xpgUpdateStage();
+					break;
+
+				case 7:
+					g_WeldRecordPage.wCurPage=g_WeldRecordPage.wTotalPage-1;
+					xpgUpdateStage();
+					break;
+
+				default:
+					break;
+			}
+    }
     else if (dwHashKey == xpgHash(DIALOG_PAGE_NAME))
     {
 		int dialogType = xpgGetCurrDialogTypeId();
@@ -2578,62 +2679,26 @@ SWORD touchSprite_TextColorBar(STXPGSPRITE * pstSprite, WORD x, WORD y)
             {
             }
         }
+        else if (dialogType == Dialog_Note_ClearAll)
+        {
+			if (!pstSprite->m_dwTypeIndex)
+			{
+				FileBrowserDeleteAllFile();
+				uiEnterRecordList();
+			}
+			exitDialog();
+        }
     }
 }
 
-static void uiEnterRecordList()
+void uiEnterRecordList()
 {
-    DWORD i = 0;
-    DWORD total, dwRtcTime;
-    
-    BYTE pbTitle[12];
-    STWELDSTATUS WeldStatus;
-    FileBrowserResetFileList(); /* reset old file list first */
-    FileBrowserScanFileList(SEARCH_TYPE);
-    total = FileBrowserGetTotalFile();
-
-    ClearAllRecord();
-    for (i = 0; i < total; i++)
-    {
-        FileListSetCurIndex(i);
-        memset(pbTitle, 0, sizeof(pbTitle));
-        memset(&WeldStatus, 0, sizeof(WeldStatus));
-        Weld_ReadFileWeldInfo(NULL, pbTitle, &WeldStatus);
-
-        dwRtcTime = 0;
-        Weld_FileNameToTime(i, &dwRtcTime);                         // 获取时间 
-
-        ST_SYSTEM_TIME sysTime;
-        SystemTimeSecToDateConv(dwRtcTime, &sysTime);
-
-        ///////////////
-        STRECORD recordData;
-        memset(&recordData, 0, sizeof(recordData));
-
-        recordData.bHead = 0;
-        recordData.bLenth = 0;
-        recordData.bIndex = 0;
-        recordData.bYear = sysTime.u16Year;
-        recordData.bMonth = sysTime.u08Month;
-        recordData.bDay = sysTime.u08Day;
-        recordData.bHour = sysTime.u08Hour;
-        recordData.bMinute = sysTime.u08Minute;
-        recordData.bSecond = sysTime.u08Second;
-        strncpy(recordData.bRecordName, pbTitle, sizeof(recordData.bRecordName) - 1);
-        recordData.bRecordName[sizeof(recordData.bRecordName) - 1] = 0;
-        recordData.bFiberMode = WeldStatus.bFiberMode;
-        recordData.bFiberL = WeldStatus.wFiberL;
-        recordData.bFiberR = WeldStatus.wFiberR;
-        recordData.bFiberLoss = WeldStatus.bFiberLoss;
-        recordData.bResult = WeldStatus.bResult;
-        recordData.wFileIndex = i;                              // 保存文件索引号
-        recordData.bChecksum = 0;
-
-        AddRecord(&recordData);
-    }
-    	
-
-    g_dwRecordListCurrPage = 0;                     // 设置当前为第0页
+	Weld_ReadAllRecord();
+	g_WeldRecordPage.dwCurIndex=0;
+	g_WeldRecordPage.dwTotalData=GetRecordTotal();
+	g_WeldRecordPage.wCurPage=0;
+	g_WeldRecordPage.wTotalPage=g_WeldRecordPage.dwTotalData/PAGE_RECORD_SIZE+(g_WeldRecordPage.dwTotalData%PAGE_RECORD_SIZE ? 1 : 0);
+	mpDebugPrint("uiEnterRecordList %d page %d",g_WeldRecordPage.dwTotalData,g_WeldRecordPage.wTotalPage);
     xpgSearchtoPageWithAction("Record");
     xpgUpdateStage();
 }
