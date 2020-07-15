@@ -225,6 +225,7 @@ SWORD Weld_ReadFileWeldInfo(STREAM* handle,STRECORD *pRecordData);
 void uiCb_CheckElectrodePos(void);
 void uiCb_DisableKeyInput(BYTE bKeyExcept);  //0xff -> skip all key
 void uiCb_EnableKeyInput(void);
+void Weld_ReadAllRecord();
 
 #endif
 

@@ -259,6 +259,10 @@ enum xpgStringId {
 	Str_Result,			//   249
 	Str_WeldOk,			//   250
 	Str_WeldFail,			//   251
+	Str_InputCheckCode,			//   252
+	Str_EnableProcing,			//   253
+	Str_ElectrodeCheckCodeError,      //   254
+	Str_ElectrodeSNnotExist,      //   255
 
 	Str_MAX_ID,
 };

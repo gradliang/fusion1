@@ -9,6 +9,8 @@ void uiTouchMsgReceiver(void);
 void uiDispatchTouchSprite(WORD x1, WORD y1);
 
 void (*dialogOnClose)();
+void Dialog_ElectrodeEnable_Path_OnClose();
+void Dialog_Electrode_Enable_Process_OnClose();
 
 #endif
 

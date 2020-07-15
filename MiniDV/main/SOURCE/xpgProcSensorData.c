@@ -25,6 +25,9 @@
 #include "ui_timer.h"
 #include "xpgFunc.h"
 #include "xpgProcSensorData.h"
+#include "xpgString.h"
+#include "uiTouchCtrller.h"
+#include "xpgDrawSprite.h"
 
 
 //#define DEBUG_POS(...)                   DONOTHING
@@ -706,7 +709,7 @@ SWORD Weld_ReadFileWeldInfo(STREAM* handle,STRECORD *pRecordData)
 	return swRet;
 }
 
-DWORD Weld_ReadAllRecord()
+void Weld_ReadAllRecord()
 {
     DWORD i = 0;
     DWORD total;
@@ -6620,7 +6623,7 @@ void Proc_SensorData_State()
 
 }
 
-//------TSPI通讯发送数据
+//------TSPI通讯发送数据,还有一部分在SETUP.C
 
 //power
 void SendCmdPowerOff()
@@ -6670,6 +6673,11 @@ void ResetMotor(void)
 {
 	TspiSendCmdPolling0xA4(0x02);
 }
+
+//0xa6 uitouchcontrol.c
+
+//--电击棒激活请求
+//0xa7 uitouchcontrol.c
 
 //--电击棒信息
 void TspiSendElectrodeInfo(void)
@@ -6730,7 +6738,6 @@ SWORD  TspiSendSimpleInfo0xAF(BYTE bInfo)
 	bTxData[2] =bInfo;
 	return TSPI_PacketSend(bTxData,1);
 }
-
 
 //------TSPI通讯接收处理
 //DWORD g_dwTestTime;
@@ -7418,7 +7425,50 @@ void TSPI_DataProc(void)
 		case 0xbb:
 			if (dwLen<=14)
 			{
+				if (pbTspiRxBuffer[2]==0xfe) //4    特殊指令
+				{
 				memcpy(&g_psSetupMenu->bElectrodeInfo[0],&pbTspiRxBuffer[2],dwLen-3);
+				}
+				else if (g_pstXpgMovie->m_pstCurPage->m_dwHashKey== xpgHash(DIALOG_PAGE_NAME) && xpgGetCurrDialogTypeId() == Dialog_Note_Electrode_Enable_Process)
+				{
+					//--0->表示连不上服务器 1->序列号不存在 2->此序列号已激活
+					if (pbTspiRxBuffer[0]==0)
+					{
+						//转到人工输入
+						Dialog_Electrode_Enable_Process_OnClose();
+					}
+					else if (pbTspiRxBuffer[0]<10)
+					{
+							dwDialogValue.dwValueData=pbTspiRxBuffer[0];
+							strDialogTitle = getstr(Str_Note);
+							dialogOnClose = exitDialog;
+							uiCb_DisableKeyInput(0xff);
+							popupDialog(Dialog_Note_ElectrodeEnable_FAIL, ((STXPGPAGE *)xpgMovieSearchPage("Main"))->m_wIndex,Idu_GetCacheWin());
+							Ui_TimerProcAdd(3000, uiCb_EnableKeyInput);
+							Ui_TimerProcAdd(3000, exitDialog);
+					}
+					else
+					{
+						WORD wCheckCode=((WORD)pbTspiRxBuffer[14])<<8|pbTspiRxBuffer[13];
+						
+						strDialogTitle = getstr(Str_Note);
+						dialogOnClose = exitDialog;
+						uiCb_DisableKeyInput(0xff);
+						if (ProduceElectrodeCheckCode()==wCheckCode)
+						{
+							popupDialog(Dialog_Note_ElectrodeEnable_PASS, ((STXPGPAGE *)xpgMovieSearchPage("Main"))->m_wIndex,Idu_GetCacheWin());
+							Ui_TimerProcAdd(3000, uiCb_CheckElectrodePos);
+						}
+						else
+						{
+							dwDialogValue.dwValueData=0;
+							popupDialog(Dialog_Note_ElectrodeEnable_FAIL, ((STXPGPAGE *)xpgMovieSearchPage("Main"))->m_wIndex,Idu_GetCacheWin());
+							Ui_TimerProcAdd(3000, uiCb_EnableKeyInput);
+							Ui_TimerProcAdd(3000, exitDialog);
+						}
+						xpgUpdateStage();
+					}
+				}
 			}
 			break;
 

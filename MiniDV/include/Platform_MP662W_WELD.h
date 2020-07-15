@@ -842,21 +842,23 @@
 #define Dialog_PowerOnCheckOpenPassword                      22          //4 开机确认开机密码
 #define Dialog_Note_ForgetHirePassword                      23          //4 忘记租借密码
 #define Dialog_Note_ForgetOpenPassword                      24          //4 忘记开机密码
-#define Dialog_Electrode_Enable                      25          //4 激活电极棒
-#define Dialog_Note_ElectrodeEnable_Path                      26          //4 激活电极棒方法
-#define Dialog_Note_ElectrodeEnable_PASS                      27          //4 激活电极棒PASS
-#define Dialog_Note_ElectrodeEnable_FAIL                      28          //4 激活电极棒FAIL
-#define Dialog_MachineWarning                      						29          //4 主界面出现的警告提示框
-#define Dialog_SleepTime                 										30           //4 关机时间对话框
-#define Dialog_ShutdownRemain                 							31           //4 倒计时1分钟关机
-#define Dialog_Note_Reinput                      								32          //4 输入不一致，请重新输入！
-#define Dialog_Note_PasswordError                      				33          //4 密码输入错误
-#define Dialog_Note_ChangeBootWordPASS                      	34          //4 修改开机密码OK
-#define Dialog_Note_ChangeHireWordPASS                      	35          //4 修改租借密码OK
-#define Dialog_YESNO_Upgrade                      						36          //4 是否下载安装新版本
-#define Dialog_Hot_Mode                      									37          //4 加热模式
-#define Dialog_Note_ClearAll                      							38          //4 是否清空熔接记录
-#define Dialog_Record_Detail                      							39          //4 熔接记录照片
+#define Dialog_Electrode_SN_Input                      						25          //4 输入电极棒激活码
+#define Dialog_Note_Electrode_Enable_Process              26          //4 电极棒后台激活处理中
+#define Dialog_Note_ElectrodeEnable_Path                      27          //4 激活电极棒方法
+#define Dialog_Electrode_CheckCode_Input                     28          //4 输入电极棒复验码
+#define Dialog_Note_ElectrodeEnable_PASS                      29          //4 激活电极棒PASS
+#define Dialog_Note_ElectrodeEnable_FAIL                      30          //4 激活电极棒FAIL
+#define Dialog_MachineWarning                      						31          //4 主界面出现的警告提示框
+#define Dialog_SleepTime                 										32           //4 关机时间对话框
+#define Dialog_ShutdownRemain                 							33           //4 倒计时1分钟关机
+#define Dialog_Note_Reinput                      								34          //4 输入不一致，请重新输入！
+#define Dialog_Note_PasswordError                      				35          //4 密码输入错误
+#define Dialog_Note_ChangeBootWordPASS                      	36          //4 修改开机密码OK
+#define Dialog_Note_ChangeHireWordPASS                      	37          //4 修改租借密码OK
+#define Dialog_YESNO_Upgrade                      						38          //4 是否下载安装新版本
+#define Dialog_Hot_Mode                      									39          //4 加热模式
+#define Dialog_Note_ClearAll                      							40          //4 是否清空熔接记录
+#define Dialog_Record_Detail                      							41          //4 熔接记录照片
 
 
 

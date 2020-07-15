@@ -116,6 +116,24 @@ void uiTouchMsgReceiver(void)
 #endif
 
 #if  (PRODUCT_UI==UI_WELDING)
+WORD ProduceElectrodeCheckCode(void)
+{
+	//随机码是十进制4位，生成的激活码也是十进制4位，电极棒序列号可以是十进制10到14位,但建议或是说目前默认是10位(年4位 月2位 序号4位)
+	//typedef unsigned short      WORD; // 2bytes
+	
+	//WORD g_wElectrodeRandomCode  //提供的随机码
+	//BYTE g_psSetupMenu->bElectrodeInfo[6] //电击棒序列号
+	WORD wCheckCode=0; //要生成的校验码
+
+	wCheckCode+=(g_wElectrodeSN&0x00ff);
+	wCheckCode+=(g_wElectrodeSN>>8);
+	wCheckCode ^= g_wElectrodeRandomCode;
+	wCheckCode+=0x16;
+	wCheckCode %=10000;
+
+	return wCheckCode;
+}
+
 SWORD touchSprite_Background(STXPGSPRITE * sprite, WORD x, WORD y)
 {
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
@@ -1055,7 +1073,8 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
             }
         }
         else if (dialogType == Dialog_SetPassword1 || dialogType == Dialog_SetPassword2 || dialogType == Dialog_CheckPassword\
-					|| dialogType == Dialog_PowerOnCheckHirePassword|| dialogType == Dialog_PowerOnCheckOpenPassword|| dialogType == Dialog_Electrode_Enable)
+					|| dialogType == Dialog_PowerOnCheckHirePassword|| dialogType == Dialog_PowerOnCheckOpenPassword|| dialogType == Dialog_Electrode_SN_Input\
+					|| dialogType == Dialog_Electrode_CheckCode_Input)
         {
             static char password1[8] = {0};
             //static char password2[8] = {0};
@@ -1104,33 +1123,43 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
 									Ui_TimerProcAdd(2000, exitDialog);
                             }
                         }
-							else if (dialogType == Dialog_Electrode_Enable)
+							else if (dialogType == Dialog_Electrode_SN_Input)
 							{
-								WORD wInputCode=(strEditPassword[0]-'0')*1000+(strEditPassword[1]-'0')*100+(strEditPassword[2]-'0')*10+(strEditPassword[3]-'0');
+								g_wElectrodeSN=(strEditPassword[0]-'0')*1000+(strEditPassword[1]-'0')*100+(strEditPassword[2]-'0')*10+(strEditPassword[3]-'0');
+								BYTE bTxData[16];
 
-								//随机码是十进制4位，生成的激活码也是十进制4位，电极棒序列号可以是十进制10到14位,但建议或是说目前默认是10位(年4位 月2位 序号4位)
-								//typedef unsigned short      WORD; // 2bytes
-								
-								//WORD g_wElectrodeRandomCode  //提供的随机码
-								//BYTE g_psSetupMenu->bElectrodeInfo[6] //电击棒序列号
-								WORD wCheckCode=0; //要生成的校验码
+								memset(bTxData,0,16);
+								bTxData[0]=0xa7;
+								bTxData[1]=3+8;
+								bTxData[2]=g_wElectrodeSN&0x00ff;
+								bTxData[3]=g_wElectrodeSN>>8;
 
-								for (i=0;i<6;i++)
-									wCheckCode+=g_psSetupMenu->bElectrodeInfo[i];
-								wCheckCode ^= g_wElectrodeRandomCode;
-								wCheckCode+=0x16;
-								wCheckCode %=10000;
+								bTxData[8]=g_wElectrodeRandomCode&0x00ff;
+								bTxData[9]=g_wElectrodeRandomCode>>8;
+								TSPI_PacketSend(bTxData,1);
+
+								exitDialog();
+								strDialogTitle = getstr(Str_Note);
+								dialogOnClose = Dialog_Electrode_Enable_Process_OnClose;
+								popupDialog(Dialog_Note_Electrode_Enable_Process, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCacheWin());
+								xpgUpdateStage();
+
+							}
+							else if (dialogType == Dialog_Electrode_CheckCode_Input)
+							{
+								WORD wCheckCode=(strEditPassword[0]-'0')*1000+(strEditPassword[1]-'0')*100+(strEditPassword[2]-'0')*10+(strEditPassword[3]-'0');
 
 								strDialogTitle = getstr(Str_Note);
 								dialogOnClose = exitDialog;
 								uiCb_DisableKeyInput(0xff);
-								if (wCheckCode==wInputCode)
+								if (ProduceElectrodeCheckCode()==wCheckCode)
 								{
 									popupDialog(Dialog_Note_ElectrodeEnable_PASS, ((STXPGPAGE *)xpgMovieSearchPage("Main"))->m_wIndex,Idu_GetCacheWin());
 									Ui_TimerProcAdd(3000, uiCb_CheckElectrodePos);
 								}
 								else
 								{
+									dwDialogValue.dwValueData=0;
 									popupDialog(Dialog_Note_ElectrodeEnable_FAIL, ((STXPGPAGE *)xpgMovieSearchPage("Main"))->m_wIndex,Idu_GetCacheWin());
 									Ui_TimerProcAdd(3000, uiCb_EnableKeyInput);
 									Ui_TimerProcAdd(3000, exitDialog);
@@ -1140,7 +1169,7 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
                     }
                 }
             }
-            else if (dwIconId == 10)  // forget
+            else if (dwIconId == 10)  // forget  enter key
             {
 					if (dialogType == Dialog_CheckPassword)
 					{
@@ -1160,15 +1189,12 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
 							popupDialog(Dialog_Note_ForgetOpenPassword, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCacheWin());
 						xpgUpdateStage();
                 }
-				else if (dialogType == Dialog_Electrode_Enable)
+				else if (dialogType == Dialog_Electrode_SN_Input||dialogType == Dialog_Electrode_CheckCode_Input)
 				{
-					strDialogTitle = getstr(Str_Note);
-					dialogOnClose = exitDialog;
-					popupDialog(Dialog_Note_ElectrodeEnable_Path, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCacheWin());
-					xpgUpdateStage();
+                exitDialog();
 				}
             }
-            else if (dwIconId == 11)
+            else if (dwIconId == 11) // Backspace
             {
                 if (len)
                 {
@@ -1495,7 +1521,8 @@ SWORD touchSprite_CloseIcon(STXPGSPRITE * sprite, WORD x, WORD y)
         int dialogType = xpgGetCurrDialogTypeId();
 
 #if 1
-        if ((dialogType == Dialog_MainPageError||dialogType == Dialog_MachineWarning) && dialogOnClose != NULL)
+        if ((dialogType == Dialog_MainPageError||dialogType == Dialog_MachineWarning||dialogType == Dialog_Note_Electrode_Enable_Process\
+					||dialogType == Dialog_Note_ElectrodeEnable_Path) && dialogOnClose != NULL)
         {
             dialogOnClose();
 			return PASS;
@@ -1642,6 +1669,31 @@ SWORD touchSprite_CloseIcon(STXPGSPRITE * sprite, WORD x, WORD y)
 }
 
 void (*dialogOnClose)() = NULL;
+
+
+void Dialog_ElectrodeEnable_Path_OnClose()
+{
+    mpDebugPrint("%s()", __FUNCTION__);
+	exitDialog();
+	strDialogTitle = getstr(Str_InputCheckCode);
+	memset(strEditPassword, 0, sizeof(strEditPassword));
+	dialogOnClose = exitDialog;
+	popupDialog(Dialog_Electrode_CheckCode_Input, ((STXPGPAGE *)xpgMovieSearchPage("Main"))->m_wIndex,Idu_GetCacheWin());
+	xpgUpdateStage();
+}
+
+void Dialog_Electrode_Enable_Process_OnClose()
+{
+    mpDebugPrint("%s()", __FUNCTION__);
+	exitDialog();
+	//转到人工输入
+	strDialogTitle = getstr(Str_Note);
+	dialogOnClose = Dialog_ElectrodeEnable_Path_OnClose;
+	popupDialog(Dialog_Note_ElectrodeEnable_Path, g_pstXpgMovie->m_pstCurPage->m_wIndex,Idu_GetCacheWin());
+	xpgUpdateStage();
+}
+
+
 
 static void Dialog_JiaReWenDu_OnClose()
 {
@@ -2410,7 +2462,7 @@ SWORD touchSprite_List(STXPGSPRITE * sprite, WORD x, WORD y)
 				strDialogTitle = getstr(Str_Input_ElectrodeEnableCode);
 				memset(strEditPassword, 0, sizeof(strEditPassword));
 				dialogOnClose = exitDialog;
-				popupDialog(Dialog_Electrode_Enable, ((STXPGPAGE *)xpgMovieSearchPage("Main"))->m_wIndex,Idu_GetCacheWin());
+				popupDialog(Dialog_Electrode_SN_Input, ((STXPGPAGE *)xpgMovieSearchPage("Main"))->m_wIndex,Idu_GetCacheWin());
 				xpgUpdateStage();
 				break;
 
