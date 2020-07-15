@@ -165,7 +165,7 @@ typedef struct {
     BYTE bRedPenEnable;
     BYTE bRedPenHZ;
     BYTE bRedPenTimerEnable;
-    WORD wRedPenTime;
+    WORD bRedPenTime;
 //温度压力环境亮度
     BYTE bTemperatureInhome[2];
     BYTE bTemperatureOuthome[2];

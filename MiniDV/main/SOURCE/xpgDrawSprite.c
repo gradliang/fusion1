@@ -1903,7 +1903,7 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             char tempstr[32];
             Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
             SetCurrIduFontID(FONT_ID_HeiTi19);
-            sprintf(tempstr, "%dmin", g_psUnsaveParam->wRedPenTime);
+            sprintf(tempstr, "%dmin", g_psUnsaveParam->bRedPenTime);
             Idu_PrintStringCenter(pWin, tempstr, pstSprite->m_wPx, pstSprite->m_wPy+4, 0, pstSprite->m_wWidth);
             Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
         }

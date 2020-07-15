@@ -1721,5 +1721,35 @@ void TimerCheckPowerOff(void)
 }
 
 //<------------TOUCH UI FUNCION-----------------------
+//--ºì¹â±Ê  VFL
+void uiCb_VFLHzFlash(void)
+{
+	DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
+    STXPGSPRITE *pstSprite,* pstMask;
+		ST_IMGWIN * pWin=Idu_GetCurrWin();
+	
+	if (g_psUnsaveParam->bRedPenEnable&& g_psUnsaveParam->bRedPenHZ && dwHashKey == xpgHash("RedLight"))
+	{
+		pstSprite = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_LIGHT_ICON, 0);
+		pstMask = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_MASK, 0);
+		if (pstSprite && pstMask)
+		{
+			if (pstSprite->m_bFlag)
+			{
+				pstSprite->m_bFlag=0;
+				pstSprite = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_ICON, 0);
+				if (pstSprite)
+	                xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+			}
+			else
+			{
+				pstSprite->m_bFlag=1;
+	           xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
+			}
+		}
+		Ui_TimerProcAdd(1000, uiCb_VFLHzFlash);
+	}
+}
+
 
 

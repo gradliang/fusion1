@@ -6622,6 +6622,38 @@ void Proc_SensorData_State()
 
 //------TSPI通讯发送数据
 
+//power
+void SendCmdPowerOff()
+{
+	BYTE bTxData[8];
+
+	MP_DEBUG("SendCmdPowerOff");
+	bTxData[0]=0x98;
+	bTxData[1]=3+1;
+	bTxData[2]=0;
+	TSPI_PacketSend(bTxData,0);
+}
+
+//--RTC
+void TspiSendRTC(void)
+{
+	BYTE bTxData[10];
+	ST_SYSTEM_TIME curTime;
+
+	bTxData[0]=0x99;
+	bTxData[1]=3+6;
+	SystemTimeGet(&curTime);
+	bTxData[2]=curTime.u16Year-2000;
+	bTxData[3]=curTime.u08Month;
+	bTxData[4]=curTime.u08Day;
+	bTxData[5]=curTime.u08Hour;
+	bTxData[6]=curTime.u08Minute;
+	bTxData[7]=curTime.u08Second;
+
+	TSPI_PacketSend(bTxData,1);
+}
+
+
 //--查询指令
 SWORD TspiSendCmdPolling0xA4(BYTE bCmd)
 {
@@ -6697,37 +6729,6 @@ SWORD  TspiSendSimpleInfo0xAF(BYTE bInfo)
 	bTxData[1]=3+1;
 	bTxData[2] =bInfo;
 	return TSPI_PacketSend(bTxData,1);
-}
-
-//power
-void SendCmdPowerOff()
-{
-	BYTE bTxData[8];
-
-	MP_DEBUG("SendCmdPowerOff");
-	bTxData[0]=0x98;
-	bTxData[1]=3+1;
-	bTxData[2]=0;
-	TSPI_PacketSend(bTxData,0);
-}
-
-//--RTC
-void TspiSendRTC(void)
-{
-	BYTE bTxData[10];
-	ST_SYSTEM_TIME curTime;
-
-	bTxData[0]=0x99;
-	bTxData[1]=3+6;
-	SystemTimeGet(&curTime);
-	bTxData[2]=curTime.u16Year-2000;
-	bTxData[3]=curTime.u08Month;
-	bTxData[4]=curTime.u08Day;
-	bTxData[5]=curTime.u08Hour;
-	bTxData[6]=curTime.u08Minute;
-	bTxData[7]=curTime.u08Second;
-
-	TSPI_PacketSend(bTxData,1);
 }
 
 
@@ -7521,12 +7522,13 @@ void TSPI_DataProc(void)
 			if (pbTspiRxBuffer[4])
 			{
 				g_psUnsaveParam->bRedPenTimerEnable=1;
-				g_psUnsaveParam->wRedPenTime=pbTspiRxBuffer[4];
+				g_psUnsaveParam->bRedPenTime=pbTspiRxBuffer[4];
 			}
 			else
 				g_psUnsaveParam->bRedPenTimerEnable=0;
 			if (dwHashKey == xpgHash("RedLight"))
 				xpgUpdateStage();
+			uiCb_VFLHzFlash();
 			break;
 
 		//充电状态与电量

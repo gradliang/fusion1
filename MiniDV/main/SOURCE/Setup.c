@@ -399,7 +399,7 @@ SWORD  SetupSendRedPen(void)
 	bTxData[2]=g_psUnsaveParam->bRedPenEnable;
 	bTxData[3]=g_psUnsaveParam->bRedPenHZ;
 	if (g_psUnsaveParam->bRedPenTimerEnable)
-		bTxData[4]=g_psUnsaveParam->wRedPenTime;
+		bTxData[4]=g_psUnsaveParam->bRedPenTime;
 	else
 		bTxData[4]=0;
 	return TSPI_PacketSend(bTxData,0);

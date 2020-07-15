@@ -518,6 +518,7 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
                 g_psUnsaveParam->bRedPenHZ = !g_psUnsaveParam->bRedPenHZ;
                 xpgUpdateStage();
 					SendUnsaveParam();
+					uiCb_VFLHzFlash();
             }
         }
         else if (dwIconId == 4)
@@ -533,9 +534,8 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
         {
             if (g_psUnsaveParam->bRedPenEnable && g_psUnsaveParam->bRedPenTimerEnable)
             {
-                g_psUnsaveParam->wRedPenTime += 10;
-                if (g_psUnsaveParam->wRedPenTime > 990)
-                    g_psUnsaveParam->wRedPenTime = 990;
+                if (g_psUnsaveParam->bRedPenTime <= 245)
+	                g_psUnsaveParam->bRedPenTime += 10;
                 xpgUpdateStage();
 					SendUnsaveParam();
             }
@@ -544,9 +544,8 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
         {
             if (g_psUnsaveParam->bRedPenEnable && g_psUnsaveParam->bRedPenTimerEnable)
             {
-                g_psUnsaveParam->wRedPenTime -= 10;
-                if (g_psUnsaveParam->wRedPenTime < 10)
-                    g_psUnsaveParam->wRedPenTime = 0;
+                if (g_psUnsaveParam->bRedPenTime >= 10)
+                	g_psUnsaveParam->bRedPenTime -= 10;
                 xpgUpdateStage();
 					SendUnsaveParam();
             }
