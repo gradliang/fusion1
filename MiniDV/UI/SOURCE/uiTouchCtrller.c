@@ -1886,6 +1886,7 @@ static void Dialog_SetValue_SuoDingRongJieCiShu()
     g_psSetupMenu->bMachineLockMode = BIT1;
     exitDialog();
     WriteSetupChg();
+	TspiSendLockInfo();
 }
 
 static void Dialog_SetValue_SuoDingRongJieRiQi()
@@ -1896,6 +1897,7 @@ static void Dialog_SetValue_SuoDingRongJieRiQi()
     g_psSetupMenu->bMachineLockMode = BIT0;
     exitDialog();
     WriteSetupChg();
+	TspiSendLockInfo();
 }
 
 
@@ -2736,6 +2738,7 @@ SWORD touchSprite_TextColorBar(STXPGSPRITE * pstSprite, WORD x, WORD y)
 			{
 				FileBrowserDeleteAllFile();
 				uiEnterRecordList();
+				TspiSendCmdPolling0xA4(0x05);
 			}
 			exitDialog();
         }

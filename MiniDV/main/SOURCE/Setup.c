@@ -368,13 +368,13 @@ SWORD  SetupSendTouchVoice(void)
 	return TSPI_PacketSend(bTxData,0);
 }
 
-SWORD  SetupSendSmartBacklight(void)
+SWORD  SetupSendLowPowerMode(void)
 {
 	BYTE bTxData[8];
 
 	bTxData[0]=0xA9;
 	bTxData[1]=3+2;
-	bTxData[2]=0x07;
+	bTxData[2]=0x08;
 	bTxData[3]=g_psSetupMenu->bLowPowerMode;
 	return TSPI_PacketSend(bTxData,0);
 }
@@ -427,7 +427,7 @@ enum{
     SETUP_SEND_HOT,
     SETUP_SEND_REDPEN, 
     SETUP_SEND_CLOUDONOFF,
-    SETUP_SEND_SMARTBACKLIGHT,
+    SETUP_SEND_LOWPOWERMODE,
     SETUP_SEND_TOUCHVOICE,
 
     SETUP_SEND_MAXNUM
@@ -439,7 +439,7 @@ SWORD(*SetupSendFunctions[]) (void) =
 	SetupSendHot,
 	SetupSendRedPen,
 	SetupSendCloudOnOff,
-	SetupSendSmartBacklight,
+	SetupSendLowPowerMode,
 	SetupSendTouchVoice,
 	NULL
 };
@@ -510,7 +510,7 @@ void WriteSetupChg(void)
 		}
 		else if (dwHashKey == xpgHash("SetSleep"))
 		{
-			SetupSendFlagSet(SETUP_SEND_SMARTBACKLIGHT);
+			SetupSendFlagSet(SETUP_SEND_LOWPOWERMODE);
 		}
 		else if (dwHashKey == xpgHash("SetSound"))
 		{
