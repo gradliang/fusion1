@@ -18,6 +18,8 @@
 #define DIALOG_DEFAULT_WIDTH						352
 #define DIALOG_DEFAULT_HEIGHT					180
 
+#define LEFT_ASIDE_YUV_COLOR						0x14148080
+
 
 extern MODEPARAM tempModeParam;
 extern DIALOGVALUE dwDialogValue;

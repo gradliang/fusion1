@@ -81,14 +81,14 @@ BYTE g_bKeyExcept=0xff; //disable all
 DWORD g_dwMachineErrorFlag=0,g_dwMachineErrorShow=0,g_dwMachineWarningFlag=0;
 
 #if 1 //OPM
-//实时申请,前一个SEG为HEAD，HEAD内每个DWORD为有效SEG数
+//第一个DWORD为HEAD，HEAD内每个DWORD为有效SEG数
 static BYTE* st_pOpmLocalBuf=NULL,* st_pOpmCloudBuf=NULL;
 
 /**
  *
  * @param   bMode:  0x01 本地实时数据 0x02本地存储数据 0x03 云端实时数据 0x04 云端历史数据
  *
- * @return   : success for resource data else return AK_NULL
+ * @return   : success for resource data else return NULL
  *
  */
 void OpmBufferRelease(void)
@@ -98,8 +98,8 @@ void OpmBufferRelease(void)
 	if (st_pOpmCloudBuf)
 		ext_mem_free(st_pOpmCloudBuf);
 }
-
-BYTE *OpmGetbuffer(BYTE bMode) //bMode
+//bMode   0x01 本地实时数据 0x02本地存储数据 0x03 云端实时数据 0x04 云端历史数据
+BYTE *OpmGetbuffer(BYTE bMode) 
 {
 	if (bMode==0x02)
 	{
@@ -135,6 +135,172 @@ DWORD OpmGetTotalNumber(BYTE bMode)
 
 	return 0;
 }
+
+#if 0
+int LoadOPMLocalDataFromFile()
+{
+    DRIVE *sysDrv;
+    BYTE  sysDrvId = SYS_DRV_ID;
+    DWORD confirm_1, confirm_2;
+    DWORD value_1, value_2, updateValue;
+    DWORD *ptr32;
+    SDWORD retVal = PASS;
+    DRIVE_PHY_DEV_ID phyDevID = DriveIndex2PhyDevID(sysDrvId);
+
+    //if ((phyDevID != DEV_NAND) && (phyDevID != DEV_SPI_FLASH))
+    if (sysDrvId == NULL_DRIVE)
+    {
+        MP_ALERT("--E-- %s: Invalid System Drive ID (= %d) defined ! => use current drive instead ...", __FUNCTION__, SYS_DRV_ID);
+        sysDrvId = DriveCurIdGet(); /* use current drive */
+
+        if (sysDrvId == NULL_DRIVE)
+        {
+            MP_ALERT("%s: --E-- Current drive is NULL !!! Abort !!!", __FUNCTION__);
+            return FALSE;
+        }
+
+        MP_ALERT("Using current drive-%s !!!", DriveIndex2DrvName(sysDrvId));
+    }
+
+
+    {
+        STREAM* file_1 = NULL;
+        DWORD fileSize;
+        DWORD dwFlag;
+        BOOL checkTimes = 1;
+        STRECORD  record;
+
+STTAB_OPEN_START:
+        sysDrv = DriveGet(sysDrvId);
+		DirReset(sysDrv);
+
+        // record1.sys
+        if (FileSearch(sysDrv, RECORD_TABLE_PATH_1, RECORD_TABLE_EXT, E_FILE_TYPE) != FS_SUCCEED)
+        {
+            MP_DEBUG("record1.sys is not found in drive-%s !! Create it now.", DriveIndex2DrvName(sysDrvId));
+            if (CreateFile(sysDrv, RECORD_TABLE_PATH_1, RECORD_TABLE_EXT) != FS_SUCCEED)
+            {
+                MP_ALERT("-E- record1.sys in drive-%s can't be created!!!", DriveIndex2DrvName(sysDrvId));
+                retVal = FAIL;
+                goto _OPEN_END;
+            }
+        }
+
+        file_1 = FileOpen(sysDrv);
+        fileSize = FileSizeGet(file_1);
+        if (fileSize < 4)
+        {
+            goto _OPEN_END;
+        }
+        
+
+        Fseek(file_1, 0, SEEK_SET);
+        if (FileRead(file_1, (BYTE *) &dwFlag, 4) != 4)
+        {
+            retVal = FAIL;
+            goto _OPEN_END;
+        }
+
+        if (dwFlag != RECORD_FLAG)
+        {
+            MP_ALERT("-E- record1.sys flag error.");
+            goto _OPEN_END;
+        }
+
+        ClearAllRecord();
+        
+        while (FileRead(file_1, (BYTE *) &record, sizeof(record)) == sizeof(record))
+        {
+            AddRecord(&record);
+        }
+        
+_OPEN_END:
+        if (file_1 != NULL)
+            FileClose(file_1);
+    }
+
+    return retVal;
+}
+
+int SaveRecordToFile()
+{
+    DRIVE *sysDrv;
+    BYTE  sysDrvId = SYS_DRV_ID;
+    DWORD confirm_1, confirm_2;
+    DWORD value_1, value_2, updateValue;
+    DWORD *ptr32;
+    SDWORD retVal = PASS;
+    DRIVE_PHY_DEV_ID phyDevID = DriveIndex2PhyDevID(sysDrvId);
+
+    //if ((phyDevID != DEV_NAND) && (phyDevID != DEV_SPI_FLASH))
+    if (sysDrvId == NULL_DRIVE)
+    {
+        MP_ALERT("--E-- %s: Invalid System Drive ID (= %d) defined ! => use current drive instead ...", __FUNCTION__, SYS_DRV_ID);
+        sysDrvId = DriveCurIdGet(); /* use current drive */
+
+        if (sysDrvId == NULL_DRIVE)
+        {
+            MP_ALERT("%s: --E-- Current drive is NULL !!! Abort !!!", __FUNCTION__);
+            return FALSE;
+        }
+
+        MP_ALERT("Using current drive-%s !!!", DriveIndex2DrvName(sysDrvId));
+    }
+
+
+    {
+        DWORD i;
+        STREAM* file_1 = NULL;
+        DWORD fileSize;
+        DWORD dwFlag = RECORD_FLAG;
+        BOOL checkTimes = 1;
+
+STTAB_OPEN_START:
+        sysDrv = DriveGet(sysDrvId);
+		DirReset(sysDrv);
+
+        // record1.sys
+        if (FileSearch(sysDrv, RECORD_TABLE_PATH_1, RECORD_TABLE_EXT, E_FILE_TYPE) != FS_SUCCEED)
+        {
+            MP_DEBUG("record1.sys is not found in drive-%s !! Create it now.", DriveIndex2DrvName(sysDrvId));
+            if (CreateFile(sysDrv, RECORD_TABLE_PATH_1, RECORD_TABLE_EXT) != FS_SUCCEED)
+            {
+                MP_ALERT("-E- record1.sys in drive-%s can't be created!!!", DriveIndex2DrvName(sysDrvId));
+                retVal = FAIL;
+                goto _OPEN_END;
+            }
+        }
+
+        file_1 = FileOpen(sysDrv);
+        
+        fileSize = FileSizeGet(file_1);
+        if (fileSize < 4)
+        {
+            goto _OPEN_END;
+        }
+
+        if (FileWrite(file_1, (BYTE *)&dwFlag, 4) != 4)
+        {
+            MP_ALERT("write record1.sys error.");
+            goto _OPEN_END;
+        }
+
+        for (i = 0; i < GetRecordTotal(); i++)
+        {
+            STRECORD* pstRecord = GetRecord(i);
+            FileWrite(file_1, (BYTE *)pstRecord, sizeof(STRECORD));
+        }
+        
+_OPEN_END:
+        if (file_1 != NULL)
+            FileClose(file_1);
+    }
+
+    return retVal;
+}
+#endif
+
+
 #endif
 
 #if TSPI_ENBALE

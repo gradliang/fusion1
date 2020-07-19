@@ -77,6 +77,10 @@ DWORD g_dwPassNum = 0,g_dwFailNum=0;
 #endif
 BYTE g_bPowerOnCheckPassword=2;
 
+//--weld 
+ST_OPM_PAGE g_stLocalOpmPage,g_stCloudOpmPage;
+ST_OPM_REAL_DATA g_stLocalOpmPageRealData,g_stCloudOpmPageRealData;
+
 //---------------------------------------------------------------------------
 // For xpg call main functions
 //---------------------------------------------------------------------------
@@ -1752,4 +1756,11 @@ void uiCb_VFLHzFlash(void)
 }
 
 
+//--
+void 	xpgParamInit()
+{
+	memset(&g_stLocalOpmPage,0,sizeof (g_stLocalOpmPage));
+	memset(&g_stCloudOpmPage,0,sizeof (g_stCloudOpmPage));
+
+}
 

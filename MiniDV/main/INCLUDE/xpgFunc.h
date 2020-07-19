@@ -22,6 +22,15 @@ enum {
     MOVE_LEFT,
 };
 
+enum {
+    OPM_NULL,
+    OPM_LOCAL_REALTIME,
+    OPM_LOCAL_RECORD,
+    OPM_CLOUD_REALTIME,
+    OPM_CLOUD_RECORD,
+};
+
+
 typedef struct{
     DWORD    dwOnPageBit;				/* 1bit for 1page */
     WORD    wX;                    /* left top */
@@ -30,6 +39,24 @@ typedef struct{
     WORD    wH;                    
     DWORD    dwColor;				/* index for OSD,YYUV for idu*/
 } ST_LINE;
+
+
+typedef struct{
+    BYTE    bPowerOnOff;				/* 0->off 1->on */
+} ST_OPM_PAGE;
+extern ST_OPM_PAGE g_stLocalOpmPage,g_stOpmCloud;
+
+
+typedef struct{
+	//BYTE	bIndexId[6];				/* 年月日时分秒*/
+	BYTE	bWaveLenth;		/* BIT0~2: uw小数点位数BIT3~5:波长0 ~5  0：850 1：1300 2：1310 3：1490 4：1550 5：1625 BIT6:db  0负数 1为正数BIT7:dbm  0负数 1为正数 */
+	BYTE  bDbDbmDot;			/* BIT0~3: db小数点位数BIT4~7: dbm小数点位数 */
+	WORD wuW;
+	WORD wdbm;
+	WORD wdb; //14 bytes
+	//BYTE bName[14];
+} ST_OPM_REAL_DATA;
+extern ST_OPM_REAL_DATA g_stLocalOpmPageRealData,g_stOpmCloudRealData;
 
 #define AUTO_SLEEP_TIME         (120*1000)
 #if (SENSOR_ENABLE == ENABLE)
@@ -194,6 +221,8 @@ void uiCb_CheckPopDialogAfterUpdatestage(void);
 void DialogCb_ExitLowPowerPopWarning(void);
 void DialogCb_ExitLowNetsignalPopWarning(void);
 BYTE uiCb_CheckWeldError(void);
+
+void 	xpgParamInit();
 
 #endif
 

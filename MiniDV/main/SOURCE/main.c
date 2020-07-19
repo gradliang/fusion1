@@ -789,6 +789,7 @@ else
     //SetMotionDetectionEnable(1);
 
   //  initRecordDummyData();
+	xpgParamInit();
 	SystemDataInit();
 
     while (1)

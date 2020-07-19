@@ -101,7 +101,7 @@
 //#define	PRODUCT_MODEL           "Mini-DV "
 //#define	SVN_VERSION             "10841" 
 #define	PRODUCT_MAIN_VER           		1
-#define	PRODUCT_SUB_VER           		0
+#define	PRODUCT_SUB_VER           		1
 
 //#define Support_EPD
 
@@ -813,6 +813,9 @@
 #define SPRITE_TYPE_TextColorBar          31
 
 //xpg page define
+#define PAGE_TITLE_HEIGHT          				40
+#define PAGE_LEFT_HIDE          						24
+
 
 //功能配置界面ICON的序号
 #define FUNCTION_ID_LAMP                        	5           //4 照明灯

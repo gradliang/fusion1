@@ -105,7 +105,7 @@ void xpgRoleDraw(STXPGROLE * pstRole, void *pTarget, register DWORD * pdwImageBu
 	MP_ASSERT(pTarget != NULL);
 
     DWORD right, bottom;
-	right = px + pstRole->m_wWidth;
+	right = px + ALIGN_CUT_2(pstRole->m_wWidth); // ALIGN_CUT_2½â¾öÓÒ±ß°×Ìõ
 	if (right > dwScrWd)
 		right = dwScrWd;
 

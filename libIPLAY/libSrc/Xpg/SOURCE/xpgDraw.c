@@ -564,6 +564,7 @@ void xpgDirectDrawRoleOnWin(ST_IMGWIN * pWin, STXPGROLE * pstRole,
 		return;
 	if (pstRole->m_pImage == NULL)
 		return;
+	x=ALIGN_CUT_2(x);
 	if (x >= pWin->wWidth || y >= pWin->wHeight)
 		return;
     if (x + pstRole->m_wWidth > pWin->wWidth)
