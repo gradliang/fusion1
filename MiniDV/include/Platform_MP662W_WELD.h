@@ -11,7 +11,8 @@
 //#define PRODUCT_ID									(PCBA_MAIN_BOARD_V10|PANEL_800x600|UI_SURFACE)
 //#define PRODUCT_ID									(PCBA_MAIN_BOARD_V11|PANEL_LVDS_1024x600|UI_SURFACE)
 //#define PRODUCT_ID									(PCBA_MAIN_BOARD_V12|PANEL_800x480|UI_WELDING)
-#define PRODUCT_ID									(PCBA_MAIN_BOARD_V20|PANEL_800x480|UI_WELDING)
+//#define PRODUCT_ID									(PCBA_MAIN_BOARD_V20|PANEL_800x480|UI_WELDING)
+#define PRODUCT_ID									(PCBA_MAIN_BOARD_V30|PANEL_800x480|UI_WELDING)
 
 
 //common function
@@ -28,8 +29,11 @@
 //software sub funtion
 #if (PRODUCT_UI==UI_WELDING)
 #define USBCAM_IN_ENABLE									0// // 1->normal jpg+yuy2  2->only yuy2 640*480
+#if (PRODUCT_PCBA==PCBA_MAIN_BOARD_V30)
+#define  UART_TO_MCU              								1//ENABLE
+#else
 #define  TSPI_ENBALE              								1//ENABLE
-
+#endif
 //---For test machine
 #define		SHOW_CENTER											0  //4 在显示屏中间固定画个十字架及两条水平线，看画面是否居中及水平，用于在装摄像头的夹具上
 #define		TEST_DISPLAY_PANEL							0 //4  显示出几个像素，用于在装摄像头的夹具上
@@ -435,7 +439,7 @@
 
 #endif
 
-#if (PRODUCT_PCBA==PCBA_MAIN_BOARD_V10)
+#if 0//(PRODUCT_PCBA==PCBA_MAIN_BOARD_V10)
 #define SENSOR_GPIO_RESET           (KGPIO | GPIO_01)
 #endif
 
@@ -471,7 +475,7 @@
 #define GPIO_MS_PWCTRL              GPIO_NULL
 #if (PRODUCT_PCBA==PCBA_MAIN_BOARD_V10)
 #define GPIO_BL_CTRL                	(PGPIO | GPIO_01)// MP662 PIN114
-#elif (PRODUCT_PCBA==PCBA_MAIN_BOARD_V11||PRODUCT_PCBA==PCBA_MAIN_BOARD_V12||PRODUCT_PCBA==PCBA_MAIN_BOARD_V20)
+#else //if (PRODUCT_PCBA==PCBA_MAIN_BOARD_V11||PRODUCT_PCBA==PCBA_MAIN_BOARD_V12||PRODUCT_PCBA==PCBA_MAIN_BOARD_V20)
 #define GPIO_BL_CTRL                	(PGPIO | GPIO_03)// MP662 PIN115
 #endif
 #define GPIO_AMPMUTE                GPIO_NULL

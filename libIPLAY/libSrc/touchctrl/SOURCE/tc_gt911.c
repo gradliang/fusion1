@@ -70,6 +70,23 @@ BYTE ACK1=1, ACK2=1, ACK3=1;
 #define __GT911_i2c_all_output()	(g_psGpio->Gpdat0 |= 0x00030000)
 #define __GT911_i2c_set_gpio_mode() (g_psGpio->Gpcfg0 = (g_psGpio->Gpcfg0 & 0xfffcfffc) )
 
+#elif (PRODUCT_PCBA==PCBA_MAIN_BOARD_V30)
+
+#define __GT911_i2c_data_high()	(g_psGpio->Agpdat|= 0x00000002)
+#define __GT911_i2c_data_low()		(g_psGpio->Agpdat &= 0xfffffffd)
+#define __GT911_i2c_data_output()	(g_psGpio->Agpdat |= 0x00020000)
+#define __GT911_i2c_data_input()	(g_psGpio->Agpdat &= 0xfffdffff)
+
+#define __GT911_i2c_clk_high()		(g_psGpio->Agpdat |= 0x00000001)
+#define __GT911_i2c_clk_low()		(g_psGpio->Agpdat &= 0xfffffffe)
+#define __GT911_i2c_clk_output()	(g_psGpio->Agpdat |= 0x00010000)
+#define __GT911_i2c_clk_input()	(g_psGpio->Agpdat &= 0xfffeffff)
+
+
+#define __GT911_i2c_read_data()   ((g_psGpio->Agpdat & 0x00000002)>>1)
+#define __GT911_i2c_all_output()	(g_psGpio->Agpdat |= 0x00030000)
+#define __GT911_i2c_set_gpio_mode() (g_psGpio->Agpcfg= (g_psGpio->Agpcfg & 0xfffcfffc) )
+
 #else
 
 #define __GT911_i2c_data_high()	(g_psGpio->Gpdat0 |= 0x00000002)

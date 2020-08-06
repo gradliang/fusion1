@@ -1062,6 +1062,11 @@ else
             {
                 TSPI_Receiver();
             }
+#elif UART_TO_MCU
+            if (dwMainEvent & EVENT_PROC_UART_DATA)
+            {
+                TSPI_DataProc();
+            }
 #endif
 
 #if (PRODUCT_UI==UI_WELDING) && SENSOR_ENABLE
@@ -1224,6 +1229,8 @@ static SWORD SystemInit(void)
 #endif
 #if TSPI_ENBALE
 	TSPI_Init();
+#elif UART_TO_MCU
+	Uart_To_Mcu_Init();
 #endif
     FileSystemInit();
 

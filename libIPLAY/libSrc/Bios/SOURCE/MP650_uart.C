@@ -39,7 +39,7 @@
 
 static UART_ISR_CALLBACK Uart1ISR_CallbackFunPtr = 0;
 static UART_ISR_CALLBACK Uart2ISR_CallbackFunPtr = 0;
-static BOOL huartAPinMultiplexerEnable = FALSE;
+BOOL huartAPinMultiplexerEnable = FALSE;
 
 static void uartWaitDelay(DWORD wCount)
 {
@@ -369,7 +369,27 @@ void HUartInit(DWORD index, BOOL rxEnable, DWORD baudRate)
     uartWaitDelay(20);
 }
 
+#if UART_TO_MCU
+void HUartMulPinChg(BOOL bMultPinEnble) // bMultPinEnble: 0->GPIO   1->UGPIO
+{
+    CLOCK *regClockPtr = (CLOCK *) CLOCK_BASE;
 
+	huartAPinMultiplexerEnable=bMultPinEnble;
+	if (huartAPinMultiplexerEnable==FALSE)
+	{
+		regClockPtr->PinMuxCfg &= ~BIT0;
+		Gpio_ConfiguraionSet(GPIO_GPIO_0, GPIO_ALT_FUNC_1, GPIO_INPUT_MODE, GPIO_DATA_HIGH, 2);//GPIO
+		Gpio_ConfiguraionSet(GPIO_UGPIO_0, GPIO_DEFAULT_FUNC, GPIO_INPUT_MODE, GPIO_DATA_HIGH, 2); //UGPIO00
+	}
+	else
+	{
+		regClockPtr->PinMuxCfg |= BIT0;
+		Gpio_ConfiguraionSet(GPIO_GPIO_0, GPIO_DEFAULT_FUNC, GPIO_INPUT_MODE, GPIO_DATA_HIGH, 2);//GPIO
+		Gpio_ConfiguraionSet(GPIO_UGPIO_0, GPIO_ALT_FUNC_1, GPIO_INPUT_MODE, GPIO_DATA_HIGH, 2);
+	}
+    uartWaitDelay(10);
+}
+#endif
 
 SDWORD HUartWaitStatus(DWORD index, DWORD dwStatus, DWORD timeOut)
 {
@@ -687,6 +707,10 @@ SDWORD HUartOutText(DWORD index, BYTE *buffer)
     HUART *regUartPtr;
     BYTE counter;
 
+	Idu_OsdErase();
+	Idu_OSDPrint(Idu_GetOsdWin(),buffer, 16, 4, OSD_COLOR_RED);//  90
+	return;
+	
     if (index == HUART_A_INDEX)
         regUartPtr = (HUART *) HUART1_BASE;
     else if (index == HUART_B_INDEX)
@@ -697,6 +721,11 @@ SDWORD HUartOutText(DWORD index, BYTE *buffer)
 
         return;
     }
+
+#if UART_TO_MCU
+	if (!huartAPinMultiplexerEnable)
+		HUartMulPinChg(1);// 0->commucation  1->DEBUG
+#endif
 
     if (HUartWaitStatus(index, C_TXBUF_EMP, UART_WAIT_EMPTY_TIMEOUT) == FAIL)
         return FAIL;

@@ -37,6 +37,8 @@
 #define EVENT_HID_MOUSE         BIT23   // Attention! Conflict with BLUETOOTH
 #elif TSPI_ENBALE
 #define EVENT_TSPI_START       				BIT22
+#elif UART_TO_MCU
+#define EVENT_PROC_UART_DATA       				BIT23
 #endif
 #if (PRODUCT_UI==UI_WELDING)
 #define EVENT_PROC_DATA       					BIT23

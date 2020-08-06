@@ -329,7 +329,11 @@ void Uart_Init(void)
 		return;
     #endif
 
+#if UART_TO_MCU
+    HUartInit(DEBUG_COM_PORT, ENABLE, HUART_BAUD);
+#else
     HUartInit(DEBUG_COM_PORT, DISABLE, HUART_BAUD);
+#endif
 
 #else
     BreakHandlerIsrCallbackRegister(UartIsr);

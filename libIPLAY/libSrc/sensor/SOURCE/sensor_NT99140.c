@@ -97,7 +97,7 @@ void Sensor_Channel_Set(BYTE bChannel)
 
 }
 
-#elif (PRODUCT_PCBA==PCBA_MAIN_BOARD_V11||PRODUCT_PCBA==PCBA_MAIN_BOARD_V12||PRODUCT_PCBA==PCBA_MAIN_BOARD_V20)
+#else //if (PRODUCT_PCBA==PCBA_MAIN_BOARD_V11||PRODUCT_PCBA==PCBA_MAIN_BOARD_V12||PRODUCT_PCBA==PCBA_MAIN_BOARD_V20)
 //--st_bCurChannel:0->channel 0  1->channel 1
 BYTE st_bCurChannel=0;
 
@@ -828,7 +828,13 @@ static void Local_HW_StopIPW2(void)
 
 void Local_Sensor_GPIO_Reset(void)
 {
-#if (PRODUCT_PCBA==PCBA_MAIN_BOARD_V11||PRODUCT_PCBA==PCBA_MAIN_BOARD_V12||PRODUCT_PCBA==PCBA_MAIN_BOARD_V20)
+#if (PRODUCT_PCBA==PCBA_MAIN_BOARD_V10)
+	SetGPIOValue((KGPIO | GPIO_01), 0);
+	IODelay(100);
+	SetGPIOValue((KGPIO | GPIO_01), 1);
+	//Local_HW_GPIO_Pin_ssen_0();
+	//IODelay(100);
+#else //if (PRODUCT_PCBA==PCBA_MAIN_BOARD_V11||PRODUCT_PCBA==PCBA_MAIN_BOARD_V12||PRODUCT_PCBA==PCBA_MAIN_BOARD_V20)
 	WORD gpioNum;
 
 	if (Sensor_CurChannel_Get())
@@ -838,13 +844,6 @@ void Local_Sensor_GPIO_Reset(void)
 	SetGPIOValue(gpioNum, 0);
 	IODelay(100);
 	SetGPIOValue(gpioNum, 1);
-
-#else
-	SetGPIOValue(SENSOR_GPIO_RESET, 0);
-	IODelay(100);
-	SetGPIOValue(SENSOR_GPIO_RESET, 1);
-	//Local_HW_GPIO_Pin_ssen_0();
-	//IODelay(100);
 #endif
 }
 

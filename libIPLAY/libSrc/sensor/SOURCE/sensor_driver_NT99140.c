@@ -153,7 +153,7 @@ static  void __sensor_nt99140_i2c_set_gpio_mode()    //(g_psGpio->Gpcfg0 = (g_ps
 		g_psGpio->Fgpcfg[1] &=  0xf7fff7ff;
 }
 
-#elif (PRODUCT_PCBA==PCBA_MAIN_BOARD_V12||PRODUCT_PCBA==PCBA_MAIN_BOARD_V20)
+#else //if (PRODUCT_PCBA==PCBA_MAIN_BOARD_V12||PRODUCT_PCBA==PCBA_MAIN_BOARD_V20)
 
 //FGPIO 24  --SDA1  FGPIO 42  --SDA2
 void __sensor_nt99140_i2c_data_high()

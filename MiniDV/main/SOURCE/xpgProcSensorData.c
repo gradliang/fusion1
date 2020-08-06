@@ -303,6 +303,15 @@ _OPEN_END:
 
 #endif
 
+#if TSPI_ENBALE||UART_TO_MCU
+#define  TX_BUF_NORMAL_LEN						32
+#define  RX_BUF_NORMAL_LEN						32
+
+static DWORD st_dwTspiRxBufLen=0,st_dwTspiRxIndex=0,st_dwCurRxDataLen;
+static BYTE *pbTspiRxBuffer=NULL,*pbTspiTxBuffer=NULL,st_bTspiTxRetry=0;
+static DWORD st_dwTspiTxBufLen=0,st_dwTspiTxMaxLen;  //4      st_dwTspiTxMaxLen:未收到MCU回复确认长度前BIT31为1
+#endif
+
 #if TSPI_ENBALE
 #define  TX_BUFFER_LENTH								16
 
@@ -310,8 +319,6 @@ _OPEN_END:
 #define  RX_HEAD_FLAG1									0x55
 #define  RX_HEAD_FLAG2									0x55
 #define  RX_HEAD_FLAG3									0xee
-#define  RX_BUF_NORMAL_LEN						32
-#define  TX_BUF_NORMAL_LEN						32
 
 
 #define SPI_CLK_GPIO                			GPIO_UGPIO_0 //pin80 
@@ -326,10 +333,7 @@ _OPEN_END:
 #define TSPI_DIN_Low 		Gpio_Config2GpioFunc(SPI_DIN_GPIO, GPIO_OUTPUT_MODE, GPIO_DATA_LOW, 1)
 #define TSPI_DIN_High 	Gpio_Config2GpioFunc(SPI_DIN_GPIO, GPIO_INPUT_MODE, GPIO_DATA_HIGH, 1)
 
-static DWORD st_dwTspiRxBufLen=0,st_dwTspiRxIndex=0;
-static BYTE *pbTspiRxBuffer=NULL,st_bTspiBusy=0,st_bTspiAbnormal=0;
-static DWORD st_dwTspiTxBufLen=0,st_dwTspiTxMaxLen;  //4      st_dwTspiTxMaxLen:未收到MCU回复确认长度前BIT31为1
-static BYTE *pbTspiTxBuffer=NULL,st_bTspiTxRetry=0;
+static BYTE st_bTspiBusy=0,st_bTspiAbnormal=0;
 
 
 BYTE TSPI_WaitFree(void)
@@ -720,6 +724,156 @@ void TSPI_Receive_Check()
 
 #endif
 
+#if UART_TO_MCU
+extern BOOL huartAPinMultiplexerEnable;
+void Uart_Send_Action(BYTE *pbDataBuf,DWORD dwLenth )
+{
+	if (huartAPinMultiplexerEnable)
+		HUartMulPinChg(0);// 0->commucation  1->DEBUG
+	UartWrite(pbDataBuf,dwLenth);
+	//HUartMulPinChg(1);// 0->commucation  1->DEBUG
+}
+
+void Uart_TimerToResend(void)
+{
+	DWORD dwLenth;
+	
+	if (!st_bTspiTxRetry)
+		return;
+	if (pbTspiTxBuffer[1])
+		dwLenth=pbTspiTxBuffer[1];
+	else
+		dwLenth=((DWORD)pbTspiTxBuffer[2]<<24)|((DWORD)pbTspiTxBuffer[3]<<16)|((DWORD)pbTspiTxBuffer[4]<<8)|pbTspiTxBuffer[5];
+	Uart_Send_Action(pbTspiTxBuffer,dwLenth);
+	st_bTspiTxRetry--;
+	if (st_bTspiTxRetry)
+			Ui_TimerProcAdd(st_bTspiTxRetry*30, Uart_TimerToResend);
+}
+
+SWORD TSPI_PacketSend(BYTE *pbDataBuf,BYTE bCheckResend)//uart
+{
+	DWORD i,dwLenth;
+	
+	//UartOutValue(pbDataBuf[0], 2);
+	if (pbDataBuf[1])
+		dwLenth=pbDataBuf[1];
+	else
+		dwLenth=((DWORD)pbDataBuf[2]<<24)|((DWORD)pbDataBuf[3]<<16)|((DWORD)pbDataBuf[4]<<8)|pbDataBuf[5];
+	dwLenth--;
+	pbDataBuf[dwLenth]=pbDataBuf[0];
+	for (i=1;i<dwLenth;i++)
+		pbDataBuf[dwLenth]+=pbDataBuf[i];
+	st_bTspiTxRetry=bCheckResend;
+	Uart_Send_Action(pbDataBuf,dwLenth+1);
+	if (st_bTspiTxRetry)
+			Ui_TimerProcAdd(st_bTspiTxRetry*10, Uart_TimerToResend);
+}
+
+extern BYTE g_binitok;
+static void Uart_Receiver(DWORD cause)
+{
+	BYTE bData,bDataHead,bNeedProc=0;
+	DWORD i;
+	static DWORD st_dwLastRxTime;
+	BYTE bStirng[16];
+	
+	//UartOutValue(GetUartChar(), 2);
+	//return;
+	#if 0
+	if (g_binitok)//(cause & C_RXDMA_DONE)
+	{
+		if (CheckUartStatus(C_RXDMA_DONE)==PASS)
+		{
+		UartDMARead(pbTspiRxBuffer,st_dwTspiRxBufLen);
+		sprintf(bStirng," %02x %02x%02x%02x%02x",pbTspiRxBuffer[0],pbTspiRxBuffer[1],pbTspiRxBuffer[2],pbTspiRxBuffer[3],pbTspiRxBuffer[4]);
+		Idu_OsdErase();
+		Idu_OSDPrint(Idu_GetOsdWin(),bStirng, 16, 200, OSD_COLOR_BLUE);//  90
+		}
+	}
+	else if (cause & C_RXTHR_HIT)
+	#endif
+	{
+		while(CheckUartStatus(C_RXTHR_HIT)==PASS)
+		{
+			bData= GetUartChar();
+			bDataHead=bData&0xf0;
+			if ((st_dwTspiRxIndex && SystemGetElapsedTime(st_dwLastRxTime)>50)||st_dwTspiRxIndex>=20)
+			{
+				Idu_OsdErase();
+				for (i=0;i<st_dwTspiRxIndex;i++)
+				{
+					sprintf(bStirng,"%02x",bData);
+					Idu_OSDPrint(Idu_GetOsdWin(),bStirng, st_dwTspiRxIndex*40, 80, OSD_COLOR_GREEN);//  90
+				}
+				st_dwTspiRxIndex=0;
+				//Idu_OsdErase();
+			}
+			//sprintf(bStirng,"%02x",bData);
+			//Idu_OSDPrint(Idu_GetOsdWin(),bStirng, st_dwTspiRxIndex*40, 40, OSD_COLOR_GREEN);//  90
+			st_dwLastRxTime=GetSysTime();
+			//st_dwTspiRxIndex++;
+			//continue;
+			if (st_dwTspiRxIndex>=st_dwTspiRxBufLen)
+			{
+				st_dwTspiRxIndex=0;
+			}
+			if (!st_dwTspiRxIndex && bDataHead!=0xb0 && bDataHead != 0xc0)
+			{
+				//UartOutValue(0x20, 2);
+				//UartOutValue(bData, 2);
+				Idu_OsdErase();
+				sprintf(bStirng,"%02x",bData);
+				Idu_OSDPrint(Idu_GetOsdWin(),bStirng, 0, 40, OSD_COLOR_GREEN);//  90
+				continue;
+			}
+			if (st_dwTspiRxIndex==1)
+			{
+				st_dwCurRxDataLen=bData;
+			}
+			else if (st_dwTspiRxIndex==5 && !pbTspiRxBuffer[1])
+			{
+				st_dwCurRxDataLen=((DWORD)pbTspiRxBuffer[5]<<24)|((DWORD)pbTspiRxBuffer[4]<<16)|((DWORD)pbTspiRxBuffer[3]<<8)|((DWORD)pbTspiRxBuffer[2]);
+			}
+			else if (st_dwTspiRxIndex>1 && st_dwTspiRxIndex+1==st_dwCurRxDataLen)
+			{
+				bNeedProc=1;
+			}
+			pbTspiRxBuffer[st_dwTspiRxIndex++]=bData;
+		}
+		if (bNeedProc)
+			EventSet(UI_EVENT, EVENT_PROC_UART_DATA);
+	}
+
+}
+
+void Uart_To_Mcu_Init(void)
+{
+	if (pbTspiTxBuffer!=NULL && st_dwTspiTxBufLen)
+		ext_mem_free(pbTspiTxBuffer);
+	if (st_dwTspiTxBufLen<TX_BUF_NORMAL_LEN)
+		st_dwTspiTxBufLen=TX_BUF_NORMAL_LEN;
+	st_dwTspiTxBufLen=ALIGN_32(st_dwTspiTxBufLen);
+	pbTspiTxBuffer = (BYTE *)ext_mem_malloc(st_dwTspiTxBufLen);
+	st_dwTspiTxMaxLen=st_dwTspiTxBufLen|BIT31;
+
+	if (pbTspiRxBuffer!=NULL && st_dwTspiRxBufLen)
+		ext_mem_free(pbTspiRxBuffer);
+	if (st_dwTspiRxBufLen<RX_BUF_NORMAL_LEN)
+		st_dwTspiRxBufLen=RX_BUF_NORMAL_LEN;
+	st_dwTspiRxBufLen=ALIGN_32(st_dwTspiRxBufLen);
+	pbTspiRxBuffer = (BYTE *)ext_mem_malloc(st_dwTspiRxBufLen);
+
+#if DEBUG_COM_PORT == HUART_A_INDEX
+    HUartRegisterCallBackFunc(HUART_A_INDEX,Uart_Receiver);
+#elif DEBUG_COM_PORT == HUART_B_INDEX
+    HUartRegisterCallBackFunc(HUART_B_INDEX,Uart_Receiver);
+#endif
+	EnaUartInt();
+
+}
+
+#endif
+
 #if (PRODUCT_UI==UI_WELDING)
 #define MIN_FREE_SPACE             									1000       // KB
 #define WELD_FILE_INFO_LENTH             							64  //BYTE
@@ -904,6 +1058,9 @@ static DWORD st_dwSendFileLen=0,st_dwSendFileIndex=0;
 
 void WeldSendFileTimer(void)
 {
+#if UART_TO_MCU
+	//Uart_Send(pbTspiTxBuffer,dwSendLen);
+#else
 	DWORD dwTspiTxMaxLenth=(st_dwTspiTxMaxLen&0x7fffffff)-8,dwSendLen;
 
 	if (st_dwSendFileIndex*dwTspiTxMaxLenth>=st_dwSendFileLen)
@@ -941,7 +1098,7 @@ void WeldSendFileTimer(void)
 		st_pbBuf=NULL;
 		st_dwSendFileLen=0;
 	}
-
+#endif
 }
 
 SWORD Weld_SendFileInit(DWORD dwFileIndex)
@@ -4302,7 +4459,7 @@ SWORD MoveVMotorToSpecPosition(BYTE bFiberIndex,SWORD swSx,SWORD swTx)
 
 void Discharge(WORD wMode,BYTE bStep)
 {
-	BYTE i,bTxData[TX_BUFFER_LENTH];
+	BYTE i,bTxData[16];
 
 	mpDebugPrint("Discharge %d bStep=%d",wMode,bStep);
 	//st_wDischargeTimeSet=wMode;
@@ -4383,7 +4540,7 @@ void Discharge(WORD wMode,BYTE bStep)
 
 void DischargeAndDriveMotor(BYTE bMotorInex,BYTE bDirection,WORD wPulseBeforDis,WORD wTotalPulse,BYTE bSpeed,WORD wVoltage,WORD wDischargeTime)
 {
-	BYTE i,bTxData[TX_BUFFER_LENTH];
+	BYTE i,bTxData[16];
 
 	st_wDiachargeRunTime=wDischargeTime;
 	bTxData[0]=0xa1;
@@ -6911,14 +7068,19 @@ void TSPI_DataProc(void)
 {
 	BYTE i,bChecksum,index,*pbBuffer;
 	DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey,dwTmpData,dwLen,*pdwBuffer;
+	BYTE bStirng[64];
 	
 	if (!st_dwTspiRxIndex)
 		return;
 	if (pbTspiRxBuffer[1])
 	{
-		for (i=0;i<st_dwTspiRxIndex;i++)
-			mpDebugPrintN(" %02x ",pbTspiRxBuffer[i]);
-		mpDebugPrint("");
+		
+		sprintf(bStirng," %02x %02x%02x%02x%02x",pbTspiRxBuffer[0],pbTspiRxBuffer[1],pbTspiRxBuffer[2],pbTspiRxBuffer[3],pbTspiRxBuffer[4]);
+		Idu_OsdErase();
+		Idu_OSDPrint(Idu_GetOsdWin(),bStirng, 16, 120, OSD_COLOR_GREEN);//  90
+	//	for (i=0;i<st_dwTspiRxIndex;i++)
+	//		mpDebugPrintN(" %02x ",pbTspiRxBuffer[i]);
+	//	mpDebugPrint("");
 	}
 	if (st_dwTspiRxIndex<3)
 		return;
@@ -7669,15 +7831,19 @@ void TSPI_DataProc(void)
 					if (st_bTspiTxRetry)
 					{
 						st_bTspiTxRetry--;
+						#if UART_TO_MCU
+						Uart_TimerToResend();
+						#else
 						TSPI_TimerToResend();
 						Ui_TimerProcRemove(TSPI_TimerToResend);
+						#endif
 					}
 				break;
 				case 0x01:
 					if (st_bTspiTxRetry)
 					{
 						st_bTspiTxRetry=0;
-						Ui_TimerProcRemove(TSPI_TimerToResend);
+						//Ui_TimerProcRemove(TSPI_TimerToResend);
 					}
 				break;
 				case 0x02:
