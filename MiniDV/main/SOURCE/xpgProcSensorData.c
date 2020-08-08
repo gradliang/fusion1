@@ -80,225 +80,281 @@ BYTE Sensor_GetPicMode(void)
 BYTE g_bKeyExcept=0xff; //disable all
 DWORD g_dwMachineErrorFlag=0,g_dwMachineErrorShow=0,g_dwMachineWarningFlag=0;
 
-#if 1 //OPM
-//第一个DWORD为HEAD，HEAD内每个DWORD为有效SEG数
-static BYTE* st_pOpmLocalBuf=NULL,* st_pOpmCloudBuf=NULL;
+WeldRecordPage  g_WeldRecordPage;
 
-/**
- *
- * @param   bMode:  0x01 本地实时数据 0x02本地存储数据 0x03 云端实时数据 0x04 云端历史数据
- *
- * @return   : success for resource data else return NULL
- *
- */
-void OpmBufferRelease(void)
+#if 1 //OPM
+//第一个DWORD为数据标志，同文件头标志，第二个DWORD为数据总数量,再保留2个DWORD，后面为一段段数据
+static BYTE* st_pOpmLocalBuf=NULL,* st_pOpmCloudBuf=NULL;
+ST_OPM_REAL_DATA g_stOpmRealData;
+ST_OPM_PAGE g_stOpmPagePara;
+
+void OpmBufferRelease(BYTE bMode)
 {
-	if (st_pOpmLocalBuf)
+	if (bMode==OPM_LOCAL_RECORD && st_pOpmLocalBuf)
 		ext_mem_free(st_pOpmLocalBuf);
-	if (st_pOpmCloudBuf)
+	if (bMode==OPM_CLOUD_RECORD && st_pOpmCloudBuf)
 		ext_mem_free(st_pOpmCloudBuf);
 }
+
 //bMode   0x01 本地实时数据 0x02本地存储数据 0x03 云端实时数据 0x04 云端历史数据
 BYTE *OpmGetbuffer(BYTE bMode) 
 {
-	if (bMode==0x02)
+	DWORD *pdwFlag;
+	
+	if (bMode==OPM_LOCAL_RECORD)
 	{
 		if (st_pOpmLocalBuf==NULL)
 		{
-			st_pOpmLocalBuf = (BYTE *)ext_mem_malloc(ALIGN_32(OPM_SEGMEN_NUM*OPM_SEGMEN_LEN+1));
-			memset(st_pOpmLocalBuf,0,ALIGN_32(OPM_SEGMEN_NUM*OPM_SEGMEN_LEN+1));
+			st_pOpmLocalBuf = (BYTE *)ext_mem_malloc(ALIGN_32(OPM_SEGMEN_NUM*OPM_SEGMEN_LEN+OPM_REC_BUF_HEAD_LEN));
+			memset(st_pOpmLocalBuf,0,ALIGN_32(OPM_SEGMEN_NUM*OPM_SEGMEN_LEN+OPM_REC_BUF_HEAD_LEN));
+			pdwFlag=(DWORD *)st_pOpmLocalBuf;
+			*pdwFlag=LOCAL_OPM_RECORD_FILE_FLAG;
 		}
 		return st_pOpmLocalBuf;
 	}
-	else if (bMode==0x04)
+	else if (bMode==OPM_CLOUD_RECORD)
 	{
 		if (st_pOpmCloudBuf==NULL)
 		{
-			st_pOpmCloudBuf = (BYTE *)ext_mem_malloc(ALIGN_32(OPM_SEGMEN_NUM*OPM_SEGMEN_LEN+1));
-			memset(st_pOpmCloudBuf,0,ALIGN_32(OPM_SEGMEN_NUM*OPM_SEGMEN_LEN+1));
+			st_pOpmCloudBuf = (BYTE *)ext_mem_malloc(ALIGN_32(OPM_SEGMEN_NUM*OPM_SEGMEN_LEN+OPM_REC_BUF_HEAD_LEN));
+			memset(st_pOpmCloudBuf,0,ALIGN_32(OPM_SEGMEN_NUM*OPM_SEGMEN_LEN+OPM_REC_BUF_HEAD_LEN));
+			pdwFlag=(DWORD *)st_pOpmCloudBuf;
+			*pdwFlag=CLOUD_OPM_RECORD_FILE_FLAG;
 		}
 		return st_pOpmCloudBuf;
 	}
 
 	return NULL;
+}
 
+SWORD OpmAddOneSeg(BYTE bMode,BYTE *pbData)
+{
+	BYTE *pbBuffer=NULL;
+	DWORD *pdwBuffer;
+	SWORD swRet=FAIL;
+
+	pbBuffer=OpmGetbuffer(bMode);
+	if (pbBuffer)
+	{
+		pdwBuffer=(DWORD *)pbBuffer;
+		pdwBuffer++; // skip flag
+		if (*pdwBuffer<OPM_SEGMEN_NUM)
+		{
+			*pdwBuffer=*pdwBuffer+1;
+			pbBuffer+=(*pdwBuffer-1)*OPM_SEGMEN_LEN+OPM_REC_BUF_HEAD_LEN;
+			memcpy(pbBuffer,pbData,sizeof(ST_OPM_REAL_DATA));
+			swRet=PASS;
+		}
+	}
+	return swRet;
+}
+
+SWORD OpmDelOneSeg(BYTE bMode,BYTE *pbTime)
+{
+	BYTE *pbBuffer=NULL,*pbSegStart;
+	DWORD *pdwBuffer,i,k,dwTotalNum;
+	SWORD swRet=FAIL;
+
+	pbBuffer=OpmGetbuffer(bMode);
+	if (pbBuffer)
+	{
+		pdwBuffer=(DWORD *)pbBuffer;// flag
+		dwTotalNum=*(pdwBuffer+1);// num
+		pbSegStart=pbBuffer+OPM_REC_BUF_HEAD_LEN;
+		for (i=0;i<dwTotalNum;i++)
+		{
+			for (k=0;k<6;k++)
+			{
+				if (pbTime[k]!=pbSegStart[1+k])
+					break;
+			}
+			if (k==6)
+			{
+				if (i<dwTotalNum-1)
+				{
+					memcpy(pbSegStart,&pbSegStart[OPM_SEGMEN_LEN],(dwTotalNum-1-i)*OPM_SEGMEN_LEN);
+				}
+				pdwBuffer=(DWORD *)pbBuffer;
+				*(pdwBuffer+1)=dwTotalNum-1;
+				swRet=PASS;
+				break;
+			}
+		}
+	}
+	return swRet;
+}
+
+SWORD OpmAddSegTime(BYTE bMode,DWORD dwIndex) // dwIndex:start from 0
+{
+	BYTE *pbBuffer=NULL;
+	DWORD *pdwBuffer;
+	SWORD swRet=FAIL;
+
+	pbBuffer=OpmGetbuffer(bMode);
+	if (pbBuffer)
+	{
+		pdwBuffer=(DWORD *)pbBuffer;
+		pdwBuffer++; // skip flag
+		if (dwIndex<*pdwBuffer)
+		{
+			pbBuffer+=dwIndex*OPM_SEGMEN_LEN+OPM_REC_BUF_HEAD_LEN;
+			pbBuffer++;  //skip bmode
+			swRet=PASS;
+		}
+	}
+	return swRet;
 }
 
 DWORD OpmGetTotalNumber(BYTE bMode)
 {
 	DWORD *pdwHead;
-	
-	if (pdwHead=(DWORD *)OpmGetbuffer(bMode))
-	{
-		return *pdwHead;
-	}
 
+	if (bMode==OPM_LOCAL_REALTIME ||bMode==OPM_CLOUD_REALTIME  )
+		return 1;
+	else if (pdwHead=(DWORD *)OpmGetbuffer(bMode))
+		return *(pdwHead+1);
 	return 0;
 }
 
-#if 0
-int LoadOPMLocalDataFromFile()
+SWORD OPMLoadDataFromFile(BYTE bMode)
 {
     DRIVE *sysDrv;
-    BYTE  sysDrvId = SYS_DRV_ID;
-    DWORD confirm_1, confirm_2;
-    DWORD value_1, value_2, updateValue;
-    DWORD *ptr32;
-    SDWORD retVal = PASS;
-    DRIVE_PHY_DEV_ID phyDevID = DriveIndex2PhyDevID(sysDrvId);
+    BYTE  sysDrvId = SYS_DRV_ID,* name, * extension,*pbBuffer;
+    DWORD dwFileSize,dwData;
+	STREAM *handle=NULL;
+	SWORD swRet=FAIL;
 
-    //if ((phyDevID != DEV_NAND) && (phyDevID != DEV_SPI_FLASH))
+	if (bMode !=OPM_LOCAL_RECORD &&  bMode !=OPM_CLOUD_RECORD)
+		return FAIL;
+	pbBuffer=OpmGetbuffer(bMode);
+	if (pbBuffer==NULL)
+		return FAIL;
     if (sysDrvId == NULL_DRIVE)
     {
         MP_ALERT("--E-- %s: Invalid System Drive ID (= %d) defined ! => use current drive instead ...", __FUNCTION__, SYS_DRV_ID);
         sysDrvId = DriveCurIdGet(); /* use current drive */
-
         if (sysDrvId == NULL_DRIVE)
         {
             MP_ALERT("%s: --E-- Current drive is NULL !!! Abort !!!", __FUNCTION__);
-            return FALSE;
+            return FAIL;
         }
-
-        MP_ALERT("Using current drive-%s !!!", DriveIndex2DrvName(sysDrvId));
     }
 
+	sysDrv = DriveGet(sysDrvId);
+	DirReset(sysDrv);
+	if (bMode ==OPM_LOCAL_RECORD)
+	{
+		name=LOCAL_OPM_RECORD_FILE_NAME;
+		extension=LOCAL_OPM_RECORD_FILE_EXT;
+	}
+	else
+	{
+		name=CLOUD_OPM_RECORD_FILE_NAME;
+		extension=CLOUD_OPM_RECORD_FILE_EXT;
+	}
 
+    if (FileSearch(sysDrv, name, extension, E_FILE_TYPE) != FS_SUCCEED)
     {
-        STREAM* file_1 = NULL;
-        DWORD fileSize;
-        DWORD dwFlag;
-        BOOL checkTimes = 1;
-        STRECORD  record;
-
-STTAB_OPEN_START:
-        sysDrv = DriveGet(sysDrvId);
-		DirReset(sysDrv);
-
-        // record1.sys
-        if (FileSearch(sysDrv, RECORD_TABLE_PATH_1, RECORD_TABLE_EXT, E_FILE_TYPE) != FS_SUCCEED)
-        {
-            MP_DEBUG("record1.sys is not found in drive-%s !! Create it now.", DriveIndex2DrvName(sysDrvId));
-            if (CreateFile(sysDrv, RECORD_TABLE_PATH_1, RECORD_TABLE_EXT) != FS_SUCCEED)
-            {
-                MP_ALERT("-E- record1.sys in drive-%s can't be created!!!", DriveIndex2DrvName(sysDrvId));
-                retVal = FAIL;
-                goto _OPEN_END;
-            }
-        }
-
-        file_1 = FileOpen(sysDrv);
-        fileSize = FileSizeGet(file_1);
-        if (fileSize < 4)
-        {
-            goto _OPEN_END;
-        }
-        
-
-        Fseek(file_1, 0, SEEK_SET);
-        if (FileRead(file_1, (BYTE *) &dwFlag, 4) != 4)
-        {
-            retVal = FAIL;
-            goto _OPEN_END;
-        }
-
-        if (dwFlag != RECORD_FLAG)
-        {
-            MP_ALERT("-E- record1.sys flag error.");
-            goto _OPEN_END;
-        }
-
-        ClearAllRecord();
-        
-        while (FileRead(file_1, (BYTE *) &record, sizeof(record)) == sizeof(record))
-        {
-            AddRecord(&record);
-        }
-        
-_OPEN_END:
-        if (file_1 != NULL)
-            FileClose(file_1);
+		MP_DEBUG("%s.%s is not found in drive-%s !!", name,extension,DriveIndex2DrvName(sysDrvId));
+		swRet=FAIL;
+		goto _OPEN_END;
+    }
+    handle = FileOpen(sysDrv);
+	dwFileSize = FileSizeGet(handle);
+	//SIZE
+	if (dwFileSize>ALIGN_32(OPM_SEGMEN_NUM*OPM_SEGMEN_LEN+OPM_REC_BUF_HEAD_LEN))
+        goto _OPEN_END;
+	//FLAG
+    Fseek(handle, 0, SEEK_SET);
+    if (FileRead(handle, (BYTE *) &dwData, 4) != 4)
+    {
+        goto _OPEN_END;
+    }
+    if ((bMode ==OPM_LOCAL_RECORD && dwData!=LOCAL_OPM_RECORD_FILE_FLAG)||(bMode ==OPM_CLOUD_RECORD && dwData!=CLOUD_OPM_RECORD_FILE_FLAG))
+    {
+        MP_ALERT("-E- flag error %d:%08x",bMode,dwData);
+        goto _OPEN_END;
+    }
+	//SEG NUM
+    //Fseek(handle, 4, SEEK_SET);
+    if (FileRead(handle, (BYTE *) &dwData, 4) != 4)
+    {
+        goto _OPEN_END;
+    }
+    if (dwData>OPM_SEGMEN_NUM)
+    {
+        MP_ALERT("-E- seg num error %d",dwData);
+        goto _OPEN_END;
     }
 
-    return retVal;
+	if (FileRead(handle, pbBuffer, dwFileSize) == dwFileSize)
+		swRet=PASS;
+
+_OPEN_END:
+    if (handle != NULL)
+        FileClose(handle);
+
+    return swRet;
 }
 
-int SaveRecordToFile()
+SWORD OPMSaveDataToFile(BYTE bMode)
 {
     DRIVE *sysDrv;
-    BYTE  sysDrvId = SYS_DRV_ID;
-    DWORD confirm_1, confirm_2;
-    DWORD value_1, value_2, updateValue;
-    DWORD *ptr32;
-    SDWORD retVal = PASS;
-    DRIVE_PHY_DEV_ID phyDevID = DriveIndex2PhyDevID(sysDrvId);
+    BYTE  sysDrvId = SYS_DRV_ID,* name, * extension,*pbBuffer;
+    DWORD dwSize;
+	STREAM *handle=NULL;
+	SWORD swRet=FAIL;
 
-    //if ((phyDevID != DEV_NAND) && (phyDevID != DEV_SPI_FLASH))
+	if (bMode !=OPM_LOCAL_RECORD &&  bMode !=OPM_CLOUD_RECORD)
+		return FAIL;
+	pbBuffer=OpmGetbuffer(bMode);
+	if (pbBuffer==NULL)
+		return FAIL;
+	dwSize=OPM_SEGMEN_NUM*OPM_SEGMEN_LEN+OPM_REC_BUF_HEAD_LEN;
     if (sysDrvId == NULL_DRIVE)
     {
         MP_ALERT("--E-- %s: Invalid System Drive ID (= %d) defined ! => use current drive instead ...", __FUNCTION__, SYS_DRV_ID);
         sysDrvId = DriveCurIdGet(); /* use current drive */
-
         if (sysDrvId == NULL_DRIVE)
         {
             MP_ALERT("%s: --E-- Current drive is NULL !!! Abort !!!", __FUNCTION__);
-            return FALSE;
+            return FAIL;
         }
-
-        MP_ALERT("Using current drive-%s !!!", DriveIndex2DrvName(sysDrvId));
     }
 
+	sysDrv = DriveGet(sysDrvId);
+	DirReset(sysDrv);
+	if (bMode ==OPM_LOCAL_RECORD)
+	{
+		name=LOCAL_OPM_RECORD_FILE_NAME;
+		extension=LOCAL_OPM_RECORD_FILE_EXT;
+	}
+	else
+	{
+		name=CLOUD_OPM_RECORD_FILE_NAME;
+		extension=CLOUD_OPM_RECORD_FILE_EXT;
+	}
 
+    if (FileSearch(sysDrv, name, extension, E_FILE_TYPE) != FS_SUCCEED)
     {
-        DWORD i;
-        STREAM* file_1 = NULL;
-        DWORD fileSize;
-        DWORD dwFlag = RECORD_FLAG;
-        BOOL checkTimes = 1;
-
-STTAB_OPEN_START:
-        sysDrv = DriveGet(sysDrvId);
-		DirReset(sysDrv);
-
-        // record1.sys
-        if (FileSearch(sysDrv, RECORD_TABLE_PATH_1, RECORD_TABLE_EXT, E_FILE_TYPE) != FS_SUCCEED)
+        MP_DEBUG("%s.%s is not found in drive-%s !! Create it now.", name,extension,DriveIndex2DrvName(sysDrvId));
+        if (CreateFile(sysDrv, name, extension) != FS_SUCCEED)
         {
-            MP_DEBUG("record1.sys is not found in drive-%s !! Create it now.", DriveIndex2DrvName(sysDrvId));
-            if (CreateFile(sysDrv, RECORD_TABLE_PATH_1, RECORD_TABLE_EXT) != FS_SUCCEED)
-            {
-                MP_ALERT("-E- record1.sys in drive-%s can't be created!!!", DriveIndex2DrvName(sysDrvId));
-                retVal = FAIL;
-                goto _OPEN_END;
-            }
-        }
-
-        file_1 = FileOpen(sysDrv);
-        
-        fileSize = FileSizeGet(file_1);
-        if (fileSize < 4)
-        {
+            MP_ALERT("-E- %s.%s in drive-%s can't be created!!!", name,extension,DriveIndex2DrvName(sysDrvId));
             goto _OPEN_END;
         }
-
-        if (FileWrite(file_1, (BYTE *)&dwFlag, 4) != 4)
-        {
-            MP_ALERT("write record1.sys error.");
-            goto _OPEN_END;
-        }
-
-        for (i = 0; i < GetRecordTotal(); i++)
-        {
-            STRECORD* pstRecord = GetRecord(i);
-            FileWrite(file_1, (BYTE *)pstRecord, sizeof(STRECORD));
-        }
-        
-_OPEN_END:
-        if (file_1 != NULL)
-            FileClose(file_1);
     }
+    handle = FileOpen(sysDrv);
+    Fseek(handle, 0, SEEK_SET);
+    if (FileWrite(handle, pbBuffer, dwSize) == dwSize)
+		swRet = PASS;
+    
+_OPEN_END:
+    if (handle != NULL)
+        FileClose(handle);
 
-    return retVal;
+    return swRet;
 }
-#endif
 
 
 #endif
@@ -875,6 +931,10 @@ void Uart_To_Mcu_Init(void)
 #endif
 
 #if (PRODUCT_UI==UI_WELDING)
+static STRECORD **pstRecordList = NULL;
+static DWORD    dwRecordTotal = 0;
+static DWORD    dwAllocedSlot = 0;
+
 #define MIN_FREE_SPACE             									1000       // KB
 #define WELD_FILE_INFO_LENTH             							64  //BYTE
 #define HEAD_EXT             												0x65787520  //ext 
@@ -977,6 +1037,72 @@ SWORD Weld_CaptureFile(ST_IMGWIN *pWin)
 	}
 
     return FAIL;
+}
+
+void AddRecord(STRECORD* pstRecord)
+{
+    //mpDebugPrint("AddRecord");
+    
+    if (pstRecord == NULL)
+        return;
+    
+    if (dwAllocedSlot == 0)
+    {
+        DWORD dwAllocByte = RECORD_INC_COUNT * sizeof(STRECORD*);
+        pstRecordList = (STRECORD**) ext_mem_malloc(dwAllocByte);
+        memset(pstRecordList, 0, dwAllocByte);
+        dwAllocedSlot = RECORD_INC_COUNT;
+    }
+    else if (dwRecordTotal >= dwAllocedSlot) 
+    {
+        STRECORD ** newList;
+        DWORD dwAllocByte = (dwAllocedSlot + RECORD_INC_COUNT) * sizeof(STRECORD*);
+        newList = (STRECORD**) ext_mem_malloc(dwAllocByte);
+        memset(newList, 0, dwAllocByte);
+        memcpy(newList, pstRecordList, dwAllocedSlot*sizeof(STRECORD*));
+        ext_mem_free(pstRecordList);
+        pstRecordList = newList;
+        dwAllocedSlot = dwAllocedSlot + RECORD_INC_COUNT;
+    }
+    ///////////////
+
+    STRECORD * newRecord = (STRECORD*) ext_mem_malloc(sizeof(STRECORD));
+    memcpy(newRecord, pstRecord, sizeof(STRECORD));
+    pstRecordList[dwRecordTotal] = newRecord;
+    dwRecordTotal++;
+    
+}
+
+STRECORD* GetRecord(DWORD dwIndex)
+{
+    if (dwIndex >= dwRecordTotal)
+        return NULL;
+    if (pstRecordList == NULL)
+        return NULL;
+    
+    return pstRecordList[dwIndex];
+}
+
+
+DWORD GetRecordTotal()
+{
+    return dwRecordTotal;
+}
+
+void ClearAllRecord()
+{
+    mpDebugPrint("ClearAllRecord");
+    
+    DWORD i;
+    for (i = 0; i < dwRecordTotal; i++)
+    {
+        if (pstRecordList[i] != NULL)
+        {
+            ext_mem_free(pstRecordList[i]);
+            pstRecordList[i] = NULL;
+        }
+    }
+    dwRecordTotal = 0;
 }
 
 SWORD Weld_ReadFileWeldInfo(STREAM* handle,STRECORD *pRecordData)
@@ -7066,21 +7192,25 @@ SWORD  TspiSendSimpleInfo0xAF(BYTE bInfo)
 //DWORD g_dwTestTime;
 void TSPI_DataProc(void)
 {
-	BYTE i,bChecksum,index,*pbBuffer;
+	BYTE i,bChecksum,bIndex,*pbBuffer;
 	DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey,dwTmpData,dwLen,*pdwBuffer;
+#if UART_TO_MCU
 	BYTE bStirng[64];
-	
+#endif
+
 	if (!st_dwTspiRxIndex)
 		return;
 	if (pbTspiRxBuffer[1])
 	{
-		
+#if UART_TO_MCU
 		sprintf(bStirng," %02x %02x%02x%02x%02x",pbTspiRxBuffer[0],pbTspiRxBuffer[1],pbTspiRxBuffer[2],pbTspiRxBuffer[3],pbTspiRxBuffer[4]);
 		Idu_OsdErase();
 		Idu_OSDPrint(Idu_GetOsdWin(),bStirng, 16, 120, OSD_COLOR_GREEN);//  90
-	//	for (i=0;i<st_dwTspiRxIndex;i++)
-	//		mpDebugPrintN(" %02x ",pbTspiRxBuffer[i]);
-	//	mpDebugPrint("");
+#else
+		for (i=0;i<st_dwTspiRxIndex;i++)
+			mpDebugPrintN(" %02x ",pbTspiRxBuffer[i]);
+		mpDebugPrint("");
+#endif
 	}
 	if (st_dwTspiRxIndex<3)
 		return;
@@ -7205,11 +7335,11 @@ void TSPI_DataProc(void)
 						break;
 					case 3: // main
 						#if SHOW_CENTER
-						index=st_bAFMotoIndex-1;
-						if (st_bMotorHold&(1<<index))
+						bIndex=st_bAFMotoIndex-1;
+						if (st_bMotorHold&(1<<bIndex))
 						{
-							MotorSetStatus(index,MOTOR_NO_HOLD);
-							st_bMotorHold &= ~(1<<index);
+							MotorSetStatus(bIndex,MOTOR_NO_HOLD);
+							st_bMotorHold &= ~(1<<bIndex);
 						}
 						if (st_bAFMotoIndex==5)
 							st_bAFMotoIndex=6;
@@ -7236,11 +7366,11 @@ void TSPI_DataProc(void)
 							 {
 							 	#if 1
 								
-								index=st_bToolMotoIndex-1;
-								if (st_bMotorHold&(1<<index))
+								bIndex=st_bToolMotoIndex-1;
+								if (st_bMotorHold&(1<<bIndex))
 								{
-									MotorSetStatus(index,MOTOR_NO_HOLD);
-									st_bMotorHold &= ~(1<<index);
+									MotorSetStatus(bIndex,MOTOR_NO_HOLD);
+									st_bMotorHold &= ~(1<<bIndex);
 								}
 								st_bToolMotoIndex++;
 								if (st_bToolMotoIndex>MAX_ADJ_NUM)
@@ -7274,18 +7404,18 @@ void TSPI_DataProc(void)
 
 					case 4:// X/Y
 						#if  SHOW_CENTER
-						index=st_bAFMotoIndex-1;
-						if (st_bMotorHold&(1<<index))
+						bIndex=st_bAFMotoIndex-1;
+						if (st_bMotorHold&(1<<bIndex))
 						{
-							MotorSetStatus(index,MOTOR_NO_HOLD);
-							st_bMotorHold &= ~(1<<index);
-							mpDebugPrint(" motor %d hold off",index);
+							MotorSetStatus(bIndex,MOTOR_NO_HOLD);
+							st_bMotorHold &= ~(1<<bIndex);
+							mpDebugPrint(" motor %d hold off",bIndex);
 						}
 						else
 						{
-							MotorSetStatus(index,MOTOR_HOLD);
-							st_bMotorHold|=(1<<index);
-							mpDebugPrint(" motor %d hold on",index);
+							MotorSetStatus(bIndex,MOTOR_HOLD);
+							st_bMotorHold|=(1<<bIndex);
+							mpDebugPrint(" motor %d hold on",bIndex);
 						}
 						#elif TEST_PLANE||ALIGN_DEMO_MODE
 						if (dwHashKey == xpgHash("Auto_work") || dwHashKey == xpgHash("Manual_work"))
@@ -7324,18 +7454,18 @@ void TSPI_DataProc(void)
 								#if 1
 								Weld_StartPause();
 								#else
-								index=st_bToolMotoIndex-1;
-								if (st_bMotorHold&(1<<index))
+								bIndex=st_bToolMotoIndex-1;
+								if (st_bMotorHold&(1<<bIndex))
 								{
-									MotorSetStatus(index,MOTOR_NO_HOLD);
-									st_bMotorHold &= ~(1<<index);
-									mpDebugPrint(" motor %d hold off",index+1);
+									MotorSetStatus(bIndex,MOTOR_NO_HOLD);
+									st_bMotorHold &= ~(1<<bIndex);
+									mpDebugPrint(" motor %d hold off",bIndex+1);
 								}
 								else
 								{
-									MotorSetStatus(index,MOTOR_HOLD);
-									st_bMotorHold|=(1<<index);
-									mpDebugPrint(" motor %d hold on",index+1);
+									MotorSetStatus(bIndex,MOTOR_HOLD);
+									st_bMotorHold|=(1<<bIndex);
+									mpDebugPrint(" motor %d hold on",bIndex+1);
 								}
 								#endif
 							}
@@ -7667,20 +7797,20 @@ void TSPI_DataProc(void)
 				g_dwMachineWarningFlag &= 0xfffffc00;
 				if (pbTspiRxBuffer[2]!=g_psUnsaveParam->bTemperatureInhome[0])
 				{
-					index=pbTspiRxBuffer[2]&BIT7;
+					bIndex=pbTspiRxBuffer[2]&BIT7;
 					i=pbTspiRxBuffer[2]&0x7f;
-					if (index>0)
+					if (bIndex>0)
 						g_dwMachineWarningFlag|=WARNING_INSIDE_TEMP_LOW;
-					else if (!index && i>60)
+					else if (!bIndex && i>60)
 						g_dwMachineWarningFlag|=WARNING_INSIDE_TEMP_HIGH;
 				}
 				if (pbTspiRxBuffer[4]!=g_psUnsaveParam->bTemperatureOuthome[0])
 				{
-					index=pbTspiRxBuffer[4]&BIT7;
+					bIndex=pbTspiRxBuffer[4]&BIT7;
 					i=pbTspiRxBuffer[4]&0x7f;
-					if (index>0 && i>20)
+					if (bIndex>0 && i>20)
 						g_dwMachineWarningFlag|=WARNING_OUTSIDE_TEMP_LOW;
-					else if (!index && i>60)
+					else if (!bIndex && i>60)
 						g_dwMachineWarningFlag|=WARNING_OUTSIDE_TEMP_HIGH;
 				}
 				if (pbTspiRxBuffer[6]!=g_psUnsaveParam->bHumidity)
@@ -7859,16 +7989,14 @@ void TSPI_DataProc(void)
 		case 0xc2:
 			if (dwLen<18)
 				break;
-			pbBuffer=OpmGetbuffer(pbTspiRxBuffer[2]);
-			if (pbBuffer)
+			bIndex=pbTspiRxBuffer[2];
+			if (bIndex==OPM_LOCAL_REALTIME||bIndex==OPM_CLOUD_REALTIME)
 			{
-				pdwBuffer=(DWORD *)pbBuffer;
-				if (*pdwBuffer<OPM_SEGMEN_NUM)
-				{
-					*pdwBuffer=*pdwBuffer+1;
-					pbBuffer+=(*pdwBuffer-1)*OPM_SEGMEN_LEN+1;
-					memcpy(pbBuffer,&pbTspiRxBuffer[3],14);
-				}
+				memcpy(&g_stOpmRealData,&pbTspiRxBuffer[2],sizeof(ST_OPM_REAL_DATA));
+			}
+			else
+			{
+				OpmAddOneSeg(bIndex,&pbTspiRxBuffer[2]);
 			}
 			break;
 
@@ -8829,6 +8957,13 @@ void WeldDataInit(void)
 		mpDebugPrint("BackGroundLevel 0x%02x-0x%02x",g_psSetupMenu->bBackGroundLevel[0],g_psSetupMenu->bBackGroundLevel[1]);
 	}
 	TimerCheckToFillReferWin(10);
+}
+
+void SystemDataInit(void)
+{
+	//熔接记录
+	g_WeldRecordPage.bMode=0;
+	Weld_ReadAllRecord();
 }
 
 #endif

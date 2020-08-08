@@ -157,10 +157,13 @@ enum {
 //string lenth
 #define	POS_STR_LEN														16
 
-//OPM lenth
-#define	OPM_SEGMEN_NUM												200
-#define	OPM_SEGMEN_LEN												16
-
+#define  RECORD_INC_COUNT       									200
+#define LOCAL_OPM_RECORD_FILE_NAME     				"loopmRec"
+#define LOCAL_OPM_RECORD_FILE_EXT        				"sys"
+#define LOCAL_OPM_RECORD_FILE_FLAG             		0x6c6f7273 //l o r s
+#define CLOUD_OPM_RECORD_FILE_NAME     				"clopmRec"
+#define CLOUD_OPM_RECORD_FILE_EXT        				"sys"
+#define CLOUD_OPM_RECORD_FILE_FLAG             		0x636f7273 //c o r s
 
 //#define QRCODE_FILE_NAME						"qrcode"
 //#define QRCODE_FILE_EXT						"jpg"
@@ -191,6 +194,89 @@ enum {
 #define	WARNING_ELECTRODE_LESS											BIT6
 #define	WARNING_BATTERY_LOW													BIT7
 #define	WARNING_NETSIGNAL_LOW												BIT8
+
+
+typedef struct{
+    BYTE    bMode;				/* 0->alll record 3->3days 7->one week */
+    WORD    wCurPage;                    
+    WORD    wTotalPage;
+    DWORD    dwCurIndex;                    
+	DWORD dwTotalData;
+	//BYTE    bReserve[3];                    
+} WeldRecordPage;
+extern WeldRecordPage  g_WeldRecordPage;
+
+#define						WELD_RECORD_TITLE_LENTH					11 //4 熔接记录标题长度,含结束符0
+typedef struct {
+    //BYTE        bHead;
+    //BYTE        bLenth;
+    //BYTE        bIndex;
+    BYTE        bYear;
+    BYTE        bMonth;
+    BYTE        bDay;
+    BYTE        bHour;
+		
+    BYTE        bMinute;
+    BYTE        bSecond;
+    BYTE        bRecordName[WELD_RECORD_TITLE_LENTH];
+    BYTE        bFiberMode;
+    BYTE        bFiberL;
+    BYTE        bFiberR; // 20bytes
+		
+    BYTE        bFiberLoss;
+    BYTE        bResult; // 0->no result  1->OK  2->FAIL
+    //BYTE        bReverse[2];
+    DWORD        dwFileIndex; //26 BYTE  index in searchinfo
+    //BYTE        bChecksum; // 
+}STRECORD;
+
+
+//OPM lenth
+#define	OPM_SEGMEN_NUM												200
+#define	OPM_RECORD_NAME_LENTH								16 //4 OPM记录标题长度,含结束符0
+#define	OPM_REC_BUF_HEAD_LEN									16 //4 记录BUFFER头保留字节数，含标志、长度等
+
+//bMode   0x01 本地实时数据 0x02本地存储数据 0x03 云端实时数据 0x04 云端历史数据
+enum {
+    OPM_NULL,
+    OPM_LOCAL_REALTIME,
+    OPM_LOCAL_RECORD,
+    OPM_CLOUD_REALTIME,
+    OPM_CLOUD_RECORD,
+};
+
+typedef struct{
+    BYTE    bPowerOnOff;				/* 0->off 1->on */
+    BYTE    bUnit;				/* 0->uW 1->dbm db */
+} ST_OPM_PAGE;
+extern ST_OPM_PAGE g_stOpmPagePara;
+
+
+typedef struct{
+	BYTE  bMode;			/* bMode   0x01 本地实时数据 0x02本地存储数据 0x03 云端实时数据 0x04 云端历史数据 */
+	BYTE	bIndexId[6];				/* 年月日时分秒*/
+	BYTE	bWaveLenth;		/* BIT0~2: uw小数点位数BIT3~5:波长0 ~5  0：850 1：1300 2：1310 3：1490 4：1550 5：1625 BIT6:db  0负数 1为正数BIT7:dbm  0负数 1为正数 */
+	BYTE  bDbDbmDot;			/* BIT0~3: db小数点位数BIT4~7: dbm小数点位数 */
+	WORD wuW;
+	WORD wdbm;
+	WORD wdb; //15 bytes
+	BYTE bReserve;
+} ST_OPM_REAL_DATA;
+extern ST_OPM_REAL_DATA g_stOpmRealData;
+
+typedef struct{
+	BYTE  bMode;			/* bMode   0x01 本地实时数据 0x02本地存储数据 0x03 云端实时数据 0x04 云端历史数据 */
+	BYTE	bIndexId[6];				/* 年月日时分秒*/
+	BYTE	bWaveLenth;		/* BIT0~2: uw小数点位数BIT3~5:波长0 ~5  0：850 1：1300 2：1310 3：1490 4：1550 5：1625 BIT6:db  0负数 1为正数BIT7:dbm  0负数 1为正数 */
+	BYTE  bDbDbmDot;			/* BIT0~3: db小数点位数BIT4~7: dbm小数点位数 */
+	WORD wuW;
+	WORD wdbm;
+	WORD wdb; //14 bytes
+	BYTE bReserve;
+	BYTE bName[OPM_RECORD_NAME_LENTH];
+} ST_OPM_REC_DATA;
+
+#define	OPM_SEGMEN_LEN												(sizeof(ST_OPM_REAL_DATA)+OPM_RECORD_NAME_LENTH)
 
 extern BYTE g_bKeyExcept;
 extern DWORD g_dwMachineErrorFlag,g_dwMachineErrorShow,g_dwMachineWarningFlag;
@@ -226,6 +312,10 @@ void uiCb_CheckElectrodePos(void);
 void uiCb_DisableKeyInput(BYTE bKeyExcept);  //0xff -> skip all key
 void uiCb_EnableKeyInput(void);
 void Weld_ReadAllRecord();
+void AddRecord(STRECORD* pstRecord);
+STRECORD* GetRecord(DWORD dwIndex);
+DWORD GetRecordTotal();
+void ClearAllRecord();
 
 #endif
 

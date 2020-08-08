@@ -542,13 +542,6 @@ HEATPARAM ReSuGuan[5]=
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-static STRECORD **pstRecordList = NULL;
-static DWORD    dwRecordTotal = 0;
-static DWORD    dwAllocedSlot = 0;
-#define  RECORD_INC_COUNT       200
-//#define RECORD_TABLE_PATH_1     "record1"
-//#define RECORD_TABLE_EXT        "sys"
-//#define RECORD_FLAG             0x8864E423
 
 #if 0
 int LoadRecordFromFile()
@@ -713,71 +706,6 @@ _OPEN_END:
     return retVal;
 }
 #endif
-void AddRecord(STRECORD* pstRecord)
-{
-    //mpDebugPrint("AddRecord");
-    
-    if (pstRecord == NULL)
-        return;
-    
-    if (dwAllocedSlot == 0)
-    {
-        DWORD dwAllocByte = RECORD_INC_COUNT * sizeof(STRECORD*);
-        pstRecordList = (STRECORD**) ext_mem_malloc(dwAllocByte);
-        memset(pstRecordList, 0, dwAllocByte);
-        dwAllocedSlot = RECORD_INC_COUNT;
-    }
-    else if (dwRecordTotal >= dwAllocedSlot) 
-    {
-        STRECORD ** newList;
-        DWORD dwAllocByte = (dwAllocedSlot + RECORD_INC_COUNT) * sizeof(STRECORD*);
-        newList = (STRECORD**) ext_mem_malloc(dwAllocByte);
-        memset(newList, 0, dwAllocByte);
-        memcpy(newList, pstRecordList, dwAllocedSlot*sizeof(STRECORD*));
-        ext_mem_free(pstRecordList);
-        pstRecordList = newList;
-        dwAllocedSlot = dwAllocedSlot + RECORD_INC_COUNT;
-    }
-    ///////////////
-
-    STRECORD * newRecord = (STRECORD*) ext_mem_malloc(sizeof(STRECORD));
-    memcpy(newRecord, pstRecord, sizeof(STRECORD));
-    pstRecordList[dwRecordTotal] = newRecord;
-    dwRecordTotal++;
-    
-}
-
-STRECORD* GetRecord(DWORD dwIndex)
-{
-    if (dwIndex >= dwRecordTotal)
-        return NULL;
-    if (pstRecordList == NULL)
-        return NULL;
-    
-    return pstRecordList[dwIndex];
-}
-
-
-DWORD GetRecordTotal()
-{
-    return dwRecordTotal;
-}
-
-void ClearAllRecord()
-{
-    mpDebugPrint("ClearAllRecord");
-    
-    DWORD i;
-    for (i = 0; i < dwRecordTotal; i++)
-    {
-        if (pstRecordList[i] != NULL)
-        {
-            ext_mem_free(pstRecordList[i]);
-            pstRecordList[i] = NULL;
-        }
-    }
-    dwRecordTotal = 0;
-}
 #if 0
 void InitRecord(STRECORD* pstRecord, WORD year, BYTE month, BYTE day, BYTE hour, BYTE minute, BYTE second, DWORD bLoss, BYTE * recordName, BYTE* fileName)
 {
@@ -824,12 +752,6 @@ int initRecordDummyData()
     AddRecord(&record);
 }
 #endif
-
-void SystemDataInit(void)
-{
-	g_WeldRecordPage.bMode=0;
-	Weld_ReadAllRecord();
-}
 
 void initModeParamDefault(MODEPARAM * pstModeParam,BYTE bIndex)
 {

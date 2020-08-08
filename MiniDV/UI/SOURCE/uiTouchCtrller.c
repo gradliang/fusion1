@@ -584,7 +584,7 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
     }
     else if(dwHashKey == xpgHash("opm1") )
     {
-		if (!g_stLocalOpmPage.bPowerOnOff && dwIconId!=1 && dwIconId!=10)
+		if (!g_stOpmPagePara.bPowerOnOff && dwIconId!=1 && dwIconId!=10)
 			return PASS;
 		switch (dwIconId)
 		{
@@ -599,7 +599,7 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
 				break;
 
 			case 10: //power button
-				g_stLocalOpmPage.bPowerOnOff=!g_stLocalOpmPage.bPowerOnOff;
+				g_stOpmPagePara.bPowerOnOff=!g_stOpmPagePara.bPowerOnOff;
 				xpgUpdateStage();
 				break;
 
@@ -609,6 +609,8 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
 
 			case 12: //UNIT
 				FlashIconAndLightIcon(dwIconId);
+				g_stOpmPagePara.bUnit=!g_stOpmPagePara.bUnit;
+				xpgUpdateStage();
 				break;
 
 			case 13: //REF

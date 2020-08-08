@@ -76,8 +76,6 @@ OPMDATAITEM  cloudOpmDataArray[] = {
 OPMDATAITEM * localOpmData = localOpmDataArray;
 OPMDATAITEM * cloudOpmData = cloudOpmDataArray;
 
-WeldRecordPage  g_WeldRecordPage;
-
 ////////////////////////////////////////////////////////////////////////
 
 char keyboardBuffer[KEYBOARD_BUFFER_SIZE];
@@ -112,7 +110,7 @@ const BYTE * FModeStrList[] = {
     NULL
 };
 
-//BYTE xpgStringBuffer[254];
+BYTE xpgStringBuffer[64];
 extern DWORD g_dwCurIndex,g_dwModeIconStatus;
 #if  (PRODUCT_UI==UI_SURFACE)
 extern DWORD g_dwPassNum,g_dwFailNum;
@@ -2536,13 +2534,13 @@ SWORD xpgDrawSprite_LightIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite
     }
     else if(dwHashKey == xpgHash("opm1") || dwHashKey == xpgHash("opmList1"))
     {
-       if (!g_stLocalOpmPage.bPowerOnOff)
+       if (!g_stOpmPagePara.bPowerOnOff)
 			 	return PASS;
 		if (dwSpriteId>10)
 			xpgDrawSprite(pWin, pstSprite, boClip);
 		else if (dwSpriteId>=4 && dwSpriteId<=9)
 		{
-			if (((g_stLocalOpmPageRealData.bWaveLenth&0x38)>>3)==dwSpriteId-4)
+			if (((g_stOpmRealData.bWaveLenth&0x38)>>3)==dwSpriteId-4)
 				xpgDrawSprite(pWin, pstSprite, boClip);
 		}
     }
@@ -3658,6 +3656,99 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
             Idu_PrintStringRight(pWin, tmpbuf, pstSprite->m_wPx, pstSprite->m_wPy, 0);
 
         Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
+    }
+    else if(dwHashKey == xpgHash("opm1") || dwHashKey == xpgHash("opm2") /*|| dwHashKey == xpgHash("opm3") || dwHashKey == xpgHash("opm4")*/)
+    {
+	       if (!g_stOpmPagePara.bPowerOnOff)
+				 	return PASS;
+			Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
+			switch (dwTextId)
+			{
+				case 0:
+					mpPaintWinArea(pWin, pstSprite->m_wPx+8, pstSprite->m_wPy+8, pstSprite->m_wWidth-16, pstSprite->m_wHeight-16, 0xffff8080);
+					break;
+				case 1:
+					if (g_stOpmPagePara.bUnit)
+					{
+						SDWORD sdwIntData;
+						BYTE bPoint,i;
+						DWORD dwPointData=1;
+						
+						sdwIntData=g_stOpmRealData.wdbm;
+						if (!(g_stOpmRealData.bWaveLenth&BIT7))
+							sdwIntData=-sdwIntData;
+						bPoint=g_stOpmRealData.bDbDbmDot>>4;
+						for (i=0;i<bPoint;i++)
+							dwPointData*=10;
+						sprintf(xpgStringBuffer, "%02d.%02d", sdwIntData/dwPointData,sdwIntData%dwPointData);
+					}
+					else
+					{
+						sprintf(xpgStringBuffer, "Lo");
+					}
+					SetCurrIduFontID(FONT_ID_ARIAL_36);
+					Idu_PrintStringRight(pWin, xpgStringBuffer, pstSprite->m_wPx, pstSprite->m_wPy, 0);
+					break;
+
+				case 2:
+					if (g_stOpmPagePara.bUnit)
+					{
+						sprintf(xpgStringBuffer, "dBm");
+						SetCurrIduFontID(FONT_ID_HeiTi19);
+						Idu_PrintString(pWin, xpgStringBuffer, pstSprite->m_wPx, pstSprite->m_wPy,0, 0);
+					}
+					break;
+
+				case 3:
+					if (g_stOpmPagePara.bUnit)
+					{
+						SDWORD sdwIntData;
+						BYTE bPoint,i;
+						DWORD dwPointData=1;
+						
+						sdwIntData=g_stOpmRealData.wdb;
+						if (!(g_stOpmRealData.bWaveLenth&BIT6))
+							sdwIntData=-sdwIntData;
+						bPoint=g_stOpmRealData.bDbDbmDot&0x0f;
+						for (i=0;i<bPoint;i++)
+							dwPointData*=10;
+						sprintf(xpgStringBuffer, "%02d.%02d", sdwIntData/dwPointData,sdwIntData%dwPointData);
+					}
+					else
+					{
+						SDWORD sdwIntData;
+						BYTE bPoint,i;
+						DWORD dwPointData=1;
+						
+						sdwIntData=g_stOpmRealData.wuW;
+						bPoint=g_stOpmRealData.bWaveLenth&0x07;
+						for (i=0;i<bPoint;i++)
+							dwPointData*=10;
+						sprintf(xpgStringBuffer, "%02d.%02d", sdwIntData/dwPointData,sdwIntData%dwPointData);
+					}
+					SetCurrIduFontID(FONT_ID_ARIAL_36);
+					Idu_PrintString(pWin, xpgStringBuffer, pstSprite->m_wPx, pstSprite->m_wPy, 0,0);
+					mpDebugPrint("%s:%s",__FUNCTION__,xpgStringBuffer);
+					break;
+
+				case 4:
+					if (g_stOpmPagePara.bUnit)
+					{
+						sprintf(xpgStringBuffer, "dB");
+					}
+					else
+					{
+						sprintf(xpgStringBuffer, "uW");
+					}
+					SetCurrIduFontID(FONT_ID_HeiTi19);
+					Idu_PrintString(pWin, xpgStringBuffer, pstSprite->m_wPx, pstSprite->m_wPy, 0,0);
+					mpDebugPrint("%s:%s",__FUNCTION__,xpgStringBuffer);
+					break;
+
+				default:
+					break;
+			}
+			Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
     }
     else if(dwHashKey == xpgHash("opmList1") || dwHashKey == xpgHash("opmList2"))
     {

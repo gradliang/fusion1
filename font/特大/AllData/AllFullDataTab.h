@@ -31,10 +31,10 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x001D 
   0xFFFFFFFF,  // char code : 0x001E 
   0xFFFFFFFF,  // char code : 0x001F 
-  0xFFFFFFFF,  // char code : 0x0020 
-  0xFFFFFFFF,  // char code : 0x0021 
+  0x0000000C,  // char code : 0x0020 
+  0x00000213,  // char code : 0x0021 
   0xFFFFFFFF,  // char code : 0x0022 
-  0xFFFFFFFF,  // char code : 0x0023 
+  0x00000271,  // char code : 0x0023 
   0xFFFFFFFF,  // char code : 0x0024 
   0xFFFFFFFF,  // char code : 0x0025 
   0xFFFFFFFF,  // char code : 0x0026 
@@ -45,18 +45,18 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x002B 
   0xFFFFFFFF,  // char code : 0x002C 
   0xFFFFFFFF,  // char code : 0x002D 
-  0xFFFFFFFF,  // char code : 0x002E 
+  0x000004C9,  // char code : 0x002E 
   0xFFFFFFFF,  // char code : 0x002F 
-  0x0000000C,  // char code : 0x0030 
-  0x00000236,  // char code : 0x0031 
-  0x0000037A,  // char code : 0x0032 
-  0x000005A4,  // char code : 0x0033 
-  0x000007CE,  // char code : 0x0034 
-  0x000009F8,  // char code : 0x0035 
-  0x00000C22,  // char code : 0x0036 
-  0x00000E4C,  // char code : 0x0037 
-  0x00001076,  // char code : 0x0038 
-  0x000012A0,  // char code : 0x0039 
+  0x00000527,  // char code : 0x0030 
+  0x00000751,  // char code : 0x0031 
+  0x00000895,  // char code : 0x0032 
+  0x00000ABF,  // char code : 0x0033 
+  0x00000CE9,  // char code : 0x0034 
+  0x00000F13,  // char code : 0x0035 
+  0x0000113D,  // char code : 0x0036 
+  0x00001367,  // char code : 0x0037 
+  0x00001591,  // char code : 0x0038 
+  0x000017BB,  // char code : 0x0039 
   0xFFFFFFFF,  // char code : 0x003A 
   0xFFFFFFFF,  // char code : 0x003B 
   0xFFFFFFFF,  // char code : 0x003C 
@@ -64,28 +64,28 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x003E 
   0xFFFFFFFF,  // char code : 0x003F 
   0xFFFFFFFF,  // char code : 0x0040 
-  0xFFFFFFFF,  // char code : 0x0041 
+  0x000019E5,  // char code : 0x0041 
   0xFFFFFFFF,  // char code : 0x0042 
-  0xFFFFFFFF,  // char code : 0x0043 
-  0xFFFFFFFF,  // char code : 0x0044 
-  0xFFFFFFFF,  // char code : 0x0045 
-  0xFFFFFFFF,  // char code : 0x0046 
-  0xFFFFFFFF,  // char code : 0x0047 
+  0x00001CF5,  // char code : 0x0043 
+  0x00001FE7,  // char code : 0x0044 
+  0x0000229B,  // char code : 0x0045 
+  0x000024F3,  // char code : 0x0046 
+  0x0000271D,  // char code : 0x0047 
   0xFFFFFFFF,  // char code : 0x0048 
-  0xFFFFFFFF,  // char code : 0x0049 
+  0x00002A0F,  // char code : 0x0049 
   0xFFFFFFFF,  // char code : 0x004A 
-  0xFFFFFFFF,  // char code : 0x004B 
-  0xFFFFFFFF,  // char code : 0x004C 
-  0xFFFFFFFF,  // char code : 0x004D 
-  0xFFFFFFFF,  // char code : 0x004E 
-  0xFFFFFFFF,  // char code : 0x004F 
-  0xFFFFFFFF,  // char code : 0x0050 
+  0x00002A6D,  // char code : 0x004B 
+  0x00002CF3,  // char code : 0x004C 
+  0x00002EEF,  // char code : 0x004D 
+  0x000031D1,  // char code : 0x004E 
+  0x00003457,  // char code : 0x004F 
+  0x00003778,  // char code : 0x0050 
   0xFFFFFFFF,  // char code : 0x0051 
   0xFFFFFFFF,  // char code : 0x0052 
-  0xFFFFFFFF,  // char code : 0x0053 
-  0xFFFFFFFF,  // char code : 0x0054 
-  0xFFFFFFFF,  // char code : 0x0055 
-  0xFFFFFFFF,  // char code : 0x0056 
+  0x000039D0,  // char code : 0x0053 
+  0x00003C64,  // char code : 0x0054 
+  0x00003EBC,  // char code : 0x0055 
+  0x00004150,  // char code : 0x0056 
   0xFFFFFFFF,  // char code : 0x0057 
   0xFFFFFFFF,  // char code : 0x0058 
   0xFFFFFFFF,  // char code : 0x0059 
@@ -104,13 +104,13 @@ unsigned int allCharFontsOffsetList[] = {
   0xFFFFFFFF,  // char code : 0x0066 
   0xFFFFFFFF,  // char code : 0x0067 
   0xFFFFFFFF,  // char code : 0x0068 
-  0x000014CA,  // char code : 0x0069 
+  0x00004460,  // char code : 0x0069 
   0xFFFFFFFF,  // char code : 0x006A 
   0xFFFFFFFF,  // char code : 0x006B 
   0xFFFFFFFF,  // char code : 0x006C 
-  0x00001528,  // char code : 0x006D 
-  0x00001838,  // char code : 0x006E 
-  0xFFFFFFFF,  // char code : 0x006F 
+  0x000044BE,  // char code : 0x006D 
+  0x000047CE,  // char code : 0x006E 
+  0x000049CA,  // char code : 0x006F 
   0xFFFFFFFF,  // char code : 0x0070 
   0xFFFFFFFF,  // char code : 0x0071 
   0xFFFFFFFF,  // char code : 0x0072 

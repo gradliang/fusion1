@@ -58,7 +58,7 @@ extern DWORD g_dwTotalSeconds;
 extern BYTE g_bXpgStatus;
 extern BYTE g_boNeedRepaint;
 extern BOOL bSetUpChg;
-extern BYTE xpgStringBuffer[256];
+extern BYTE xpgStringBuffer[64];
 extern STXPGBROWSER *g_pstBrowser;
 //--------------------
 #if ERROR_HANDLER_ENABLE
@@ -76,10 +76,6 @@ ST_IMGWIN g_stVolWin;
 DWORD g_dwPassNum = 0,g_dwFailNum=0;
 #endif
 BYTE g_bPowerOnCheckPassword=2;
-
-//--weld 
-ST_OPM_PAGE g_stLocalOpmPage,g_stCloudOpmPage;
-ST_OPM_REAL_DATA g_stLocalOpmPageRealData,g_stCloudOpmPageRealData;
 
 //---------------------------------------------------------------------------
 // For xpg call main functions
@@ -1759,8 +1755,7 @@ void uiCb_VFLHzFlash(void)
 //--
 void 	xpgParamInit()
 {
-	memset(&g_stLocalOpmPage,0,sizeof (g_stLocalOpmPage));
-	memset(&g_stCloudOpmPage,0,sizeof (g_stCloudOpmPage));
+	memset(&g_stOpmPagePara,0,sizeof (g_stOpmPagePara));
 
 }
 

@@ -707,10 +707,12 @@ SDWORD HUartOutText(DWORD index, BYTE *buffer)
     HUART *regUartPtr;
     BYTE counter;
 
+#if UART_TO_MCU
 	Idu_OsdErase();
 	Idu_OSDPrint(Idu_GetOsdWin(),buffer, 16, 4, OSD_COLOR_RED);//  90
 	return;
-	
+#endif
+
     if (index == HUART_A_INDEX)
         regUartPtr = (HUART *) HUART1_BASE;
     else if (index == HUART_B_INDEX)

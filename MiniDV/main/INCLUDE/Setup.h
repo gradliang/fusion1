@@ -98,7 +98,6 @@ enum {
 };
 
 #define						SETTING_NUMBER					256  //对应下面设置的数量
-#define						WELD_RECORD_TITLE_LENTH					11 //4 熔接记录标题长度,含结束符0
 typedef struct {
     unsigned int    fangDianZhongXin;
     unsigned int    rongJieDianYa;
@@ -124,41 +123,6 @@ typedef struct {
     BYTE    bTime;
 }HEATPARAM;
 extern HEATPARAM ReSuGuan[5];
-
-typedef struct{
-    BYTE    bMode;				/* 0->alll record 3->3days 7->one week */
-    WORD    wCurPage;                    
-    WORD    wTotalPage;
-    DWORD    dwCurIndex;                    
-	DWORD dwTotalData;
-	//BYTE    bReserve[3];                    
-} WeldRecordPage;
-extern WeldRecordPage  g_WeldRecordPage;
-
-typedef struct {
-    //BYTE        bHead;
-    //BYTE        bLenth;
-    //BYTE        bIndex;
-    BYTE        bYear;
-    BYTE        bMonth;
-    BYTE        bDay;
-    BYTE        bHour;
-		
-    BYTE        bMinute;
-    BYTE        bSecond;
-    BYTE        bRecordName[WELD_RECORD_TITLE_LENTH];
-    BYTE        bFiberMode;
-    BYTE        bFiberL;
-    BYTE        bFiberR; // 20bytes
-		
-    BYTE        bFiberLoss;
-    BYTE        bResult; // 0->no result  1->OK  2->FAIL
-    //BYTE        bReverse[2];
-    DWORD        dwFileIndex; //26 BYTE  index in searchinfo
-    //BYTE        bChecksum; // 
-}STRECORD;
-
-
 
 typedef struct {
 //红光笔
@@ -296,13 +260,9 @@ extern ST_SETUP_MENU *g_psSetupMenu;
 
 SDWORD GetSetupMenuValue(void);
 void SetupMenuInit(void);
-int LoadRecordFromFile();
-int SaveRecordToFile();
-void AddRecord(STRECORD* pstRecord);
-STRECORD* GetRecord(DWORD dwIndex);
-DWORD GetRecordTotal();
-void ClearAllRecord();
-void InitRecord(STRECORD* pstRecord, WORD year, BYTE month, BYTE day, BYTE hour, BYTE minute, BYTE second, DWORD power, BYTE * recordName, BYTE* fileName);
+//int LoadRecordFromFile();
+//int SaveRecordToFile();
+//void InitRecord(STRECORD* pstRecord, WORD year, BYTE month, BYTE day, BYTE hour, BYTE minute, BYTE second, DWORD power, BYTE * recordName, BYTE* fileName);
 
 
 int initRecordDummyData();      // Jia Shu Ju
