@@ -30,6 +30,7 @@ extern DWORD * pdwEditingFusionValue;
 extern BOOL isSelectOnlineOPM;
 extern WORD g_wElectrodeRandomCode,g_wElectrodeSN;
 
+extern SWORD(*drawSpriteFunctions[]) (ST_IMGWIN *, STXPGSPRITE *, BOOL);
 
 SWORD xpgDrawSprite_Null				  ( ST_IMGWIN *, STXPGSPRITE *, BOOL );
 SWORD xpgDrawSprite						    ( ST_IMGWIN *, STXPGSPRITE *, BOOL ); // type0

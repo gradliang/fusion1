@@ -817,6 +817,46 @@ void CheckAutoSleepOrAutoOff()
 }
 #endif
 
+void FlashIconAndLightIcon(DWORD dwIndex)
+{
+	STXPGSPRITE * pstSprite;
+
+	pstSprite = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_ICON, dwIndex);
+	if (pstSprite)
+		 (*drawSpriteFunctions[pstSprite->m_dwType]) (Idu_GetCurrWin(), pstSprite, 1);
+	xpgDelay(200);
+	pstSprite = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_LIGHT_ICON, dwIndex);
+	if (pstSprite)
+		 (*drawSpriteFunctions[pstSprite->m_dwType]) (Idu_GetCurrWin(), pstSprite, 1);
+}
+
+void DrakSprite(ST_IMGWIN*pWin, STXPGSPRITE * pstSprite)
+{
+	ST_IMGWIN stWin;
+
+	if (pstSprite)
+	{
+		ImgWinInit(&stWin, NULL, pstSprite->m_wHeight, pstSprite->m_wWidth);
+		stWin.dwOffset= pWin->dwOffset;
+		stWin.pdwStart = (DWORD *)((BYTE *)pWin->pdwStart + pstSprite->m_wPy* pWin->dwOffset + (pstSprite->m_wPx<< 1));
+		DrakWin(&stWin, 2, 1);
+	}
+}
+
+void FlashByDarkIcon(DWORD dwIndex)
+{
+	STXPGSPRITE * pstSprite;
+	ST_IMGWIN *pWin=Idu_GetCurrWin();
+
+	pstSprite = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_ICON, dwIndex);
+	if (pstSprite)
+	{
+		DrakSprite(pWin, pstSprite);
+		//mpClearWin(&stWin);
+		xpgDelay(200);
+		 (*drawSpriteFunctions[pstSprite->m_dwType]) (pWin, pstSprite, 1);
+	}
+}
 
 //------------------------------------------------------------------------------
 void xpgCb_NullFunc()
@@ -1530,11 +1570,11 @@ void uiCb_CheckBattery(void)
 					TspiSendCmdPolling0xA4(0x0b);
 				if (g_bLogoMix>=128)
 				{
-					g_sbLogoStep=-4;
+					g_sbLogoStep=-2;
 					g_bLogoMix=128;
 				}
 				else if (!g_bLogoMix)
-					g_sbLogoStep=4;
+					g_sbLogoStep=2;
 				g_bLogoMix+=g_sbLogoStep;
 				xpgUpdateStage();
 				Ui_TimerProcAdd(10, uiCb_CheckBattery);

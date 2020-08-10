@@ -226,7 +226,7 @@ DWORD OpmGetTotalNumber(BYTE bMode)
 SWORD OPMLoadDataFromFile(BYTE bMode)
 {
     DRIVE *sysDrv;
-    BYTE  sysDrvId = SYS_DRV_ID,* name, * extension,*pbBuffer;
+    BYTE  sysDrvId = NULL_DRIVE,* name, * extension,*pbBuffer;//SYS_DRV_ID
     DWORD dwFileSize,dwData;
 	STREAM *handle=NULL;
 	SWORD swRet=FAIL;
@@ -238,7 +238,7 @@ SWORD OPMLoadDataFromFile(BYTE bMode)
 		return FAIL;
     if (sysDrvId == NULL_DRIVE)
     {
-        MP_ALERT("--E-- %s: Invalid System Drive ID (= %d) defined ! => use current drive instead ...", __FUNCTION__, SYS_DRV_ID);
+        //MP_ALERT("--E-- %s: Invalid System Drive ID (= %d) defined ! => use current drive instead ...", __FUNCTION__, SYS_DRV_ID);
         sysDrvId = DriveCurIdGet(); /* use current drive */
         if (sysDrvId == NULL_DRIVE)
         {
@@ -279,7 +279,7 @@ SWORD OPMLoadDataFromFile(BYTE bMode)
     }
     if ((bMode ==OPM_LOCAL_RECORD && dwData!=LOCAL_OPM_RECORD_FILE_FLAG)||(bMode ==OPM_CLOUD_RECORD && dwData!=CLOUD_OPM_RECORD_FILE_FLAG))
     {
-        MP_ALERT("-E- flag error %d:%08x",bMode,dwData);
+        MP_ALERT("-E-%s: flag error %d:%08x",__FUNCTION__,bMode,dwData);
         goto _OPEN_END;
     }
 	//SEG NUM
@@ -293,9 +293,12 @@ SWORD OPMLoadDataFromFile(BYTE bMode)
         MP_ALERT("-E- seg num error %d",dwData);
         goto _OPEN_END;
     }
-
+    Fseek(handle, 0, SEEK_SET);
 	if (FileRead(handle, pbBuffer, dwFileSize) == dwFileSize)
+	{
+		MP_ALERT("%s: read fag %08x seg %d", __FUNCTION__,*((DWORD *)(pbBuffer)),*((DWORD *)(pbBuffer+4)));
 		swRet=PASS;
+	}
 
 _OPEN_END:
     if (handle != NULL)
@@ -307,8 +310,8 @@ _OPEN_END:
 SWORD OPMSaveDataToFile(BYTE bMode)
 {
     DRIVE *sysDrv;
-    BYTE  sysDrvId = SYS_DRV_ID,* name, * extension,*pbBuffer;
-    DWORD dwSize;
+    BYTE  sysDrvId = NULL_DRIVE,* name, * extension,*pbBuffer;//SYS_DRV_ID
+    DWORD dwSize,*pdwBuffer;
 	STREAM *handle=NULL;
 	SWORD swRet=FAIL;
 
@@ -317,10 +320,12 @@ SWORD OPMSaveDataToFile(BYTE bMode)
 	pbBuffer=OpmGetbuffer(bMode);
 	if (pbBuffer==NULL)
 		return FAIL;
+	pdwBuffer=(DWORD *)pbBuffer;
+	MP_ALERT("%s: data %08x %08x", __FUNCTION__,*pdwBuffer,*(pdwBuffer+1));
 	dwSize=OPM_SEGMEN_NUM*OPM_SEGMEN_LEN+OPM_REC_BUF_HEAD_LEN;
     if (sysDrvId == NULL_DRIVE)
     {
-        MP_ALERT("--E-- %s: Invalid System Drive ID (= %d) defined ! => use current drive instead ...", __FUNCTION__, SYS_DRV_ID);
+        //MP_ALERT("--E-- %s: Invalid System Drive ID (= %d) defined ! => use current drive instead ...", __FUNCTION__, SYS_DRV_ID);
         sysDrvId = DriveCurIdGet(); /* use current drive */
         if (sysDrvId == NULL_DRIVE)
         {
@@ -8978,6 +8983,11 @@ void WeldDataInit(void)
 		mpDebugPrint("BackGroundLevel 0x%02x-0x%02x",g_psSetupMenu->bBackGroundLevel[0],g_psSetupMenu->bBackGroundLevel[1]);
 	}
 	TimerCheckToFillReferWin(10);
+}
+
+//--
+void SystemTimerToInit(void)
+{
 }
 
 void SystemDataInit(void)

@@ -1912,9 +1912,15 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
 		if (dwHashKey == xpgHash("opm1"))
 		{
 			if (g_stOpmPagePara.bCal && dwSpriteId>=10 && dwSpriteId<20)
+			{
+					xpgSpriteDisableTouch(pstSprite);
 					return PASS;
+			}
 			else if (!g_stOpmPagePara.bCal && dwSpriteId>=30 && dwSpriteId<40)
+			{
+					xpgSpriteDisableTouch(pstSprite);
 					return PASS;
+			}
 			//else if (g_stOpmPagePara.bPowerOnOff && dwSpriteId>10 && dwSpriteId<20) //flash error
 			//		dwSpriteId=0xffffffff;
 		}
@@ -1941,7 +1947,7 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
 			if ((dwHashKey == xpgHash("opm1")&&dwSpriteId == 1)||(dwHashKey == xpgHash("opm2")&&dwSpriteId == 0))
 	            Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
             SetCurrIduFontID(FONT_ID_HeiTi16);
-            Idu_PrintStringCenter(pWin, text, pstSprite->m_wPx+8, pstSprite->m_wPy+8, 0, pstSprite->m_wWidth);  
+            Idu_PrintStringCenter(pWin, text, pstSprite->m_wPx+10, pstSprite->m_wPy+8, 0, pstSprite->m_wWidth);  
             Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
         }
         else if (dwSpriteId == 2)
@@ -1997,14 +2003,16 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         }
         else if (dwSpriteId == 10)
         {
-			MakeMaskRole(&stMaskRole, XPG_ROLE_ICON_MASK_0, pstSprite->m_wWidth, pstSprite->m_wHeight,BIT7);
+			MakeMaskRole((STXPGROLE *)&stMaskRole, XPG_ROLE_ICON_MASK_0, pstSprite->m_wWidth, pstSprite->m_wHeight,BIT7);
 			xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, &stMaskRole);
+			if (!g_stOpmPagePara.bPowerOnOff)
+				DrakSprite(pWin,pstSprite);
         }
         else if (dwSpriteId == 11)
         {
             if (dwHashKey == xpgHash("opm1"))
             {
-				MakeMaskRole(&stMaskRole, XPG_ROLE_ICON_MASK_0, pstSprite->m_wWidth, pstSprite->m_wHeight,BIT5);
+				MakeMaskRole((STXPGROLE *)&stMaskRole, XPG_ROLE_ICON_MASK_0, pstSprite->m_wWidth, pstSprite->m_wHeight,BIT5);
 				xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, &stMaskRole);
             }
             else if (dwHashKey == xpgHash("opm2"))
@@ -2018,12 +2026,12 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         }
         else if (dwSpriteId == 13)
         {
-			MakeMaskRole(&stMaskRole, XPG_ROLE_ICON_MASK_0, pstSprite->m_wWidth, pstSprite->m_wHeight,BIT6);
+			MakeMaskRole((STXPGROLE *)&stMaskRole, XPG_ROLE_ICON_MASK_0, pstSprite->m_wWidth, pstSprite->m_wHeight,BIT6);
 			xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, &stMaskRole);
         }
         else if (dwSpriteId == 14)
         {
-			MakeMaskRole(&stMaskRole, XPG_ROLE_ICON_MASK_0, pstSprite->m_wWidth, pstSprite->m_wHeight,BIT4);
+			MakeMaskRole((STXPGROLE *)&stMaskRole, XPG_ROLE_ICON_MASK_0, pstSprite->m_wWidth, pstSprite->m_wHeight,BIT4);
 			xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, &stMaskRole);
         }
         else if (dwSpriteId == 15)
@@ -2039,12 +2047,12 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
 		 {
 	 			if (dwSpriteId==30)
 				{
-					MakeMaskRole(&stMaskRole, XPG_ROLE_ICON_MASK_0, pstSprite->m_wWidth, pstSprite->m_wHeight,BIT7);
+					MakeMaskRole((STXPGROLE *)&stMaskRole, XPG_ROLE_ICON_MASK_0, pstSprite->m_wWidth, pstSprite->m_wHeight,BIT7);
 					xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, &stMaskRole);
 				}
 	 			else if (dwSpriteId==32)
 				{
-					MakeMaskRole(&stMaskRole, XPG_ROLE_ICON_MASK_0, pstSprite->m_wWidth, pstSprite->m_wHeight,BIT6);
+					MakeMaskRole((STXPGROLE *)&stMaskRole, XPG_ROLE_ICON_MASK_0, pstSprite->m_wWidth, pstSprite->m_wHeight,BIT6);
 					xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, &stMaskRole);
 				}
 				else
@@ -2566,17 +2574,17 @@ SWORD xpgDrawSprite_LightIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite
 		}
 		if (dwSpriteId==13)
 		{
-			MakeMaskRole(&stMaskRole, XPG_ROLE_ICON_MASK_0, pstSprite->m_wWidth, pstSprite->m_wHeight,BIT6);
+			MakeMaskRole((STXPGROLE *)&stMaskRole, XPG_ROLE_ICON_MASK_0, pstSprite->m_wWidth, pstSprite->m_wHeight,BIT6);
 			xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, &stMaskRole);
 		}
 		else if (dwSpriteId==11)
 		{
-			MakeMaskRole(&stMaskRole, XPG_ROLE_ICON_MASK_0, pstSprite->m_wWidth, pstSprite->m_wHeight,BIT5);
+			MakeMaskRole((STXPGROLE *)&stMaskRole, XPG_ROLE_ICON_MASK_0, pstSprite->m_wWidth, pstSprite->m_wHeight,BIT5);
 			xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, &stMaskRole);
 		}
 		else if (dwSpriteId==14)
 		{
-			MakeMaskRole(&stMaskRole, XPG_ROLE_ICON_MASK_0, pstSprite->m_wWidth, pstSprite->m_wHeight,BIT4);
+			MakeMaskRole((STXPGROLE *)&stMaskRole, XPG_ROLE_ICON_MASK_0, pstSprite->m_wWidth, pstSprite->m_wHeight,BIT4);
 			xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, &stMaskRole);
 		}
 		else if (dwSpriteId>10)
@@ -3743,7 +3751,11 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
 					break;
 
 				case 3:
-					if (g_stOpmPagePara.bUnit)
+					if (g_stOpmPagePara.bCal)
+					{
+						sprintf(xpgStringBuffer, "CAL");
+					}
+					else if (g_stOpmPagePara.bUnit)
 					{
 						SDWORD sdwIntData;
 						BYTE bPoint,i;
@@ -3771,21 +3783,22 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
 					}
 					SetCurrIduFontID(FONT_ID_ARIAL_36);
 					Idu_PrintString(pWin, xpgStringBuffer, pstSprite->m_wPx, pstSprite->m_wPy, 0,0);
-					mpDebugPrint("%s:%s",__FUNCTION__,xpgStringBuffer);
 					break;
 
 				case 4:
-					if (g_stOpmPagePara.bUnit)
+					if (!g_stOpmPagePara.bCal)
 					{
-						sprintf(xpgStringBuffer, "dB");
+						if (g_stOpmPagePara.bUnit)
+						{
+							sprintf(xpgStringBuffer, "dB");
+						}
+						else
+						{
+							sprintf(xpgStringBuffer, "uW");
+						}
+						SetCurrIduFontID(FONT_ID_HeiTi19);
+						Idu_PrintString(pWin, xpgStringBuffer, pstSprite->m_wPx, pstSprite->m_wPy, 0,0);
 					}
-					else
-					{
-						sprintf(xpgStringBuffer, "uW");
-					}
-					SetCurrIduFontID(FONT_ID_HeiTi19);
-					Idu_PrintString(pWin, xpgStringBuffer, pstSprite->m_wPx, pstSprite->m_wPy, 0,0);
-					mpDebugPrint("%s:%s",__FUNCTION__,xpgStringBuffer);
 					break;
 
 				default:
@@ -5443,7 +5456,7 @@ void DrawRoundIcon(ST_IMGWIN * pWin,int maskRoleIndex,WORD wX,WORD wY,WORD wW,WO
 
 	wW=ALIGN_2(wW);
 	MakeDialogColorRole(&stRole, wW,wH,dwYUVcolor);
-	MakeMaskRole(&stMaskRole, maskRoleIndex, wW,wH,0xf0);
+	MakeMaskRole((STXPGROLE *)&stMaskRole, maskRoleIndex, wW,wH,0xf0);
 	xpgRoleDrawMask(&stRole, pWin->pdwStart, wX,wY, pWin->wWidth, pWin->wHeight, &stMaskRole);
 	if (stRole.m_pRawImage)
 	{
@@ -5466,8 +5479,8 @@ void DrawRoundDialog(ST_IMGWIN * pWin,BYTE bMode,int maskRoleIndex,WORD wX,WORD 
 	curDialogHeight = wH;
 	curDialogLeft = wX;
 	curDialogTop = wY;
-	MakeDialogRole(&stRole,bMode, wW, wH);
-	MakeMaskRole(&stMaskRole, maskRoleIndex, wW, wH,0xf0);
+	MakeDialogRole((STXPGROLE *)&stRole,bMode, wW, wH);
+	MakeMaskRole((STXPGROLE *)&stMaskRole, maskRoleIndex, wW, wH,0xf0);
 	xpgRoleDrawMask(&stRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, &stMaskRole);
 	if (stRole.m_pRawImage)
 	{
@@ -5675,7 +5688,7 @@ SWORD xpgDrawSprite_Dialog(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, B
 				dailogX = (pWin->wWidth - dialogW) / 2;
 				dialogY = (pWin->wHeight - dialogH) / 2;
 		       //MakeDialogColorRole(&stRole, dialogW, dialogH,RGB2YUV(0xf9,0x59,0x5a));
-		       // MakeMaskRole(&stMaskRole, XPG_ROLE_ICON_MASK_0, dialogW, dialogH,0xf0);
+		       // MakeMaskRole((STXPGROLE *)&stMaskRole, XPG_ROLE_ICON_MASK_0, dialogW, dialogH,0xf0);
 		       // xpgRoleDrawMask(&stRole, pWin->pdwStart, dailogX, dialogY, pWin->wWidth, pWin->wHeight, &stMaskRole);
 				DrawRoundIcon(pWin,XPG_ROLE_ICON_MASK_0,dailogX, dialogY,dialogW, dialogH,RGB2YUV(0xf9,0x59,0x5a));
 			 	pstRole = g_pstXpgMovie->m_pstObjRole[XPG_ROLE_MAIN_ERROR_ICON];

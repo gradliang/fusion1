@@ -25,8 +25,6 @@ DWORD dwLastTouchActionTime = 0;
 static BYTE st_bTouchDown=0;// 0->touch release 1->Touch on   
 static BYTE st_bGoSetupFrom=0;// 0->from main   1->for work pgage    strSetupBackPageName[24] = {0};
 
-extern SWORD(*drawSpriteFunctions[]) (ST_IMGWIN *, STXPGSPRITE *, BOOL);
-
 static void uiEnterRecordList();
 static void Dialog_JiaReWenDu_OnClose();
 static void Dialog_JiaReShiJian_OnClose();
@@ -146,37 +144,6 @@ SWORD touchSprite_Background(STXPGSPRITE * sprite, WORD x, WORD y)
         xpgUpdateStage();
     }
     return 0;
-}
-
-void FlashIconAndLightIcon(DWORD dwIndex)
-{
-	STXPGSPRITE * pstSprite;
-
-	pstSprite = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_ICON, dwIndex);
-	if (pstSprite)
-		 (*drawSpriteFunctions[pstSprite->m_dwType]) (Idu_GetCurrWin(), pstSprite, 1);
-	xpgDelay(200);
-	pstSprite = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_LIGHT_ICON, dwIndex);
-	if (pstSprite)
-		 (*drawSpriteFunctions[pstSprite->m_dwType]) (Idu_GetCurrWin(), pstSprite, 1);
-}
-
-void FlashByDarkIcon(DWORD dwIndex)
-{
-	STXPGSPRITE * pstSprite;
-	ST_IMGWIN stWin,*pWin=Idu_GetCurrWin();
-
-	pstSprite = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_ICON, dwIndex);
-	if (pstSprite)
-	{
-		ImgWinInit(&stWin, NULL, pstSprite->m_wHeight, pstSprite->m_wWidth);
-		stWin.dwOffset= pWin->dwOffset;
-		stWin.pdwStart = (DWORD *)((BYTE *)pWin->pdwStart + pstSprite->m_wPy* pWin->dwOffset + (pstSprite->m_wPx<< 1));
-		DrakWin(&stWin, 2, 1);
-		//mpClearWin(&stWin);
-		xpgDelay(200);
-		 (*drawSpriteFunctions[pstSprite->m_dwType]) (pWin, pstSprite, 1);
-	}
 }
 
 extern BYTE g_bDisplayMode;
@@ -605,6 +572,13 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
     {
 		if (!g_stOpmPagePara.bPowerOnOff && dwIconId!=1 && dwIconId!=10)
 			return PASS;
+		if (dwIconId>=4 && dwIconId<=9)
+		{
+			g_stOpmRealData.bWaveLenth &= 0xc7;
+			g_stOpmRealData.bWaveLenth |= ((dwIconId-4)<<3);
+			xpgUpdateStage();
+			SendOpmCmd(OPM_MACHINE_LOCAL,dwIconId-3);
+		}
 		switch (dwIconId)
 		{
 			case 1: //cloud opm
@@ -642,19 +616,32 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
 
 			case 14: //SAVE
 				FlashIconAndLightIcon(dwIconId);
+				STXPGSPRITE * pstSprite;
+				ST_IMGWIN *pWin=Idu_GetCurrWin();
+				pstSprite = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_TEXT, 0);
+				if (pstSprite)
+				{
+					mpPaintWinArea(pWin, pstSprite->m_wPx+8, pstSprite->m_wPy+8, pstSprite->m_wWidth-16, pstSprite->m_wHeight-16, 0xffff8080);
+					SetCurrIduFontID(FONT_ID_ARIAL_36);
+					Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
+					Idu_PrintStringCenterWH(pWin, "SAVE   DATA !", pstSprite->m_wPx, pstSprite->m_wPy, 0,pstSprite->m_wWidth,pstSprite->m_wHeight);
+					//Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
+					xpgDelay(1000);
+				}
 				SendOpmCmd(OPM_MACHINE_LOCAL,0x0e);
 				OpmAddOneSeg(OPM_LOCAL_RECORD,&g_stOpmRealData);
+				xpgUpdateStage();
 				break;
 
 			case 30: //ESC
 				g_stOpmPagePara.bCal=0;
-				SendOpmCmd(OPM_MACHINE_LOCAL,0x13);
 				xpgUpdateStage();
+				SendOpmCmd(OPM_MACHINE_LOCAL,0x13);
 				break;
 			case 32: // CAL SAVE
 				g_stOpmPagePara.bCal=0;
-				SendOpmCmd(OPM_MACHINE_LOCAL,0x1a);
 				xpgUpdateStage();
+				SendOpmCmd(OPM_MACHINE_LOCAL,0x1a);
 				break;
 
 			case 31: // +0.05dB 
