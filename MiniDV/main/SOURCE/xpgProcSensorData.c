@@ -88,12 +88,18 @@ static BYTE* st_pOpmLocalBuf=NULL,* st_pOpmCloudBuf=NULL;
 ST_OPM_REAL_DATA g_stOpmRealData;
 ST_OPM_PAGE g_stOpmPagePara;
 
-void OpmBufferRelease(BYTE bMode)
+void OpmBufferRelease(void)
 {
-	if (bMode==OPM_LOCAL_RECORD && st_pOpmLocalBuf)
+	if (st_pOpmLocalBuf)
+	{
 		ext_mem_free(st_pOpmLocalBuf);
-	if (bMode==OPM_CLOUD_RECORD && st_pOpmCloudBuf)
+		st_pOpmLocalBuf=NULL;
+	}
+	if (st_pOpmCloudBuf)
+	{
 		ext_mem_free(st_pOpmCloudBuf);
+		st_pOpmCloudBuf=NULL;
+	}
 }
 
 //bMode   0x01 本地实时数据 0x02本地存储数据 0x03 云端实时数据 0x04 云端历史数据
@@ -126,7 +132,7 @@ BYTE *OpmGetbuffer(BYTE bMode)
 
 	return NULL;
 }
-
+//--pbData is ST_OPM_REAL_DATA
 SWORD OpmAddOneSeg(BYTE bMode,BYTE *pbData)
 {
 	BYTE *pbBuffer=NULL;
@@ -143,6 +149,7 @@ SWORD OpmAddOneSeg(BYTE bMode,BYTE *pbData)
 			*pdwBuffer=*pdwBuffer+1;
 			pbBuffer+=(*pdwBuffer-1)*OPM_SEGMEN_LEN+OPM_REC_BUF_HEAD_LEN;
 			memcpy(pbBuffer,pbData,sizeof(ST_OPM_REAL_DATA));
+			OPMSaveDataToFile(bMode);
 			swRet=PASS;
 		}
 	}
@@ -176,6 +183,7 @@ SWORD OpmDelOneSeg(BYTE bMode,BYTE *pbTime)
 				}
 				pdwBuffer=(DWORD *)pbBuffer;
 				*(pdwBuffer+1)=dwTotalNum-1;
+				OPMSaveDataToFile(bMode);
 				swRet=PASS;
 				break;
 			}
@@ -184,11 +192,10 @@ SWORD OpmDelOneSeg(BYTE bMode,BYTE *pbTime)
 	return swRet;
 }
 
-SWORD OpmAddSegTime(BYTE bMode,DWORD dwIndex) // dwIndex:start from 0
+BYTE * OpmGetSegTime(BYTE bMode,DWORD dwIndex) // dwIndex:start from 0
 {
 	BYTE *pbBuffer=NULL;
 	DWORD *pdwBuffer;
-	SWORD swRet=FAIL;
 
 	pbBuffer=OpmGetbuffer(bMode);
 	if (pbBuffer)
@@ -199,10 +206,10 @@ SWORD OpmAddSegTime(BYTE bMode,DWORD dwIndex) // dwIndex:start from 0
 		{
 			pbBuffer+=dwIndex*OPM_SEGMEN_LEN+OPM_REC_BUF_HEAD_LEN;
 			pbBuffer++;  //skip bmode
-			swRet=PASS;
+			return pbBuffer;
 		}
 	}
-	return swRet;
+	return NULL;
 }
 
 DWORD OpmGetTotalNumber(BYTE bMode)
@@ -7073,6 +7080,20 @@ void Proc_SensorData_State()
 }
 
 //------TSPI通讯发送数据,还有一部分在SETUP.C
+
+//OPM操作指令
+//bOpmIndex:0x01本地OPM 0x02云端OPM
+void SendOpmCmd(BYTE bOpmIndex,BYTE bOpmCmd)
+{
+	BYTE bTxData[8];
+
+	MP_DEBUG("SendOpmCmd");
+	bTxData[0]=0x92;
+	bTxData[1]=3+2;
+	bTxData[2]=bOpmIndex;
+	bTxData[3]=bOpmCmd;
+	TSPI_PacketSend(bTxData,0);
+}
 
 //power
 void SendCmdPowerOff()

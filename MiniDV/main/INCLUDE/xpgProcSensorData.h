@@ -236,9 +236,17 @@ typedef struct {
 #define	OPM_RECORD_NAME_LENTH								16 //4 OPM记录标题长度,含结束符0
 #define	OPM_REC_BUF_HEAD_LEN									16 //4 记录BUFFER头保留字节数，含标志、长度等
 
+//0x01本地OPM 0x02云端OPM
+enum {
+    OPM_MACHINE_NULL,
+    OPM_MACHINE_LOCAL,
+    OPM_MACHINE_CLOUD,
+};
+
+
 //bMode   0x01 本地实时数据 0x02本地存储数据 0x03 云端实时数据 0x04 云端历史数据
 enum {
-    OPM_NULL,
+    OPM_DATA_NULL,
     OPM_LOCAL_REALTIME,
     OPM_LOCAL_RECORD,
     OPM_CLOUD_REALTIME,
@@ -248,6 +256,7 @@ enum {
 typedef struct{
     BYTE    bPowerOnOff;				/* 0->off 1->on */
     BYTE    bUnit;				/* 0->uW 1->dbm db */
+    BYTE    bCal;				/* 0->off 1->on */
 } ST_OPM_PAGE;
 extern ST_OPM_PAGE g_stOpmPagePara;
 

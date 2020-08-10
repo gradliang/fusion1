@@ -340,7 +340,7 @@ void xpgRoleDrawMask(STXPGROLE * pstRole, void *pTarget, DWORD px, DWORD py, DWO
 	register DWORD *pdwSourceBuffer;
 	register DWORD *pdwMaskBuffer;
 	DWORD right, bottom;
-	register DWORD x, y, j, k;
+	register DWORD x, y, j, k,l;
 
 	MP_DEBUG("xpgRoleDrawMask");
 	if (pstRole == NULL || pstMaskRole == NULL ||pTarget == NULL)
@@ -367,7 +367,7 @@ void xpgRoleDrawMask(STXPGROLE * pstRole, void *pTarget, DWORD px, DWORD py, DWO
 		MP_DEBUG("xpgRoleDrawMask null");
 		return;
 	}
-    // mpDebugPrint("pstRole->m_wRawWidth=%d,pstMaskRole->m_wRawWidth=%d", pstRole->m_wRawWidth, pstMaskRole->m_wRawWidth);
+     //mpDebugPrint("pstRole->m_wRawWidth=%d,pstMaskRole->m_wRawWidth=%d", pstRole->m_wRawWidth, pstMaskRole->m_wRawWidth);
 
 	pdwSourceBuffer = (DWORD *) ((DWORD)pstRole->m_pRawImage|0xA0000000);//(DWORD *) pstRole->m_pRawImage;
 	pdwMaskBuffer = (DWORD *) ((DWORD)pstMaskRole->m_pRawImage|0xA0000000);//(DWORD *) pstMaskRole->m_pRawImage;
@@ -382,7 +382,10 @@ void xpgRoleDrawMask(STXPGROLE * pstRole, void *pTarget, DWORD px, DWORD py, DWO
 	if ((DWORD)pdwScreenBuffer & 3) {
 		MP_DEBUG("pdwScreenBuffer & 3");
 	}
-	right = px + pstRole->m_wWidth;
+	if (pstMaskRole->m_wRawWidth<pstRole->m_wWidth)
+		right = px + pstMaskRole->m_wRawWidth;
+	else
+		right = px + pstRole->m_wWidth;
 	if (right > dwScrWd)
 		right = dwScrWd;
 
@@ -399,10 +402,11 @@ void xpgRoleDrawMask(STXPGROLE * pstRole, void *pTarget, DWORD px, DWORD py, DWO
 	for (y = py; y < bottom; y++) 
 	{
 		j = ((y * dwScrWd) >> 1) + (px >> 1);
-		k = (((y - py) * pstRole->m_wRawWidth) >> 1);  //m_wRawWidth is align 16
-		for (x = px; x < right; x += 2, j++, k++) 
+		k = (((y - py) * pstRole->m_wRawWidth) >> 1);  //pstRole->m_wRawWidth is align 16
+		l = (((y - py) * pstMaskRole->m_wRawWidth) >> 1); // ex:pstMaskRole->m_wRawWidth=170  pstRole->m_wRawWidth=176
+		for (x = px; x < right; x += 2, j++, k++,l++) 
 		{
-			c = *(pdwMaskBuffer + k);
+			c = *(pdwMaskBuffer + l);
 			if ((c & 0xffff0000) == 0) continue; // skip black pixel
 
 			cy0 = YYCbCr_Y0(c);

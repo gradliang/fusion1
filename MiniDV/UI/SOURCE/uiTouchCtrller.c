@@ -161,6 +161,24 @@ void FlashIconAndLightIcon(DWORD dwIndex)
 		 (*drawSpriteFunctions[pstSprite->m_dwType]) (Idu_GetCurrWin(), pstSprite, 1);
 }
 
+void FlashByDarkIcon(DWORD dwIndex)
+{
+	STXPGSPRITE * pstSprite;
+	ST_IMGWIN stWin,*pWin=Idu_GetCurrWin();
+
+	pstSprite = xpgSpriteFindType(g_pstXpgMovie, SPRITE_TYPE_ICON, dwIndex);
+	if (pstSprite)
+	{
+		ImgWinInit(&stWin, NULL, pstSprite->m_wHeight, pstSprite->m_wWidth);
+		stWin.dwOffset= pWin->dwOffset;
+		stWin.pdwStart = (DWORD *)((BYTE *)pWin->pdwStart + pstSprite->m_wPy* pWin->dwOffset + (pstSprite->m_wPx<< 1));
+		DrakWin(&stWin, 2, 1);
+		//mpClearWin(&stWin);
+		xpgDelay(200);
+		 (*drawSpriteFunctions[pstSprite->m_dwType]) (pWin, pstSprite, 1);
+	}
+}
+
 extern BYTE g_bDisplayMode;
 SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
 {
@@ -221,6 +239,7 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
             isSelectOnlineOPM = 0;
             xpgSearchtoPageWithAction("opm1");
             xpgUpdateStage();
+			OPMLoadDataFromFile(OPM_LOCAL_RECORD);
         }
         else if (dwIconId == 6) 
         {
@@ -596,6 +615,7 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
 				Idu_GetCacheWin_WithInit();
 				xpgSearchtoPageWithAction("opmWarn");
 				xpgUpdateStage();
+				OPMLoadDataFromFile(OPM_CLOUD_RECORD);
 				break;
 
 			case 10: //power button
@@ -605,6 +625,8 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
 
 			case 11: //cal
 				FlashIconAndLightIcon(dwIconId);
+				g_stOpmPagePara.bCal=1;
+				xpgUpdateStage();
 				break;
 
 			case 12: //UNIT
@@ -615,10 +637,33 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
 
 			case 13: //REF
 				FlashIconAndLightIcon(dwIconId);
+				SendOpmCmd(OPM_MACHINE_LOCAL,0x0d);
 				break;
 
 			case 14: //SAVE
 				FlashIconAndLightIcon(dwIconId);
+				SendOpmCmd(OPM_MACHINE_LOCAL,0x0e);
+				OpmAddOneSeg(OPM_LOCAL_RECORD,&g_stOpmRealData);
+				break;
+
+			case 30: //ESC
+				g_stOpmPagePara.bCal=0;
+				SendOpmCmd(OPM_MACHINE_LOCAL,0x13);
+				xpgUpdateStage();
+				break;
+			case 32: // CAL SAVE
+				g_stOpmPagePara.bCal=0;
+				SendOpmCmd(OPM_MACHINE_LOCAL,0x1a);
+				xpgUpdateStage();
+				break;
+
+			case 31: // +0.05dB 
+				SendOpmCmd(OPM_MACHINE_LOCAL,0x11);
+				FlashByDarkIcon(dwIconId);
+				break;
+			case 33: //-0.05dB 
+				SendOpmCmd(OPM_MACHINE_LOCAL,0x12);
+				FlashByDarkIcon(dwIconId);
 				break;
 
 			default:
@@ -1502,6 +1547,7 @@ SWORD touchSprite_BackIcon(STXPGSPRITE * sprite, WORD x, WORD y)
         dwHashKey == xpgHash("opm2") 
         )
     {
+		OpmBufferRelease();// opm1 opm2
         xpgSearchtoPageWithAction("Main");
         xpgUpdateStage();
     }

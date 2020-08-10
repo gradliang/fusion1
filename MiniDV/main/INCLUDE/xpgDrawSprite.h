@@ -59,6 +59,7 @@ SWORD xpgDrawSprite_Frame(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BO
 SWORD xpgDrawSprite_RepeatIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOOL boClip);          // type29
 SWORD xpgDrawSprite_HomeStatus(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOOL boClip);    // type30
 SWORD xpgDrawSprite_TextColorBar(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOOL boClip);    // type31
+void MakeMaskRole(STXPGROLE * pstMaskRole, int maskRoleIndex, WORD width, WORD height,BYTE bMaskConerFlag);
 void DrawRoundIcon(ST_IMGWIN * pWin,int maskRoleIndex,WORD wX,WORD wY,WORD wW,WORD wH,DWORD dwYUVcolor);
 
 
