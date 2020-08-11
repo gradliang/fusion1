@@ -1911,18 +1911,16 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
     {
 		if (dwHashKey == xpgHash("opm1"))
 		{
-			if (g_stOpmPagePara.bCal && dwSpriteId>=10 && dwSpriteId<20)
+			if (g_stLocalOpmPagePara.bCal && dwSpriteId>=10 && dwSpriteId<20)
 			{
 					xpgSpriteDisableTouch(pstSprite);
 					return PASS;
 			}
-			else if (!g_stOpmPagePara.bCal && dwSpriteId>=30 && dwSpriteId<40)
+			else if (!g_stLocalOpmPagePara.bCal && dwSpriteId>=30 && dwSpriteId<40)
 			{
 					xpgSpriteDisableTouch(pstSprite);
 					return PASS;
 			}
-			//else if (g_stOpmPagePara.bPowerOnOff && dwSpriteId>10 && dwSpriteId<20) //flash error
-			//		dwSpriteId=0xffffffff;
 		}
         if (dwSpriteId == 20)
         {
@@ -2005,20 +2003,13 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
         {
 			MakeMaskRole((STXPGROLE *)&stMaskRole, XPG_ROLE_ICON_MASK_0, pstSprite->m_wWidth, pstSprite->m_wHeight,BIT7);
 			xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, &stMaskRole);
-			if (!g_stOpmPagePara.bPowerOnOff)
-				DrakSprite(pWin,pstSprite);
+			//if (!g_stLocalOpmPagePara.bPowerOnOff)
+			//	DrakSprite(pWin,pstSprite);
         }
         else if (dwSpriteId == 11)
         {
-            if (dwHashKey == xpgHash("opm1"))
-            {
 				MakeMaskRole((STXPGROLE *)&stMaskRole, XPG_ROLE_ICON_MASK_0, pstSprite->m_wWidth, pstSprite->m_wHeight,BIT5);
 				xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, pstSprite->m_wPx, pstSprite->m_wPy, pWin->wWidth, pWin->wHeight, &stMaskRole);
-            }
-            else if (dwHashKey == xpgHash("opm2"))
-            {
-                xpgDrawSprite(pWin, pstSprite, boClip);
-            }
         }
         else if (dwSpriteId == 12)
         {
@@ -2043,7 +2034,7 @@ SWORD xpgDrawSprite_Icon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
                     xpgRoleDrawMask(pstSprite->m_pstRole, pWin->pdwStart, wX, wY, pWin->wWidth, pWin->wHeight, pstMask->m_pstRole);
             }
         }
-		 else if (g_stOpmPagePara.bCal && dwSpriteId>=30 && dwSpriteId<40)
+		 else if (g_stLocalOpmPagePara.bCal && dwSpriteId>=30 && dwSpriteId<40)//(dwHashKey == xpgHash("opm2"))
 		 {
 	 			if (dwSpriteId==30)
 				{
@@ -2560,17 +2551,25 @@ SWORD xpgDrawSprite_LightIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite
             Idu_PrintStringCenter(pWin, text, pstSprite->m_wPx, pstSprite->m_wPy+2, 0, pstSprite->m_wWidth); 
         }
     }
-    else if(dwHashKey == xpgHash("opm1") || dwHashKey == xpgHash("opmList1"))
+    else if(dwHashKey == xpgHash("opm1") || dwHashKey == xpgHash("opm2") || dwHashKey == xpgHash("opmList1"))
     {
-       if (!g_stOpmPagePara.bPowerOnOff)
-			 	return PASS;
+		ST_OPM_PAGE *stOpmPagePara=&g_stLocalOpmPagePara;
+
 		if (dwHashKey == xpgHash("opm1"))
 		{
+	       if (!stOpmPagePara->bPowerOnOff)
+				 	return PASS;
 			if (dwSpriteId>=10 && dwSpriteId<20)
 			{
-				if (g_stOpmPagePara.bCal)
+				if (stOpmPagePara->bCal)
 					return PASS;
 			}
+		}
+		else
+		{
+			stOpmPagePara=&g_stCloudOpmPagePara;
+	       if (!stOpmPagePara->bPowerOnOff && dwSpriteId!=11)
+				 	return PASS;
 		}
 		if (dwSpriteId==13)
 		{
@@ -2591,11 +2590,12 @@ SWORD xpgDrawSprite_LightIcon(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite
 			xpgDrawSprite(pWin, pstSprite, boClip);
 		else if (dwSpriteId>=4 && dwSpriteId<=9)
 		{
-			if (((g_stOpmRealData.bWaveLenth&0x38)>>3)==dwSpriteId-4)
+			//if (((stOpmPagePara->bWaveLenth&0x38)>>3)==dwSpriteId-4)
+			if (stOpmPagePara->bWaveIconIndex==dwSpriteId)
 				xpgDrawSprite(pWin, pstSprite, boClip);
 		}
     }
-    else if(dwHashKey == xpgHash("opm2") || dwHashKey == xpgHash("opmList2"))
+    else if(dwHashKey == xpgHash("opmList2"))
     {
 #if 0
         if (dwSpriteId == 1)
@@ -3045,6 +3045,7 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
     DWORD dwTextId = pstSprite->m_dwTypeIndex;
 	WORD wX=pstSprite->m_wPx;
     DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
+	
     if (dwHashKey == xpgHash("Main"))
     {
         if (dwTextId == 0)
@@ -3710,16 +3711,34 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
     }
     else if(dwHashKey == xpgHash("opm1") || dwHashKey == xpgHash("opm2") /*|| dwHashKey == xpgHash("opm3") || dwHashKey == xpgHash("opm4")*/)
     {
-	       if (!g_stOpmPagePara.bPowerOnOff)
+			ST_OPM_PAGE *stOpmPagePara=&g_stCloudOpmPagePara;
+			
+			if (dwHashKey == xpgHash("opm1"))
+				stOpmPagePara=&g_stLocalOpmPagePara;
+	       if (!stOpmPagePara->bPowerOnOff)
 				 	return PASS;
 			Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
 			switch (dwTextId)
 			{
 				case 0:
 					mpPaintWinArea(pWin, pstSprite->m_wPx+8, pstSprite->m_wPy+8, pstSprite->m_wWidth-16, pstSprite->m_wHeight-16, 0xffff8080);
+					if (dwHashKey == xpgHash("opm2"))
+					{
+						if (stOpmPagePara->bStaus<4)
+						{
+							SetCurrIduFontID(FONT_ID_ARIAL_36);
+							Idu_SetFontYUV(IDU_FONT_YUVCOLOR_BLACK);
+							sprintf(xpgStringBuffer, "LINKING");
+							BYTE i;
+							for (i=0;i<stOpmPagePara->bStaus;i++)
+								strcat(xpgStringBuffer,".");
+							Idu_PrintString(pWin, xpgStringBuffer, pstSprite->m_wPx+40, pstSprite->m_wPy+24, 0,0);
+							Ui_TimerProcAdd(800, OpmCloudShowLinkingStatus);
+						}
+					}
 					break;
 				case 1:
-					if (g_stOpmPagePara.bUnit)
+					if (stOpmPagePara->bUnit)
 					{
 						SDWORD sdwIntData;
 						BYTE bPoint,i;
@@ -3742,7 +3761,7 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
 					break;
 
 				case 2:
-					if (g_stOpmPagePara.bUnit)
+					if (stOpmPagePara->bUnit)
 					{
 						sprintf(xpgStringBuffer, "dBm");
 						SetCurrIduFontID(FONT_ID_HeiTi19);
@@ -3751,11 +3770,11 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
 					break;
 
 				case 3:
-					if (g_stOpmPagePara.bCal)
+					if (stOpmPagePara->bCal)
 					{
 						sprintf(xpgStringBuffer, "CAL");
 					}
-					else if (g_stOpmPagePara.bUnit)
+					else if (stOpmPagePara->bUnit)
 					{
 						SDWORD sdwIntData;
 						BYTE bPoint,i;
@@ -3786,9 +3805,9 @@ SWORD xpgDrawSprite_Text(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite, BOO
 					break;
 
 				case 4:
-					if (!g_stOpmPagePara.bCal)
+					if (!stOpmPagePara->bCal)
 					{
-						if (g_stOpmPagePara.bUnit)
+						if (stOpmPagePara->bUnit)
 						{
 							sprintf(xpgStringBuffer, "dB");
 						}
@@ -4866,14 +4885,9 @@ SWORD xpgDrawSprite_Selector(ST_IMGWIN * pWin, register STXPGSPRITE * pstSprite,
     }
     else if (dwHashKey == xpgHash("opm2"))
     {
-        Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy, pstSprite->m_wWidth, pstSprite->m_wHeight, RGB2YUV(20, 20, 20));
-        Idu_PaintWinArea(pWin, pstSprite->m_wPx + pstSprite->m_wWidth - 2, pstSprite->m_wPy, 2, pstSprite->m_wHeight, RGB2YUV(0x2E, 0x2E, 0x2E));
-        Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy, pstSprite->m_wWidth, 2, RGB2YUV(0x2E, 0x2E, 0x2E));
-        Idu_PaintWinArea(pWin, pstSprite->m_wPx, pstSprite->m_wPy + pstSprite->m_wHeight - 2, pstSprite->m_wWidth, 2, RGB2YUV(0x2E, 0x2E, 0x2E));
         SetCurrIduFontID(FONT_ID_HeiTi19);
         Idu_PrintString(pWin, getstr(Str_YunDuanShuJu), pstSprite->m_wPx + 20, pstSprite->m_wPy + 12, 0, 0);
-        Idu_PrintString(pWin, ">", pstSprite->m_wPx + 168, pstSprite->m_wPy + 12, 0, 0);
-        //xpgSpriteEnableTouch(pstSprite);
+        Idu_PrintString(pWin, ">", pstSprite->m_wPx + 164, pstSprite->m_wPy + 12, 0, 0);
     }
     else if (dwHashKey == xpgHash("opmList1"))
     {

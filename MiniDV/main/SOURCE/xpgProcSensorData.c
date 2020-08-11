@@ -86,7 +86,7 @@ WeldRecordPage  g_WeldRecordPage;
 //第一个DWORD为数据标志，同文件头标志，第二个DWORD为数据总数量,再保留2个DWORD，后面为一段段数据
 static BYTE* st_pOpmLocalBuf=NULL,* st_pOpmCloudBuf=NULL;
 ST_OPM_REAL_DATA g_stOpmRealData;
-ST_OPM_PAGE g_stOpmPagePara;
+ST_OPM_PAGE g_stLocalOpmPagePara,g_stCloudOpmPagePara;
 
 void OpmBufferRelease(void)
 {
@@ -368,6 +368,20 @@ _OPEN_END:
     return swRet;
 }
 
+
+void OpmCloudShowLinkingStatus(void)
+{
+	DWORD dwHashKey = g_pstXpgMovie->m_pstCurPage->m_dwHashKey;
+
+	if (dwHashKey != xpgHash("opm2"))
+		return;
+	if (g_stCloudOpmPagePara.bStaus>3)
+		return;
+	g_stCloudOpmPagePara.bStaus++;
+	if (g_stCloudOpmPagePara.bStaus>3)
+		g_stCloudOpmPagePara.bStaus=0;
+	xpgUpdateStage();
+}
 
 #endif
 

@@ -139,7 +139,6 @@ SWORD touchSprite_Background(STXPGSPRITE * sprite, WORD x, WORD y)
     if (dwHashKey == xpgHash("opmWarn"))
     {
         Free_CacheWin();
-        isSelectOnlineOPM = 1;
         xpgSearchtoPageWithAction("opm2");
         xpgUpdateStage();
     }
@@ -203,7 +202,8 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
         }
         else if (dwIconId == 5) 
         {
-            isSelectOnlineOPM = 0;
+			 memset(&g_stLocalOpmPagePara,0,sizeof(ST_OPM_PAGE));
+			 memset(&g_stCloudOpmPagePara,0,sizeof(ST_OPM_PAGE));
             xpgSearchtoPageWithAction("opm1");
             xpgUpdateStage();
 			OPMLoadDataFromFile(OPM_LOCAL_RECORD);
@@ -504,7 +504,6 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
         }
         else if (dwIconId == 1)
         {
-            isSelectOnlineOPM = 0;
             xpgSearchtoPageWithAction("opm1");
             xpgUpdateStage();
         }
@@ -568,50 +567,76 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
             }
         }
     }
-    else if(dwHashKey == xpgHash("opm1") )
+    else if(dwHashKey == xpgHash("opm1") || dwHashKey == xpgHash("opm2"))
     {
-		if (!g_stOpmPagePara.bPowerOnOff && dwIconId!=1 && dwIconId!=10)
-			return PASS;
+		ST_OPM_PAGE *stOpmPagePara=&g_stCloudOpmPagePara;
+		BYTE bOpmMachineIndex,bOpmRecIndex;
+		
+		if (dwHashKey == xpgHash("opm1"))
+		{
+			if (!stOpmPagePara->bPowerOnOff && dwIconId!=1 && dwIconId!=10)
+				return PASS;
+			stOpmPagePara=&g_stLocalOpmPagePara;
+			bOpmMachineIndex=OPM_MACHINE_LOCAL;
+			bOpmRecIndex=OPM_LOCAL_RECORD;
+		}
+		else
+		{
+			if (!stOpmPagePara->bPowerOnOff && dwIconId!=1 && dwIconId!=10&& dwIconId!=11)
+				return PASS;
+			stOpmPagePara=&g_stCloudOpmPagePara;
+			bOpmMachineIndex=OPM_MACHINE_CLOUD;
+			bOpmRecIndex=OPM_CLOUD_RECORD;
+		}
+
 		if (dwIconId>=4 && dwIconId<=9)
 		{
-			g_stOpmRealData.bWaveLenth &= 0xc7;
-			g_stOpmRealData.bWaveLenth |= ((dwIconId-4)<<3);
+			//g_stOpmRealData.bWaveLenth &= 0xc7;
+			//g_stOpmRealData.bWaveLenth |= ((dwIconId-4)<<3);
+			stOpmPagePara->bWaveIconIndex=dwIconId;
 			xpgUpdateStage();
-			SendOpmCmd(OPM_MACHINE_LOCAL,dwIconId-3);
+			SendOpmCmd(bOpmMachineIndex,dwIconId-3);
 		}
 		switch (dwIconId)
 		{
+			case 0: //local opm
+				xpgSearchtoPageWithAction("opm1");
+				xpgUpdateStage();
+				OPMLoadDataFromFile(bOpmRecIndex);
+				break;
+				
 			case 1: //cloud opm
-				isSelectOnlineOPM = 1;
 				xpgSearchtoPageWithAction("opm2");
 				xpgUpdateStage();
+				/*
 				Free_CacheWin();
 				Idu_GetCacheWin_WithInit();
 				xpgSearchtoPageWithAction("opmWarn");
 				xpgUpdateStage();
-				OPMLoadDataFromFile(OPM_CLOUD_RECORD);
+				*/
+				OPMLoadDataFromFile(bOpmRecIndex);
 				break;
 
 			case 10: //power button
-				g_stOpmPagePara.bPowerOnOff=!g_stOpmPagePara.bPowerOnOff;
+				stOpmPagePara->bPowerOnOff=!stOpmPagePara->bPowerOnOff;
 				xpgUpdateStage();
 				break;
 
 			case 11: //cal
 				FlashIconAndLightIcon(dwIconId);
-				g_stOpmPagePara.bCal=1;
+				stOpmPagePara->bCal=1;
 				xpgUpdateStage();
 				break;
 
 			case 12: //UNIT
 				FlashIconAndLightIcon(dwIconId);
-				g_stOpmPagePara.bUnit=!g_stOpmPagePara.bUnit;
+				stOpmPagePara->bUnit=!stOpmPagePara->bUnit;
 				xpgUpdateStage();
 				break;
 
 			case 13: //REF
 				FlashIconAndLightIcon(dwIconId);
-				SendOpmCmd(OPM_MACHINE_LOCAL,0x0d);
+				SendOpmCmd(bOpmMachineIndex,0x0d);
 				break;
 
 			case 14: //SAVE
@@ -628,28 +653,28 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
 					//Idu_SetFontYUV(IDU_FONT_YUVCOLOR_DEFAULT_WHITE);
 					xpgDelay(1000);
 				}
-				SendOpmCmd(OPM_MACHINE_LOCAL,0x0e);
-				OpmAddOneSeg(OPM_LOCAL_RECORD,&g_stOpmRealData);
+				SendOpmCmd(bOpmMachineIndex,0x0e);
+				OpmAddOneSeg(bOpmRecIndex,&g_stOpmRealData);
 				xpgUpdateStage();
 				break;
 
 			case 30: //ESC
-				g_stOpmPagePara.bCal=0;
+				stOpmPagePara->bCal=0;
 				xpgUpdateStage();
-				SendOpmCmd(OPM_MACHINE_LOCAL,0x13);
+				SendOpmCmd(bOpmMachineIndex,0x13);
 				break;
 			case 32: // CAL SAVE
-				g_stOpmPagePara.bCal=0;
+				stOpmPagePara->bCal=0;
 				xpgUpdateStage();
-				SendOpmCmd(OPM_MACHINE_LOCAL,0x1a);
+				SendOpmCmd(bOpmMachineIndex,0x1a);
 				break;
 
 			case 31: // +0.05dB 
-				SendOpmCmd(OPM_MACHINE_LOCAL,0x11);
+				SendOpmCmd(bOpmMachineIndex,0x11);
 				FlashByDarkIcon(dwIconId);
 				break;
 			case 33: //-0.05dB 
-				SendOpmCmd(OPM_MACHINE_LOCAL,0x12);
+				SendOpmCmd(bOpmMachineIndex,0x12);
 				FlashByDarkIcon(dwIconId);
 				break;
 
@@ -661,7 +686,6 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
     {
         if (dwIconId == 0)
         {
-            isSelectOnlineOPM = 0;
             xpgSearchtoPageWithAction("opm1");
             xpgUpdateStage();
         }
@@ -674,13 +698,11 @@ SWORD touchSprite_Icon(STXPGSPRITE * sprite, WORD x, WORD y)
     {
         if (dwIconId == 0)
         {
-            isSelectOnlineOPM = 0;
             xpgSearchtoPageWithAction("opm1");
             xpgUpdateStage();
         }
         else if (dwIconId == 1)
         {
-            isSelectOnlineOPM = 1;
             xpgSearchtoPageWithAction("opm2");
             xpgUpdateStage();
         }

@@ -257,8 +257,10 @@ typedef struct{
     BYTE    bPowerOnOff;				/* 0->off 1->on */
     BYTE    bUnit;				/* 0->uW 1->dbm db */
     BYTE    bCal;				/* 0->off 1->on */
+    BYTE    bStaus;				/*For    Cloud OPM  0->link 1->link. 2->link.. 3->link... 4->link fail   9->link ok     云端模式未开启 3->2G信号弱，无法连接4->连接失败 */
+    BYTE    bWaveIconIndex;				/*bWaveLenth Icon index 4-9*/
 } ST_OPM_PAGE;
-extern ST_OPM_PAGE g_stOpmPagePara;
+extern ST_OPM_PAGE g_stLocalOpmPagePara,g_stCloudOpmPagePara;
 
 
 typedef struct{
@@ -325,6 +327,7 @@ void AddRecord(STRECORD* pstRecord);
 STRECORD* GetRecord(DWORD dwIndex);
 DWORD GetRecordTotal();
 void ClearAllRecord();
+void OpmCloudShowLinkingStatus(void);
 
 #endif
 

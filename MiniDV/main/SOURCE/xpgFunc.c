@@ -1795,7 +1795,8 @@ void uiCb_VFLHzFlash(void)
 //--
 void 	xpgParamInit()
 {
-	memset(&g_stOpmPagePara,0,sizeof (g_stOpmPagePara));
+	memset(&g_stLocalOpmPagePara,0,sizeof (ST_OPM_PAGE));
+	memset(&g_stCloudOpmPagePara,0,sizeof (ST_OPM_PAGE));
 
 }
 
